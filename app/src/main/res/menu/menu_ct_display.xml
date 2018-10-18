@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/set_colors"
+        android:showAsAction="never"
+        android:title="Set Colors">
+        <menu>
+            <item
+                android:id="@+id/set_time_colors"
+                android:showAsAction="always"
+                android:title="Time"></item>
+            <item
+                android:id="@+id/set_button_colors"
+                android:showAsAction="always"
+                android:title="Buttons"></item>
+            <item
+                android:id="@+id/set_back_screen_colors"
+                android:showAsAction="always"
+                android:title="Back Screen"></item>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/BAR_MENU_KEEP_SCREEN"
+        android:showAsAction="always"
+        android:title="Keep screen (ON/OFF)" />
+    <item
+        android:id="@+id/help"
+        android:showAsAction="never"
+        android:title="Help"></item>
+</menu>

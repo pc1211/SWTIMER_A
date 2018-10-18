@@ -1,0 +1,34 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.pgyl.swtimer_a">
+
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <application
+        android:icon="@drawable/app_icon"
+        android:label="Swtimer">
+        <activity
+            android:name="com.example.pgyl.swtimer_a.MainActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:launchMode="singleTask"
+            android:label="Swtimer">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.pgyl.swtimer_a.CtDisplayActivity"
+            android:label="CTActivity" />
+        <activity
+            android:name="com.example.pgyl.pekislib_a.PresetsActivity"
+            android:label="InputEditListActivity" />
+        <activity
+            android:name="com.example.pgyl.pekislib_a.InputButtonsActivity"
+            android:label="InputButtonsActivity" />
+        <activity
+            android:name="com.example.pgyl.pekislib_a.ColorPickerActivity"
+            android:label="ColorPickerActivity" />
+        <activity
+            android:name="com.example.pgyl.pekislib_a.HelpActivity"
+            android:label="HelpActivity" />
+    </application>
+</manifest>
