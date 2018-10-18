@@ -45,7 +45,7 @@
         android:orientation="horizontal">
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_INVERT_CLOCK_ALARM"
+            android:id="@+id/BTN_INVERT_CLOCK_APP_ALARM"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />

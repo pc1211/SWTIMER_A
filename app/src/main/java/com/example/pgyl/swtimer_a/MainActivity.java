@@ -50,23 +50,6 @@ import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 
 public class MainActivity extends Activity {
-    //region Constantes
-    private enum COMMANDS {
-        SHOW_EXPIRATION_TIME(R.drawable.main_clock), ADD_NEW_CHRONOTIMER_TO_LIST(R.drawable.main_tolist), NEW_CHRONO(R.drawable.main_chrono), NEW_TIMER(R.drawable.main_timer), INVERT_SELECTION_ALL_CT(R.drawable.main_inv), SELECT_ALL_CT(R.drawable.main_all), START_SELECTED_CT(R.drawable.main_start), STOP_SELECTED_CT(R.drawable.main_stop), SPLIT_SELECTED_CT(R.drawable.main_split), RESET_SELECTED_CT(R.drawable.main_reset), REMOVE_SELECTED_CT(R.drawable.main_remove);
-
-        private int valueId;
-
-        COMMANDS(int valueId) {
-            this.valueId = valueId;
-        }
-
-        public int ID() {
-            return valueId;
-        }
-    }
-
-    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
-
     private final int UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS = 1000;
     private final long DELAY_ZERO_MS = 0;
     //endregion
@@ -86,7 +69,6 @@ public class MainActivity extends Activity {
     private String calledActivity;
     private StringShelfDatabase stringShelfDatabase;
     private String shpFileName;
-    //endregion
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,6 +105,7 @@ public class MainActivity extends Activity {
         menu = null;
         savePreferences();
     }
+    //endregion
 
     @Override
     protected void onResume() {
@@ -153,7 +136,6 @@ public class MainActivity extends Activity {
         mainCtListRobot.startAutomatic(UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS);
         invalidateOptionsMenu();
     }
-    //endregion
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
@@ -176,6 +158,7 @@ public class MainActivity extends Activity {
         setKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
+    //endregion
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {  // appelé par invalideOptionsMenu après changement d'orientation
@@ -621,5 +604,22 @@ public class MainActivity extends Activity {
     private boolean returnsFromHelp() {
         return (calledActivity.equals(PEKISLIB_ACTIVITIES.HELP.toString()));
     }
+
+    //region Constantes
+    private enum COMMANDS {
+        SHOW_EXPIRATION_TIME(R.drawable.main_clock), ADD_NEW_CHRONOTIMER_TO_LIST(R.drawable.main_tolist), NEW_CHRONO(R.drawable.main_chrono), NEW_TIMER(R.drawable.main_timer), INVERT_SELECTION_ALL_CT(R.drawable.main_inv), SELECT_ALL_CT(R.drawable.main_all), START_SELECTED_CT(R.drawable.main_start), STOP_SELECTED_CT(R.drawable.main_stop), SPLIT_SELECTED_CT(R.drawable.main_split), RESET_SELECTED_CT(R.drawable.main_reset), REMOVE_SELECTED_CT(R.drawable.main_remove);
+
+        private int valueId;
+
+        COMMANDS(int valueId) {
+            this.valueId = valueId;
+        }
+
+        public int ID() {
+            return valueId;
+        }
+    }
+
+    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
 
 }

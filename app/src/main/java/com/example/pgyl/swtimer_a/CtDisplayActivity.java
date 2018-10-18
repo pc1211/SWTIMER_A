@@ -50,27 +50,6 @@ import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
 
 public class CtDisplayActivity extends Activity {
-    //region Constantes
-    private enum COMMANDS {
-        RUN(R.raw.ct_run), SPLIT(R.raw.ct_split), INVERT_CLOCK_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
-
-        private int valueId;
-
-        COMMANDS(int valueId) {
-            this.valueId = valueId;
-        }
-
-        public int ID() {
-            return valueId;
-        }
-    }
-
-    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
-
-    public enum CTDISPLAY_EXTRA_KEYS {
-        CURRENT_CHRONO_TIMER_ID
-    }
-
     private final int UPDATE_CT_DISPLAY_VIEW_TIME_INTERVAL_MS = 10;
     private final int ACTIVITY_CODE_MULTIPLIER = 100;  // Pour différencier les types d'appel à une même activité
     //endregion
@@ -141,10 +120,10 @@ public class CtDisplayActivity extends Activity {
                 validReturnFromCalledActivity = false;
                 if (returnsFromPresets()) {
                     if (!currentCtRecord.setMessage(getCurrentPresetMessageFromPresets())) {
-                        Toast.makeText(this, "Error updating Clock alarm message", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Error updating Clock App alarm message", Toast.LENGTH_LONG).show();
                     }
                     if (!currentCtRecord.setTimeDef(Long.parseLong(getCurrentPresetTimeDefFromPresets()))) {
-                        Toast.makeText(this, "Error updating Clock alarm default time", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Error updating Clock App alarm default time", Toast.LENGTH_LONG).show();
                     }
                 }
                 if (returnsFromColorPicker()) {
@@ -209,7 +188,6 @@ public class CtDisplayActivity extends Activity {
             validReturnFromCalledActivity = true;
         }
     }
-    //endregion
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {  //  Non appelé après changement d'orientation
@@ -257,6 +235,7 @@ public class CtDisplayActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+    //endregion
 
     private void onButtonClick(COMMANDS command) {
         long nowm = System.currentTimeMillis();
@@ -266,7 +245,7 @@ public class CtDisplayActivity extends Activity {
         if (command.equals(COMMANDS.SPLIT)) {
             onButtonClickSplit(nowm);
         }
-        if (command.equals(COMMANDS.INVERT_CLOCK_ALARM)) {
+        if (command.equals(COMMANDS.INVERT_CLOCK_APP_ALARM)) {
             onButtonClickInvertClockAppAlarm();
         }
         if (command.equals(COMMANDS.RESET)) {
@@ -391,7 +370,7 @@ public class CtDisplayActivity extends Activity {
         if (command.equals(COMMANDS.RESET)) {
             return false;
         }
-        if (command.equals(COMMANDS.INVERT_CLOCK_ALARM)) {
+        if (command.equals(COMMANDS.INVERT_CLOCK_APP_ALARM)) {
             return currentCtRecord.hasClockAppAlarm();
         }
         return false;
@@ -664,6 +643,27 @@ public class CtDisplayActivity extends Activity {
 
     private boolean returnsFromHelp() {
         return (calledActivity.equals(PEKISLIB_ACTIVITIES.HELP.toString()));
+    }
+
+    //region Constantes
+    private enum COMMANDS {
+        RUN(R.raw.ct_run), SPLIT(R.raw.ct_split), INVERT_CLOCK_APP_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
+
+        private int valueId;
+
+        COMMANDS(int valueId) {
+            this.valueId = valueId;
+        }
+
+        public int ID() {
+            return valueId;
+        }
+    }
+
+    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
+
+    public enum CTDISPLAY_EXTRA_KEYS {
+        CURRENT_CHRONO_TIMER_ID
     }
 
 }
