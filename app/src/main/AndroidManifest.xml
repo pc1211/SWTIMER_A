@@ -4,6 +4,7 @@
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <application
         android:icon="@drawable/app_icon"
+        android:theme="@style/AppTheme"
         android:label="Swtimer">
         <activity
             android:name="com.example.pgyl.swtimer_a.MainActivity"
