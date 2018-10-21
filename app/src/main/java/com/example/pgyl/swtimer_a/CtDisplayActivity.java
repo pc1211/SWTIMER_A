@@ -50,6 +50,27 @@ import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
 
 public class CtDisplayActivity extends Activity {
+    //region Constantes
+    private enum COMMANDS {
+        RUN(R.raw.ct_run), SPLIT(R.raw.ct_split), INVERT_CLOCK_APP_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
+
+        private int valueId;
+
+        COMMANDS(int valueId) {
+            this.valueId = valueId;
+        }
+
+        public int ID() {
+            return valueId;
+        }
+    }
+
+    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
+
+    public enum CTDISPLAY_EXTRA_KEYS {
+        CURRENT_CHRONO_TIMER_ID
+    }
+
     private final int UPDATE_CT_DISPLAY_VIEW_TIME_INTERVAL_MS = 10;
     private final int ACTIVITY_CODE_MULTIPLIER = 100;  // Pour différencier les types d'appel à une même activité
     //endregion
@@ -643,27 +664,6 @@ public class CtDisplayActivity extends Activity {
 
     private boolean returnsFromHelp() {
         return (calledActivity.equals(PEKISLIB_ACTIVITIES.HELP.toString()));
-    }
-
-    //region Constantes
-    private enum COMMANDS {
-        RUN(R.raw.ct_run), SPLIT(R.raw.ct_split), INVERT_CLOCK_APP_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
-
-        private int valueId;
-
-        COMMANDS(int valueId) {
-            this.valueId = valueId;
-        }
-
-        public int ID() {
-            return valueId;
-        }
-    }
-
-    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
-
-    public enum CTDISPLAY_EXTRA_KEYS {
-        CURRENT_CHRONO_TIMER_ID
     }
 
 }

@@ -50,6 +50,23 @@ import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 
 public class MainActivity extends Activity {
+    //region Constantes
+    private enum COMMANDS {
+        SHOW_EXPIRATION_TIME(R.drawable.main_clock), ADD_NEW_CHRONOTIMER_TO_LIST(R.drawable.main_tolist), NEW_CHRONO(R.drawable.main_chrono), NEW_TIMER(R.drawable.main_timer), INVERT_SELECTION_ALL_CT(R.drawable.main_inv), SELECT_ALL_CT(R.drawable.main_all), START_SELECTED_CT(R.drawable.main_start), STOP_SELECTED_CT(R.drawable.main_stop), SPLIT_SELECTED_CT(R.drawable.main_split), RESET_SELECTED_CT(R.drawable.main_reset), REMOVE_SELECTED_CT(R.drawable.main_remove);
+
+        private int valueId;
+
+        COMMANDS(int valueId) {
+            this.valueId = valueId;
+        }
+
+        public int ID() {
+            return valueId;
+        }
+    }
+
+    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
+
     private final int UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS = 1000;
     private final long DELAY_ZERO_MS = 0;
     //endregion
@@ -243,11 +260,11 @@ public class MainActivity extends Activity {
     }
 
     private void onButtonClickAddNewChrono(long nowm) {
-        setNewChronoTimer(MODE.CHRONO, nowm);
+        createChronoTimer(MODE.CHRONO, nowm);
     }
 
     private void onButtonClickAddNewTimer(long nowm) {
-        setNewChronoTimer(MODE.TIMER, nowm);
+        createChronoTimer(MODE.TIMER, nowm);
     }
 
     private void onButtonClickShowExpirationTime() {
@@ -295,12 +312,9 @@ public class MainActivity extends Activity {
         dialog.show();
     }
 
-    private void setNewChronoTimer(MODE mode, long nowm) {
-        final String MESSAGE_INIT_DEFAULT_VALUE = "Message";
-        final int TIMEDEFINIT_DEFAULT_VALUE = 0;
-
+    private void createChronoTimer(MODE mode, long nowm) {
         mainCtListRobot.stopAutomatic();
-        int idct = ctRecordsHandler.createNewChronoTimer(mode, TIMEDEFINIT_DEFAULT_VALUE, MESSAGE_INIT_DEFAULT_VALUE);
+        int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
             rebuildList();
             mainCtListRobot.startAutomatic(DELAY_ZERO_MS);
@@ -604,22 +618,5 @@ public class MainActivity extends Activity {
     private boolean returnsFromHelp() {
         return (calledActivity.equals(PEKISLIB_ACTIVITIES.HELP.toString()));
     }
-
-    //region Constantes
-    private enum COMMANDS {
-        SHOW_EXPIRATION_TIME(R.drawable.main_clock), ADD_NEW_CHRONOTIMER_TO_LIST(R.drawable.main_tolist), NEW_CHRONO(R.drawable.main_chrono), NEW_TIMER(R.drawable.main_timer), INVERT_SELECTION_ALL_CT(R.drawable.main_inv), SELECT_ALL_CT(R.drawable.main_all), START_SELECTED_CT(R.drawable.main_start), STOP_SELECTED_CT(R.drawable.main_stop), SPLIT_SELECTED_CT(R.drawable.main_split), RESET_SELECTED_CT(R.drawable.main_reset), REMOVE_SELECTED_CT(R.drawable.main_remove);
-
-        private int valueId;
-
-        COMMANDS(int valueId) {
-            this.valueId = valueId;
-        }
-
-        public int ID() {
-            return valueId;
-        }
-    }
-
-    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
 
 }

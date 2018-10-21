@@ -11,6 +11,7 @@ import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightInMillis;
 
 class CtRecord {   //  Données d'un Chrono ou Timer
     // region Constantes
@@ -60,7 +61,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         timeAccUntilSplit = 0;
         timeDef = 0;
         timeDefInit = 0;
-        timeExp = 0;
+        timeExp = midnightInMillis();
         timeDisplay = 0;
         timeDisplayWithoutSplit = 0;
     }
