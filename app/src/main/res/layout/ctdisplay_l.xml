@@ -19,13 +19,23 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:orientation="horizontal">
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
             android:id="@+id/BTN_CHRONO_MODE"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <com.example.pgyl.pekislib_a.SymbolButtonView
+            android:id="@+id/BTN_TIMER_MODE"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <com.example.pgyl.pekislib_a.SymbolButtonView
+            android:id="@+id/BTN_INVERT_CLOCK_APP_ALARM"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
@@ -41,31 +51,12 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
-        <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_TIMER_MODE"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_INVERT_CLOCK_APP_ALARM"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
             android:id="@+id/BTN_RESET"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
+
     </LinearLayout>
 </LinearLayout>    
