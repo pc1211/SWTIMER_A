@@ -30,14 +30,7 @@ public class CtRecordsHandler {
         START, STOP, SPLIT, RESET, REMOVE, COUNT
     }
 
-    private enum ALARM_SEPARATORS {
-        ALARM, MESSAGE;
-
-        public String SID() {
-            return "£µ$" + this.toString() + "$µ£";
-        }
-    }
-
+    private final String ALARM_SEPARATOR= "£µ$***ALARM***$µ£";
     //endregion
     //region Variables
     private Context context;
@@ -253,27 +246,24 @@ public class CtRecordsHandler {
         return ret;
     }
 
-    //  Ajouter  £µ$ALARM$µ££µ$MESSAGE$µ£<Message>  à  requestedClockAppAlarmDismisses
     private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
-        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATORS.ALARM.SID() + ALARM_SEPARATORS.MESSAGE.SID() + ctRecord.getClockAppAlarmMessage();
+        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getClockAppAlarmMessage();
         ctRecord.dismissClockAppAlarm(!USE_CLOCK_APP);
     }
 
     private void processNextRequestedClockAppAlarmDismiss() {   //  Une alarme à la fois, la prochaine est traitée au prochain init() de CtRecordsHandler
-        String clockAppAlarmString;
+        String message;
 
         if (!requestedClockAppAlarmDismisses.equals("")) {
-            requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses.substring(ALARM_SEPARATORS.ALARM.SID().length());
-            int nextAlarmIndex = requestedClockAppAlarmDismisses.indexOf(ALARM_SEPARATORS.ALARM.SID());
+            requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses.substring(ALARM_SEPARATOR.length());
+            int nextAlarmIndex = requestedClockAppAlarmDismisses.indexOf(ALARM_SEPARATOR);
             if (nextAlarmIndex != NOT_FOUND) {
-                clockAppAlarmString = requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex);
+                message = requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex);
                 requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses.substring(nextAlarmIndex);
             } else {
-                clockAppAlarmString = requestedClockAppAlarmDismisses;
+                message = requestedClockAppAlarmDismisses;
                 requestedClockAppAlarmDismisses = "";
             }
-            int messageIndex = clockAppAlarmString.indexOf(ALARM_SEPARATORS.MESSAGE.SID());
-            String message = clockAppAlarmString.substring(messageIndex + ALARM_SEPARATORS.MESSAGE.SID().length());
             Toast.makeText(context, "Dismissing Clock alarm " + message, Toast.LENGTH_LONG).show();
             dismissClockAppAlarm(context, message);
         }
