@@ -10,6 +10,7 @@ import java.util.Calendar;
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_HMS_SEPARATOR;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightInMillis;
 
@@ -217,12 +218,20 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return ret;
     }
 
-    public String getClockAppAlarmMessage() {
+    public String getClockAppAlarmTime() {   //  OK TimeZone
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeExp);
-        int seconds = calendar.get(Calendar.SECOND);
+        String ret = String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY)) + TIME_HMS_SEPARATOR + String.format("%02d", calendar.get(Calendar.MINUTE));
         calendar = null;
-        return message + " (in " + String.valueOf(seconds) + "s)";
+        return ret;
+    }
+
+    public String getClockAppAlarmMessage() {    //  OK TimeZone
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeExp);
+        String ret = message + " (in " + String.valueOf(calendar.get(Calendar.SECOND)) + "s)";
+        calendar = null;
+        return ret;
     }
 
     public boolean updateTime(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)

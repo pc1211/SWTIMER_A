@@ -12,7 +12,6 @@ import java.util.Comparator;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.pgyl.pekislib_a.ClockAppAlarmUtils.dismissClockAppAlarm;
-import static com.example.pgyl.pekislib_a.ClockAppAlarmUtils.setClockAppAlarm;
 import static com.example.pgyl.pekislib_a.Constants.DUMMY_VALUE;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
@@ -31,12 +30,8 @@ public class CtRecordsHandler {
         START, STOP, SPLIT, RESET, REMOVE, COUNT
     }
 
-    private enum ACTIONS_ON_CLOCK_APP_ALARM {
-        SET, DISMISS
-    }
-
     private enum ALARM_SEPARATORS {
-        ALARM, ACTION, MESSAGE, TIME_EXP;
+        ALARM, MESSAGE;
 
         public String SID() {
             return "£µ$" + this.toString() + "$µ£";
@@ -49,7 +44,7 @@ public class CtRecordsHandler {
     private ArrayList<CtRecord> ctRecords;
     private StringShelfDatabase stringShelfDatabase;
     private String shpFileName;
-    private String requestedClockAppAlarmActions;
+    private String requestedClockAppAlarmDismisses;
     //endregion
 
     public CtRecordsHandler(Context context, StringShelfDatabase stringShelfDatabase) {
@@ -60,8 +55,8 @@ public class CtRecordsHandler {
     }
 
     private void init() {
-        requestedClockAppAlarmActions = getSHPRequestedClockAppAlarms();
-        processNextRequestedClockAppAlarmAction();
+        requestedClockAppAlarmDismisses = getSHPRequestedClockAppAlarmsDismisses();
+        processNextRequestedClockAppAlarmDismiss();
         ctRecords = convertChronoTimerRowsToCtRecords(getChronoTimerRows());
     }
 
@@ -225,7 +220,7 @@ public class CtRecordsHandler {
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.STOP)) {
                         if (!ctRecords.get(i).stop(nowm)) {
-                            RequestAdditionalClockAppAlarmAction(ctRecords.get(i), ACTIONS_ON_CLOCK_APP_ALARM.DISMISS);
+                            RequestAdditionalClockAppAlarmDismiss(ctRecords.get(i));
                         }
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.SPLIT)) {
@@ -233,12 +228,12 @@ public class CtRecordsHandler {
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.RESET)) {
                         if (!ctRecords.get(i).reset()) {
-                            RequestAdditionalClockAppAlarmAction(ctRecords.get(i), ACTIONS_ON_CLOCK_APP_ALARM.DISMISS);
+                            RequestAdditionalClockAppAlarmDismiss(ctRecords.get(i));
                         }
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.REMOVE)) {
                         if (!ctRecords.get(i).reset()) {
-                            RequestAdditionalClockAppAlarmAction(ctRecords.get(i), ACTIONS_ON_CLOCK_APP_ALARM.DISMISS);
+                            RequestAdditionalClockAppAlarmDismiss(ctRecords.get(i));
                         }
                         ctRecords.remove(i);
                         if (ctRecords.isEmpty()) {
@@ -254,48 +249,33 @@ public class CtRecordsHandler {
             }
             while (i < ctRecords.size());
         }
-        processNextRequestedClockAppAlarmAction();
+        processNextRequestedClockAppAlarmDismiss();
         return ret;
     }
 
-    //  Ajouter  £µ$ALARM$µ££µ$<SET/DISMISS>$µ££µ$<Message>$µ££µ$<Expiration time>$µ£  à  requestedClockAppAlarmActions
-    private void RequestAdditionalClockAppAlarmAction(CtRecord ctRecord, ACTIONS_ON_CLOCK_APP_ALARM action) {
-        requestedClockAppAlarmActions = requestedClockAppAlarmActions + ALARM_SEPARATORS.ALARM.SID() + ALARM_SEPARATORS.ACTION.SID() + action.toString() + ALARM_SEPARATORS.MESSAGE.SID() + ctRecord.getClockAppAlarmMessage() + ALARM_SEPARATORS.TIME_EXP.SID() + String.valueOf(ctRecord.getTimeExp());
-        if (action.equals(ACTIONS_ON_CLOCK_APP_ALARM.SET)) {
-            ctRecord.setClockAppAlarm(!USE_CLOCK_APP);
-        }
-        if (action.equals(ACTIONS_ON_CLOCK_APP_ALARM.DISMISS)) {
-            ctRecord.dismissClockAppAlarm(!USE_CLOCK_APP);
-        }
+    //  Ajouter  £µ$ALARM$µ££µ$MESSAGE$µ£<Message>  à  requestedClockAppAlarmDismisses
+    private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
+        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATORS.ALARM.SID() + ALARM_SEPARATORS.MESSAGE.SID() + ctRecord.getClockAppAlarmMessage();
+        ctRecord.dismissClockAppAlarm(!USE_CLOCK_APP);
     }
 
-    private void processNextRequestedClockAppAlarmAction() {   //  Une alarme à la fois, la prochaine est traitée au prochain init() de CtRecordsHandler
+    private void processNextRequestedClockAppAlarmDismiss() {   //  Une alarme à la fois, la prochaine est traitée au prochain init() de CtRecordsHandler
         String clockAppAlarmString;
 
-        if (!requestedClockAppAlarmActions.equals("")) {
-            requestedClockAppAlarmActions = requestedClockAppAlarmActions.substring(ALARM_SEPARATORS.ALARM.SID().length());
-            int nextAlarmIndex = requestedClockAppAlarmActions.indexOf(ALARM_SEPARATORS.ALARM.SID());
+        if (!requestedClockAppAlarmDismisses.equals("")) {
+            requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses.substring(ALARM_SEPARATORS.ALARM.SID().length());
+            int nextAlarmIndex = requestedClockAppAlarmDismisses.indexOf(ALARM_SEPARATORS.ALARM.SID());
             if (nextAlarmIndex != NOT_FOUND) {
-                clockAppAlarmString = requestedClockAppAlarmActions.substring(0, nextAlarmIndex);
-                requestedClockAppAlarmActions = requestedClockAppAlarmActions.substring(nextAlarmIndex);
+                clockAppAlarmString = requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex);
+                requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses.substring(nextAlarmIndex);
             } else {
-                clockAppAlarmString = requestedClockAppAlarmActions;
-                requestedClockAppAlarmActions = "";
+                clockAppAlarmString = requestedClockAppAlarmDismisses;
+                requestedClockAppAlarmDismisses = "";
             }
-            int actionIndex = clockAppAlarmString.indexOf(ALARM_SEPARATORS.ACTION.SID());
             int messageIndex = clockAppAlarmString.indexOf(ALARM_SEPARATORS.MESSAGE.SID());
-            int timeExpIndex = clockAppAlarmString.indexOf(ALARM_SEPARATORS.TIME_EXP.SID());
-            String action = clockAppAlarmString.substring(actionIndex + ALARM_SEPARATORS.ACTION.SID().length(), messageIndex);
-            String message = clockAppAlarmString.substring(messageIndex + ALARM_SEPARATORS.MESSAGE.SID().length(), timeExpIndex);
-            if (action.equals(ACTIONS_ON_CLOCK_APP_ALARM.SET.toString())) {
-                long timeExp = Long.parseLong(clockAppAlarmString.substring(timeExpIndex + ALARM_SEPARATORS.TIME_EXP.SID().length()));
-                Toast.makeText(context, "Setting Clock alarm " + message, Toast.LENGTH_LONG).show();
-                setClockAppAlarm(context, timeExp, message);
-            }
-            if (action.equals(ACTIONS_ON_CLOCK_APP_ALARM.DISMISS.toString())) {
-                Toast.makeText(context, "Dismissing Clock alarm " + message, Toast.LENGTH_LONG).show();
-                dismissClockAppAlarm(context, message);
-            }
+            String message = clockAppAlarmString.substring(messageIndex + ALARM_SEPARATORS.MESSAGE.SID().length());
+            Toast.makeText(context, "Dismissing Clock alarm " + message, Toast.LENGTH_LONG).show();
+            dismissClockAppAlarm(context, message);
         }
     }
 
@@ -314,13 +294,13 @@ public class CtRecordsHandler {
     private void savePreferences() {
         SharedPreferences shp = context.getSharedPreferences(shpFileName, MODE_PRIVATE);
         SharedPreferences.Editor shpEditor = shp.edit();
-        shpEditor.putString(SWTIMER_SHP_KEY_NAMES.REQUESTED_CLOCK_APP_ALARMS.toString(), requestedClockAppAlarmActions);
+        shpEditor.putString(SWTIMER_SHP_KEY_NAMES.REQUESTED_CLOCK_APP_ALARM_DISMISSES.toString(), requestedClockAppAlarmDismisses);
         shpEditor.commit();
     }
 
-    private String getSHPRequestedClockAppAlarms() {
+    private String getSHPRequestedClockAppAlarmsDismisses() {
         SharedPreferences shp = context.getSharedPreferences(shpFileName, MODE_PRIVATE);
-        return shp.getString(SWTIMER_SHP_KEY_NAMES.REQUESTED_CLOCK_APP_ALARMS.toString(), "");
+        return shp.getString(SWTIMER_SHP_KEY_NAMES.REQUESTED_CLOCK_APP_ALARM_DISMISSES.toString(), "");
     }
 
     private void closeChronoTimers() {
