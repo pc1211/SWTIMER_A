@@ -292,7 +292,7 @@ public class CtDisplayActivity extends Activity {
         } else {
             ctDisplayTimeRobot.stopAutomatic();
             if (!currentCtRecord.stop(nowm)) {
-                currentCtRecord.dismissClockAppAlarm(USE_CLOCK_APP);
+                currentCtRecord.setClockAppAlarmOff(USE_CLOCK_APP);
             }
         }
     }
@@ -305,9 +305,9 @@ public class CtDisplayActivity extends Activity {
         if (currentCtRecord.getMode().equals(MODE.TIMER)) {
             if (currentCtRecord.isRunning()) {
                 if (!currentCtRecord.hasClockAppAlarm()) {
-                    currentCtRecord.setClockAppAlarm(USE_CLOCK_APP);
+                    currentCtRecord.setClockAppAlarmOn(USE_CLOCK_APP);
                 } else {
-                    currentCtRecord.dismissClockAppAlarm(USE_CLOCK_APP);
+                    currentCtRecord.setClockAppAlarmOff(USE_CLOCK_APP);
                 }
             }
         }
@@ -316,7 +316,7 @@ public class CtDisplayActivity extends Activity {
     private void onButtonClickReset() {
         ctDisplayTimeRobot.stopAutomatic();
         if (!currentCtRecord.reset()) {
-            currentCtRecord.dismissClockAppAlarm(USE_CLOCK_APP);
+            currentCtRecord.setClockAppAlarmOff(USE_CLOCK_APP);
         }
     }
 

@@ -248,7 +248,7 @@ public class CtRecordsHandler {
 
     private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
         requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getClockAppAlarmMessage();
-        ctRecord.dismissClockAppAlarm(!USE_CLOCK_APP);
+        ctRecord.setClockAppAlarmOff(!USE_CLOCK_APP);
     }
 
     private void processNextRequestedClockAppAlarmDismiss() {   //  Une alarme à la fois, la prochaine est traitée au prochain init() de CtRecordsHandler

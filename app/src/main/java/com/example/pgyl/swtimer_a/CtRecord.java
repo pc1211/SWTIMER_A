@@ -318,18 +318,28 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return ret;
     }
 
-    public void setClockAppAlarm(boolean useClockApp) {
+    public void setClockAppAlarmOn(boolean useClockApp) {
+        boolean error = false;
         if (useClockApp) {
-            ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, getClockAppAlarmMessage());
+            if (ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, getClockAppAlarmMessage())) {
+                error = true;
+            }
         }
-        clockAppAlarm = true;
+        if (!error) {
+            clockAppAlarm = true;
+        }
     }
 
-    public void dismissClockAppAlarm(boolean useClockApp) {
+    public void setClockAppAlarmOff(boolean useClockApp) {
+        boolean error = false;
         if (useClockApp) {
-            ClockAppAlarmUtils.dismissClockAppAlarm(context, getClockAppAlarmMessage());
+            if (ClockAppAlarmUtils.dismissClockAppAlarm(context, getClockAppAlarmMessage())) {
+                error = true;
+            }
         }
-        clockAppAlarm = false;
+        if (!error) {
+            clockAppAlarm = false;
+        }
     }
 
     public CtRecord loadFromChronoTimerRow(String[] chronoTimerRow) {

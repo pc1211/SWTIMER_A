@@ -107,7 +107,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
             ctRecords.get(pos).start(nowm);
         } else {
             if (!ctRecords.get(pos).stop(nowm)) {
-                ctRecords.get(pos).dismissClockAppAlarm(USE_CLOCK_APP);
+                ctRecords.get(pos).setClockAppAlarmOff(USE_CLOCK_APP);
             }
         }
         if (mOnButtonClickListener != null) {
@@ -121,7 +121,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
             ctRecords.get(pos).split(nowm);
         } else {
             if (!ctRecords.get(pos).reset()) {
-                ctRecords.get(pos).dismissClockAppAlarm(USE_CLOCK_APP);
+                ctRecords.get(pos).setClockAppAlarmOff(USE_CLOCK_APP);
             }
         }
         if (mOnButtonClickListener != null) {
@@ -133,9 +133,9 @@ public class MainCtListItemAdapter extends BaseAdapter {
         if (ctRecords.get(pos).getMode().equals(MODE.TIMER)) {
             if (ctRecords.get(pos).isRunning()) {
                 if (!ctRecords.get(pos).hasClockAppAlarm()) {
-                    ctRecords.get(pos).setClockAppAlarm(USE_CLOCK_APP);
+                    ctRecords.get(pos).setClockAppAlarmOn(USE_CLOCK_APP);
                 } else {
-                    ctRecords.get(pos).dismissClockAppAlarm(USE_CLOCK_APP);
+                    ctRecords.get(pos).setClockAppAlarmOff(USE_CLOCK_APP);
                 }
                 if (mOnButtonClickListener != null) {
                     mOnButtonClickListener.onButtonClick();
