@@ -87,22 +87,22 @@ public class CtRecordsHandler {
                 public int compare(CtRecord ctRecord1, CtRecord ctRecord2) {
                     boolean running1 = ctRecord1.isRunning();
                     boolean running2 = ctRecord2.isRunning();
-                    int ret = (running1 == running2) ? 0 : (running1 ? -1 : 1);    //  SORT running DESC
+                    int ret = (running1 == running2) ? 0 : (running1 ? -1 : 1);    //  SORT ON running DESC
                     if (ret == 0) {    //  running1 = running2
                         String mode1 = ctRecord1.getMode().toString();
                         String mode2 = ctRecord2.getMode().toString();
-                        ret = mode2.compareTo(mode1);                              //  SORT mode DESC  (Timers puis Chronos )
+                        ret = mode2.compareTo(mode1);                              //  SORT ON mode DESC  (Timers puis Chronos )
                         if (ret == 0) {     //  mode1 = mode2
                             long time1 = ctRecord1.getTimeDisplayWithoutSplit();   //  OK si updateTime() appelé pour tous les ctRecords avant le tri
                             long time2 = ctRecord2.getTimeDisplayWithoutSplit();
-                            ret = ((time1 == time2) ? 0 : ((time1 > time2) ? 1 : -1));   //  Si Timer  => SORT time ASC   (d'abord les plus petits temps)
-                            if (mode1.equals(MODE.CHRONO.toString())) {                  //  Si Chrono => SORT time DESC  (d'abord les plus grands temps)
+                            ret = ((time1 == time2) ? 0 : ((time1 > time2) ? 1 : -1));   //  Si Timer  => SORT ON time ASC   (d'abord les plus petits temps)
+                            if (mode1.equals(MODE.CHRONO.toString())) {                  //  Si Chrono => SORT ON time DESC  (d'abord les plus grands temps)
                                 ret = -ret;
                             }
                             if (ret == 0) {     //  time1 = time2
                                 String message1 = ctRecord1.getMessage();
                                 String message2 = ctRecord2.getMessage();
-                                ret = message1.compareTo(message2);           //  SORT message ASC
+                                ret = message1.compareTo(message2);           //  SORT ON message ASC
                             }
                         }
                     }
@@ -264,7 +264,6 @@ public class CtRecordsHandler {
                 message = requestedClockAppAlarmDismisses;
                 requestedClockAppAlarmDismisses = "";
             }
-            Toast.makeText(context, "Dismissing Clock alarm " + message, Toast.LENGTH_LONG).show();
             dismissClockAppAlarm(context, message);
         }
     }

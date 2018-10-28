@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.pgyl.pekislib_a.BeeperIntentService;
 import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
@@ -283,6 +284,7 @@ public class MainActivity extends Activity {
         mainCtListRobot.stopAutomatic();
         rebuildList();
         mainCtListRobot.startAutomatic(DELAY_ZERO_MS);
+        startService(new Intent(this, BeeperIntentService.class));  //  Beep
     }
 
     private void onCtListItemButtonClick() {

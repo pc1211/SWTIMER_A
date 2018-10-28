@@ -31,5 +31,6 @@
         <activity
             android:name="com.example.pgyl.pekislib_a.HelpActivity"
             android:label="HelpActivity" />
+        <service android:name="com.example.pgyl.pekislib_a.BeeperIntentService" android:exported="false" />
     </application>
 </manifest>

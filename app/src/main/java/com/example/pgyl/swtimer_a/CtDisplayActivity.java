@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.pgyl.pekislib_a.BeeperIntentService;
 import com.example.pgyl.pekislib_a.ColorPickerActivity;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
@@ -35,7 +36,7 @@ import static com.example.pgyl.pekislib_a.Constants.TABLE_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
-import static com.example.pgyl.pekislib_a.MiscUtils.caseFirstUpOtherLow;
+import static com.example.pgyl.pekislib_a.MiscUtils.capitalize;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESET_ACTIVITY_DATA_TYPES;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESET_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
@@ -324,7 +325,7 @@ public class CtDisplayActivity extends Activity {
         MODE oldMode = currentCtRecord.getMode();
         if (!currentCtRecord.setMode(newMode)) {
             if (!newMode.equals(oldMode)) {
-                Toast.makeText(this, "First stop " + caseFirstUpOtherLow(oldMode.toString()), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "First stop " + capitalize(oldMode.toString()), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -333,6 +334,7 @@ public class CtDisplayActivity extends Activity {
         Toast.makeText(this, currentCtRecord.getTimeZoneExpirationMessage(), Toast.LENGTH_LONG).show();
         updatetimeDotMatrixDisplayViewText();
         updateButtonColors();
+        startService(new Intent(this, BeeperIntentService.class));  //  Beep
     }
 
     private void onTimeDotMatrixDisplayViewClick() {
@@ -562,7 +564,7 @@ public class CtDisplayActivity extends Activity {
     private void launchColorPickerActivity(COLOR_ITEMS colorItem) {
         setColdStartForColorPicker();
         Intent callingIntent = new Intent(this, ColorPickerActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), caseFirstUpOtherLow(colorItem.toString()) + " Colors (RRGGBB)");
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), capitalize(colorItem.toString()) + " Colors (RRGGBB)");
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), colorItem.TABLE_NAME());
         startActivityForResult(callingIntent, (PEKISLIB_ACTIVITIES.COLORPICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + colorItem.ordinal());  //  Il faut différencier les 3 types de couleur
     }

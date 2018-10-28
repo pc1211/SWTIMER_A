@@ -321,7 +321,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     public void setClockAppAlarmOn(boolean useClockApp) {
         boolean error = false;
         if (useClockApp) {
-            if (ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, getClockAppAlarmMessage())) {
+            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, getClockAppAlarmMessage())) {
                 error = true;
             }
         }
@@ -333,7 +333,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     public void setClockAppAlarmOff(boolean useClockApp) {
         boolean error = false;
         if (useClockApp) {
-            if (ClockAppAlarmUtils.dismissClockAppAlarm(context, getClockAppAlarmMessage())) {
+            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, getClockAppAlarmMessage())) {
                 error = true;
             }
         }
