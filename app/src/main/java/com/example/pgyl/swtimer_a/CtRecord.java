@@ -3,7 +3,7 @@ package com.example.pgyl.swtimer_a;
 import android.content.Context;
 
 import com.example.pgyl.pekislib_a.ClockAppAlarmUtils;
-import com.example.pgyl.swtimer_a.Constants.TABLE_CHRONO_TIMERS_DATA_FIELDS;
+import com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.TABLE_CHRONO_TIMERS_DATA_FIELDS;
 
 import java.util.Calendar;
 

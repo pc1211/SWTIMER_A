@@ -19,39 +19,55 @@ import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.PresetsActivity;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
+import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_TYPE;
 import com.example.pgyl.pekislib_a.SymbolButtonView;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_START_TYPE;
 import static com.example.pgyl.pekislib_a.Constants.COLOR_PREFIX;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
-import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_TABLES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
-import static com.example.pgyl.pekislib_a.Constants.TABLE_ACTIVITY_INFOS_DATA_FIELDS;
-import static com.example.pgyl.pekislib_a.Constants.TABLE_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.Constants.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.capitalize;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESET_ACTIVITY_DATA_TYPES;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESET_ACTIVITY_EXTRA_KEYS;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.TABLE_EXTRA_KEYS;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentColorsInColorPickerActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentColorsInColorPickerActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInColorPickerActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
-import static com.example.pgyl.swtimer_a.Constants.COLOR_ITEMS;
-import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_SHP_KEY_NAMES;
-import static com.example.pgyl.swtimer_a.Constants.SWTIMER_TABLES;
-import static com.example.pgyl.swtimer_a.Constants.TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS;
-import static com.example.pgyl.swtimer_a.Constants.TABLE_PRESETS_CT_DATA_FIELDS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.SWTIMER_TABLES;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.TABLE_COLORS_BACK_SCREEN_DATA_FIELDS;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorItemTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentColorsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentMessageOfPresetCTInPresetsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentTimeOfPresetCTInPresetsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimer;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentMessageOfPresetCTInPresetsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentTimeOfPresetCTInPresetsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setDefaultMessageOfPresetCT;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setDefaultTimeOfPresetCT;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 
 public class CtDisplayActivity extends Activity {
     //region Constantes
+    public enum COLOR_ITEMS {
+        TIME, BUTTONS, BACK_SCREEN
+    }
+
     private enum COMMANDS {
         RUN(R.raw.ct_run), SPLIT(R.raw.ct_split), INVERT_CLOCK_APP_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
 
@@ -113,9 +129,9 @@ public class CtDisplayActivity extends Activity {
         ctDisplayTimeRobot.stopAutomatic();
         ctDisplayTimeRobot.close();
         ctDisplayTimeRobot = null;
-        saveCurrentColors(COLOR_ITEMS.TIME, timeColors);
-        saveCurrentColors(COLOR_ITEMS.BUTTONS, buttonColors);
-        saveCurrentColors(COLOR_ITEMS.BACK_SCREEN, backScreenColors);
+        setCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.TIME, timeColors);
+        setCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BUTTONS, buttonColors);
+        setCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN, backScreenColors);
         saveCurrentChronoTimer();
         currentCtRecord = null;
         stringShelfDatabase.close();
@@ -131,32 +147,32 @@ public class CtDisplayActivity extends Activity {
         setupKeepScreen();
         setupStringShelfDatabase();
         loadCurrentChronoTimer(getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND));
-        timeColors = getCurrentColors(COLOR_ITEMS.TIME);
-        buttonColors = getCurrentColors(COLOR_ITEMS.BUTTONS);
-        backScreenColors = getCurrentColors(COLOR_ITEMS.BACK_SCREEN);
+        timeColors = getCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.TIME);
+        buttonColors = getCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BUTTONS);
+        backScreenColors = getCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN);
 
-        if (isColdStart()) {
-            setHotStart();
+        if (isColdStartStatusInCtDisplayActivity(stringShelfDatabase)) {
+            setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_TYPE.HOT);
         } else {
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (returnsFromPresets()) {
-                    if (!currentCtRecord.setMessage(getCurrentPresetMessageFromPresets())) {
+                    if (!currentCtRecord.setMessage(getCurrentMessageOfPresetCTInPresetsActivity(stringShelfDatabase))) {
                         Toast.makeText(this, "Error updating Clock App alarm message", Toast.LENGTH_LONG).show();
                     }
-                    if (!currentCtRecord.setTimeDef(Long.parseLong(getCurrentPresetTimeDefFromPresets()))) {
+                    if (!currentCtRecord.setTimeDef(Long.parseLong(getCurrentTimeOfPresetCTInPresetsActivity(stringShelfDatabase)))) {
                         Toast.makeText(this, "Error updating Clock App alarm default time", Toast.LENGTH_LONG).show();
                     }
                 }
                 if (returnsFromColorPicker()) {
-                    if (calledActivity.equals(PEKISLIB_ACTIVITIES.COLORPICKER.toString() + COLOR_ITEMS.TIME.toString())) {
-                        timeColors = getCurrentColorsFromColorPicker(COLOR_ITEMS.TIME);
+                    if (calledActivity.equals(PEKISLIB_ACTIVITIES.COLOR_PICKER.toString() + COLOR_ITEMS.TIME.toString())) {
+                        timeColors = getCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.TIME));
                     }
-                    if (calledActivity.equals(PEKISLIB_ACTIVITIES.COLORPICKER.toString() + COLOR_ITEMS.BUTTONS.toString())) {
-                        buttonColors = getCurrentColorsFromColorPicker(COLOR_ITEMS.BUTTONS);
+                    if (calledActivity.equals(PEKISLIB_ACTIVITIES.COLOR_PICKER.toString() + COLOR_ITEMS.BUTTONS.toString())) {
+                        buttonColors = getCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.BUTTONS));
                     }
-                    if (calledActivity.equals(PEKISLIB_ACTIVITIES.COLORPICKER.toString() + COLOR_ITEMS.BACK_SCREEN.toString())) {
-                        backScreenColors = getCurrentColorsFromColorPicker(COLOR_ITEMS.BACK_SCREEN);
+                    if (calledActivity.equals(PEKISLIB_ACTIVITIES.COLOR_PICKER.toString() + COLOR_ITEMS.BACK_SCREEN.toString())) {
+                        backScreenColors = getCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.BACK_SCREEN));
                     }
                 }
                 if (returnsFromHelp()) {
@@ -187,20 +203,20 @@ public class CtDisplayActivity extends Activity {
                 validReturnFromCalledActivity = true;
             }
         }
-        if (requestCode == (PEKISLIB_ACTIVITIES.COLORPICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.TIME.ordinal()) {
-            calledActivity = PEKISLIB_ACTIVITIES.COLORPICKER.toString() + COLOR_ITEMS.TIME.toString();
+        if (requestCode == (PEKISLIB_ACTIVITIES.COLOR_PICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.TIME.ordinal()) {
+            calledActivity = PEKISLIB_ACTIVITIES.COLOR_PICKER.toString() + COLOR_ITEMS.TIME.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
-        if (requestCode == (PEKISLIB_ACTIVITIES.COLORPICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.BUTTONS.ordinal()) {
-            calledActivity = PEKISLIB_ACTIVITIES.COLORPICKER.toString() + COLOR_ITEMS.BUTTONS.toString();
+        if (requestCode == (PEKISLIB_ACTIVITIES.COLOR_PICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.BUTTONS.ordinal()) {
+            calledActivity = PEKISLIB_ACTIVITIES.COLOR_PICKER.toString() + COLOR_ITEMS.BUTTONS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
-        if (requestCode == (PEKISLIB_ACTIVITIES.COLORPICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.BACK_SCREEN.ordinal()) {
-            calledActivity = PEKISLIB_ACTIVITIES.COLORPICKER.toString() + COLOR_ITEMS.BACK_SCREEN.toString();
+        if (requestCode == (PEKISLIB_ACTIVITIES.COLOR_PICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.BACK_SCREEN.ordinal()) {
+            calledActivity = PEKISLIB_ACTIVITIES.COLOR_PICKER.toString() + COLOR_ITEMS.BACK_SCREEN.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
@@ -238,20 +254,17 @@ public class CtDisplayActivity extends Activity {
             setKeepScreenBarMenuItemIcon(keepScreen);
         }
         if (item.getItemId() == R.id.set_time_colors) {
-            setCurrentColorsForColorPicker(COLOR_ITEMS.TIME, timeColors);
-            setDefaultColorsForPresets(COLOR_ITEMS.TIME, getDefaultColors(COLOR_ITEMS.TIME));
+            setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.TIME), timeColors);
             launchColorPickerActivity(COLOR_ITEMS.TIME);
             return true;
         }
         if (item.getItemId() == R.id.set_button_colors) {
-            setCurrentColorsForColorPicker(COLOR_ITEMS.BUTTONS, buttonColors);
-            setDefaultColorsForPresets(COLOR_ITEMS.BUTTONS, getDefaultColors(COLOR_ITEMS.BUTTONS));
+            setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.BUTTONS), buttonColors);
             launchColorPickerActivity(COLOR_ITEMS.BUTTONS);
             return true;
         }
         if (item.getItemId() == R.id.set_back_screen_colors) {
-            setCurrentColorsForColorPicker(COLOR_ITEMS.BACK_SCREEN, backScreenColors);
-            setDefaultColorsForPresets(COLOR_ITEMS.BACK_SCREEN, getDefaultColors(COLOR_ITEMS.BACK_SCREEN));
+            setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.BACK_SCREEN), backScreenColors);
             launchColorPickerActivity(COLOR_ITEMS.BACK_SCREEN);
             return true;
         }
@@ -338,10 +351,10 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void onTimeDotMatrixDisplayViewClick() {
-        setCurrentTimeDefForPresets(currentCtRecord.getTimeDef());
-        setDefaultTimeForPresets(currentCtRecord.getTimeDefInit());
-        setCurrentMessageForPresets(currentCtRecord.getMessage());
-        setDefaultMessageForPresets(currentCtRecord.getMessageInit());
+        setCurrentTimeOfPresetCTInPresetsActivity(stringShelfDatabase, currentCtRecord.getTimeDef());
+        setDefaultTimeOfPresetCT(stringShelfDatabase, currentCtRecord.getTimeDefInit());
+        setCurrentMessageOfPresetCTInPresetsActivity(stringShelfDatabase, currentCtRecord.getMessage());
+        setDefaultMessageOfPresetCT(stringShelfDatabase, currentCtRecord.getMessageInit());
         launchPresetsActivity();
     }
 
@@ -454,7 +467,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupBackScreenColor() {
-        backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + backScreenColors[Constants.TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.BACK.INDEX()]));
+        backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + backScreenColors[TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.BACK.INDEX()]));
     }
 
     private void setupBarMenuItems() {
@@ -485,7 +498,7 @@ public class CtDisplayActivity extends Activity {
         for (COMMANDS command : COMMANDS.values()) {
             try {
                 int index = command.ordinal();
-                buttons[index] = (SymbolButtonView) findViewById(rid.getField(BUTTON_XML_NAME_PREFIX + command.toString()).getInt(rid));
+                buttons[index] = findViewById(rid.getField(BUTTON_XML_NAME_PREFIX + command.toString()).getInt(rid));
                 buttons[index].setSVGImageResource(command.ID());
                 final COMMANDS fcommand = command;
                 buttons[index].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
@@ -507,11 +520,11 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void loadCurrentChronoTimer(int idct) {
-        currentCtRecord = new CtRecord(this).loadFromChronoTimerRow(getChronoTimer(idct));
+        currentCtRecord = new CtRecord(this).loadFromChronoTimerRow(getChronoTimerById(stringShelfDatabase, idct));
     }
 
     private void saveCurrentChronoTimer() {
-        saveChronoTimer(currentCtRecord.convertToChronoTimerRow());
+        saveChronoTimer(stringShelfDatabase, currentCtRecord.convertToChronoTimerRow());
     }
 
     private void setupTimeDotMatrixDisplayView() {
@@ -562,17 +575,17 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void launchColorPickerActivity(COLOR_ITEMS colorItem) {
-        setColdStartForColorPicker();
+        setStartStatusInColorPickerActivity(stringShelfDatabase, ACTIVITY_START_TYPE.COLD);
         Intent callingIntent = new Intent(this, ColorPickerActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), capitalize(colorItem.toString()) + " Colors (RRGGBB)");
-        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), colorItem.TABLE_NAME());
-        startActivityForResult(callingIntent, (PEKISLIB_ACTIVITIES.COLORPICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + colorItem.ordinal());  //  Il faut différencier les 3 types de couleur
+        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorItemTableName(colorItem));
+        startActivityForResult(callingIntent, (PEKISLIB_ACTIVITIES.COLOR_PICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + colorItem.ordinal());  //  Il faut différencier les 3 types de couleur
     }
 
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
-        setColdStartForPresets();
+        setStartStatusInPresetsActivity(stringShelfDatabase, ACTIVITY_START_TYPE.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), "Time / Message Presets");
         callingIntent.putExtra(PRESET_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
@@ -581,84 +594,12 @@ public class CtDisplayActivity extends Activity {
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.PRESETS.ordinal());
     }
 
-    private boolean isColdStart() {
-        return (stringShelfDatabase.selectFieldByIdOrCreate(PEKISLIB_TABLES.ACTIVITY_INFOS.toString(), SWTIMER_ACTIVITIES.CTDISPLAY.toString(), TABLE_ACTIVITY_INFOS_DATA_FIELDS.START_TYPE.INDEX()).equals(ACTIVITY_START_TYPE.COLD.toString()));
-    }
-
-    private void setHotStart() {
-        stringShelfDatabase.insertOrReplaceFieldById(PEKISLIB_TABLES.ACTIVITY_INFOS.toString(), SWTIMER_ACTIVITIES.CTDISPLAY.toString(), TABLE_ACTIVITY_INFOS_DATA_FIELDS.START_TYPE.INDEX(), ACTIVITY_START_TYPE.HOT.toString());
-    }
-
-    private void setColdStartForColorPicker() {
-        stringShelfDatabase.insertOrReplaceFieldById(PEKISLIB_TABLES.ACTIVITY_INFOS.toString(), PEKISLIB_ACTIVITIES.COLORPICKER.toString(), TABLE_ACTIVITY_INFOS_DATA_FIELDS.START_TYPE.INDEX(), ACTIVITY_START_TYPE.COLD.toString());
-    }
-
-    private void setColdStartForPresets() {
-        stringShelfDatabase.insertOrReplaceFieldById(PEKISLIB_TABLES.ACTIVITY_INFOS.toString(), PEKISLIB_ACTIVITIES.PRESETS.toString(), TABLE_ACTIVITY_INFOS_DATA_FIELDS.START_TYPE.INDEX(), ACTIVITY_START_TYPE.COLD.toString());
-    }
-
-    private String getCurrentPresetMessageFromPresets() {
-        return stringShelfDatabase.selectFieldByIdOrCreate(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_IDS.CURRENT.toString() + PEKISLIB_ACTIVITIES.PRESETS.toString(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX());
-    }
-
-    private String getCurrentPresetTimeDefFromPresets() {
-        return stringShelfDatabase.selectFieldByIdOrCreate(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_IDS.CURRENT.toString() + PEKISLIB_ACTIVITIES.PRESETS.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX());
-    }
-
-    private String[] getCurrentColorsFromColorPicker(COLOR_ITEMS colorItem) {
-        return stringShelfDatabase.selectRowByIdOrCreate(colorItem.TABLE_NAME(), TABLE_IDS.CURRENT.toString() + PEKISLIB_ACTIVITIES.COLORPICKER.toString());
-    }
-
-    private String[] getCurrentColors(COLOR_ITEMS colorItem) {
-        return stringShelfDatabase.selectRowByIdOrCreate(colorItem.TABLE_NAME(), TABLE_IDS.CURRENT.toString() + colorItem.toString() + SWTIMER_ACTIVITIES.CTDISPLAY.toString());
-    }
-
-    private String[] getDefaultColors(COLOR_ITEMS colorItem) {
-        return stringShelfDatabase.selectRowByIdOrCreate(colorItem.TABLE_NAME(), TABLE_IDS.DEFAULT.toString() + colorItem.toString());
-    }
-
-    private void saveCurrentColors(COLOR_ITEMS colorItem, String[] values) {
-        stringShelfDatabase.insertOrReplaceRowById(colorItem.TABLE_NAME(), TABLE_IDS.CURRENT.toString() + colorItem.toString() + SWTIMER_ACTIVITIES.CTDISPLAY.toString(), values);
-    }
-
-    private void setCurrentTimeDefForPresets(long value) {
-        stringShelfDatabase.insertOrReplaceFieldById(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_IDS.CURRENT.toString() + PEKISLIB_ACTIVITIES.PRESETS.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX(), String.valueOf(value));
-    }
-
-    private void setCurrentMessageForPresets(String value) {
-        stringShelfDatabase.insertOrReplaceFieldById(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_IDS.CURRENT.toString() + PEKISLIB_ACTIVITIES.PRESETS.toString(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX(), value);
-    }
-
-    private void setDefaultTimeForPresets(long value) {
-        stringShelfDatabase.insertOrReplaceFieldById(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_IDS.DEFAULT.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX(), String.valueOf(value));
-    }
-
-    private void setDefaultMessageForPresets(String value) {
-        stringShelfDatabase.insertOrReplaceFieldById(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_IDS.DEFAULT.toString(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX(), value);
-    }
-
-    private void setCurrentColorsForColorPicker(COLOR_ITEMS colorItem, String[] values) {
-        stringShelfDatabase.insertOrReplaceRowById(colorItem.TABLE_NAME(), TABLE_IDS.CURRENT.toString() + PEKISLIB_ACTIVITIES.COLORPICKER.toString(), values);
-    }
-
-    private void setDefaultColorsForPresets(COLOR_ITEMS colorItem, String[] values) {
-        stringShelfDatabase.insertOrReplaceRowById(colorItem.TABLE_NAME(), TABLE_IDS.DEFAULT.toString(), values);
-    }
-
-    private String[] getChronoTimer(int idct) {
-        return stringShelfDatabase.selectRowByIdOrCreate(SWTIMER_TABLES.CHRONO_TIMERS.toString(), String.valueOf(idct));
-    }
-
-    private void saveChronoTimer(String[] values) {
-        stringShelfDatabase.insertOrReplaceRow(SWTIMER_TABLES.CHRONO_TIMERS.toString(), values);
-    }
-
     private boolean returnsFromPresets() {
         return (calledActivity.equals(PEKISLIB_ACTIVITIES.PRESETS.toString()));
     }
 
     private boolean returnsFromColorPicker() {
-        String s = PEKISLIB_ACTIVITIES.COLORPICKER.toString();
+        String s = PEKISLIB_ACTIVITIES.COLOR_PICKER.toString();
         if (calledActivity.length() >= s.length()) {
             return (calledActivity.substring(0, s.length()).equals(s));
         } else return false;

@@ -16,9 +16,9 @@ import static com.example.pgyl.pekislib_a.Constants.DUMMY_VALUE;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_SHP_KEY_NAMES;
-import static com.example.pgyl.swtimer_a.Constants.SWTIMER_TABLES;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimers;
 
 public class CtRecordsHandler {
     //region Constantes
@@ -30,7 +30,7 @@ public class CtRecordsHandler {
         START, STOP, SPLIT, RESET, REMOVE, COUNT
     }
 
-    private final String ALARM_SEPARATOR= "£µ$***ALARM***$µ£";
+    private final String ALARM_SEPARATOR = "£µ$***ALARM***$µ£";
     //endregion
     //region Variables
     private Context context;
@@ -50,11 +50,11 @@ public class CtRecordsHandler {
     private void init() {
         requestedClockAppAlarmDismisses = getSHPRequestedClockAppAlarmsDismisses();
         processNextRequestedClockAppAlarmDismiss();
-        ctRecords = convertChronoTimerRowsToCtRecords(getChronoTimerRows());
+        ctRecords = convertChronoTimerRowsToCtRecords(StringShelfDatabaseUtils.getChronoTimers(stringShelfDatabase));
     }
 
     public void saveAndclose() {
-        saveChronoTimers();
+        saveChronoTimers(stringShelfDatabase, convertCtRecordsToChronoTimerRows(ctRecords));
         savePreferences();
         stringShelfDatabase = null;
         closeChronoTimers();
@@ -298,15 +298,6 @@ public class CtRecordsHandler {
         }
         ctRecords.clear();
         ctRecords = null;
-    }
-
-    private String[][] getChronoTimerRows() {
-        return stringShelfDatabase.selectRows(SWTIMER_TABLES.CHRONO_TIMERS.toString(), null);
-    }
-
-    private void saveChronoTimers() {
-        stringShelfDatabase.deleteRows(SWTIMER_TABLES.CHRONO_TIMERS.toString(), null);
-        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.CHRONO_TIMERS.toString(), convertCtRecordsToChronoTimerRows(ctRecords));
     }
 
 }

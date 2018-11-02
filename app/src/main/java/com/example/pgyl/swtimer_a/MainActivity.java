@@ -18,37 +18,29 @@ import android.widget.Toast;
 import com.example.pgyl.pekislib_a.BeeperIntentService;
 import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.HelpActivity;
-import com.example.pgyl.pekislib_a.InputButtonsActivity;
 import com.example.pgyl.pekislib_a.StateView;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
-import com.example.pgyl.pekislib_a.TimeDateUtils;
+import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_TYPE;
 
 import java.util.EnumMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_START_TYPE;
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
-import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_TABLES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
-import static com.example.pgyl.pekislib_a.Constants.TABLE_ACTIVITY_INFOS_DATA_FIELDS;
-import static com.example.pgyl.pekislib_a.Constants.TABLE_COLORS_REGEXP_HEX_DEFAULT;
-import static com.example.pgyl.pekislib_a.Constants.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.convertXhmsToMs;
-import static com.example.pgyl.swtimer_a.Constants.COLOR_ITEMS;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createTableActivityInfos;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_SHP_KEY_NAMES;
-import static com.example.pgyl.swtimer_a.Constants.SWTIMER_TABLES;
-import static com.example.pgyl.swtimer_a.Constants.TABLE_CHRONO_TIMERS_DATA_FIELDS;
-import static com.example.pgyl.swtimer_a.Constants.TABLE_COLORS_BACK_SCREEN_DATA_FIELDS;
-import static com.example.pgyl.swtimer_a.Constants.TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS;
-import static com.example.pgyl.swtimer_a.Constants.TABLE_PRESETS_CT_DATA_FIELDS;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableChronoTimers;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableColors;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTablePresetsCT;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 
 public class MainActivity extends Activity {
     //region Constantes
@@ -158,8 +150,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
         validReturnFromCalledActivity = false;
-        if (requestCode == SWTIMER_ACTIVITIES.CTDISPLAY.ordinal()) {
-            calledActivity = SWTIMER_ACTIVITIES.CTDISPLAY.toString();
+        if (requestCode == SWTIMER_ACTIVITIES.CT_DISPLAY.ordinal()) {
+            calledActivity = SWTIMER_ACTIVITIES.CT_DISPLAY.toString();
             validReturnFromCalledActivity = true;
         }
         if (requestCode == PEKISLIB_ACTIVITIES.HELP.ordinal()) {
@@ -528,63 +520,10 @@ public class MainActivity extends Activity {
     private void setupStringShelfDatabase() {
         stringShelfDatabase = new StringShelfDatabase(this);
         stringShelfDatabase.open();
-        setupStringShelfDatabaseTableActivityInfos(stringShelfDatabase);
-        setupStringShelfDatabaseTableColors(stringShelfDatabase);
-        setupStringShelfDatabaseTableChronoTimers(stringShelfDatabase);
-        setupStringShelfDatabaseTablePresetsCT(stringShelfDatabase);
-    }
-
-    private void setupStringShelfDatabaseTableActivityInfos(StringShelfDatabase stringShelfDatabase) {
-        if (!stringShelfDatabase.tableExists(PEKISLIB_TABLES.ACTIVITY_INFOS.toString())) {
-            stringShelfDatabase.createTable(PEKISLIB_TABLES.ACTIVITY_INFOS.toString(), 1 + TABLE_ACTIVITY_INFOS_DATA_FIELDS.values().length);   //  Champ ID + Données
-        }
-    }
-
-    private void setupStringShelfDatabaseTableColors(StringShelfDatabase stringShelfDatabase) {
-        final String[][] TABLE_COLOR_TIME_BUTTONS_INITS = {
-                {TABLE_IDS.LABEL.toString(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.ON.LABEL(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.OFF.LABEL(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.BACK.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString() + COLOR_ITEMS.TIME.toString(), "999900", "303030", "000000"},
-                {TABLE_IDS.DEFAULT.toString() + COLOR_ITEMS.BUTTONS.toString(), "0061F3", "696969", "000000"}};
-
-        final String[][] TABLE_COLOR_BACK_SCREEN_INITS = {
-                {TABLE_IDS.LABEL.toString(), TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.BACK.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString() + COLOR_ITEMS.BACK_SCREEN.toString(), "000000"}};
-
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_TIMEBUTTONS.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.COLORS_TIMEBUTTONS.toString(), 1 + TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.values().length);   //  Champ ID + Données;
-            stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_TIMEBUTTONS.toString(), TABLE_COLOR_TIME_BUTTONS_INITS);
-            setCurrentColorsForCtDisplay(COLOR_ITEMS.TIME, getDefaultColors(COLOR_ITEMS.TIME));
-            setCurrentColorsForCtDisplay(COLOR_ITEMS.BUTTONS, getDefaultColors(COLOR_ITEMS.BUTTONS));
-        }
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), 1 + TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.values().length);   //  Champ ID + Données;
-            stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), TABLE_COLOR_BACK_SCREEN_INITS);
-            setCurrentColorsForCtDisplay(COLOR_ITEMS.BACK_SCREEN, getDefaultColors(COLOR_ITEMS.BACK_SCREEN));
-        }
-    }
-
-    private void setupStringShelfDatabaseTableChronoTimers(StringShelfDatabase stringShelfDatabase) {
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.CHRONO_TIMERS.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.CHRONO_TIMERS.toString(), 1 + TABLE_CHRONO_TIMERS_DATA_FIELDS.values().length);   //  Champ ID + Données
-        }
-    }
-
-    private void setupStringShelfDatabaseTablePresetsCT(StringShelfDatabase stringShelfDatabase) {
-        final String[][] TABLE_PRESETS_CT_INITS = {
-                {TABLE_IDS.LABEL.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.LABEL(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_XHMS.toString(), InputButtonsActivity.KEYBOARDS.ALPHANUM.toString()},
-                {TABLE_IDS.REGEXP.toString(), "^([0-9]+(" + TimeDateUtils.TIMEUNITS.HOUR.SYMBOL() + "|$))?([0-9]+(" + TimeDateUtils.TIMEUNITS.MIN.SYMBOL() + "|$))?([0-9]+(" + TimeDateUtils.TIMEUNITS.SEC.SYMBOL() + "|$))?([0-9]+(" + TimeDateUtils.TIMEUNITS.CS.SYMBOL() + "|$))?$", null},
-                {TABLE_IDS.MAX.toString(), String.valueOf(convertXhmsToMs("23" + TimeDateUtils.TIMEUNITS.HOUR.SYMBOL() + "59" + TimeDateUtils.TIMEUNITS.MIN.SYMBOL() + "59" + TimeDateUtils.TIMEUNITS.SEC.SYMBOL() + "99" + TimeDateUtils.TIMEUNITS.CS.SYMBOL())), null},    //  23h59m59s99c
-                {TABLE_IDS.TIMEUNIT.toString(), TimeDateUtils.TIMEUNITS.CS.toString(), null}};
-
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.PRESETS_CT.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.PRESETS_CT.toString(), 1 + TABLE_PRESETS_CT_DATA_FIELDS.values().length);   //  Champ ID + Données
-            stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_PRESETS_CT_INITS);
-        }
+        createTableActivityInfos(stringShelfDatabase);
+        createTableColors(stringShelfDatabase);
+        createTableChronoTimers(stringShelfDatabase);
+        createTablePresetsCT(stringShelfDatabase);
     }
 
     private void launchHelpActivity() {
@@ -595,26 +534,14 @@ public class MainActivity extends Activity {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setColdStartForCtDisplay();
+        setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_TYPE.COLD);
         Intent callingIntent = new Intent(this, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
-        startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CTDISPLAY.ordinal());
-    }
-
-    private void setColdStartForCtDisplay() {
-        stringShelfDatabase.insertOrReplaceFieldById(PEKISLIB_TABLES.ACTIVITY_INFOS.toString(), SWTIMER_ACTIVITIES.CTDISPLAY.toString(), TABLE_ACTIVITY_INFOS_DATA_FIELDS.START_TYPE.INDEX(), ACTIVITY_START_TYPE.COLD.toString());
-    }
-
-    private String[] getDefaultColors(COLOR_ITEMS colorItem) {
-        return stringShelfDatabase.selectRowByIdOrCreate(colorItem.TABLE_NAME(), TABLE_IDS.DEFAULT.toString() + colorItem.toString());
-    }
-
-    private void setCurrentColorsForCtDisplay(COLOR_ITEMS colorItem, String[] values) {
-        stringShelfDatabase.insertOrReplaceRowById(colorItem.TABLE_NAME(), TABLE_IDS.CURRENT.toString() + colorItem.toString() + SWTIMER_ACTIVITIES.CTDISPLAY.toString(), values);
+        startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CT_DISPLAY.ordinal());
     }
 
     private boolean returnsFromCtDisplay() {
-        return (calledActivity.equals(SWTIMER_ACTIVITIES.CTDISPLAY.toString()));
+        return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY.toString()));
     }
 
     private boolean returnsFromHelp() {

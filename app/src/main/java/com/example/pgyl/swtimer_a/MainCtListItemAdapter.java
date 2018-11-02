@@ -13,21 +13,20 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.pgyl.pekislib_a.Constants.ACTIVITY_START_TYPE;
 import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
+import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_TYPE;
 
 import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
-import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_TABLES;
-import static com.example.pgyl.pekislib_a.Constants.TABLE_ACTIVITY_INFOS_DATA_FIELDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 
 public class MainCtListItemAdapter extends BaseAdapter {
     public interface onButtonClickListener {
@@ -319,14 +318,10 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setColdStartForCtDisplay();
+        setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_TYPE.COLD);
         Intent callingIntent = new Intent(context, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
-        ((Activity) context).startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CTDISPLAY.ordinal());
-    }
-
-    private void setColdStartForCtDisplay() {
-        stringShelfDatabase.insertOrReplaceFieldById(PEKISLIB_TABLES.ACTIVITY_INFOS.toString(), SWTIMER_ACTIVITIES.CTDISPLAY.toString(), TABLE_ACTIVITY_INFOS_DATA_FIELDS.START_TYPE.INDEX(), ACTIVITY_START_TYPE.COLD.toString());
+        ((Activity) context).startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CT_DISPLAY.ordinal());
     }
 
 }
