@@ -20,7 +20,6 @@ import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.StateView;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
-import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_TYPE;
 
 import java.util.EnumMap;
 import java.util.logging.Level;
@@ -32,6 +31,7 @@ import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.activityStartStatusCold;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createTableActivityInfos;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_SHP_KEY_NAMES;
@@ -448,7 +448,7 @@ public class MainActivity extends Activity {
         for (COMMANDS command : COMMANDS.values())
             try {
                 int index = command.ordinal();
-                buttons[index] = (CustomImageButton) findViewById(rid.getField(BUTTON_COMMAND_XML_PREFIX + command.toString()).getInt(rid));
+                buttons[index] = findViewById(rid.getField(BUTTON_COMMAND_XML_PREFIX + command.toString()).getInt(rid));
                 buttons[index].setImageResource(command.ID());
                 final COMMANDS fcommand = command;
                 buttons[index].setOnClickListener(new View.OnClickListener() {
@@ -476,7 +476,7 @@ public class MainActivity extends Activity {
         for (COMMANDS command : COMMANDS.values())
             try {
                 if ((command.equals(COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) || (command.equals(COMMANDS.SHOW_EXPIRATION_TIME))) {
-                    StateView stateView = (StateView) findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + command.toString()).getInt(rid));
+                    StateView stateView = findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + command.toString()).getInt(rid));
                     commandStateViewsMap.put(command, stateView);
                 }
             } catch (IllegalAccessException ex) {
@@ -534,7 +534,7 @@ public class MainActivity extends Activity {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_TYPE.COLD);
+        setStartStatusInCtDisplayActivity(stringShelfDatabase, activityStartStatusCold());
         Intent callingIntent = new Intent(this, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
         startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CT_DISPLAY.ordinal());

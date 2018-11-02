@@ -3,16 +3,14 @@ package com.example.pgyl.swtimer_a;
 import android.content.Context;
 
 import com.example.pgyl.pekislib_a.ClockAppAlarmUtils;
-import com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.TABLE_CHRONO_TIMERS_DATA_FIELDS;
 
 import java.util.Calendar;
 
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
-import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_HMS_SEPARATOR;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightInMillis;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightTimeInMillis;
 
 class CtRecord {   //  Données d'un Chrono ou Timer
     // region Constantes
@@ -62,9 +60,28 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         timeAccUntilSplit = 0;
         timeDef = 0;
         timeDefInit = 0;
-        timeExp = midnightInMillis();
+        timeExp = midnightTimeInMillis();
         timeDisplay = 0;
         timeDisplayWithoutSplit = 0;
+    }
+
+    public void fill(int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String message, String messageInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
+        this.idct = idct;
+        this.mode = mode;
+        this.selected = selected;
+        this.running = running;
+        this.splitted = splitted;
+        this.clockAppAlarm = clockAppAlarm;
+        this.message = message;
+        this.messageInit = messageInit;
+        this.timeStart = timeStart;
+        this.timeAcc = timeAcc;
+        this.timeAccUntilSplit = timeAccUntilSplit;
+        this.timeDef = timeDef;
+        this.timeDefInit = timeDefInit;
+        this.timeExp = timeExp;
+        this.timeDisplay = timeDisplay;
+        this.timeDisplayWithoutSplit = timeDisplayWithoutSplit;
     }
 
     public void close() {
@@ -340,45 +357,6 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         if (!error) {
             clockAppAlarm = false;
         }
-    }
-
-    public CtRecord loadFromChronoTimerRow(String[] chronoTimerRow) {
-        idct = Integer.parseInt(chronoTimerRow[TABLE_ID_INDEX]);
-        mode = CtRecord.MODE.valueOf(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.MODE.INDEX()]);
-        selected = (Integer.parseInt(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.SELECTED.INDEX()]) == 1);
-        running = (Integer.parseInt(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.RUNNING.INDEX()]) == 1);
-        splitted = (Integer.parseInt(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.SPLITTED.INDEX()]) == 1);
-        clockAppAlarm = (Integer.parseInt(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.ALARM_SET.INDEX()]) == 1);
-        message = chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.MESSAGE.INDEX()];
-        messageInit = chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.MESSAGE_INIT.INDEX()];
-        timeStart = Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_START.INDEX()]);
-        timeAcc = Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_ACC.INDEX()]);
-        timeAccUntilSplit = Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_ACC_UNTIL_SPLIT.INDEX()]);
-        timeDef = Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF.INDEX()]);
-        timeDefInit = Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF_INIT.INDEX()]);
-        timeExp = Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_EXP.INDEX()]);
-        timeDisplay = 0;
-        timeDisplayWithoutSplit = 0;
-        return this;
-    }
-
-    public String[] convertToChronoTimerRow() {
-        String[] ret = new String[1 + TABLE_CHRONO_TIMERS_DATA_FIELDS.values().length];  //  Champ ID + Données
-        ret[TABLE_ID_INDEX] = String.valueOf(idct);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.MODE.INDEX()] = mode.toString();
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.SELECTED.INDEX()] = String.valueOf(selected ? 1 : 0);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.RUNNING.INDEX()] = String.valueOf(running ? 1 : 0);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.SPLITTED.INDEX()] = String.valueOf(splitted ? 1 : 0);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.ALARM_SET.INDEX()] = String.valueOf(clockAppAlarm ? 1 : 0);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.MESSAGE.INDEX()] = message;
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.MESSAGE_INIT.INDEX()] = messageInit;
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_START.INDEX()] = String.valueOf(timeStart);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_ACC.INDEX()] = String.valueOf(timeAcc);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_ACC_UNTIL_SPLIT.INDEX()] = String.valueOf(timeAccUntilSplit);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF.INDEX()] = String.valueOf(timeDef);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF_INIT.INDEX()] = String.valueOf(timeDefInit);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_EXP.INDEX()] = String.valueOf(timeExp);
-        return ret;
     }
 
 }

@@ -18,6 +18,8 @@ import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.fillCtRecordFromChronoTimerRow;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerRowFromCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimers;
 
 public class CtRecordsHandler {
@@ -116,7 +118,8 @@ public class CtRecordsHandler {
         ArrayList<CtRecord> ret = new ArrayList<CtRecord>();
         if (chronoTimerRows != null) {
             for (int i = 0; i <= (chronoTimerRows.length - 1); i = i + 1) {
-                ret.add(new CtRecord(context).loadFromChronoTimerRow(chronoTimerRows[i]));
+                ret.add(new CtRecord(context));
+                fillCtRecordFromChronoTimerRow(ret.get(i), chronoTimerRows[i]);
             }
         }
         return ret;
@@ -127,7 +130,7 @@ public class CtRecordsHandler {
         if (!ctRecords.isEmpty()) {
             ret = new String[ctRecords.size()][];
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
-                ret[i] = ctRecords.get(i).convertToChronoTimerRow();
+                ret[i] = getChronoTimerRowFromCtRecord(ctRecords.get(i));
             }
         }
         return ret;
