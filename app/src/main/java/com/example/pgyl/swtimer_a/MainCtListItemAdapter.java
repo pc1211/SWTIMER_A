@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
+import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
 
 import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.activityStartStatusCold;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
@@ -318,7 +318,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setStartStatusInCtDisplayActivity(stringShelfDatabase, activityStartStatusCold());
+        setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(context, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
         ((Activity) context).startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CT_DISPLAY.ordinal());

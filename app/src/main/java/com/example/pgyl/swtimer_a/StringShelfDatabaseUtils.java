@@ -3,11 +3,11 @@ package com.example.pgyl.swtimer_a;
 import com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import com.example.pgyl.pekislib_a.InputButtonsActivity.KEYBOARDS;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
+import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
 import com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import com.example.pgyl.swtimer_a.CtDisplayActivity.COLOR_ITEMS;
 
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.activityStartStatusCold;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosStartTypeIndex;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentIdName;
@@ -200,11 +200,11 @@ public class StringShelfDatabaseUtils {
 
     //region START_STATUS
     public static boolean isColdStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.selectFieldByIdOrCreate(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartTypeIndex()).equals(activityStartStatusCold());
+        return stringShelfDatabase.selectFieldByIdOrCreate(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartTypeIndex()).equals(ACTIVITY_START_STATUS.COLD);
     }
 
-    public static void setStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, String activityStartStatus) {
-        stringShelfDatabase.insertOrReplaceFieldById(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartTypeIndex(), activityStartStatus);
+    public static void setStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, ACTIVITY_START_STATUS activityStartStatus) {
+        stringShelfDatabase.insertOrReplaceFieldById(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartTypeIndex(), activityStartStatus.toString());
     }
     //endregion
 
