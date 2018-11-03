@@ -8,7 +8,7 @@ import com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import com.example.pgyl.swtimer_a.CtDisplayActivity.COLOR_ITEMS;
 
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosStartTypeIndex;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosStartStatusIndex;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentIdName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaultIdName;
@@ -200,11 +200,11 @@ public class StringShelfDatabaseUtils {
 
     //region START_STATUS
     public static boolean isColdStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.selectFieldByIdOrCreate(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartTypeIndex()).equals(ACTIVITY_START_STATUS.COLD);
+        return stringShelfDatabase.selectFieldByIdOrCreate(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartStatusIndex()).equals(ACTIVITY_START_STATUS.COLD);
     }
 
     public static void setStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, ACTIVITY_START_STATUS activityStartStatus) {
-        stringShelfDatabase.insertOrReplaceFieldById(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartTypeIndex(), activityStartStatus.toString());
+        stringShelfDatabase.insertOrReplaceFieldById(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartStatusIndex(), activityStartStatus.toString());
     }
     //endregion
 
