@@ -120,7 +120,7 @@ public class CtDisplayActivity extends Activity {
         setupOrientationLayout();
         setupButtons();
         setupTimeDotMatrixDisplayView();
-        backLayout = (LinearLayout) findViewById(R.id.BACK_LAYOUT);
+        backLayout = findViewById(R.id.BACK_LAYOUT);
         validReturnFromCalledActivity = false;
     }
 

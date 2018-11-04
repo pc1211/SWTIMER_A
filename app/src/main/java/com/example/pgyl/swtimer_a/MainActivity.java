@@ -97,7 +97,7 @@ public class MainActivity extends Activity {
         getActionBar().setTitle(ACTIVITY_TITLE);
         setContentView(R.layout.main);
         setupButtons();
-        mainCtListView = (ListView) findViewById(R.id.CT_LIST);
+        mainCtListView = findViewById(R.id.CT_LIST);
         showExpirationTime = false;
         addNewChronoTimerToList = false;
         keepScreen = false;
