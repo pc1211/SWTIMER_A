@@ -10,7 +10,7 @@ import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_HMS_SEPARATOR;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightTimeInMillis;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightTimeMillis;
 
 class CtRecord {   //  Données d'un Chrono ou Timer
     // region Constantes
@@ -47,6 +47,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     private void init() {
+        final long TIME_DEFAULT_VALUE = 0;
+
         idct = 0;
         mode = MODE.CHRONO;
         selected = false;
@@ -55,14 +57,14 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         clockAppAlarm = false;
         message = null;
         messageInit = null;
-        timeStart = 0;
-        timeAcc = 0;
-        timeAccUntilSplit = 0;
-        timeDef = 0;
-        timeDefInit = 0;
-        timeExp = midnightTimeInMillis();
-        timeDisplay = 0;
-        timeDisplayWithoutSplit = 0;
+        timeStart = TIME_DEFAULT_VALUE;
+        timeAcc = TIME_DEFAULT_VALUE;
+        timeAccUntilSplit = TIME_DEFAULT_VALUE;
+        timeDef = TIME_DEFAULT_VALUE;
+        timeDefInit = TIME_DEFAULT_VALUE;
+        timeExp = midnightTimeMillis();
+        timeDisplay = TIME_DEFAULT_VALUE;
+        timeDisplayWithoutSplit = TIME_DEFAULT_VALUE;
     }
 
     public void fill(int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String message, String messageInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
@@ -182,13 +184,18 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return timeDef;
     }
 
-    public boolean setTimeDef(long newTimeDef) {
+    public boolean setTimeDef(long newTimeDef, long nowm) {
         boolean ret = true;
         if (timeDef != newTimeDef) {
             if (mode.equals(MODE.TIMER)) {
                 if (running) {
-                    if (hasClockAppAlarm()) {
+                    if (hasClockAppAlarm()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)
                         ret = false;
+                    } else {
+                        long newTimeExp = timeStart + newTimeDef - timeAcc;
+                        if (newTimeExp > nowm) {   //  Il est encore temps
+                            timeExp = newTimeExp;
+                        }
                     }
                 } else {
                     reset();

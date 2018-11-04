@@ -104,13 +104,25 @@ public class StringShelfDatabaseUtils {
     //endregion
 
     //region TABLES
-    public static void createTableChronoTimers(StringShelfDatabase stringShelfDatabase) {
+    public static boolean createTableChronoTimersIfNotExits(StringShelfDatabase stringShelfDatabase) {
+        boolean ret = false;
         if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.CHRONO_TIMERS.toString())) {
             stringShelfDatabase.createTable(SWTIMER_TABLES.CHRONO_TIMERS.toString(), 1 + TABLE_CHRONO_TIMERS_DATA_FIELDS.values().length);   //  Champ ID + Données
+            ret = true;
         }
+        return ret;
     }
 
-    public static void createTablePresetsCT(StringShelfDatabase stringShelfDatabase) {
+    public static boolean createTablePresetsCTIfNotExists(StringShelfDatabase stringShelfDatabase) {
+        boolean ret = false;
+        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.PRESETS_CT.toString())) {
+            stringShelfDatabase.createTable(SWTIMER_TABLES.PRESETS_CT.toString(), 1 + TABLE_PRESETS_CT_DATA_FIELDS.values().length);   //  Champ ID + Données
+            ret = true;
+        }
+        return ret;
+    }
+
+    public static void initializeTablePresetsCT(StringShelfDatabase stringShelfDatabase) {
         final String[][] TABLE_PRESETS_CT_INITS = {
                 {getLabelIdName(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.LABEL(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.LABEL()},
                 {getKeyboardIdName(), KEYBOARDS.TIME_XHMS.toString(), KEYBOARDS.ALPHANUM.toString()},
@@ -118,13 +130,19 @@ public class StringShelfDatabaseUtils {
                 {getMaxIdName(), String.valueOf(convertXhmsToMs("23" + TIMEUNITS.HOUR.SYMBOL() + "59" + TIMEUNITS.MIN.SYMBOL() + "59" + TIMEUNITS.SEC.SYMBOL() + "99" + TIMEUNITS.CS.SYMBOL())), null},    //  23h59m59s99c
                 {getTimeUnitIdName(), TIMEUNITS.CS.toString(), null}};
 
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.PRESETS_CT.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.PRESETS_CT.toString(), 1 + TABLE_PRESETS_CT_DATA_FIELDS.values().length);   //  Champ ID + Données
-            stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_PRESETS_CT_INITS);
-        }
+        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_PRESETS_CT_INITS);
     }
 
-    public static void createTableColors(StringShelfDatabase stringShelfDatabase) {
+    public static boolean createTableColorsTimeButtonsIfNotExits(StringShelfDatabase stringShelfDatabase) {
+        boolean ret = false;
+        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString())) {
+            stringShelfDatabase.createTable(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString(), 1 + TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.values().length);   //  Champ ID + Données;
+            ret = true;
+        }
+        return ret;
+    }
+
+    public static void initializeTableColorsTimeButtons(StringShelfDatabase stringShelfDatabase) {
         final String[][] TABLE_COLOR_TIME_BUTTONS_INITS = {
                 {getLabelIdName(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.ON.LABEL(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.OFF.LABEL(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.BACK.LABEL()},
                 {getKeyboardIdName(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString()},
@@ -132,23 +150,25 @@ public class StringShelfDatabaseUtils {
                 {getDefaultIdName() + COLOR_ITEMS.TIME.toString(), "999900", "303030", "000000"},
                 {getDefaultIdName() + COLOR_ITEMS.BUTTONS.toString(), "0061F3", "696969", "000000"}};
 
+        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString(), TABLE_COLOR_TIME_BUTTONS_INITS);
+    }
+
+    public static boolean createTableColorsBackScreenIfNotExists(StringShelfDatabase stringShelfDatabase) {
+        boolean ret = false;
+        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString())) {
+            stringShelfDatabase.createTable(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), 1 + TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.values().length);   //  Champ ID + Données;
+        }
+        return ret;
+    }
+
+    public static void initializeTableColorsBackScreen(StringShelfDatabase stringShelfDatabase) {
         final String[][] TABLE_COLOR_BACK_SCREEN_INITS = {
                 {getLabelIdName(), TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.BACK.LABEL()},
                 {getKeyboardIdName(), KEYBOARDS.HEX.toString()},
                 {getRegexpIdName(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
                 {getDefaultIdName() + COLOR_ITEMS.BACK_SCREEN.toString(), "000000"}};
 
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString(), 1 + TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.values().length);   //  Champ ID + Données;
-            stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString(), TABLE_COLOR_TIME_BUTTONS_INITS);
-            setCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.TIME, getDefaultColors(stringShelfDatabase, COLOR_ITEMS.TIME));
-            setCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BUTTONS, getDefaultColors(stringShelfDatabase, COLOR_ITEMS.BUTTONS));
-        }
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), 1 + TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.values().length);   //  Champ ID + Données;
-            stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), TABLE_COLOR_BACK_SCREEN_INITS);
-            setCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN, getDefaultColors(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN));
-        }
+        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), TABLE_COLOR_BACK_SCREEN_INITS);
     }
     //endregion
 

@@ -69,14 +69,14 @@ public class CtRecordsHandler {
 
     public int createChronoTimer(MODE mode) {
         final String MESSAGE_INIT_DEFAULT_VALUE = "Message";
-        final int TIMEDEFINIT_DEFAULT_VALUE = 0;
+        final long TIMEDEFINIT_DEFAULT_VALUE = 0;
 
         CtRecord ctRecord = new CtRecord(context);
         int idct = getMaxId() + 1;
         ctRecord.setIdct(idct);
         ctRecord.setMode(mode);
         ctRecord.setTimeDefInit(TIMEDEFINIT_DEFAULT_VALUE);
-        ctRecord.setTimeDef(TIMEDEFINIT_DEFAULT_VALUE);
+        ctRecord.setTimeDef(TIMEDEFINIT_DEFAULT_VALUE, DUMMY_VALUE);
         ctRecord.setMessageInit(MESSAGE_INIT_DEFAULT_VALUE + idct);
         ctRecord.setMessage(MESSAGE_INIT_DEFAULT_VALUE + idct);
         ctRecords.add(ctRecord);

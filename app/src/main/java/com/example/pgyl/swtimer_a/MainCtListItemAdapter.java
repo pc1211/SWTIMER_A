@@ -8,12 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
 
@@ -244,16 +240,16 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     private MainCtListItemViewHolder buildViewHolder(View convertView) {
         MainCtListItemViewHolder viewHolder = new MainCtListItemViewHolder();
-        viewHolder.cbSelection = (CheckBox) convertView.findViewById(R.id.CB_SELECTION);
-        viewHolder.btnModeRun = (CustomImageButton) convertView.findViewById(R.id.BTN_MODE_RUN);
-        viewHolder.btnSplit = (CustomImageButton) convertView.findViewById(R.id.BTN_SPLIT);
-        viewHolder.btnClockAppAlarm = (CustomImageButton) convertView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
+        viewHolder.cbSelection = convertView.findViewById(R.id.CB_SELECTION);
+        viewHolder.btnModeRun = convertView.findViewById(R.id.BTN_MODE_RUN);
+        viewHolder.btnSplit = convertView.findViewById(R.id.BTN_SPLIT);
+        viewHolder.btnClockAppAlarm = convertView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            viewHolder.ltTimeMessage = (LinearLayout) convertView.findViewById(R.id.LT_TIME_MESSAGE);
-            viewHolder.tvTime = (TextView) convertView.findViewById(R.id.TV_TIME);
-            viewHolder.tvMessage = (TextView) convertView.findViewById(R.id.TV_MESSAGE);
+            viewHolder.ltTimeMessage = convertView.findViewById(R.id.LT_TIME_MESSAGE);
+            viewHolder.tvTime = convertView.findViewById(R.id.TV_TIME);
+            viewHolder.tvMessage = convertView.findViewById(R.id.TV_MESSAGE);
         } else {
-            viewHolder.tvTimeMessage = (TextView) convertView.findViewById(R.id.TV_TIME_MESSAGE);
+            viewHolder.tvTimeMessage = convertView.findViewById(R.id.TV_TIME_MESSAGE);
         }
         return viewHolder;
     }

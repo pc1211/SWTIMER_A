@@ -164,7 +164,7 @@ public class CtDisplayActivity extends Activity {
                     if (!currentCtRecord.setMessage(getCurrentMessageOfPresetCTInPresetsActivity(stringShelfDatabase))) {
                         Toast.makeText(this, "Error updating Clock App alarm message", Toast.LENGTH_LONG).show();
                     }
-                    if (!currentCtRecord.setTimeDef(Long.parseLong(getCurrentTimeOfPresetCTInPresetsActivity(stringShelfDatabase)))) {
+                    if (!currentCtRecord.setTimeDef(Long.parseLong(getCurrentTimeOfPresetCTInPresetsActivity(stringShelfDatabase)), nowm)) {
                         Toast.makeText(this, "Error updating Clock App alarm default time", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -248,7 +248,7 @@ public class CtDisplayActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.help) {
+        if (item.getItemId() == R.id.HELP) {
             launchHelpActivity();
             return true;
         }
@@ -257,17 +257,17 @@ public class CtDisplayActivity extends Activity {
             setScreen(keepScreen);
             setKeepScreenBarMenuItemIcon(keepScreen);
         }
-        if (item.getItemId() == R.id.set_time_colors) {
+        if (item.getItemId() == R.id.SET_TIME_COLORS) {
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.TIME), timeColors);
             launchColorPickerActivity(COLOR_ITEMS.TIME);
             return true;
         }
-        if (item.getItemId() == R.id.set_button_colors) {
+        if (item.getItemId() == R.id.SET_BUTTON_COLORS) {
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.BUTTONS), buttonColors);
             launchColorPickerActivity(COLOR_ITEMS.BUTTONS);
             return true;
         }
-        if (item.getItemId() == R.id.set_back_screen_colors) {
+        if (item.getItemId() == R.id.SET_BACK_SCREEN_COLORS) {
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.BACK_SCREEN), backScreenColors);
             launchColorPickerActivity(COLOR_ITEMS.BACK_SCREEN);
             return true;
