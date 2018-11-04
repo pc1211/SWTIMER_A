@@ -38,7 +38,7 @@ import static com.example.pgyl.swtimer_a.Constants.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.COLOR_ITEMS;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableChronoTimersIfNotExits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableChronoTimersIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableColorsBackScreenIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableColorsTimeButtonsIfNotExits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTablePresetsCTIfNotExists;
@@ -540,7 +540,7 @@ public class MainActivity extends Activity {
         if (createTablePresetsCTIfNotExists(stringShelfDatabase)) {
             initializeTablePresetsCT(stringShelfDatabase);
         }
-        createTableChronoTimersIfNotExits(stringShelfDatabase);
+        createTableChronoTimersIfNotExists(stringShelfDatabase);
     }
 
     private void launchHelpActivity() {

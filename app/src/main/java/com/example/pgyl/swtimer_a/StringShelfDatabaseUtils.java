@@ -104,7 +104,7 @@ public class StringShelfDatabaseUtils {
     //endregion
 
     //region TABLES
-    public static boolean createTableChronoTimersIfNotExits(StringShelfDatabase stringShelfDatabase) {
+    public static boolean createTableChronoTimersIfNotExists(StringShelfDatabase stringShelfDatabase) {
         boolean ret = false;
         if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.CHRONO_TIMERS.toString())) {
             stringShelfDatabase.createTable(SWTIMER_TABLES.CHRONO_TIMERS.toString(), 1 + TABLE_CHRONO_TIMERS_DATA_FIELDS.values().length);   //  Champ ID + Données
@@ -157,6 +157,7 @@ public class StringShelfDatabaseUtils {
         boolean ret = false;
         if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString())) {
             stringShelfDatabase.createTable(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), 1 + TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.values().length);   //  Champ ID + Données;
+            ret = true;
         }
         return ret;
     }
