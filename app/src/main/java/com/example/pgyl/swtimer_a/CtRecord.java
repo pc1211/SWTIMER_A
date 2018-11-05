@@ -147,7 +147,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         if (message != newMessage) {
             if (mode.equals(MODE.TIMER)) {
                 if (running) {
-                    if (hasClockAppAlarm()) {
+                    if (hasClockAppAlarm()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)
                         ret = false;
                     }
                 }
@@ -195,6 +195,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                         long newTimeExp = timeStart + newTimeDef - timeAcc;
                         if (newTimeExp > nowm) {   //  Il est encore temps
                             timeExp = newTimeExp;
+                        } else {
+                            ret = false;
                         }
                     }
                 } else {

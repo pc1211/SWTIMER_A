@@ -1,6 +1,5 @@
 package com.example.pgyl.swtimer_a;
 
-import com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import com.example.pgyl.pekislib_a.InputButtonsActivity.KEYBOARDS;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
@@ -247,7 +246,7 @@ public class StringShelfDatabaseUtils {
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.CHRONO_TIMERS.toString(), values);
     }
 
-    public static void fillCtRecordFromChronoTimerRow(CtRecord ctRecord, String[] chronoTimerRow) {
+    public static void copyChronoTimerRowToCtRecord(String[] chronoTimerRow, CtRecord ctRecord) {
         ctRecord.fill(
                 Integer.parseInt(chronoTimerRow[TABLE_ID_INDEX]),
                 CtRecord.MODE.valueOf(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.MODE.INDEX()]),
@@ -267,7 +266,7 @@ public class StringShelfDatabaseUtils {
                 0);
     }
 
-    public static String[] getChronoTimerRowFromCtRecord(CtRecord ctRecord) {
+    public static String[] ctRecordToChronoTimerRow(CtRecord ctRecord) {
         String[] ret = new String[1 + TABLE_CHRONO_TIMERS_DATA_FIELDS.values().length];  //  Champ ID + Données
         ret[TABLE_ID_INDEX] = String.valueOf(ctRecord.getIdct());
         ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.MODE.INDEX()] = ctRecord.getMode().toString();
@@ -285,35 +284,30 @@ public class StringShelfDatabaseUtils {
         ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_EXP.INDEX()] = String.valueOf(ctRecord.getTimeExp());
         return ret;
     }
+
+    public static boolean copyPresetCTRowToCtRecord(String[] presetCTRow, CtRecord ctRecord, long nowm) {
+        boolean ret = true;
+        if (!ctRecord.setTimeDef(Long.parseLong(presetCTRow[TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX()]), nowm)) {
+            ret = false;
+        }
+        if (!ctRecord.setMessage(presetCTRow[TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX()])) {
+            ret = false;
+        }
+        return ret;
+    }
+
+    public static String[] timeMessageToPresetCTRow(long time, String message) {
+        String[] ret = new String[1 + TABLE_PRESETS_CT_DATA_FIELDS.values().length];  //  Champ ID + Données
+        ret[TABLE_ID_INDEX] = null;
+        ret[TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX()] = String.valueOf(time);
+        ret[TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX()] = message;
+        return ret;
+    }
     //endregion
 
     //region PRESETS_CT
     public static String getPresetsCTTableName() {
         return SWTIMER_TABLES.PRESETS_CT.toString();
-    }
-
-    public static String getCurrentMessageOfPresetCTInPresetsActivity(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.selectFieldByIdOrCreate(SWTIMER_TABLES.PRESETS_CT.toString(), getCurrentIdName() + PEKISLIB_ACTIVITIES.PRESETS.toString(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX());
-    }
-
-    public static void setCurrentMessageOfPresetCTInPresetsActivity(StringShelfDatabase stringShelfDatabase, String value) {
-        stringShelfDatabase.insertOrReplaceFieldById(SWTIMER_TABLES.PRESETS_CT.toString(), getCurrentIdName() + PEKISLIB_ACTIVITIES.PRESETS.toString(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX(), value);
-    }
-
-    public static String getCurrentTimeOfPresetCTInPresetsActivity(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.selectFieldByIdOrCreate(SWTIMER_TABLES.PRESETS_CT.toString(), getCurrentIdName() + PEKISLIB_ACTIVITIES.PRESETS.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX());
-    }
-
-    public static void setCurrentTimeOfPresetCTInPresetsActivity(StringShelfDatabase stringShelfDatabase, long value) {
-        stringShelfDatabase.insertOrReplaceFieldById(SWTIMER_TABLES.PRESETS_CT.toString(), getCurrentIdName() + PEKISLIB_ACTIVITIES.PRESETS.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX(), String.valueOf(value));
-    }
-
-    public static void setDefaultTimeOfPresetCT(StringShelfDatabase stringShelfDatabase, long value) {
-        stringShelfDatabase.insertOrReplaceFieldById(SWTIMER_TABLES.PRESETS_CT.toString(), getDefaultIdName(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX(), String.valueOf(value));
-    }
-
-    public static void setDefaultMessageOfPresetCT(StringShelfDatabase stringShelfDatabase, String value) {
-        stringShelfDatabase.insertOrReplaceFieldById(SWTIMER_TABLES.PRESETS_CT.toString(), getDefaultIdName(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX(), value);
     }
     //endregion
 

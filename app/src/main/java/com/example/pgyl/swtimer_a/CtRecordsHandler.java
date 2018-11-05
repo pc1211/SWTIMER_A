@@ -18,8 +18,8 @@ import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.fillCtRecordFromChronoTimerRow;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerRowFromCtRecord;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.copyChronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.ctRecordToChronoTimerRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimers;
 
 public class CtRecordsHandler {
@@ -52,11 +52,11 @@ public class CtRecordsHandler {
     private void init() {
         requestedClockAppAlarmDismisses = getSHPRequestedClockAppAlarmsDismisses();
         processNextRequestedClockAppAlarmDismiss();
-        ctRecords = convertChronoTimerRowsToCtRecords(StringShelfDatabaseUtils.getChronoTimers(stringShelfDatabase));
+        ctRecords = copyChronoTimerRowsToCtRecords(StringShelfDatabaseUtils.getChronoTimers(stringShelfDatabase));
     }
 
     public void saveAndclose() {
-        saveChronoTimers(stringShelfDatabase, convertCtRecordsToChronoTimerRows(ctRecords));
+        saveChronoTimers(stringShelfDatabase, ctRecordsToChronoTimerRows(ctRecords));
         savePreferences();
         stringShelfDatabase = null;
         closeChronoTimers();
@@ -114,23 +114,23 @@ public class CtRecordsHandler {
         }
     }
 
-    public ArrayList<CtRecord> convertChronoTimerRowsToCtRecords(String[][] chronoTimerRows) {
+    public ArrayList<CtRecord> copyChronoTimerRowsToCtRecords(String[][] chronoTimerRows) {
         ArrayList<CtRecord> ret = new ArrayList<CtRecord>();
         if (chronoTimerRows != null) {
             for (int i = 0; i <= (chronoTimerRows.length - 1); i = i + 1) {
                 ret.add(new CtRecord(context));
-                fillCtRecordFromChronoTimerRow(ret.get(i), chronoTimerRows[i]);
+                copyChronoTimerRowToCtRecord(chronoTimerRows[i], ret.get(i));
             }
         }
         return ret;
     }
 
-    public String[][] convertCtRecordsToChronoTimerRows(ArrayList<CtRecord> ctRecords) {
+    public String[][] ctRecordsToChronoTimerRows(ArrayList<CtRecord> ctRecords) {
         String[][] ret = null;
         if (!ctRecords.isEmpty()) {
             ret = new String[ctRecords.size()][];
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
-                ret[i] = getChronoTimerRowFromCtRecord(ctRecords.get(i));
+                ret[i] = ctRecordToChronoTimerRow(ctRecords.get(i));
             }
         }
         return ret;

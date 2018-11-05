@@ -137,10 +137,10 @@ public class MainActivity extends Activity {
 
         if (validReturnFromCalledActivity) {
             validReturnFromCalledActivity = false;
-            if (returnsFromCtDisplay()) {
+            if (returnsFromCtDisplayActivity()) {
                 //  NOP
             }
-            if (returnsFromHelp()) {
+            if (returnsFromHelpActivity()) {
                 //  NOP
             }
         }
@@ -557,11 +557,11 @@ public class MainActivity extends Activity {
         startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CT_DISPLAY.ordinal());
     }
 
-    private boolean returnsFromCtDisplay() {
+    private boolean returnsFromCtDisplayActivity() {
         return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY.toString()));
     }
 
-    private boolean returnsFromHelp() {
+    private boolean returnsFromHelpActivity() {
         return (calledActivity.equals(PEKISLIB_ACTIVITIES.HELP.toString()));
     }
 
