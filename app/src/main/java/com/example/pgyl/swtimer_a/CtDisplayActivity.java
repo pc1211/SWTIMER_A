@@ -13,7 +13,6 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.pgyl.pekislib_a.BeeperIntentService;
 import com.example.pgyl.pekislib_a.ColorPickerActivity;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
@@ -32,6 +31,7 @@ import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
+import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.capitalize;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_IS_COLOR_TYPE;
@@ -349,7 +349,7 @@ public class CtDisplayActivity extends Activity {
         Toast.makeText(this, currentCtRecord.getTimeZoneExpirationMessage(), Toast.LENGTH_LONG).show();
         updatetimeDotMatrixDisplayViewText();
         updateButtonColors();
-        startService(new Intent(this, BeeperIntentService.class));  //  Beep
+        beep(this);
     }
 
     private void onTimeDotMatrixDisplayViewClick() {

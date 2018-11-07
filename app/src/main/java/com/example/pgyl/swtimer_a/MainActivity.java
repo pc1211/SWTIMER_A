@@ -15,7 +15,6 @@ import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.pgyl.pekislib_a.BeeperIntentService;
 import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.StateView;
@@ -31,6 +30,8 @@ import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
+import static com.example.pgyl.pekislib_a.MiscUtils.beep;
+import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createTableActivityInfosIfNotExists;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.tableActivityInfosExists;
@@ -195,6 +196,10 @@ public class MainActivity extends Activity {
             launchHelpActivity();
             return true;
         }
+        if (item.getItemId() == R.id.ABOUT) {
+            msgBox("Version: " + BuildConfig.VERSION_NAME, this);
+            return true;
+        }
         if (item.getItemId() == R.id.BAR_MENU_KEEP_SCREEN) {
             keepScreen = !keepScreen;
             setScreen(keepScreen);
@@ -289,7 +294,7 @@ public class MainActivity extends Activity {
         mainCtListRobot.stopAutomatic();
         rebuildList();
         mainCtListRobot.startAutomatic(DELAY_ZERO_MS);
-        startService(new Intent(this, BeeperIntentService.class));  //  Beep
+        beep(this);
     }
 
     private void onCtListItemButtonClick() {
