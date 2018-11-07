@@ -103,22 +103,20 @@ public class StringShelfDatabaseUtils {
     //endregion
 
     //region TABLES
-    public static boolean createTableChronoTimersIfNotExists(StringShelfDatabase stringShelfDatabase) {
-        boolean ret = false;
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.CHRONO_TIMERS.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.CHRONO_TIMERS.toString(), 1 + TABLE_CHRONO_TIMERS_DATA_FIELDS.values().length);   //  Champ ID + Données
-            ret = true;
-        }
-        return ret;
+    public static boolean tableChronoTimersExists(StringShelfDatabase stringShelfDatabase) {
+        return stringShelfDatabase.tableExists(SWTIMER_TABLES.CHRONO_TIMERS.toString());
     }
 
-    public static boolean createTablePresetsCTIfNotExists(StringShelfDatabase stringShelfDatabase) {
-        boolean ret = false;
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.PRESETS_CT.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.PRESETS_CT.toString(), 1 + TABLE_PRESETS_CT_DATA_FIELDS.values().length);   //  Champ ID + Données
-            ret = true;
-        }
-        return ret;
+    public static void createTableChronoTimersIfNotExists(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.CHRONO_TIMERS.toString(), 1 + TABLE_CHRONO_TIMERS_DATA_FIELDS.values().length);   //  Champ ID + Données
+    }
+
+    public static boolean tablePresetsCTExists(StringShelfDatabase stringShelfDatabase) {
+        return stringShelfDatabase.tableExists(SWTIMER_TABLES.PRESETS_CT.toString());
+    }
+
+    public static void createTablePresetsCTIfNotExists(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.PRESETS_CT.toString(), 1 + TABLE_PRESETS_CT_DATA_FIELDS.values().length);   //  Champ ID + Données
     }
 
     public static void initializeTablePresetsCT(StringShelfDatabase stringShelfDatabase) {
@@ -132,13 +130,12 @@ public class StringShelfDatabaseUtils {
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_PRESETS_CT_INITS);
     }
 
-    public static boolean createTableColorsTimeButtonsIfNotExits(StringShelfDatabase stringShelfDatabase) {
-        boolean ret = false;
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString(), 1 + TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.values().length);   //  Champ ID + Données;
-            ret = true;
-        }
-        return ret;
+    public static boolean tableColorsTimeButtonsExists(StringShelfDatabase stringShelfDatabase) {
+        return stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString());
+    }
+
+    public static void createTableColorsTimeButtonsIfNotExists(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString(), 1 + TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.values().length);   //  Champ ID + Données;
     }
 
     public static void initializeTableColorsTimeButtons(StringShelfDatabase stringShelfDatabase) {
@@ -152,13 +149,12 @@ public class StringShelfDatabaseUtils {
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString(), TABLE_COLOR_TIME_BUTTONS_INITS);
     }
 
-    public static boolean createTableColorsBackScreenIfNotExists(StringShelfDatabase stringShelfDatabase) {
-        boolean ret = false;
-        if (!stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString())) {
-            stringShelfDatabase.createTable(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), 1 + TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.values().length);   //  Champ ID + Données;
-            ret = true;
-        }
-        return ret;
+    public static boolean tableColorsBackScreenExists(StringShelfDatabase stringShelfDatabase) {
+        return stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString());
+    }
+
+    public static void createTableColorsBackScreenIfNotExists(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), 1 + TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.values().length);   //  Champ ID + Données;
     }
 
     public static void initializeTableColorsBackScreen(StringShelfDatabase stringShelfDatabase) {
@@ -220,7 +216,7 @@ public class StringShelfDatabaseUtils {
 
     //region START_STATUS
     public static boolean isColdStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.selectFieldByIdOrCreate(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartStatusIndex()).equals(ACTIVITY_START_STATUS.COLD);
+        return stringShelfDatabase.selectFieldByIdOrCreate(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartStatusIndex()).equals(ACTIVITY_START_STATUS.COLD.toString());
     }
 
     public static void setStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, ACTIVITY_START_STATUS activityStartStatus) {
