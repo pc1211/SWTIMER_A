@@ -7,15 +7,9 @@ import com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import com.example.pgyl.swtimer_a.CtDisplayActivity.COLOR_ITEMS;
 
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosStartStatusIndex;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosTableName;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentIdName;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaultIdName;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getKeyboardIdName;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getLabelIdName;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getMaxIdName;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getRegexpIdName;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getTimeUnitIdName;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.convertXhmsToMs;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 
@@ -121,13 +115,17 @@ public class StringShelfDatabaseUtils {
 
     public static void initializeTablePresetsCT(StringShelfDatabase stringShelfDatabase) {
         final String[][] TABLE_PRESETS_CT_INITS = {
-                {getLabelIdName(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.LABEL(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.LABEL()},
-                {getKeyboardIdName(), KEYBOARDS.TIME_XHMS.toString(), KEYBOARDS.ALPHANUM.toString()},
-                {getRegexpIdName(), "^([0-9]+(" + TIMEUNITS.HOUR.SYMBOL() + "|$))?([0-9]+(" + TIMEUNITS.MIN.SYMBOL() + "|$))?([0-9]+(" + TIMEUNITS.SEC.SYMBOL() + "|$))?([0-9]+(" + TIMEUNITS.CS.SYMBOL() + "|$))?$", null},
-                {getMaxIdName(), String.valueOf(convertXhmsToMs("23" + TIMEUNITS.HOUR.SYMBOL() + "59" + TIMEUNITS.MIN.SYMBOL() + "59" + TIMEUNITS.SEC.SYMBOL() + "99" + TIMEUNITS.CS.SYMBOL())), null},    //  23h59m59s99c
-                {getTimeUnitIdName(), TIMEUNITS.CS.toString(), null}};
+                {TABLE_IDS.LABEL.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.LABEL(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.TIME_XHMS.toString(), KEYBOARDS.ALPHANUM.toString()},
+                {TABLE_IDS.REGEXP.toString(), "^([0-9]+(" + TIMEUNITS.HOUR.SYMBOL() + "|$))?([0-9]+(" + TIMEUNITS.MIN.SYMBOL() + "|$))?([0-9]+(" + TIMEUNITS.SEC.SYMBOL() + "|$))?([0-9]+(" + TIMEUNITS.CS.SYMBOL() + "|$))?$", null},
+                {TABLE_IDS.MAX.toString(), String.valueOf(convertXhmsToMs("23" + TIMEUNITS.HOUR.SYMBOL() + "59" + TIMEUNITS.MIN.SYMBOL() + "59" + TIMEUNITS.SEC.SYMBOL() + "99" + TIMEUNITS.CS.SYMBOL())), null},    //  23h59m59s99c
+                {TABLE_IDS.TIMEUNIT.toString(), TIMEUNITS.CS.toString(), null}};
 
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_PRESETS_CT_INITS);
+    }
+
+    public static String getPresetsCTTableName() {
+        return SWTIMER_TABLES.PRESETS_CT.toString();
     }
 
     public static boolean tableColorsTimeButtonsExists(StringShelfDatabase stringShelfDatabase) {
@@ -140,11 +138,11 @@ public class StringShelfDatabaseUtils {
 
     public static void initializeTableColorsTimeButtons(StringShelfDatabase stringShelfDatabase) {
         final String[][] TABLE_COLOR_TIME_BUTTONS_INITS = {
-                {getLabelIdName(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.ON.LABEL(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.OFF.LABEL(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.BACK.LABEL()},
-                {getKeyboardIdName(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString()},
-                {getRegexpIdName(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {getDefaultIdName() + COLOR_ITEMS.TIME.toString(), "999900", "303030", "000000"},
-                {getDefaultIdName() + COLOR_ITEMS.BUTTONS.toString(), "0061F3", "696969", "000000"}};
+                {TABLE_IDS.LABEL.toString(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.ON.LABEL(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.OFF.LABEL(), TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.BACK.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString() + COLOR_ITEMS.TIME.toString(), "999900", "303030", "000000"},
+                {TABLE_IDS.DEFAULT.toString() + COLOR_ITEMS.BUTTONS.toString(), "0061F3", "696969", "000000"}};
 
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_TIME_BUTTONS.toString(), TABLE_COLOR_TIME_BUTTONS_INITS);
     }
@@ -159,16 +157,14 @@ public class StringShelfDatabaseUtils {
 
     public static void initializeTableColorsBackScreen(StringShelfDatabase stringShelfDatabase) {
         final String[][] TABLE_COLOR_BACK_SCREEN_INITS = {
-                {getLabelIdName(), TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.BACK.LABEL()},
-                {getKeyboardIdName(), KEYBOARDS.HEX.toString()},
-                {getRegexpIdName(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {getDefaultIdName() + COLOR_ITEMS.BACK_SCREEN.toString(), "000000"}};
+                {TABLE_IDS.LABEL.toString(), TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.BACK.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.HEX.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString() + COLOR_ITEMS.BACK_SCREEN.toString(), "000000"}};
 
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), TABLE_COLOR_BACK_SCREEN_INITS);
     }
-    //endregion
 
-    //region COLORS
     public static String getColorItemTableName(COLOR_ITEMS colorItem) {
         String ret;
 
@@ -184,7 +180,9 @@ public class StringShelfDatabaseUtils {
         }
         return ret;
     }
+    //endregion
 
+    //region COLORS
     public static int getTimeButtonsColorOnIndex() {
         return TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS.ON.INDEX();
     }
@@ -202,15 +200,15 @@ public class StringShelfDatabaseUtils {
     }
 
     public static String[] getDefaultColors(StringShelfDatabase stringShelfDatabase, COLOR_ITEMS colorItem) {
-        return stringShelfDatabase.selectRowByIdOrCreate(getColorItemTableName(colorItem), getDefaultIdName() + colorItem.toString());
+        return stringShelfDatabase.selectRowByIdOrCreate(getColorItemTableName(colorItem), TABLE_IDS.DEFAULT.toString() + colorItem.toString());
     }
 
     public static String[] getCurrentColorsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, COLOR_ITEMS colorItem) {
-        return stringShelfDatabase.selectRowByIdOrCreate(getColorItemTableName(colorItem), getCurrentIdName() + colorItem.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+        return stringShelfDatabase.selectRowByIdOrCreate(getColorItemTableName(colorItem), TABLE_IDS.CURRENT.toString() + colorItem.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
     }
 
     public static void setCurrentColorsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, COLOR_ITEMS colorItem, String[] colors) {
-        stringShelfDatabase.insertOrReplaceRowById(getColorItemTableName(colorItem), getCurrentIdName() + colorItem.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colors);
+        stringShelfDatabase.insertOrReplaceRowById(getColorItemTableName(colorItem), TABLE_IDS.CURRENT.toString() + colorItem.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colors);
     }
     //endregion
 
@@ -280,7 +278,9 @@ public class StringShelfDatabaseUtils {
         ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_EXP.INDEX()] = String.valueOf(ctRecord.getTimeExp());
         return ret;
     }
+    //endregion
 
+    //region PRESETS_CT
     public static boolean copyPresetCTRowToCtRecord(String[] presetCTRow, CtRecord ctRecord, long nowm) {
         boolean ret = true;
         if (!ctRecord.setTimeDef(Long.parseLong(presetCTRow[TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX()]), nowm)) {
@@ -298,12 +298,6 @@ public class StringShelfDatabaseUtils {
         ret[TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX()] = String.valueOf(time);
         ret[TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX()] = message;
         return ret;
-    }
-    //endregion
-
-    //region PRESETS_CT
-    public static String getPresetsCTTableName() {
-        return SWTIMER_TABLES.PRESETS_CT.toString();
     }
     //endregion
 

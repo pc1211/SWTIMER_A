@@ -26,16 +26,15 @@ import java.util.logging.Logger;
 
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
-import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
+import static com.example.pgyl.pekislib_a.StateView.STATES;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createTableActivityInfosIfNotExists;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.tableActivityInfosExists;
-import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.COLOR_ITEMS;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
@@ -70,6 +69,8 @@ public class MainActivity extends Activity {
         }
     }
 
+    private enum STATE_VIEWS {SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST}
+
     private enum BAR_MENU_ITEMS {KEEP_SCREEN}
 
     public enum SWTIMER_SHP_KEY_NAMES {SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST, KEEP_SCREEN, REQUESTED_CLOCK_APP_ALARM_DISMISSES}
@@ -78,8 +79,9 @@ public class MainActivity extends Activity {
     private final long DELAY_ZERO_MS = 0;
     //endregion
     //region Variables
-    EnumMap<COMMANDS, StateView> commandStateViewsMap;
+    private EnumMap<COMMANDS, StateView> commandStateViewsMap;
     private CustomImageButton[] buttons;
+    private StateView[] stateViews;
     private Menu menu;
     private MenuItem[] barMenuItems;
     private CtRecordsHandler ctRecordsHandler;
@@ -89,8 +91,6 @@ public class MainActivity extends Activity {
     private boolean keepScreen;
     private ListView mainCtListView;
     private MainCtListItemAdapter mainCtListItemAdapter;
-    private boolean validReturnFromCalledActivity;
-    private String calledActivity;
     private StringShelfDatabase stringShelfDatabase;
     private String shpFileName;
 
@@ -104,11 +104,7 @@ public class MainActivity extends Activity {
         getActionBar().setTitle(ACTIVITY_TITLE);
         setContentView(R.layout.main);
         setupButtons();
-        mainCtListView = findViewById(R.id.CT_LIST);
-        showExpirationTime = false;
-        addNewChronoTimerToList = false;
-        keepScreen = false;
-        validReturnFromCalledActivity = false;
+        setupStateViews();
     }
 
     @Override
@@ -136,42 +132,21 @@ public class MainActivity extends Activity {
         super.onResume();
 
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car sera partagé avec CtDisplayActivity
-        setupStates();
-        setupShowExpirationTime();
-        setupAddNewChronoTimerToList();
-        setupKeepScreen();
+        linkButtonsToStateViews();
         setupStringShelfDatabase();
-
-        if (validReturnFromCalledActivity) {
-            validReturnFromCalledActivity = false;
-            if (returnsFromCtDisplayActivity()) {
-                //  NOP
-            }
-            if (returnsFromHelpActivity()) {
-                //  NOP
-            }
-        }
-
-        setupButtonColors();
         setupCtRecordsHandler();
         setupMainCtList();
         setupMainCtListRobot();
+        setupShowExpirationTime();
+        setupAddNewChronoTimerToList();
+        setupKeepScreen();
+        setupButtonColors();
+
+        updateDisplayButtonColors();
+        updateDisplayStateColors();
         rebuildList();
         mainCtListRobot.startAutomatic(UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS);
         invalidateOptionsMenu();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
-        validReturnFromCalledActivity = false;
-        if (requestCode == SWTIMER_ACTIVITIES.CT_DISPLAY.ordinal()) {
-            calledActivity = SWTIMER_ACTIVITIES.CT_DISPLAY.toString();
-            validReturnFromCalledActivity = true;
-        }
-        if (requestCode == PEKISLIB_ACTIVITIES.HELP.ordinal()) {
-            calledActivity = PEKISLIB_ACTIVITIES.HELP.toString();
-            validReturnFromCalledActivity = true;
-        }
     }
 
     @Override
@@ -179,14 +154,14 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
         setupBarMenuItems();
-        setKeepScreenBarMenuItemIcon(keepScreen);
+        uppdateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
     //endregion
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {  // appelé par invalideOptionsMenu après changement d'orientation
-        setKeepScreenBarMenuItemIcon(keepScreen);
+        uppdateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
 
@@ -202,8 +177,8 @@ public class MainActivity extends Activity {
         }
         if (item.getItemId() == R.id.BAR_MENU_KEEP_SCREEN) {
             keepScreen = !keepScreen;
-            setScreen(keepScreen);
-            setKeepScreenBarMenuItemIcon(keepScreen);
+            updateDisplayScreen(keepScreen);
+            uppdateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -280,14 +255,16 @@ public class MainActivity extends Activity {
 
     private void onButtonClickShowExpirationTime() {
         showExpirationTime = !showExpirationTime;
-        updateStateColor(commandStateViewsMap.get(COMMANDS.SHOW_EXPIRATION_TIME), showExpirationTime);
+        setState(COMMANDS.SHOW_EXPIRATION_TIME, showExpirationTime);
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
+        updateDisplayStateColor(COMMANDS.SHOW_EXPIRATION_TIME);
         rebuildList();
     }
 
     private void onButtonClickAddNewChronoTimerToList() {
         addNewChronoTimerToList = !addNewChronoTimerToList;
-        updateStateColor(commandStateViewsMap.get(COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST), addNewChronoTimerToList);
+        setState(COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST, addNewChronoTimerToList);
+        updateDisplayStateColor(COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST);
     }
 
     private void onCtListExpiredTimers() {
@@ -301,6 +278,38 @@ public class MainActivity extends Activity {
         mainCtListRobot.stopAutomatic();
         rebuildList();
         mainCtListRobot.startAutomatic(DELAY_ZERO_MS);
+    }
+
+    private void updateDisplayStateColor(COMMANDS command) {
+        commandStateViewsMap.get(command).invalidate();
+    }
+
+    private void updateDisplayStateColors() {
+        for (COMMANDS command : COMMANDS.values()) {
+            if ((command.equals(COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) || (command.equals(COMMANDS.SHOW_EXPIRATION_TIME))) {
+                updateDisplayStateColor(command);
+            }
+        }
+    }
+
+    private void updateDisplayButtonColors() {
+        for (final COMMANDS command : COMMANDS.values()) {
+            int index = command.ordinal();
+            buttons[index].updateColor();
+        }
+    }
+
+    private void uppdateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
+        int id = (keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off);
+        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon(id);
+    }
+
+    private void updateDisplayScreen(boolean keepScreen) {
+        if (keepScreen) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     private void removeSelection() {
@@ -335,36 +344,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void setScreen(boolean keepScreen) {
-        if (keepScreen) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-    }
-
-    private void setKeepScreenBarMenuItemIcon(boolean keepScreen) {
-        int id;
-
-        if (keepScreen) {
-            id = R.drawable.main_light_on;
-        } else {
-            id = R.drawable.main_light_off;
-        }
-        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon(id);
-    }
-
-    private void updateStateColor(StateView stateView, boolean state) {
-        if (state) {
-            stateView.setStateOn();
-        } else {
-            stateView.setStateOff();
-        }
-    }
-
-    private void updateButtonColor(COMMANDS command) {
-        int index = command.ordinal();
-        buttons[index].updateColor();
+    private void setState(COMMANDS command, boolean value) {
+        commandStateViewsMap.get(command).setState(value ? STATES.ON : STATES.OFF);
     }
 
     private void rebuildList() {
@@ -405,59 +386,6 @@ public class MainActivity extends Activity {
         return shp.getBoolean(SWTIMER_SHP_KEY_NAMES.KEEP_SCREEN.toString(), KEEP_SCREEN_DEFAULT_VALUE);
     }
 
-    private void setupShowExpirationTime() {
-        showExpirationTime = getSHPShowExpirationTime();
-        updateStateColor(commandStateViewsMap.get(COMMANDS.SHOW_EXPIRATION_TIME), showExpirationTime);
-    }
-
-    private void setupAddNewChronoTimerToList() {
-        addNewChronoTimerToList = getSHPaddNewChronoTimerToList();
-        updateStateColor(commandStateViewsMap.get(COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST), addNewChronoTimerToList);
-    }
-
-    private void setupKeepScreen() {
-        keepScreen = getSHPKeepScreen();
-        setScreen(keepScreen);
-    }
-
-    private void setupButtonColors() {
-        final String NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT = "668CFF";
-        final String NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT = "0040FF";
-
-        for (final COMMANDS command : COMMANDS.values()) {
-            String unpressedColor = BUTTON_STATES.UNPRESSED.DEFAULT_COLOR();
-            String pressedColor = BUTTON_STATES.PRESSED.DEFAULT_COLOR();
-            if (command.equals(COMMANDS.NEW_CHRONO) || (command.equals(COMMANDS.NEW_TIMER))) {
-                unpressedColor = NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT;
-                pressedColor = NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT;
-            }
-            int index = command.ordinal();
-            buttons[index].setUnpressedColor(unpressedColor);
-            buttons[index].setPressedColor(pressedColor);
-            updateButtonColor(command);
-        }
-    }
-
-    private void setupBarMenuItems() {
-        final String MENU_ITEM_XML_PREFIX = "BAR_MENU_";
-
-        barMenuItems = new MenuItem[BAR_MENU_ITEMS.values().length];
-        Class rid = R.id.class;
-        for (BAR_MENU_ITEMS barMenuItem : BAR_MENU_ITEMS.values())
-            try {
-                int index = barMenuItem.ordinal();
-                barMenuItems[index] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            }
-    }
-
     private void setupButtons() {
         final String BUTTON_COMMAND_XML_PREFIX = "BTN_";
 
@@ -486,17 +414,15 @@ public class MainActivity extends Activity {
             }
     }
 
-    private void setupStates() {
+    private void setupStateViews() {
         final String BUTTON_STATE_XML_PREFIX = "STATE_";
 
         Class rid = R.id.class;
-        commandStateViewsMap = new EnumMap<COMMANDS, StateView>(COMMANDS.class);
-        for (COMMANDS command : COMMANDS.values())
+        stateViews = new StateView[STATE_VIEWS.values().length];
+        for (STATE_VIEWS stateValue : STATE_VIEWS.values())
             try {
-                if ((command.equals(COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) || (command.equals(COMMANDS.SHOW_EXPIRATION_TIME))) {
-                    StateView stateView = findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + command.toString()).getInt(rid));
-                    commandStateViewsMap.put(command, stateView);
-                }
+                int index = stateValue.ordinal();
+                stateViews[index] = findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + stateValue.toString()).getInt(rid));
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {
@@ -508,31 +434,16 @@ public class MainActivity extends Activity {
             }
     }
 
+    private void linkButtonsToStateViews() {
+        commandStateViewsMap = new EnumMap<COMMANDS, StateView>(COMMANDS.class);
+        for (STATE_VIEWS stateValue : STATE_VIEWS.values()) {
+            int index = stateValue.ordinal();
+            commandStateViewsMap.put(COMMANDS.valueOf(stateValue.toString()), stateViews[index]);
+        }
+    }
+
     private void setupCtRecordsHandler() {
         ctRecordsHandler = new CtRecordsHandler(this, stringShelfDatabase);
-    }
-
-    private void setupMainCtList() {
-        mainCtListItemAdapter = new MainCtListItemAdapter(this, stringShelfDatabase);
-        mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
-        mainCtListItemAdapter.setOnItemButtonClick(new MainCtListItemAdapter.onButtonClickListener() {
-            @Override
-            public void onButtonClick() {
-                onCtListItemButtonClick();
-            }
-        });
-        mainCtListView.setAdapter(mainCtListItemAdapter);
-    }
-
-    private void setupMainCtListRobot() {
-        mainCtListRobot = new MainCtListRobot(mainCtListView, ctRecordsHandler);
-        mainCtListRobot.setUpdateInterval(UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS);
-        mainCtListRobot.setOnExpiredTimersListener(new MainCtListRobot.onExpiredTimersListener() {
-            @Override
-            public void onExpiredTimers() {
-                onCtListExpiredTimers();
-            }
-        });
     }
 
     private void setupStringShelfDatabase() {
@@ -561,26 +472,94 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void setupMainCtList() {
+        mainCtListItemAdapter = new MainCtListItemAdapter(this, stringShelfDatabase);
+        mainCtListItemAdapter.setOnItemButtonClick(new MainCtListItemAdapter.onButtonClickListener() {
+            @Override
+            public void onButtonClick() {
+                onCtListItemButtonClick();
+            }
+        });
+        mainCtListView = findViewById(R.id.CT_LIST);
+        mainCtListView.setAdapter(mainCtListItemAdapter);
+    }
+
+    private void setupMainCtListRobot() {
+        mainCtListRobot = new MainCtListRobot(mainCtListView, ctRecordsHandler);
+        mainCtListRobot.setUpdateInterval(UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS);
+        mainCtListRobot.setOnExpiredTimersListener(new MainCtListRobot.onExpiredTimersListener() {
+            @Override
+            public void onExpiredTimers() {
+                onCtListExpiredTimers();
+            }
+        });
+    }
+
+    private void setupShowExpirationTime() {
+        showExpirationTime = getSHPShowExpirationTime();
+        setState(COMMANDS.SHOW_EXPIRATION_TIME, showExpirationTime);
+        mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
+    }
+
+    private void setupAddNewChronoTimerToList() {
+        addNewChronoTimerToList = getSHPaddNewChronoTimerToList();
+        setState(COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST, addNewChronoTimerToList);
+    }
+
+    private void setupKeepScreen() {
+        keepScreen = getSHPKeepScreen();
+        updateDisplayScreen(keepScreen);
+    }
+
+    private void setupButtonColors() {
+        final String NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT = "668CFF";
+        final String NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT = "0040FF";
+
+        for (final COMMANDS command : COMMANDS.values()) {
+            String unpressedColor = BUTTON_STATES.UNPRESSED.DEFAULT_COLOR();
+            String pressedColor = BUTTON_STATES.PRESSED.DEFAULT_COLOR();
+            if (command.equals(COMMANDS.NEW_CHRONO) || (command.equals(COMMANDS.NEW_TIMER))) {
+                unpressedColor = NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT;
+                pressedColor = NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT;
+            }
+            int index = command.ordinal();
+            buttons[index].setUnpressedColor(unpressedColor);
+            buttons[index].setPressedColor(pressedColor);
+        }
+    }
+
+    private void setupBarMenuItems() {
+        final String MENU_ITEM_XML_PREFIX = "BAR_MENU_";
+
+        barMenuItems = new MenuItem[BAR_MENU_ITEMS.values().length];
+        Class rid = R.id.class;
+        for (BAR_MENU_ITEMS barMenuItem : BAR_MENU_ITEMS.values())
+            try {
+                int index = barMenuItem.ordinal();
+                barMenuItems[index] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoSuchFieldException ex) {
+                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SecurityException ex) {
+                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+
     private void launchHelpActivity() {
         Intent callingIntent = new Intent(this, HelpActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), HELP_ACTIVITY_TITLE);
         callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpmainactivity);
-        startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.HELP.ordinal());
+        startActivity(callingIntent);
     }
 
     private void launchCtDisplayActivity(int idct) {
         setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
-        startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CT_DISPLAY.ordinal());
-    }
-
-    private boolean returnsFromCtDisplayActivity() {
-        return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY.toString()));
-    }
-
-    private boolean returnsFromHelpActivity() {
-        return (calledActivity.equals(PEKISLIB_ACTIVITIES.HELP.toString()));
+        startActivity(callingIntent);
     }
 
 }

@@ -177,19 +177,17 @@ public class CtDisplayActivity extends Activity {
                         backScreenColors = getCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.BACK_SCREEN));
                     }
                 }
-                if (returnsFromHelpActivity()) {
-                    //  NOP
-                }
             }
         }
 
         currentCtRecord.updateTime(nowm);
-        updatetimeDotMatrixDisplayViewText();
-        getActionBar().setTitle(currentCtRecord.getMessage());
-        updateButtonColors();
-        setupTimeColors();
-        setupBackScreenColor();
         setupCtDisplayTimeRobot();
+        setupCtDisplayTimeColors(timeColors);
+
+        updateDisplayTime();
+        updateDisplayActivityTitle(currentCtRecord.getMessage());
+        updateDisplayButtonColors();
+        updateDisplayBackScreenColor();
         if (currentCtRecord.isRunning()) {
             ctDisplayTimeRobot.startAutomatic(UPDATE_CT_DISPLAY_VIEW_TIME_INTERVAL_MS);
         }
@@ -223,10 +221,6 @@ public class CtDisplayActivity extends Activity {
                 validReturnFromCalledActivity = true;
             }
         }
-        if (requestCode == PEKISLIB_ACTIVITIES.HELP.ordinal()) {
-            calledActivity = PEKISLIB_ACTIVITIES.HELP.toString();
-            validReturnFromCalledActivity = true;
-        }
     }
 
     @Override
@@ -234,13 +228,13 @@ public class CtDisplayActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_ct_display, menu);
         this.menu = menu;
         setupBarMenuItems();
-        setKeepScreenBarMenuItemIcon(keepScreen);
+        updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {  // appelé par invalideOptionsMenu après changement d'orientation
-        setKeepScreenBarMenuItemIcon(keepScreen);
+        updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
 
@@ -252,8 +246,8 @@ public class CtDisplayActivity extends Activity {
         }
         if (item.getItemId() == R.id.BAR_MENU_KEEP_SCREEN) {
             keepScreen = !keepScreen;
-            setScreen(keepScreen);
-            setKeepScreenBarMenuItemIcon(keepScreen);
+            updateDisplayScreen(keepScreen);
+            updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         }
         if (item.getItemId() == R.id.SET_TIME_COLORS) {
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.TIME), timeColors);
@@ -295,8 +289,8 @@ public class CtDisplayActivity extends Activity {
             onButtonClickMode(MODE.TIMER);
         }
         currentCtRecord.updateTime(nowm);
-        updateButtonColors();
-        updatetimeDotMatrixDisplayViewText();
+        updateDisplayButtonColors();
+        updateDisplayTime();
     }
 
     private void onButtonClickRun(long nowm) {
@@ -347,8 +341,8 @@ public class CtDisplayActivity extends Activity {
 
     private void onExpiredTimerCurrentChronoTimer() {
         Toast.makeText(this, currentCtRecord.getTimeZoneExpirationMessage(), Toast.LENGTH_LONG).show();
-        updatetimeDotMatrixDisplayViewText();
-        updateButtonColors();
+        updateDisplayTime();
+        updateDisplayButtonColors();
         beep(this);
     }
 
@@ -358,13 +352,17 @@ public class CtDisplayActivity extends Activity {
         launchPresetsActivity();
     }
 
-    private void updatetimeDotMatrixDisplayViewText() {
+    private void updateDisplayTime() {
         timeDotMatrixDisplayView.fillGridOff();
         timeDotMatrixDisplayView.drawText(0, 0, convertMsToHms(currentCtRecord.getTimeDisplay(), TIMEUNITS.CS));
         timeDotMatrixDisplayView.invalidate();
     }
 
-    private void updateButtonColor(COMMANDS command) {  //   ON/BACK ou OFF/BACK
+    private void updateDisplayBackScreenColor() {
+        backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + backScreenColors[getBackScreenColorBackIndex()]));
+    }
+
+    private void updateDisplayButtonColor(COMMANDS command) {  //   ON/BACK ou OFF/BACK
         int frontColorIndex;
         int alternateColorIndex;
 
@@ -382,11 +380,34 @@ public class CtDisplayActivity extends Activity {
         buttons[index].invalidate();
     }
 
-    private void updateButtonColors() {
+    private void updateDisplayButtonColors() {
         for (COMMANDS command : COMMANDS.values()) {
             int index = command.ordinal();
             buttons[index].setColors(buttonColors);
-            updateButtonColor(command);
+            updateDisplayButtonColor(command);
+        }
+    }
+
+    private void updateDisplayActivityTitle(String activityTitle) {
+        getActionBar().setTitle(activityTitle);
+    }
+
+    private void updateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
+        int id;
+
+        if (keepScreen) {
+            id = R.drawable.main_light_on;
+        } else {
+            id = R.drawable.main_light_off;
+        }
+        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon(id);
+    }
+
+    private void updateDisplayScreen(boolean keepScreen) {
+        if (keepScreen) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 
@@ -412,25 +433,6 @@ public class CtDisplayActivity extends Activity {
         return false;
     }
 
-    private void setScreen(boolean keepScreen) {
-        if (keepScreen) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-    }
-
-    private void setKeepScreenBarMenuItemIcon(boolean keepScreen) {
-        int id;
-
-        if (keepScreen) {
-            id = R.drawable.main_light_on;
-        } else {
-            id = R.drawable.main_light_off;
-        }
-        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon(id);
-    }
-
     private boolean getSHPKeepScreen() {
         final boolean KEEP_SCREEN_DEFAULT_VALUE = false;
 
@@ -445,49 +447,12 @@ public class CtDisplayActivity extends Activity {
         shpEditor.commit();
     }
 
-    private void setupKeepScreen() {
-        keepScreen = getSHPKeepScreen();
-        setScreen(keepScreen);
-    }
-
     private void setupOrientationLayout() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             setContentView(R.layout.ctdisplay_p);
         } else {
             setContentView(R.layout.ctdisplay_l);
         }
-    }
-
-    private void setupTimeColors() {
-        timeDotMatrixDisplayView.setColors(timeColors);
-        timeDotMatrixDisplayView.setFrontColorIndex(getTimeButtonsColorOnIndex());
-        timeDotMatrixDisplayView.setBackColorIndex(getTimeButtonsColorOffIndex());
-        timeDotMatrixDisplayView.setAlternateColorIndex(getTimeButtonsColorBackIndex());
-        timeDotMatrixDisplayView.invalidate();
-    }
-
-    private void setupBackScreenColor() {
-        backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + backScreenColors[getBackScreenColorBackIndex()]));
-    }
-
-    private void setupBarMenuItems() {
-        final String MENU_ITEM_XML_PREFIX = "BAR_MENU_";
-
-        barMenuItems = new MenuItem[BAR_MENU_ITEMS.values().length];
-        Class rid = R.id.class;
-        for (BAR_MENU_ITEMS barMenuItem : BAR_MENU_ITEMS.values())
-            try {
-                int index = barMenuItem.ordinal();
-                barMenuItems[index] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            }
     }
 
     private void setupButtons() {
@@ -519,10 +484,6 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void saveCurrentChronoTimer() {
-        saveChronoTimer(stringShelfDatabase, ctRecordToChronoTimerRow(currentCtRecord));
-    }
-
     private void setupTimeDotMatrixDisplayView() {
         //  Pour Afficher HH:MM:SS:CC
         final int SYMBOL_RIGHT_MARGIN = 1;       //  1 colonne vide à droite de chaque symbole
@@ -547,6 +508,16 @@ public class CtDisplayActivity extends Activity {
         });
     }
 
+    private void setupKeepScreen() {
+        keepScreen = getSHPKeepScreen();
+        updateDisplayScreen(keepScreen);
+    }
+
+    private void setupStringShelfDatabase() {
+        stringShelfDatabase = new StringShelfDatabase(this);
+        stringShelfDatabase.open();
+    }
+
     private void setupCtDisplayTimeRobot() {
         ctDisplayTimeRobot = new CtDisplayTimeRobot(timeDotMatrixDisplayView, currentCtRecord);
         ctDisplayTimeRobot.setUpdateInterval(UPDATE_CT_DISPLAY_VIEW_TIME_INTERVAL_MS);
@@ -558,16 +529,35 @@ public class CtDisplayActivity extends Activity {
         });
     }
 
-    private void setupStringShelfDatabase() {
-        stringShelfDatabase = new StringShelfDatabase(this);
-        stringShelfDatabase.open();
+    private void setupCtDisplayTimeColors(String[] timeColors) {
+        timeDotMatrixDisplayView.setColors(timeColors);
+        timeDotMatrixDisplayView.setFrontColorIndex(getTimeButtonsColorOnIndex());
+        timeDotMatrixDisplayView.setBackColorIndex(getTimeButtonsColorOffIndex());
+        timeDotMatrixDisplayView.setAlternateColorIndex(getTimeButtonsColorBackIndex());
     }
 
-    private void launchHelpActivity() {
-        Intent callingIntent = new Intent(this, HelpActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), HELP_ACTIVITY_TITLE);
-        callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpctdisplayactivity);
-        startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.HELP.ordinal());
+    private void setupBarMenuItems() {
+        final String MENU_ITEM_XML_PREFIX = "BAR_MENU_";
+
+        barMenuItems = new MenuItem[BAR_MENU_ITEMS.values().length];
+        Class rid = R.id.class;
+        for (BAR_MENU_ITEMS barMenuItem : BAR_MENU_ITEMS.values())
+            try {
+                int index = barMenuItem.ordinal();
+                barMenuItems[index] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoSuchFieldException ex) {
+                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SecurityException ex) {
+                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+
+    private void saveCurrentChronoTimer() {
+        saveChronoTimer(stringShelfDatabase, ctRecordToChronoTimerRow(currentCtRecord));
     }
 
     private void launchColorPickerActivity(COLOR_ITEMS colorItem) {
@@ -590,19 +580,22 @@ public class CtDisplayActivity extends Activity {
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.PRESETS.ordinal());
     }
 
+    private void launchHelpActivity() {
+        Intent callingIntent = new Intent(this, HelpActivity.class);
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), HELP_ACTIVITY_TITLE);
+        callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpctdisplayactivity);
+        startActivity(callingIntent);
+    }
+
     private boolean returnsFromPresetsActivity() {
         return (calledActivity.equals(PEKISLIB_ACTIVITIES.PRESETS.toString()));
     }
 
     private boolean returnsFromColorPickerActivity() {
-        String s = PEKISLIB_ACTIVITIES.COLOR_PICKER.toString();
-        if (calledActivity.length() >= s.length()) {
-            return (calledActivity.substring(0, s.length()).equals(s));
+        String colorPickerActivityBaseName = PEKISLIB_ACTIVITIES.COLOR_PICKER.toString();
+        if (calledActivity.length() >= colorPickerActivityBaseName.length()) {
+            return (calledActivity.substring(0, colorPickerActivityBaseName.length()).equals(colorPickerActivityBaseName));
         } else return false;
-    }
-
-    private boolean returnsFromHelpActivity() {
-        return (calledActivity.equals(PEKISLIB_ACTIVITIES.HELP.toString()));
     }
 
 }
