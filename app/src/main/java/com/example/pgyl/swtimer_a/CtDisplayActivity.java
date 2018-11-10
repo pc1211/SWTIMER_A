@@ -101,7 +101,7 @@ public class CtDisplayActivity extends Activity {
     private String[] timeColors;
     private String[] buttonColors;
     private String[] backScreenColors;
-    private DotMatrixDisplayView timeDotMatrixDisplayView;
+    private DotMatrixDisplayView ctDisplayTimeView;
     private SymbolButtonView[] buttons;
     private Menu menu;
     private MenuItem[] barMenuItems;
@@ -118,7 +118,7 @@ public class CtDisplayActivity extends Activity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setupOrientationLayout();
         setupButtons();
-        setupTimeDotMatrixDisplayView();
+        setupCtDisplayTimeView();
         backLayout = findViewById(R.id.BACK_LAYOUT);
         validReturnFromCalledActivity = false;
     }
@@ -150,12 +150,13 @@ public class CtDisplayActivity extends Activity {
         setupKeepScreen();
         setupStringShelfDatabase();
         currentCtRecord = new CtRecord(this);
+        setupCtDisplayTimeRobot();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         copyChronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), currentCtRecord);
+
         timeColors = getCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.TIME);
         buttonColors = getCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BUTTONS);
         backScreenColors = getCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN);
-
         if (isColdStartStatusInCtDisplayActivity(stringShelfDatabase)) {
             setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
         } else {
@@ -179,15 +180,15 @@ public class CtDisplayActivity extends Activity {
                 }
             }
         }
+        setupCtDisplayTimeColors();
+        setupButtonColors();
 
         currentCtRecord.updateTime(nowm);
-        setupCtDisplayTimeRobot();
-        setupCtDisplayTimeColors(timeColors);
-
         updateDisplayTime();
         updateDisplayActivityTitle(currentCtRecord.getMessage());
         updateDisplayButtonColors();
         updateDisplayBackScreenColor();
+        updateDisplayKeepScreen();
         if (currentCtRecord.isRunning()) {
             ctDisplayTimeRobot.startAutomatic(UPDATE_CT_DISPLAY_VIEW_TIME_INTERVAL_MS);
         }
@@ -246,7 +247,7 @@ public class CtDisplayActivity extends Activity {
         }
         if (item.getItemId() == R.id.BAR_MENU_KEEP_SCREEN) {
             keepScreen = !keepScreen;
-            updateDisplayScreen(keepScreen);
+            updateDisplayKeepScreen();
             updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         }
         if (item.getItemId() == R.id.SET_TIME_COLORS) {
@@ -353,9 +354,9 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayTime() {
-        timeDotMatrixDisplayView.fillGridOff();
-        timeDotMatrixDisplayView.drawText(0, 0, convertMsToHms(currentCtRecord.getTimeDisplay(), TIMEUNITS.CS));
-        timeDotMatrixDisplayView.invalidate();
+        ctDisplayTimeView.fillGridOff();
+        ctDisplayTimeView.drawText(0, 0, convertMsToHms(currentCtRecord.getTimeDisplay(), TIMEUNITS.CS));
+        ctDisplayTimeView.invalidate();
     }
 
     private void updateDisplayBackScreenColor() {
@@ -363,16 +364,8 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayButtonColor(COMMANDS command) {  //   ON/BACK ou OFF/BACK
-        int frontColorIndex;
-        int alternateColorIndex;
-
-        if (getButtonState(command)) {
-            frontColorIndex = getTimeButtonsColorOnIndex();
-            alternateColorIndex = getTimeButtonsColorOffIndex();
-        } else {
-            frontColorIndex = getTimeButtonsColorOffIndex();
-            alternateColorIndex = getTimeButtonsColorOnIndex();
-        }
+        int frontColorIndex = ((getButtonState(command)) ? getTimeButtonsColorOnIndex() : getTimeButtonsColorOffIndex());
+        int alternateColorIndex = ((getButtonState(command)) ? getTimeButtonsColorOffIndex() : getTimeButtonsColorOnIndex());
         int index = command.ordinal();
         buttons[index].setFrontColorIndex(frontColorIndex);
         buttons[index].setBackColorIndex(getTimeButtonsColorBackIndex());
@@ -382,8 +375,6 @@ public class CtDisplayActivity extends Activity {
 
     private void updateDisplayButtonColors() {
         for (COMMANDS command : COMMANDS.values()) {
-            int index = command.ordinal();
-            buttons[index].setColors(buttonColors);
             updateDisplayButtonColor(command);
         }
     }
@@ -393,17 +384,10 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
-        int id;
-
-        if (keepScreen) {
-            id = R.drawable.main_light_on;
-        } else {
-            id = R.drawable.main_light_off;
-        }
-        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon(id);
+        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
     }
 
-    private void updateDisplayScreen(boolean keepScreen) {
+    private void updateDisplayKeepScreen() {
         if (keepScreen) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
@@ -484,7 +468,7 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void setupTimeDotMatrixDisplayView() {
+    private void setupCtDisplayTimeView() {
         //  Pour Afficher HH:MM:SS:CC
         final int SYMBOL_RIGHT_MARGIN = 1;       //  1 colonne vide à droite de chaque symbole
         final int FULL_SYMBOLS_COUNT = 7;        //  HH, MM, SS et CC nécessitent la largeur normale de symbole + marge droite, sauf pour le dernier C
@@ -493,14 +477,14 @@ public class CtDisplayActivity extends Activity {
         final int SHORT_DOT_WIDTH = 0;           //  '.' est à afficher sur le symbole précédent en bas à droite sur une ligne supplémentaire
         final int SHORT_DOUBLE_DOT_WIDTH = 1 + SYMBOL_RIGHT_MARGIN;    //  ':' est à afficher sur une seule colonne + marge droite
 
-        timeDotMatrixDisplayView = findViewById(R.id.DISPLAY_TIME);
-        int symbolWidth = timeDotMatrixDisplayView.getSymbolWidth();
+        ctDisplayTimeView = findViewById(R.id.DISPLAY_TIME);
+        int symbolWidth = ctDisplayTimeView.getSymbolWidth();
         int gridWidth = FULL_SYMBOLS_COUNT * (symbolWidth + SYMBOL_RIGHT_MARGIN) + symbolWidth + DOUBLE_DOT_SYMBOL_COUNT * SHORT_DOUBLE_DOT_WIDTH + DOT_SYMBOL_COUNT * SHORT_DOT_WIDTH;
-        int gridHeight = timeDotMatrixDisplayView.getSymbolHeight() + 1;   // 1 ligne supplémentaire pour le point décimal
-        timeDotMatrixDisplayView.setGridDimensions(gridWidth, gridHeight);
-        timeDotMatrixDisplayView.setSymbolRightMargin(SYMBOL_RIGHT_MARGIN);
-        timeDotMatrixDisplayView.setAllSymbolCompressionsOn();   //  Afficher '.' et ':'  sur un nombre réduit de colonnes
-        timeDotMatrixDisplayView.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
+        int gridHeight = ctDisplayTimeView.getSymbolHeight() + 1;   // 1 ligne supplémentaire pour le point décimal
+        ctDisplayTimeView.setGridDimensions(gridWidth, gridHeight);
+        ctDisplayTimeView.setSymbolRightMargin(SYMBOL_RIGHT_MARGIN);
+        ctDisplayTimeView.setAllSymbolCompressionsOn();   //  Afficher '.' et ':'  sur un nombre réduit de colonnes
+        ctDisplayTimeView.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
                 onTimeDotMatrixDisplayViewClick();
@@ -510,7 +494,6 @@ public class CtDisplayActivity extends Activity {
 
     private void setupKeepScreen() {
         keepScreen = getSHPKeepScreen();
-        updateDisplayScreen(keepScreen);
     }
 
     private void setupStringShelfDatabase() {
@@ -519,7 +502,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupCtDisplayTimeRobot() {
-        ctDisplayTimeRobot = new CtDisplayTimeRobot(timeDotMatrixDisplayView, currentCtRecord);
+        ctDisplayTimeRobot = new CtDisplayTimeRobot(ctDisplayTimeView, currentCtRecord);
         ctDisplayTimeRobot.setUpdateInterval(UPDATE_CT_DISPLAY_VIEW_TIME_INTERVAL_MS);
         ctDisplayTimeRobot.setOnExpiredTimerListener(new CtDisplayTimeRobot.onExpiredTimerListener() {
             @Override
@@ -529,11 +512,18 @@ public class CtDisplayActivity extends Activity {
         });
     }
 
-    private void setupCtDisplayTimeColors(String[] timeColors) {
-        timeDotMatrixDisplayView.setColors(timeColors);
-        timeDotMatrixDisplayView.setFrontColorIndex(getTimeButtonsColorOnIndex());
-        timeDotMatrixDisplayView.setBackColorIndex(getTimeButtonsColorOffIndex());
-        timeDotMatrixDisplayView.setAlternateColorIndex(getTimeButtonsColorBackIndex());
+    private void setupCtDisplayTimeColors() {
+        ctDisplayTimeView.setColors(timeColors);
+        ctDisplayTimeView.setFrontColorIndex(getTimeButtonsColorOnIndex());
+        ctDisplayTimeView.setBackColorIndex(getTimeButtonsColorOffIndex());
+        ctDisplayTimeView.setAlternateColorIndex(getTimeButtonsColorBackIndex());
+    }
+
+    private void setupButtonColors() {
+        for (COMMANDS command : COMMANDS.values()) {
+            int index = command.ordinal();
+            buttons[index].setColors(buttonColors);
+        }
     }
 
     private void setupBarMenuItems() {

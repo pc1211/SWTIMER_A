@@ -144,6 +144,7 @@ public class MainActivity extends Activity {
 
         updateDisplayButtonColors();
         updateDisplayStateColors();
+        updateDisplayKeepScreen();
         rebuildList();
         mainCtListRobot.startAutomatic(UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS);
         invalidateOptionsMenu();
@@ -177,7 +178,7 @@ public class MainActivity extends Activity {
         }
         if (item.getItemId() == R.id.BAR_MENU_KEEP_SCREEN) {
             keepScreen = !keepScreen;
-            updateDisplayScreen(keepScreen);
+            updateDisplayKeepScreen();
             uppdateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         }
         return super.onOptionsItemSelected(item);
@@ -300,11 +301,10 @@ public class MainActivity extends Activity {
     }
 
     private void uppdateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
-        int id = (keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off);
-        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon(id);
+        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
     }
 
-    private void updateDisplayScreen(boolean keepScreen) {
+    private void updateDisplayKeepScreen() {
         if (keepScreen) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
@@ -508,7 +508,6 @@ public class MainActivity extends Activity {
 
     private void setupKeepScreen() {
         keepScreen = getSHPKeepScreen();
-        updateDisplayScreen(keepScreen);
     }
 
     private void setupButtonColors() {
