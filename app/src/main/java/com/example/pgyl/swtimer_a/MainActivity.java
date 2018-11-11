@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.HelpActivity;
@@ -31,6 +30,7 @@ import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
+import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.StateView.STATES;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createTableActivityInfosIfNotExists;
@@ -217,7 +217,7 @@ public class MainActivity extends Activity {
             }
             mainCtListRobot.startAutomatic(DELAY_ZERO_MS);
         } else {
-            Toast.makeText(this, "The list must contain at least one Chrono or Timer", Toast.LENGTH_LONG).show();
+            toastLong("The list must contain at least one Chrono or Timer",this);
         }
     }
 
@@ -242,7 +242,7 @@ public class MainActivity extends Activity {
             rebuildList();
             mainCtListRobot.startAutomatic(DELAY_ZERO_MS);
         } else {
-            Toast.makeText(this, "The list must contain at least one selected Chrono or Timer", Toast.LENGTH_LONG).show();
+            toastLong("The list must contain at least one selected Chrono or Timer",this);
         }
     }
 

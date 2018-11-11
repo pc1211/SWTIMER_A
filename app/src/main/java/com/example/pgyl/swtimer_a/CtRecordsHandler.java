@@ -2,7 +2,6 @@ package com.example.pgyl.swtimer_a;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Toast;
 
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 
@@ -15,6 +14,7 @@ import static com.example.pgyl.pekislib_a.ClockAppAlarmUtils.dismissClockAppAlar
 import static com.example.pgyl.pekislib_a.Constants.DUMMY_VALUE;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
+import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
@@ -182,7 +182,7 @@ public class CtRecordsHandler {
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
                 if (action.equals(ACTIONS_ON_ALL.UPDATE_TIME)) {
                     if (!ctRecords.get(i).updateTime(nowm)) {   //  Timer expiré
-                        Toast.makeText(context, ctRecords.get(i).getTimeZoneExpirationMessage(), Toast.LENGTH_LONG).show();
+                        toastLong(ctRecords.get(i).getTimeZoneExpirationMessage(), context);
                         ret = ret + 1;
                     }
                 }

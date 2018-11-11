@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.pgyl.pekislib_a.ColorPickerActivity;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
@@ -33,6 +32,7 @@ import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.capitalize;
+import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_IS_COLOR_TYPE;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.TABLE_EXTRA_KEYS;
@@ -164,7 +164,7 @@ public class CtDisplayActivity extends Activity {
                 validReturnFromCalledActivity = false;
                 if (returnsFromPresetsActivity()) {
                     if (!copyPresetCTRowToCtRecord(getCurrentPresetInPresetsActivity(stringShelfDatabase, getPresetsCTTableName()), currentCtRecord, nowm)) {
-                        Toast.makeText(this, "Error updating Timer", Toast.LENGTH_LONG).show();
+                        toastLong("Error updating Timer",this);
                     }
                 }
                 if (returnsFromColorPickerActivity()) {
@@ -335,13 +335,13 @@ public class CtDisplayActivity extends Activity {
         MODE oldMode = currentCtRecord.getMode();
         if (!currentCtRecord.setMode(newMode)) {
             if (!newMode.equals(oldMode)) {
-                Toast.makeText(this, "First stop " + capitalize(oldMode.toString()), Toast.LENGTH_LONG).show();
+                toastLong("First stop " + capitalize(oldMode.toString()),this);
             }
         }
     }
 
     private void onExpiredTimerCurrentChronoTimer() {
-        Toast.makeText(this, currentCtRecord.getTimeZoneExpirationMessage(), Toast.LENGTH_LONG).show();
+        toastLong(currentCtRecord.getTimeZoneExpirationMessage(),this);
         updateDisplayTime();
         updateDisplayButtonColors();
         beep(this);
