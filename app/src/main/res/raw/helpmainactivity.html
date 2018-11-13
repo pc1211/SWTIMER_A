@@ -1,4 +1,4 @@
-<h2 style="color: #2e6c80;">Main screen</h2>
+<h2 style="color: #2e6c80;">Dashboard</h2>
 <p>To create a new Chrono/Timer (CT), Press
     <img
             src="main_chrono.png"
@@ -61,11 +61,24 @@
     </li>
     <li>
     <strong>Time</strong>
+		<ul>
+		  <li>if chrono: elapsed time
+		  </li>
+		  <li>if timer: remaining time
+		<br />
+		(or expiration time if
+		<img
+				src="main_clock.png"
+				width="16"
+				height="16">
+		is ON)
+		</li>
+		</ul>
     </li>
     <li>
         <strong>Message</strong>
     </li>
-</ul>The second row of buttons allows batch commands (for one or more selected CT).
+</ul>
 </p>
 <table>
     <thead>
@@ -245,10 +258,7 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Stop selected CT
-                <br />
-                (if running timer with alarm: Shows Alarms screen in Clock app and dismisses alarm)
-            </td>
+            <td style="border: 1px solid black;">Stop selected CT (*)</td>
         </tr>
         <tr>
             <td
@@ -270,10 +280,7 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Reset selected CT
-                <br />
-                (if running timer with alarm: shows Alarms screen in Clock app and dismisses alarm)
-            </td>
+            <td style="border: 1px solid black;">Reset selected CT (*)</td>
         </tr>
         <tr>
             <td
@@ -284,9 +291,7 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Remove selected CT
-			<br />
-                (if running timer with alarm: shows Alarms screen in Clock app and dismisses alarm)</td>
+            <td style="border: 1px solid black;">Remove selected CT (*)</td>
         </tr>
         <tr>
             <td
@@ -321,12 +326,9 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Start/Stop CT
+            <td style="border: 1px solid black;">Start/Stop (*) CT
                 <br />
                 (highlighted if Running)
-                <br />
-                (if Stop running timer with alarm: Shows Alarms screen in Clock app and dismisses
-                alarm)
             </td>
         </tr>
         <tr>
@@ -368,24 +370,18 @@
                     align="center"
                     style="border: 1px solid black;">Time &<br />Message
             </td>
-            <td style="border: 1px solid black;">Show CT alone / Set Default time or Message
+            <td style="border: 1px solid black;">Set Default time or Message
                 <br />
                 (calls
                 <strong>Chrono/Timer</strong>
                 screen)
-                <br />
-                (displays elapsed time if chrono, remaining time (or expiration time if
-                <img
-                        src="main_clock.png"
-                        width="16"
-                        height="16">
-                is ON)) if timer)
                 <br />
                 (if long press: Select this CT only)
             </td>
         </tr>
     </tbody>
 </table>
+<p>(*) If running timer with alarm: shows Alarms screen in Clock app and dismisses alarm</p>
 <p>A menu is also available:</p>
 <table>
     <thead>
