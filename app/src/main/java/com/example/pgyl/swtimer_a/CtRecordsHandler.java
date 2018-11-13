@@ -250,7 +250,7 @@ public class CtRecordsHandler {
     }
 
     private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
-        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getClockAppAlarmMessage();
+        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getMessage();
         ctRecord.setClockAppAlarmOff(!USE_CLOCK_APP);
     }
 

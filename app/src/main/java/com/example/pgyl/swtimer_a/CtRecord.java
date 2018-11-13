@@ -8,7 +8,6 @@ import java.util.Calendar;
 
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_HMS_SEPARATOR;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightTimeMillis;
 
@@ -244,22 +243,6 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return ret;
     }
 
-    public String getClockAppAlarmTime() {   //  OK TimeZone
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeExp);
-        String ret = String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY)) + TIME_HMS_SEPARATOR + String.format("%02d", calendar.get(Calendar.MINUTE));
-        calendar = null;
-        return ret;
-    }
-
-    public String getClockAppAlarmMessage() {    //  OK TimeZone
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeExp);
-        String ret = message + " (in " + String.valueOf(calendar.get(Calendar.SECOND)) + "s)";
-        calendar = null;
-        return ret;
-    }
-
     public boolean updateTime(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
         if (mode.equals(MODE.TIMER)) {
             if (running) {
@@ -343,7 +326,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     public void setClockAppAlarmOn(boolean useClockApp) {
         boolean error = false;
         if (useClockApp) {
-            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, getClockAppAlarmMessage())) {
+            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, message)) {
                 error = true;
             }
         }
@@ -355,7 +338,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     public void setClockAppAlarmOff(boolean useClockApp) {
         boolean error = false;
         if (useClockApp) {
-            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, getClockAppAlarmMessage())) {
+            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, message)) {
                 error = true;
             }
         }
