@@ -469,7 +469,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupCtDisplayTimeView() {
-        //  Pour Afficher HH:MM:SS:CC
+        //  Pour Afficher HH:MM:SS.CC
         final int SYMBOL_RIGHT_MARGIN = 1;       //  1 colonne vide à droite de chaque symbole
         final int FULL_SYMBOLS_COUNT = 7;        //  HH, MM, SS et CC nécessitent la largeur normale de symbole + marge droite, sauf pour le dernier C
         final int DOT_SYMBOL_COUNT = 1;          //  '.' est présent 1 fois
