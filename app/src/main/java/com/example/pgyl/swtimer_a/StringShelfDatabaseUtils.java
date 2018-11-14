@@ -20,33 +20,25 @@ public class StringShelfDatabaseUtils {
     }
 
     private enum TABLE_CHRONO_TIMERS_DATA_FIELDS {
-        MODE(1), SELECTED(2), RUNNING(3), SPLITTED(4), ALARM_SET(5), MESSAGE(6), MESSAGE_INIT(7), TIME_START(8), TIME_ACC(9), TIME_ACC_UNTIL_SPLIT(10), TIME_DEF(11), TIME_DEF_INIT(12), TIME_EXP(13);
-
-        private int valueIndex;
-
-        TABLE_CHRONO_TIMERS_DATA_FIELDS(int valueIndex) {
-            this.valueIndex = valueIndex;
-        }
+        MODE, SELECTED, RUNNING, SPLITTED, ALARM_SET, MESSAGE, MESSAGE_INIT, TIME_START, TIME_ACC, TIME_ACC_UNTIL_SPLIT, TIME_DEF, TIME_DEF_INIT, TIME_EXP;
 
         public int INDEX() {
-            return valueIndex;
-        }
+            return ordinal() + 1;
+        }   //  INDEX 0 pour identifiant utilisateur
     }
 
     private enum TABLE_PRESETS_CT_DATA_FIELDS {
-        TIME("Time", 1), MESSAGE("Message", 2);
+        TIME("Time"), MESSAGE("Message");
 
-        private int valueIndex;
         private String valueLabel;
 
-        TABLE_PRESETS_CT_DATA_FIELDS(String valueLabel, int valueIndex) {
-            this.valueIndex = valueIndex;
+        TABLE_PRESETS_CT_DATA_FIELDS(String valueLabel) {
             this.valueLabel = valueLabel;
         }
 
         public int INDEX() {
-            return valueIndex;
-        }
+            return ordinal() + 1;
+        }   //  INDEX 0 pour identifiant utilisateur
 
         public String LABEL() {
             return valueLabel;
@@ -54,19 +46,17 @@ public class StringShelfDatabaseUtils {
     }
 
     private enum TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS {
-        ON("Light On", 1), OFF("Light Off", 2), BACK("Background", 3);
+        ON("Light On"), OFF("Light Off"), BACK("Background");
 
-        private int valueIndex;
         private String valueLabel;
 
-        TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS(String valueLabel, int valueIndex) {
-            this.valueIndex = valueIndex;
+        TABLE_COLORS_TIMEBUTTONS_DATA_FIELDS(String valueLabel) {
             this.valueLabel = valueLabel;
         }
 
         public int INDEX() {
-            return valueIndex;
-        }
+            return ordinal() + 1;
+        }   //  INDEX 0 pour identifiant utilisateur
 
         public String LABEL() {
             return valueLabel;
@@ -74,19 +64,17 @@ public class StringShelfDatabaseUtils {
     }
 
     private enum TABLE_COLORS_BACK_SCREEN_DATA_FIELDS {
-        BACK("Background", 1);
+        BACK("Background");
 
-        private int valueIndex;
         private String valueLabel;
 
-        TABLE_COLORS_BACK_SCREEN_DATA_FIELDS(String valueLabel, int valueIndex) {
-            this.valueIndex = valueIndex;
+        TABLE_COLORS_BACK_SCREEN_DATA_FIELDS(String valueLabel) {
             this.valueLabel = valueLabel;
         }
 
         public int INDEX() {
-            return valueIndex;
-        }
+            return ordinal() + 1;
+        }   //  INDEX 0 pour identifiant utilisateur
 
         public String LABEL() {
             return valueLabel;
