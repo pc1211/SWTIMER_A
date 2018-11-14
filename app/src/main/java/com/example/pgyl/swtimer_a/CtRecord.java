@@ -8,7 +8,7 @@ import java.util.Calendar;
 
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightTimeMillis;
 
 class CtRecord {   //  Données d'un Chrono ou Timer
@@ -232,7 +232,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public String getTimeZoneExpirationMessage() {
-        return "Timer " + message + CRLF + "expired @" + convertMsToHms(getTimeZoneExpirationTime(), TIMEUNITS.SEC);
+        return "Timer " + message + CRLF + "expired @" + msToHms(getTimeZoneExpirationTime(), TIMEUNITS.SEC);
     }
 
     public long getTimeZoneExpirationTime() {   //  OK TimeZone; Sans les ms de calendar

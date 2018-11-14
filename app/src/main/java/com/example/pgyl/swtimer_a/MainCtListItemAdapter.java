@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
@@ -231,10 +231,10 @@ public class MainCtListItemAdapter extends BaseAdapter {
             }
         }
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            viewHolder.tvTime.setText(convertMsToHms(timeDisplay, tu));
+            viewHolder.tvTime.setText(msToHms(timeDisplay, tu));
             viewHolder.tvMessage.setText(ctRecords.get(k).getMessage());
         } else {
-            viewHolder.tvTimeMessage.setText(convertMsToHms(timeDisplay, tu) + SEPARATOR + ctRecords.get(k).getMessage());
+            viewHolder.tvTimeMessage.setText(msToHms(timeDisplay, tu) + SEPARATOR + ctRecords.get(k).getMessage());
         }
     }
 

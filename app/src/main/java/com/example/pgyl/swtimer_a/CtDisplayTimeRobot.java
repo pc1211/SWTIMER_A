@@ -5,7 +5,7 @@ import android.os.Handler;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 
 public class CtDisplayTimeRobot {
     public interface onExpiredTimerListener {
@@ -71,7 +71,7 @@ public class CtDisplayTimeRobot {
                 if (currentCtRecord.updateTime(nowm)) {
                     if (!currentCtRecord.isSplitted()) {
                         timeDotMatrixDisplayView.fillGridOff();
-                        timeDotMatrixDisplayView.drawText(0, 0, convertMsToHms(currentCtRecord.getTimeDisplay(), TIMEUNITS.CS));
+                        timeDotMatrixDisplayView.drawText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TIMEUNITS.CS));
                         timeDotMatrixDisplayView.invalidate();
                     }
                 } else {    //  Le timer a expiré - Evacuation générale

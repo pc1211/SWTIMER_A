@@ -44,7 +44,7 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInColorPickerActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.convertMsToHms;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
@@ -164,7 +164,7 @@ public class CtDisplayActivity extends Activity {
                 validReturnFromCalledActivity = false;
                 if (returnsFromPresetsActivity()) {
                     if (!copyPresetCTRowToCtRecord(getCurrentPresetInPresetsActivity(stringShelfDatabase, getPresetsCTTableName()), currentCtRecord, nowm)) {
-                        toastLong("Error updating Timer",this);
+                        toastLong("Error updating Timer", this);
                     }
                 }
                 if (returnsFromColorPickerActivity()) {
@@ -335,13 +335,13 @@ public class CtDisplayActivity extends Activity {
         MODE oldMode = currentCtRecord.getMode();
         if (!currentCtRecord.setMode(newMode)) {
             if (!newMode.equals(oldMode)) {
-                toastLong("First stop " + capitalize(oldMode.toString()),this);
+                toastLong("First stop " + capitalize(oldMode.toString()), this);
             }
         }
     }
 
     private void onExpiredTimerCurrentChronoTimer() {
-        toastLong(currentCtRecord.getTimeZoneExpirationMessage(),this);
+        toastLong(currentCtRecord.getTimeZoneExpirationMessage(), this);
         updateDisplayTime();
         updateDisplayButtonColors();
         beep(this);
@@ -355,7 +355,7 @@ public class CtDisplayActivity extends Activity {
 
     private void updateDisplayTime() {
         ctDisplayTimeView.fillGridOff();
-        ctDisplayTimeView.drawText(0, 0, convertMsToHms(currentCtRecord.getTimeDisplay(), TIMEUNITS.CS));
+        ctDisplayTimeView.drawText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TIMEUNITS.CS));
         ctDisplayTimeView.invalidate();
     }
 

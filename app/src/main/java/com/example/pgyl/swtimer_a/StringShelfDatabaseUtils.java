@@ -10,7 +10,7 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosStartStatusIndex;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosTableName;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.convertXhmsToMs;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.xhmsToMs;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 
 public class StringShelfDatabaseUtils {
@@ -106,7 +106,7 @@ public class StringShelfDatabaseUtils {
                 {TABLE_IDS.LABEL.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.LABEL(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.TIME_XHMS.toString(), KEYBOARDS.ALPHANUM.toString()},
                 {TABLE_IDS.REGEXP.toString(), "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(c|$))?$", null},
-                {TABLE_IDS.MAX.toString(), String.valueOf(convertXhmsToMs("23h59m59s99c")), null},
+                {TABLE_IDS.MAX.toString(), String.valueOf(xhmsToMs("23h59m59s99c")), null},
                 {TABLE_IDS.TIMEUNIT.toString(), TIMEUNITS.CS.toString(), null}};
 
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_PRESETS_CT_INITS);
