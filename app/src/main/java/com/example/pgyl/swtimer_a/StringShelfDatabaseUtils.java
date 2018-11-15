@@ -191,7 +191,7 @@ public class StringShelfDatabaseUtils {
         return stringShelfDatabase.selectRowByIdOrCreate(getColorItemTableName(colorItem), TABLE_IDS.DEFAULT.toString() + colorItem.toString());
     }
 
-    public static void setDefaultColors(StringShelfDatabase stringShelfDatabase, COLOR_ITEMS colorItem, String[] colors) {
+    public static void setGlobalDefaultColors(StringShelfDatabase stringShelfDatabase, COLOR_ITEMS colorItem, String[] colors) {
         stringShelfDatabase.insertOrReplaceRowById(getColorItemTableName(colorItem), TABLE_IDS.DEFAULT.toString(), colors);     //  Sans ajouter colorItem.toString() car PresetsActivity va seulement utiliser DEFAULT
     }
 

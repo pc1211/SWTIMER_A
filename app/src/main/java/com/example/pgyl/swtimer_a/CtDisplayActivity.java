@@ -63,7 +63,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeButtons
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimer;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setDefaultColors;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setGlobalDefaultColors;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.timeMessageToPresetCTRow;
 
@@ -254,19 +254,19 @@ public class CtDisplayActivity extends Activity {
         }
         if (item.getItemId() == R.id.SET_TIME_COLORS) {
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.TIME), timeColors);
-            setDefaultColors(stringShelfDatabase, COLOR_ITEMS.TIME, getDefaultColors(stringShelfDatabase, COLOR_ITEMS.TIME));
+            setGlobalDefaultColors(stringShelfDatabase, COLOR_ITEMS.TIME, getDefaultColors(stringShelfDatabase, COLOR_ITEMS.TIME));
             launchColorPickerActivity(COLOR_ITEMS.TIME);
             return true;
         }
         if (item.getItemId() == R.id.SET_BUTTON_COLORS) {
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.BUTTONS), buttonColors);
-            setDefaultColors(stringShelfDatabase, COLOR_ITEMS.BUTTONS, getDefaultColors(stringShelfDatabase, COLOR_ITEMS.BUTTONS));
+            setGlobalDefaultColors(stringShelfDatabase, COLOR_ITEMS.BUTTONS, getDefaultColors(stringShelfDatabase, COLOR_ITEMS.BUTTONS));
             launchColorPickerActivity(COLOR_ITEMS.BUTTONS);
             return true;
         }
         if (item.getItemId() == R.id.SET_BACK_SCREEN_COLORS) {
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, getColorItemTableName(COLOR_ITEMS.BACK_SCREEN), backScreenColors);
-            setDefaultColors(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN, getDefaultColors(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN));
+            setGlobalDefaultColors(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN, getDefaultColors(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN));
             launchColorPickerActivity(COLOR_ITEMS.BACK_SCREEN);
             return true;
         }
