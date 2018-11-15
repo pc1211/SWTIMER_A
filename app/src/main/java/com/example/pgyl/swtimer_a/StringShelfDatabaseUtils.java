@@ -191,6 +191,10 @@ public class StringShelfDatabaseUtils {
         return stringShelfDatabase.selectRowByIdOrCreate(getColorItemTableName(colorItem), TABLE_IDS.DEFAULT.toString() + colorItem.toString());
     }
 
+    public static void setDefaultColors(StringShelfDatabase stringShelfDatabase, COLOR_ITEMS colorItem, String[] colors) {
+        stringShelfDatabase.insertOrReplaceRowById(getColorItemTableName(colorItem), TABLE_IDS.DEFAULT.toString(), colors);     //  Sans ajouter colorItem.toString() car PresetsActivity va seulement utiliser DEFAULT
+    }
+
     public static String[] getCurrentColorsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, COLOR_ITEMS colorItem) {
         return stringShelfDatabase.selectRowByIdOrCreate(getColorItemTableName(colorItem), TABLE_IDS.CURRENT.toString() + colorItem.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
     }
