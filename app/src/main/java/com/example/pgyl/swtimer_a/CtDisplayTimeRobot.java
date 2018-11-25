@@ -39,9 +39,9 @@ public class CtDisplayTimeRobot {
         }
     }
 
-    public static final boolean DISPLAY_INITIALIZE = true;
     private final long UPDATE_INTERVAL_RESET_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
     private final long UPDATE_INTERVAL_NON_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
+    public static final boolean DISPLAY_INITIALIZE = true;
     private final String RESET_MESSAGE = "...Sleeping...";
     //endregion
 
@@ -94,14 +94,15 @@ public class CtDisplayTimeRobot {
 
     public void updateCtDisplayTimeView(boolean displayInitialize) {
         if (displayInitialize) {
-            ctDisplayTimeView.fillRectOff(resetRect);
             if (currentCtRecord.isReset()) {
+                updateInterval = UPDATE_INTERVAL_RESET_MS;
+                ctDisplayTimeView.fillRectOff(resetRect);
                 ctDisplayTimeView.displayText(0, 0, RESET_MESSAGE, ctDisplayTimeView.getDefautFont());
                 ctDisplayTimeView.appendText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
-                updateInterval = UPDATE_INTERVAL_RESET_MS;
             } else {
-                ctDisplayTimeView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
                 updateInterval = UPDATE_INTERVAL_NON_RESET_MS;
+                ctDisplayTimeView.fillRectOff(ctDisplayTimeView.getDisplayRect());
+                ctDisplayTimeView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         } else {
             if (currentCtRecord.isReset()) {
@@ -123,8 +124,10 @@ public class CtDisplayTimeRobot {
                 if (mOnExpiredTimerListener != null) {
                     mOnExpiredTimerListener.onExpiredTimer();
                 }
+                updateCtDisplayTimeView(DISPLAY_INITIALIZE);
+            } else {
+                updateCtDisplayTimeView(!DISPLAY_INITIALIZE);
             }
-            updateCtDisplayTimeView(!DISPLAY_INITIALIZE);
             inAutomatic = false;
         }
     }
