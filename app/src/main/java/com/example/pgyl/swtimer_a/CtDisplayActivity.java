@@ -44,7 +44,7 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPre
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInColorPickerActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
-import static com.example.pgyl.swtimer_a.CtDisplayTimeRobot.FORCE_RESET_STATE_CHANGE;
+import static com.example.pgyl.swtimer_a.CtDisplayTimeRobot.DISPLAY_INITIALIZE;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
@@ -351,7 +351,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateCtDisplayTimeView() {
-        ctDisplayTimeRobot.updateCtDisplayTimeView(FORCE_RESET_STATE_CHANGE);
+        ctDisplayTimeRobot.updateCtDisplayTimeView(DISPLAY_INITIALIZE);
     }
 
     private void updateDisplayBackScreenColor() {

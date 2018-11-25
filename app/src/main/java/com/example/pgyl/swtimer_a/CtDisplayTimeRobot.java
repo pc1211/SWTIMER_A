@@ -39,7 +39,7 @@ public class CtDisplayTimeRobot {
         }
     }
 
-    public static final boolean FORCE_RESET_STATE_CHANGE = true;
+    public static final boolean DISPLAY_INITIALIZE = true;
     private final long UPDATE_INTERVAL_RESET_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
     private final long UPDATE_INTERVAL_NON_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
     private final String RESET_MESSAGE = "...Sleeping...";
@@ -51,9 +51,7 @@ public class CtDisplayTimeRobot {
     private CtRecord currentCtRecord;
     private long updateInterval;
     private boolean inAutomatic;
-    private boolean resetState;
     private Rect resetRect;
-    private boolean oldResetState;
     private final Handler handlerTime = new Handler();
     private Runnable runnableTime = new Runnable() {
         @Override
@@ -77,7 +75,6 @@ public class CtDisplayTimeRobot {
         inAutomatic = false;
         mOnExpiredTimerListener = null;
         updateInterval = UPDATE_INTERVAL_RESET_MS;
-        oldResetState = false;
     }
 
     public void close() {
@@ -95,22 +92,19 @@ public class CtDisplayTimeRobot {
         handlerTime.removeCallbacks(runnableTime);
     }
 
-    public void updateCtDisplayTimeView(boolean forceResetStateChange) {
-        resetState = currentCtRecord.isReset();
-        if (forceResetStateChange || (resetState != oldResetState)) {
+    public void updateCtDisplayTimeView(boolean displayInitialize) {
+        if (displayInitialize) {
             ctDisplayTimeView.fillRectOff(resetRect);
-            if (resetState) {
+            if (currentCtRecord.isReset()) {
                 ctDisplayTimeView.displayText(0, 0, RESET_MESSAGE, ctDisplayTimeView.getDefautFont());
                 ctDisplayTimeView.appendText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
                 updateInterval = UPDATE_INTERVAL_RESET_MS;
-
             } else {
                 ctDisplayTimeView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
                 updateInterval = UPDATE_INTERVAL_NON_RESET_MS;
             }
-            oldResetState = resetState;
         } else {
-            if (resetState) {
+            if (currentCtRecord.isReset()) {
                 ctDisplayTimeView.scrollLeft(resetRect);
             } else {
                 ctDisplayTimeView.fillRectOff(ctDisplayTimeView.getDisplayRect());
@@ -130,7 +124,7 @@ public class CtDisplayTimeRobot {
                     mOnExpiredTimerListener.onExpiredTimer();
                 }
             }
-            updateCtDisplayTimeView(!FORCE_RESET_STATE_CHANGE);
+            updateCtDisplayTimeView(!DISPLAY_INITIALIZE);
             inAutomatic = false;
         }
     }
