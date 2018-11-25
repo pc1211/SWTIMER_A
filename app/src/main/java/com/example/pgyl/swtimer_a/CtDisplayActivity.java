@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,8 +44,7 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPre
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInColorPickerActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
+import static com.example.pgyl.swtimer_a.CtDisplayTimeRobot.FORCE_RESET_STATE_CHANGE;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
@@ -93,7 +93,7 @@ public class CtDisplayActivity extends Activity {
         CURRENT_CHRONO_TIMER_ID
     }
 
-    private final int UPDATE_CT_DISPLAY_VIEW_TIME_INTERVAL_MS = 10;
+    private final long DELAY_ZERO_MS = 0;
     private final int ACTIVITY_CODE_MULTIPLIER = 100;  // Pour différencier les types d'appel à une même activité
     //endregion
     //region Variables
@@ -186,14 +186,12 @@ public class CtDisplayActivity extends Activity {
         setupButtonColors();
 
         currentCtRecord.updateTime(nowm);
-        updateDisplayTime();
+        updateCtDisplayTimeView();
         updateDisplayActivityTitle(currentCtRecord.getMessage());
         updateDisplayButtonColors();
         updateDisplayBackScreenColor();
         updateDisplayKeepScreen();
-        if (currentCtRecord.isRunning()) {
-            ctDisplayTimeRobot.startAutomatic(UPDATE_CT_DISPLAY_VIEW_TIME_INTERVAL_MS);
-        }
+        ctDisplayTimeRobot.startAutomatic(DELAY_ZERO_MS);
         invalidateOptionsMenu();
     }
 
@@ -296,17 +294,13 @@ public class CtDisplayActivity extends Activity {
         }
         currentCtRecord.updateTime(nowm);
         updateDisplayButtonColors();
-        updateDisplayTime();
+        updateCtDisplayTimeView();
     }
 
     private void onButtonClickRun(long nowm) {
-        final long DELAY_ZERO_MS = 0;
-
         if (!currentCtRecord.isRunning()) {
             currentCtRecord.start(nowm);
-            ctDisplayTimeRobot.startAutomatic(DELAY_ZERO_MS);
         } else {
-            ctDisplayTimeRobot.stopAutomatic();
             if (!currentCtRecord.stop(nowm)) {
                 currentCtRecord.setClockAppAlarmOff(USE_CLOCK_APP);
             }
@@ -330,7 +324,6 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void onButtonClickReset() {
-        ctDisplayTimeRobot.stopAutomatic();
         if (!currentCtRecord.reset()) {
             currentCtRecord.setClockAppAlarmOff(USE_CLOCK_APP);
         }
@@ -347,21 +340,18 @@ public class CtDisplayActivity extends Activity {
 
     private void onExpiredTimerCurrentChronoTimer() {
         toastLong(currentCtRecord.getTimeZoneExpirationMessage(), this);
-        updateDisplayTime();
         updateDisplayButtonColors();
         beep(this);
     }
 
-    private void onTimeDotMatrixDisplayViewClick() {
+    private void onCtDisplayTimeViewClick() {
         setCurrentPresetInPresetsActivity(stringShelfDatabase, getPresetsCTTableName(), timeMessageToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getMessage()));
         setDefaults(stringShelfDatabase, getPresetsCTTableName(), timeMessageToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getMessageInit()));
         launchPresetsActivity();
     }
 
-    private void updateDisplayTime() {
-        ctDisplayTimeView.fillGridOff();
-        ctDisplayTimeView.drawText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TIMEUNITS.CS));
-        ctDisplayTimeView.invalidate();
+    private void updateCtDisplayTimeView() {
+        ctDisplayTimeRobot.updateCtDisplayTimeView(FORCE_RESET_STATE_CHANGE);
     }
 
     private void updateDisplayBackScreenColor() {
@@ -475,24 +465,17 @@ public class CtDisplayActivity extends Activity {
 
     private void setupCtDisplayTimeView() {
         //  Pour Afficher HH:MM:SS.CC
-        final int SYMBOL_RIGHT_MARGIN = 1;       //  1 colonne vide à droite de chaque symbole
-        final int FULL_SYMBOLS_COUNT = 7;        //  HH, MM, SS et CC nécessitent la largeur normale de symbole + marge droite, sauf pour le dernier C
-        final int DOT_SYMBOL_COUNT = 1;          //  '.' est présent 1 fois
-        final int DOUBLE_DOT_SYMBOL_COUNT = 2;   //  ':' est présent 2 fois
-        final int SHORT_DOT_WIDTH = 0;           //  '.' est à afficher sur le symbole précédent en bas à droite sur une ligne supplémentaire
-        final int SHORT_DOUBLE_DOT_WIDTH = 1 + SYMBOL_RIGHT_MARGIN;    //  ':' est à afficher sur une seule colonne + marge droite
+        final int GRID_DISPLAY_WIDTH = 51;   //  7 caracteres avec marge droite x (5+1) + dernier caractere sans marge droite 1 x 5 + 2 doubles points x 2
+        final int GRID_DISPLAY_HEIGHT = 8;   //  7 lignes + 1 pour le point décimal (surchargeant le caractère précédent)
+        final int GRID_TOTAL_WIDTH = 200;    //  Suffisant pour stocker l'affichage du temps et d'un message de 24 caractères 5x7, avec marge droite
+        final int GRID_TOTAL_HEIGHT = GRID_DISPLAY_HEIGHT;
 
         ctDisplayTimeView = findViewById(R.id.DISPLAY_TIME);
-        int symbolWidth = ctDisplayTimeView.getSymbolWidth();
-        int gridWidth = FULL_SYMBOLS_COUNT * (symbolWidth + SYMBOL_RIGHT_MARGIN) + symbolWidth + DOUBLE_DOT_SYMBOL_COUNT * SHORT_DOUBLE_DOT_WIDTH + DOT_SYMBOL_COUNT * SHORT_DOT_WIDTH;
-        int gridHeight = ctDisplayTimeView.getSymbolHeight() + 1;   // 1 ligne supplémentaire pour le point décimal
-        ctDisplayTimeView.setGridDimensions(gridWidth, gridHeight);
-        ctDisplayTimeView.setSymbolRightMargin(SYMBOL_RIGHT_MARGIN);
-        ctDisplayTimeView.setAllSymbolCompressionsOn();   //  Afficher '.' et ':'  sur un nombre réduit de colonnes
+        ctDisplayTimeView.setGridDimensions(new Rect(0, 0, GRID_DISPLAY_WIDTH, GRID_DISPLAY_HEIGHT), new Rect(0, 0, GRID_TOTAL_WIDTH, GRID_TOTAL_HEIGHT));
         ctDisplayTimeView.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
-                onTimeDotMatrixDisplayViewClick();
+                onCtDisplayTimeViewClick();
             }
         });
     }
@@ -508,7 +491,6 @@ public class CtDisplayActivity extends Activity {
 
     private void setupCtDisplayTimeRobot() {
         ctDisplayTimeRobot = new CtDisplayTimeRobot(ctDisplayTimeView, currentCtRecord);
-        ctDisplayTimeRobot.setUpdateInterval(UPDATE_CT_DISPLAY_VIEW_TIME_INTERVAL_MS);
         ctDisplayTimeRobot.setOnExpiredTimerListener(new CtDisplayTimeRobot.onExpiredTimerListener() {
             @Override
             public void onExpiredTimer() {

@@ -8,8 +8,8 @@ import java.util.Calendar;
 
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightTimeMillis;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 
 class CtRecord {   //  Données d'un Chrono ou Timer
     // region Constantes
@@ -131,6 +131,10 @@ class CtRecord {   //  Données d'un Chrono ou Timer
 
     public boolean isSplitted() {   //  Pas de set
         return splitted;
+    }
+
+    public boolean isReset() {
+        return ((timeAcc == 0) && (!running));
     }
 
     public boolean hasClockAppAlarm() {
