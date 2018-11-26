@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.ListView;
 
-public class MainCtListRobot {
+public class MainCtListUpdater {
     public interface onExpiredTimersListener {
         void onExpiredTimers();
     }
@@ -29,7 +29,7 @@ public class MainCtListRobot {
     };
     //endregion
 
-    public MainCtListRobot(ListView mainCtListView, CtRecordsHandler ctRecordsHandler) {
+    public MainCtListUpdater(ListView mainCtListView, CtRecordsHandler ctRecordsHandler) {
         super();
 
         this.mainCtListView = mainCtListView;

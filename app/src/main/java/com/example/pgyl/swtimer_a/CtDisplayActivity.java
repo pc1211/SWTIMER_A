@@ -44,7 +44,7 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPre
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInColorPickerActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
-import static com.example.pgyl.swtimer_a.CtDisplayTimeRobot.DISPLAY_INITIALIZE;
+import static com.example.pgyl.swtimer_a.CtDisplayTimeUpdater.DISPLAY_INITIALIZE;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
@@ -98,7 +98,7 @@ public class CtDisplayActivity extends Activity {
     //endregion
     //region Variables
     private CtRecord currentCtRecord;
-    private CtDisplayTimeRobot ctDisplayTimeRobot;
+    private CtDisplayTimeUpdater ctDisplayTimeUpdater;
     private boolean keepScreen;
     private String[] timeColors;
     private String[] buttonColors;
@@ -131,9 +131,9 @@ public class CtDisplayActivity extends Activity {
 
         savePreferences();
 
-        ctDisplayTimeRobot.stopAutomatic();
-        ctDisplayTimeRobot.close();
-        ctDisplayTimeRobot = null;
+        ctDisplayTimeUpdater.stopAutomatic();
+        ctDisplayTimeUpdater.close();
+        ctDisplayTimeUpdater = null;
         setCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.TIME, timeColors);
         setCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BUTTONS, buttonColors);
         setCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN, backScreenColors);
@@ -191,7 +191,7 @@ public class CtDisplayActivity extends Activity {
         updateDisplayButtonColors();
         updateDisplayBackScreenColor();
         updateDisplayKeepScreen();
-        ctDisplayTimeRobot.startAutomatic(DELAY_ZERO_MS);
+        ctDisplayTimeUpdater.startAutomatic(DELAY_ZERO_MS);
         invalidateOptionsMenu();
     }
 
@@ -351,7 +351,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateCtDisplayTimeView() {
-        ctDisplayTimeRobot.updateCtDisplayTimeView(DISPLAY_INITIALIZE);
+        ctDisplayTimeUpdater.updateCtDisplayTimeView(DISPLAY_INITIALIZE);
     }
 
     private void updateDisplayBackScreenColor() {
@@ -489,8 +489,8 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupCtDisplayTimeRobot() {
-        ctDisplayTimeRobot = new CtDisplayTimeRobot(ctDisplayTimeView, currentCtRecord);
-        ctDisplayTimeRobot.setOnExpiredTimerListener(new CtDisplayTimeRobot.onExpiredTimerListener() {
+        ctDisplayTimeUpdater = new CtDisplayTimeUpdater(ctDisplayTimeView, currentCtRecord);
+        ctDisplayTimeUpdater.setOnExpiredTimerListener(new CtDisplayTimeUpdater.onExpiredTimerListener() {
             @Override
             public void onExpiredTimer() {
                 onExpiredTimerCurrentChronoTimer();

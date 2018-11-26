@@ -10,7 +10,7 @@ import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 
-public class CtDisplayTimeRobot {
+public class CtDisplayTimeUpdater {
     public interface onExpiredTimerListener {
         void onExpiredTimer();
     }
@@ -39,10 +39,10 @@ public class CtDisplayTimeRobot {
         }
     }
 
+    public static final boolean DISPLAY_INITIALIZE = true;
     private final long UPDATE_INTERVAL_RESET_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
     private final long UPDATE_INTERVAL_NON_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
-    public static final boolean DISPLAY_INITIALIZE = true;
-    private final String RESET_MESSAGE = "...Sleeping...";
+    private final String RESET_MESSAGE = "...Sleep...";
     //endregion
 
     //region Variables
@@ -61,7 +61,7 @@ public class CtDisplayTimeRobot {
     };
     //endregion
 
-    public CtDisplayTimeRobot(DotMatrixDisplayView ctDisplayTimeView, CtRecord currentCtRecord) {
+    public CtDisplayTimeUpdater(DotMatrixDisplayView ctDisplayTimeView, CtRecord currentCtRecord) {
         super();
 
         this.ctDisplayTimeView = ctDisplayTimeView;
@@ -139,14 +139,12 @@ public class CtDisplayTimeRobot {
         for (EXTRA_DOT_MATRIX_SYMBOLS_DATA extraSymbolData : EXTRA_DOT_MATRIX_SYMBOLS_DATA.values()) {
             extraFont.addSymbol(extraSymbolData.valueChar, extraSymbolData.DATA());
         }
-        extraFont.setWidth(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_2E.DATA()[0].length);   //  Tous les caractères ont la même largeur et hauteur
-        extraFont.setHeight(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_2E.DATA().length);
         extraFont.setRightMargin(EXTRA_DOT_MATRIX_FONT_SYMBOL_RIGHT_MARGIN);
         //  Le "." surcharge le caractère précédent, le ":" est affiché sur une largeur réduite
-        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_2E.valueChar).posInitialOffset = new Point(-extraFont.getWidth() - extraFont.getRightMargin() + 1, 1);
-        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_2E.valueChar).posFinalOffset = new Point(extraFont.getWidth() + extraFont.getRightMargin() - 1, -1);
-        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_3A.valueChar).posInitialOffset = new Point(-extraFont.getWidth() / 2, 0);
-        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_3A.valueChar).posFinalOffset = new Point(extraFont.getWidth() / 2 + extraFont.getRightMargin() + 1, 0);
+        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_2E.valueChar).setPosInitialOffset(new Point(-extraFont.getWidth() - extraFont.getRightMargin() + 1, 1));
+        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_2E.valueChar).setPosFinalOffset(new Point(extraFont.getWidth() + extraFont.getRightMargin() - 1, -1));
+        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_3A.valueChar).setPosInitialOffset(new Point(-extraFont.getWidth() / 2, 0));
+        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_3A.valueChar).setPosFinalOffset(new Point(extraFont.getWidth() / 2 + extraFont.getRightMargin() + 1, 0));
     }
 
 }
