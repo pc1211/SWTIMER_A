@@ -22,14 +22,14 @@ public class CtDisplayTimeUpdater {
     private onExpiredTimerListener mOnExpiredTimerListener;
 
     //region Constantes
-    private enum EXTRA_DOT_MATRIX_SYMBOLS_DATA {    //  Caractères redéfinis pour l'affichage du temps ("." et ":") (plus fins que la fonte par défaut de DotMatrixDisplayView)
+    private enum EXTRA_FONT_SYMBOLS_DATA {    //  Caractères redéfinis pour l'affichage du temps ("." et ":") (plus fins que la fonte par défaut de DotMatrixDisplayView)
         ASCII_2E('.', new int[][]{{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 1}}),
         ASCII_3A(':', new int[][]{{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}});
 
         private Character valueChar;
         private int[][] valueData;
 
-        EXTRA_DOT_MATRIX_SYMBOLS_DATA(Character valueChar, int[][] valueData) {
+        EXTRA_FONT_SYMBOLS_DATA(Character valueChar, int[][] valueData) {
             this.valueChar = valueChar;
             this.valueData = valueData;
         }
@@ -133,18 +133,18 @@ public class CtDisplayTimeUpdater {
     }
 
     private void setupExtraFont() {
-        final int EXTRA_DOT_MATRIX_FONT_SYMBOL_RIGHT_MARGIN = 1;
+        final int EXTRA_FONT_SYMBOL_RIGHT_MARGIN = 1;
 
         extraFont = new DotMatrixFont();
-        for (EXTRA_DOT_MATRIX_SYMBOLS_DATA extraSymbolData : EXTRA_DOT_MATRIX_SYMBOLS_DATA.values()) {
-            extraFont.addSymbol(extraSymbolData.valueChar, extraSymbolData.DATA());
+        for (EXTRA_FONT_SYMBOLS_DATA extraFontSymbolData : EXTRA_FONT_SYMBOLS_DATA.values()) {
+            extraFont.addSymbol(extraFontSymbolData.valueChar, extraFontSymbolData.DATA());
         }
-        extraFont.setRightMargin(EXTRA_DOT_MATRIX_FONT_SYMBOL_RIGHT_MARGIN);
+        extraFont.setRightMargin(EXTRA_FONT_SYMBOL_RIGHT_MARGIN);
         //  Le "." surcharge le caractère précédent, le ":" est affiché sur une largeur réduite
-        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_2E.valueChar).setPosInitialOffset(new Point(-extraFont.getWidth() - extraFont.getRightMargin() + 1, 1));
-        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_2E.valueChar).setPosFinalOffset(new Point(extraFont.getWidth() + extraFont.getRightMargin() - 1, -1));
-        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_3A.valueChar).setPosInitialOffset(new Point(-extraFont.getWidth() / 2, 0));
-        extraFont.getCharMap().get(EXTRA_DOT_MATRIX_SYMBOLS_DATA.ASCII_3A.valueChar).setPosFinalOffset(new Point(extraFont.getWidth() / 2 + extraFont.getRightMargin() + 1, 0));
+        extraFont.getCharMap().get(EXTRA_FONT_SYMBOLS_DATA.ASCII_2E.valueChar).setPosInitialOffset(new Point(-extraFont.getWidth() - extraFont.getRightMargin() + 1, 1));
+        extraFont.getCharMap().get(EXTRA_FONT_SYMBOLS_DATA.ASCII_2E.valueChar).setPosFinalOffset(new Point(extraFont.getWidth() + extraFont.getRightMargin() - 1, -1));
+        extraFont.getCharMap().get(EXTRA_FONT_SYMBOLS_DATA.ASCII_3A.valueChar).setPosInitialOffset(new Point(-extraFont.getWidth() / 2, 0));
+        extraFont.getCharMap().get(EXTRA_FONT_SYMBOLS_DATA.ASCII_3A.valueChar).setPosFinalOffset(new Point(extraFont.getWidth() / 2 + extraFont.getRightMargin() + 1, 0));
     }
 
 }
