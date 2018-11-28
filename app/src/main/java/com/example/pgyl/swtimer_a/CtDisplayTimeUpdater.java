@@ -6,6 +6,7 @@ import android.os.Handler;
 
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
+import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
@@ -22,35 +23,16 @@ public class CtDisplayTimeUpdater {
     private onExpiredTimerListener mOnExpiredTimerListener;
 
     //region Constantes
-    private enum EXTRA_FONT_SYMBOLS_DATA {    //  Caractères redéfinis pour l'affichage du temps ("." et ":") (plus fins que la fonte par défaut de DotMatrixDisplayView)
-        ASCII_2E('.', new int[][]{{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 1}}),
-        ASCII_3A(':', new int[][]{{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}});
-
-        private Character valueChar;
-        private int[][] valueData;
-
-        EXTRA_FONT_SYMBOLS_DATA(Character valueChar, int[][] valueData) {
-            this.valueChar = valueChar;
-            this.valueData = valueData;
-        }
-
-        public int[][] DATA() {
-            return valueData;
-        }
-    }
-
     public static final boolean DISPLAY_INITIALIZE = true;
-    private final long UPDATE_INTERVAL_RESET_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
-    private final long UPDATE_INTERVAL_NON_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
     private final String RESET_MESSAGE = "...Sleep...";
     //endregion
-
     //region Variables
     private DotMatrixDisplayView ctDisplayTimeView;
     private DotMatrixFont extraFont;
     private CtRecord currentCtRecord;
     private long updateInterval;
     private boolean inAutomatic;
+    private Rect displayRect;
     private Rect resetRect;
     private final Handler handlerTime = new Handler();
     private Runnable runnableTime = new Runnable() {
@@ -71,10 +53,11 @@ public class CtDisplayTimeUpdater {
 
     private void init() {
         setupExtraFont();
-        resetRect = new Rect(0, 0, ctDisplayTimeView.getDisplayRect().width() + 1 + RESET_MESSAGE.length() * (ctDisplayTimeView.getDefautFont().getWidth() + ctDisplayTimeView.getDefautFont().getRightMargin()), ctDisplayTimeView.getDefautFont().getHeight());
+        displayRect = new Rect(0, 0, getTimeDisplayWidth() - ctDisplayTimeView.getDefautFont().getRightMargin(), getDisplayHeight() + 1);   //  +1 pour la ligne du '.'
+        resetRect = new Rect(displayRect.left, displayRect.top, getResetMessageDisplayWidth() + getTimeDisplayWidth(), displayRect.height());
+        ctDisplayTimeView.setGridDimensions(displayRect, resetRect);
         inAutomatic = false;
         mOnExpiredTimerListener = null;
-        updateInterval = UPDATE_INTERVAL_RESET_MS;
     }
 
     public void close() {
@@ -84,8 +67,8 @@ public class CtDisplayTimeUpdater {
         currentCtRecord = null;
     }
 
-    public void startAutomatic(long delay) {
-        handlerTime.postDelayed(runnableTime, delay);
+    public void startAutomatic() {
+        handlerTime.postDelayed(runnableTime, updateInterval);
     }
 
     public void stopAutomatic() {
@@ -93,6 +76,16 @@ public class CtDisplayTimeUpdater {
     }
 
     public void updateCtDisplayTimeView(boolean displayInitialize) {
+        final long UPDATE_INTERVAL_RESET_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
+        final long UPDATE_INTERVAL_NON_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
+
+        long nowm = System.currentTimeMillis();
+        if (!currentCtRecord.updateTime(nowm)) {    //  Le timer a expiré
+            if (mOnExpiredTimerListener != null) {
+                mOnExpiredTimerListener.onExpiredTimer();
+            }
+            displayInitialize = true;
+        }
         if (displayInitialize) {
             if (currentCtRecord.isReset()) {
                 updateInterval = UPDATE_INTERVAL_RESET_MS;
@@ -101,14 +94,14 @@ public class CtDisplayTimeUpdater {
                 ctDisplayTimeView.appendText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             } else {
                 updateInterval = UPDATE_INTERVAL_NON_RESET_MS;
-                ctDisplayTimeView.fillRectOff(ctDisplayTimeView.getDisplayRect());
+                ctDisplayTimeView.fillRectOff(displayRect);
                 ctDisplayTimeView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         } else {
             if (currentCtRecord.isReset()) {
                 ctDisplayTimeView.scrollLeft(resetRect);
             } else {
-                ctDisplayTimeView.fillRectOff(ctDisplayTimeView.getDisplayRect());
+                ctDisplayTimeView.fillRectOff(displayRect);
                 ctDisplayTimeView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         }
@@ -116,35 +109,51 @@ public class CtDisplayTimeUpdater {
     }
 
     private void automatic() {
-        long nowm = System.currentTimeMillis();
         handlerTime.postDelayed(runnableTime, updateInterval);
         if ((!inAutomatic) && (!ctDisplayTimeView.isDrawing())) {
             inAutomatic = true;
-            if (!currentCtRecord.updateTime(nowm)) {    //  Le timer a expiré
-                if (mOnExpiredTimerListener != null) {
-                    mOnExpiredTimerListener.onExpiredTimer();
-                }
-                updateCtDisplayTimeView(DISPLAY_INITIALIZE);
-            } else {
-                updateCtDisplayTimeView(!DISPLAY_INITIALIZE);
-            }
+            updateCtDisplayTimeView(!DISPLAY_INITIALIZE);
             inAutomatic = false;
         }
     }
 
+    private int getTimeDisplayWidth() {   //  Largeur nécessaire pour afficher "HH:MM:SS.CC"   (avec marge droite)
+        final String EXTRA_FONT_TIME_PATTERN = "::.";
+        final String DEFAULT_FONT_TIME_PATTERN = "HHMMSSCC";
+
+        return extraFont.getTextWidth(EXTRA_FONT_TIME_PATTERN) + ctDisplayTimeView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_PATTERN);
+    }
+
+    private int getResetMessageDisplayWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
+        return ctDisplayTimeView.getDefautFont().getTextWidth(RESET_MESSAGE);
+    }
+
+    private int getDisplayHeight() {   //  Hauteur nécessaire pour pouvoir utiliser à la fois extraFont et ctDisplayTimeView.getDefautFont()
+        return Math.max(extraFont.getHeight(), ctDisplayTimeView.getDefautFont().getHeight());
+    }
+
     private void setupExtraFont() {
-        final int EXTRA_FONT_SYMBOL_RIGHT_MARGIN = 1;
+        //  Caractères redéfinis pour l'affichage du temps ("." et ":") (plus fins que la fonte par défaut de DotMatrixDisplayView)
+        final DotMatrixSymbol[] EXTRA_FONT_SYMBOLS = {
+                new DotMatrixSymbol('.', new int[][]{{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 1}}),
+                new DotMatrixSymbol(':', new int[][]{{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}})
+        };
+
+        final int EXTRA_FONT_RIGHT_MARGIN = 1;
+        DotMatrixSymbol symbol;
 
         extraFont = new DotMatrixFont();
-        for (EXTRA_FONT_SYMBOLS_DATA extraFontSymbolData : EXTRA_FONT_SYMBOLS_DATA.values()) {
-            extraFont.addSymbol(extraFontSymbolData.valueChar, extraFontSymbolData.DATA());
-        }
-        extraFont.setRightMargin(EXTRA_FONT_SYMBOL_RIGHT_MARGIN);
-        //  Le "." surcharge le caractère précédent, le ":" est affiché sur une largeur réduite
-        extraFont.getCharMap().get(EXTRA_FONT_SYMBOLS_DATA.ASCII_2E.valueChar).setPosInitialOffset(new Point(-extraFont.getWidth() - extraFont.getRightMargin() + 1, 1));
-        extraFont.getCharMap().get(EXTRA_FONT_SYMBOLS_DATA.ASCII_2E.valueChar).setPosFinalOffset(new Point(extraFont.getWidth() + extraFont.getRightMargin() - 1, -1));
-        extraFont.getCharMap().get(EXTRA_FONT_SYMBOLS_DATA.ASCII_3A.valueChar).setPosInitialOffset(new Point(-extraFont.getWidth() / 2, 0));
-        extraFont.getCharMap().get(EXTRA_FONT_SYMBOLS_DATA.ASCII_3A.valueChar).setPosFinalOffset(new Point(extraFont.getWidth() / 2 + extraFont.getRightMargin() + 1, 0));
+        extraFont.setSymbols(EXTRA_FONT_SYMBOLS);
+        extraFont.setRightMargin(EXTRA_FONT_RIGHT_MARGIN);
+        symbol = extraFont.getCharMap().get('.');
+        //  Le "." est affiché sur le caractère précédent:
+        symbol.setPosInitialOffset(new Point(-symbol.getWidth() - extraFont.getRightMargin() + 1, 1));
+        symbol.setPosFinalOffset(new Point(symbol.getWidth() + extraFont.getRightMargin() - 1, -1));
+        //  le ":" est affiché sur une largeur réduite:
+        symbol = extraFont.getCharMap().get(':');
+        symbol.setPosInitialOffset(new Point(-symbol.getWidth() / 2, 0));
+        symbol.setPosFinalOffset(new Point(symbol.getWidth() / 2 + extraFont.getRightMargin() + 1, 0));
+        symbol = null;
     }
 
 }

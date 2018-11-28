@@ -75,7 +75,6 @@ public class MainActivity extends Activity {
 
     public enum SWTIMER_SHP_KEY_NAMES {SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST, KEEP_SCREEN, REQUESTED_CLOCK_APP_ALARM_DISMISSES}
 
-    private final int UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS = 1000;
     private final long DELAY_ZERO_MS = 0;
     //endregion
     //region Variables
@@ -136,7 +135,7 @@ public class MainActivity extends Activity {
         setupStringShelfDatabase();
         setupCtRecordsHandler();
         setupMainCtList();
-        setupMainCtListRobot();
+        setupMainCtListUpdater();
         setupShowExpirationTime();
         setupAddNewChronoTimerToList();
         setupKeepScreen();
@@ -146,7 +145,7 @@ public class MainActivity extends Activity {
         updateDisplayStateColors();
         updateDisplayKeepScreen();
         rebuildList();
-        mainCtListUpdater.startAutomatic(UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS);
+        mainCtListUpdater.startAutomatic();
         invalidateOptionsMenu();
     }
 
@@ -215,9 +214,9 @@ public class MainActivity extends Activity {
             if (command.equals(COMMANDS.SELECT_ALL_CT)) {
                 ctRecordsHandler.selectAll();
             }
-            mainCtListUpdater.startAutomatic(DELAY_ZERO_MS);
+            mainCtListUpdater.startAutomatic();
         } else {
-            toastLong("The list must contain at least one Chrono or Timer",this);
+            toastLong("The list must contain at least one Chrono or Timer", this);
         }
     }
 
@@ -240,9 +239,9 @@ public class MainActivity extends Activity {
                 removeSelection();
             }
             rebuildList();
-            mainCtListUpdater.startAutomatic(DELAY_ZERO_MS);
+            mainCtListUpdater.startAutomatic();
         } else {
-            toastLong("The list must contain at least one selected Chrono or Timer",this);
+            toastLong("The list must contain at least one selected Chrono or Timer", this);
         }
     }
 
@@ -271,14 +270,14 @@ public class MainActivity extends Activity {
     private void onCtListExpiredTimers() {
         mainCtListUpdater.stopAutomatic();
         rebuildList();
-        mainCtListUpdater.startAutomatic(DELAY_ZERO_MS);
+        mainCtListUpdater.startAutomatic();
         beep(this);
     }
 
     private void onCtListItemButtonClick() {
         mainCtListUpdater.stopAutomatic();
         rebuildList();
-        mainCtListUpdater.startAutomatic(DELAY_ZERO_MS);
+        mainCtListUpdater.startAutomatic();
     }
 
     private void updateDisplayStateColor(COMMANDS command) {
@@ -338,7 +337,7 @@ public class MainActivity extends Activity {
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
             rebuildList();
-            mainCtListUpdater.startAutomatic(DELAY_ZERO_MS);
+            mainCtListUpdater.startAutomatic();
         } else {
             launchCtDisplayActivity(idct);
         }
@@ -484,9 +483,8 @@ public class MainActivity extends Activity {
         mainCtListView.setAdapter(mainCtListItemAdapter);
     }
 
-    private void setupMainCtListRobot() {
+    private void setupMainCtListUpdater() {
         mainCtListUpdater = new MainCtListUpdater(mainCtListView, ctRecordsHandler);
-        mainCtListUpdater.setUpdateInterval(UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS);
         mainCtListUpdater.setOnExpiredTimersListener(new MainCtListUpdater.onExpiredTimersListener() {
             @Override
             public void onExpiredTimers() {

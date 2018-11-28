@@ -15,6 +15,9 @@ public class MainCtListUpdater {
 
     private onExpiredTimersListener mOnExpiredTimersListener;
 
+    //region Constantes
+    private final int UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS = 1000;
+    //endregion
     //region Variables
     private MainCtListItemAdapter mainCtListItemAdapter;
     private ListView mainCtListView;
@@ -38,6 +41,7 @@ public class MainCtListUpdater {
     }
 
     private void init() {
+        updateInterval = UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS;
         mOnExpiredTimersListener = null;
         mainCtListItemAdapter = (MainCtListItemAdapter) mainCtListView.getAdapter();
     }
@@ -48,12 +52,8 @@ public class MainCtListUpdater {
         ctRecordsHandler = null;
     }
 
-    public void setUpdateInterval(long updateInterval) {
-        this.updateInterval = updateInterval;
-    }
-
-    public void startAutomatic(long delay) {
-        handlerTime.postDelayed(runnableTime, delay);
+    public void startAutomatic() {
+        handlerTime.postDelayed(runnableTime, updateInterval);
     }
 
     public void stopAutomatic() {

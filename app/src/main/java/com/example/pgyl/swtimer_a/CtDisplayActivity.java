@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -152,7 +151,7 @@ public class CtDisplayActivity extends Activity {
         setupKeepScreen();
         setupStringShelfDatabase();
         currentCtRecord = new CtRecord(this);
-        setupCtDisplayTimeRobot();
+        setupCtDisplayTimeUpdater();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         copyChronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), currentCtRecord);
 
@@ -184,14 +183,12 @@ public class CtDisplayActivity extends Activity {
         }
         setupCtDisplayTimeColors();
         setupButtonColors();
-
-        currentCtRecord.updateTime(nowm);
         updateCtDisplayTimeView();
         updateDisplayActivityTitle(currentCtRecord.getMessage());
         updateDisplayButtonColors();
         updateDisplayBackScreenColor();
         updateDisplayKeepScreen();
-        ctDisplayTimeUpdater.startAutomatic(DELAY_ZERO_MS);
+        ctDisplayTimeUpdater.startAutomatic();
         invalidateOptionsMenu();
     }
 
@@ -464,13 +461,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupCtDisplayTimeView() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un message
-        final int GRID_DISPLAY_WIDTH = 51;   //  7 caracteres avec marge droite x (5+1) + dernier caractere sans marge droite 1 x 5 + 2 doubles points x 2
-        final int GRID_DISPLAY_HEIGHT = 8;   //  7 lignes + 1 pour le point décimal (surchargeant le caractère précédent)
-        final int GRID_TOTAL_WIDTH = 200;    //  Suffisant pour stocker l'affichage du temps et d'un message de max. 24 caractères 5x7, avec marge droite
-        final int GRID_TOTAL_HEIGHT = GRID_DISPLAY_HEIGHT;
-
         ctDisplayTimeView = findViewById(R.id.DISPLAY_TIME);
-        ctDisplayTimeView.setGridDimensions(new Rect(0, 0, GRID_DISPLAY_WIDTH, GRID_DISPLAY_HEIGHT), new Rect(0, 0, GRID_TOTAL_WIDTH, GRID_TOTAL_HEIGHT));
         ctDisplayTimeView.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
@@ -488,7 +479,7 @@ public class CtDisplayActivity extends Activity {
         stringShelfDatabase.open();
     }
 
-    private void setupCtDisplayTimeRobot() {
+    private void setupCtDisplayTimeUpdater() {
         ctDisplayTimeUpdater = new CtDisplayTimeUpdater(ctDisplayTimeView, currentCtRecord);
         ctDisplayTimeUpdater.setOnExpiredTimerListener(new CtDisplayTimeUpdater.onExpiredTimerListener() {
             @Override
