@@ -97,16 +97,16 @@ public class CtDisplayActivity extends Activity {
     //endregion
     //region Variables
     private CtRecord currentCtRecord;
+    private DotMatrixDisplayView timeDotMatrixDisplayView;
     private CtDisplayTimeUpdater ctDisplayTimeUpdater;
-    private boolean keepScreen;
-    private String[] timeColors;
-    private String[] buttonColors;
-    private String[] backScreenColors;
-    private DotMatrixDisplayView ctDisplayTimeView;
     private SymbolButtonView[] buttons;
     private Menu menu;
     private MenuItem[] barMenuItems;
     private LinearLayout backLayout;
+    private boolean keepScreen;
+    private String[] timeColors;
+    private String[] buttonColors;
+    private String[] backScreenColors;
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
     private StringShelfDatabase stringShelfDatabase;
@@ -119,7 +119,7 @@ public class CtDisplayActivity extends Activity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setupOrientationLayout();
         setupButtons();
-        setupCtDisplayTimeView();
+        setupTimeDotMatrixDisplayView();
         backLayout = findViewById(R.id.BACK_LAYOUT);
         validReturnFromCalledActivity = false;
     }
@@ -460,9 +460,9 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void setupCtDisplayTimeView() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un message
-        ctDisplayTimeView = findViewById(R.id.DISPLAY_TIME);
-        ctDisplayTimeView.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
+    private void setupTimeDotMatrixDisplayView() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un message
+        timeDotMatrixDisplayView = findViewById(R.id.DISPLAY_TIME);
+        timeDotMatrixDisplayView.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
                 onCtDisplayTimeViewClick();
@@ -480,7 +480,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupCtDisplayTimeUpdater() {
-        ctDisplayTimeUpdater = new CtDisplayTimeUpdater(ctDisplayTimeView, currentCtRecord);
+        ctDisplayTimeUpdater = new CtDisplayTimeUpdater(timeDotMatrixDisplayView, currentCtRecord);
         ctDisplayTimeUpdater.setOnExpiredTimerListener(new CtDisplayTimeUpdater.onExpiredTimerListener() {
             @Override
             public void onExpiredTimer() {
@@ -490,10 +490,10 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupCtDisplayTimeColors() {
-        ctDisplayTimeView.setColors(timeColors);
-        ctDisplayTimeView.setFrontColorIndex(getTimeButtonsColorOnIndex());
-        ctDisplayTimeView.setBackColorIndex(getTimeButtonsColorOffIndex());
-        ctDisplayTimeView.setAlternateColorIndex(getTimeButtonsColorBackIndex());
+        timeDotMatrixDisplayView.setColors(timeColors);
+        timeDotMatrixDisplayView.setFrontColorIndex(getTimeButtonsColorOnIndex());
+        timeDotMatrixDisplayView.setBackColorIndex(getTimeButtonsColorOffIndex());
+        timeDotMatrixDisplayView.setAlternateColorIndex(getTimeButtonsColorBackIndex());
     }
 
     private void setupButtonColors() {

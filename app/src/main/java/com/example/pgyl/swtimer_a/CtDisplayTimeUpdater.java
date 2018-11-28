@@ -24,16 +24,16 @@ public class CtDisplayTimeUpdater {
 
     //region Constantes
     public static final boolean DISPLAY_INITIALIZE = true;
-    private final String RESET_MESSAGE = "...Sleep...";
+    private final String SLEEP_MESSAGE = "...Sleep...";
     //endregion
     //region Variables
-    private DotMatrixDisplayView ctDisplayTimeView;
+    private DotMatrixDisplayView timeDotMatrixDisplayView;
     private DotMatrixFont extraFont;
     private CtRecord currentCtRecord;
     private long updateInterval;
     private boolean inAutomatic;
     private Rect displayRect;
-    private Rect resetRect;
+    private Rect extendedRect;
     private final Handler handlerTime = new Handler();
     private Runnable runnableTime = new Runnable() {
         @Override
@@ -43,25 +43,25 @@ public class CtDisplayTimeUpdater {
     };
     //endregion
 
-    public CtDisplayTimeUpdater(DotMatrixDisplayView ctDisplayTimeView, CtRecord currentCtRecord) {
+    public CtDisplayTimeUpdater(DotMatrixDisplayView timeDotMatrixDisplayView, CtRecord currentCtRecord) {
         super();
 
-        this.ctDisplayTimeView = ctDisplayTimeView;
+        this.timeDotMatrixDisplayView = timeDotMatrixDisplayView;
         this.currentCtRecord = currentCtRecord;
         init();
     }
 
     private void init() {
         setupExtraFont();
-        displayRect = new Rect(0, 0, getTimeDisplayWidth() - ctDisplayTimeView.getDefautFont().getRightMargin(), getDisplayHeight() + 1);   //  +1 pour la ligne du '.'
-        resetRect = new Rect(displayRect.left, displayRect.top, getResetMessageDisplayWidth() + getTimeDisplayWidth(), displayRect.height());
-        ctDisplayTimeView.setGridDimensions(displayRect, resetRect);
+        displayRect = new Rect(0, 0, getTimeDisplayWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), getDisplayHeight() + 1);   //  +1 pour la ligne du '.'
+        extendedRect = new Rect(displayRect.left, displayRect.top, getMessageDisplayWidth() + getTimeDisplayWidth(), displayRect.height());
+        timeDotMatrixDisplayView.setGridDimensions(displayRect, extendedRect);
         inAutomatic = false;
         mOnExpiredTimerListener = null;
     }
 
     public void close() {
-        ctDisplayTimeView = null;
+        timeDotMatrixDisplayView = null;
         extraFont.close();
         extraFont = null;
         currentCtRecord = null;
@@ -76,8 +76,8 @@ public class CtDisplayTimeUpdater {
     }
 
     public void updateCtDisplayTimeView(boolean displayInitialize) {
-        final long UPDATE_INTERVAL_RESET_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
-        final long UPDATE_INTERVAL_NON_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
+        final long UPDATE_INTERVAL_SLEEP_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
+        final long UPDATE_INTERVAL_NO_SLEEP_MS = 10;    //   Affichage du temps au 1/100e de seconde
 
         long nowm = System.currentTimeMillis();
         if (!currentCtRecord.updateTime(nowm)) {    //  Le timer a expiré
@@ -88,29 +88,29 @@ public class CtDisplayTimeUpdater {
         }
         if (displayInitialize) {
             if (currentCtRecord.isReset()) {
-                updateInterval = UPDATE_INTERVAL_RESET_MS;
-                ctDisplayTimeView.fillRectOff(resetRect);
-                ctDisplayTimeView.displayText(0, 0, RESET_MESSAGE, ctDisplayTimeView.getDefautFont());
-                ctDisplayTimeView.appendText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                updateInterval = UPDATE_INTERVAL_SLEEP_MS;
+                timeDotMatrixDisplayView.fillRectOff(extendedRect);
+                timeDotMatrixDisplayView.displayText(0, 0, SLEEP_MESSAGE, timeDotMatrixDisplayView.getDefautFont());
+                timeDotMatrixDisplayView.appendText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             } else {
-                updateInterval = UPDATE_INTERVAL_NON_RESET_MS;
-                ctDisplayTimeView.fillRectOff(displayRect);
-                ctDisplayTimeView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                updateInterval = UPDATE_INTERVAL_NO_SLEEP_MS;
+                timeDotMatrixDisplayView.fillRectOff(displayRect);
+                timeDotMatrixDisplayView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         } else {
             if (currentCtRecord.isReset()) {
-                ctDisplayTimeView.scrollLeft(resetRect);
+                timeDotMatrixDisplayView.scrollLeft(extendedRect);
             } else {
-                ctDisplayTimeView.fillRectOff(displayRect);
-                ctDisplayTimeView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                timeDotMatrixDisplayView.fillRectOff(displayRect);
+                timeDotMatrixDisplayView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         }
-        ctDisplayTimeView.invalidate();
+        timeDotMatrixDisplayView.invalidate();
     }
 
     private void automatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
-        if ((!inAutomatic) && (!ctDisplayTimeView.isDrawing())) {
+        if ((!inAutomatic) && (!timeDotMatrixDisplayView.isDrawing())) {
             inAutomatic = true;
             updateCtDisplayTimeView(!DISPLAY_INITIALIZE);
             inAutomatic = false;
@@ -118,18 +118,18 @@ public class CtDisplayTimeUpdater {
     }
 
     private int getTimeDisplayWidth() {   //  Largeur nécessaire pour afficher "HH:MM:SS.CC"   (avec marge droite)
-        final String EXTRA_FONT_TIME_PATTERN = "::.";
-        final String DEFAULT_FONT_TIME_PATTERN = "HHMMSSCC";
+        final String EXTRA_FONT_TIME_CHARS = "::.";
+        final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC
 
-        return extraFont.getTextWidth(EXTRA_FONT_TIME_PATTERN) + ctDisplayTimeView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_PATTERN);
+        return extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + timeDotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS);
     }
 
-    private int getResetMessageDisplayWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
-        return ctDisplayTimeView.getDefautFont().getTextWidth(RESET_MESSAGE);
+    private int getMessageDisplayWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
+        return timeDotMatrixDisplayView.getDefautFont().getTextWidth(SLEEP_MESSAGE);
     }
 
-    private int getDisplayHeight() {   //  Hauteur nécessaire pour pouvoir utiliser à la fois extraFont et ctDisplayTimeView.getDefautFont()
-        return Math.max(extraFont.getHeight(), ctDisplayTimeView.getDefautFont().getHeight());
+    private int getDisplayHeight() {   //  Hauteur nécessaire pour pouvoir utiliser à la fois extraFont et timeDotMatrixDisplayView.getDefautFont()
+        return Math.max(extraFont.getHeight(), timeDotMatrixDisplayView.getDefautFont().getHeight());
     }
 
     private void setupExtraFont() {
