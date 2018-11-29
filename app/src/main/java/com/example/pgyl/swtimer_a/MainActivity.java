@@ -67,15 +67,30 @@ public class MainActivity extends Activity {
         public int ID() {
             return valueId;
         }
+
+        public int INDEX() {
+            return ordinal();
+        }
     }
 
-    private enum STATE_VIEWS {SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST}
+    private enum STATE_VIEWS {
+        SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST;
 
-    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
+        public int INDEX() {
+            return ordinal();
+        }
+    }
+
+    private enum BAR_MENU_ITEMS {
+        KEEP_SCREEN;
+
+        public int INDEX() {
+            return ordinal();
+        }
+    }
 
     public enum SWTIMER_SHP_KEY_NAMES {SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST, KEEP_SCREEN, REQUESTED_CLOCK_APP_ALARM_DISMISSES}
 
-    private final long DELAY_ZERO_MS = 0;
     //endregion
     //region Variables
     private EnumMap<COMMANDS, StateView> commandStateViewsMap;
@@ -131,6 +146,7 @@ public class MainActivity extends Activity {
         super.onResume();
 
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car sera partagé avec CtDisplayActivity
+        keepScreen = getSHPKeepScreen();
         linkButtonsToStateViews();
         setupStringShelfDatabase();
         setupCtRecordsHandler();
@@ -138,7 +154,6 @@ public class MainActivity extends Activity {
         setupMainCtListUpdater();
         setupShowExpirationTime();
         setupAddNewChronoTimerToList();
-        setupKeepScreen();
         setupButtonColors();
 
         updateDisplayButtonColors();
@@ -294,13 +309,12 @@ public class MainActivity extends Activity {
 
     private void updateDisplayButtonColors() {
         for (final COMMANDS command : COMMANDS.values()) {
-            int index = command.ordinal();
-            buttons[index].updateColor();
+            buttons[command.INDEX()].updateColor();
         }
     }
 
     private void uppdateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
-        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
+        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.INDEX()].setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
     }
 
     private void updateDisplayKeepScreen() {
@@ -392,11 +406,10 @@ public class MainActivity extends Activity {
         Class rid = R.id.class;
         for (COMMANDS command : COMMANDS.values())
             try {
-                int index = command.ordinal();
-                buttons[index] = findViewById(rid.getField(BUTTON_COMMAND_XML_PREFIX + command.toString()).getInt(rid));
-                buttons[index].setImageResource(command.ID());
+                buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_COMMAND_XML_PREFIX + command.toString()).getInt(rid));
+                buttons[command.INDEX()].setImageResource(command.ID());
                 final COMMANDS fcommand = command;
-                buttons[index].setOnClickListener(new View.OnClickListener() {
+                buttons[command.INDEX()].setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         onButtonClick(fcommand);
@@ -420,8 +433,7 @@ public class MainActivity extends Activity {
         stateViews = new StateView[STATE_VIEWS.values().length];
         for (STATE_VIEWS stateValue : STATE_VIEWS.values())
             try {
-                int index = stateValue.ordinal();
-                stateViews[index] = findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + stateValue.toString()).getInt(rid));
+                stateViews[stateValue.INDEX()] = findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + stateValue.toString()).getInt(rid));
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {
@@ -436,8 +448,7 @@ public class MainActivity extends Activity {
     private void linkButtonsToStateViews() {
         commandStateViewsMap = new EnumMap<COMMANDS, StateView>(COMMANDS.class);
         for (STATE_VIEWS stateValue : STATE_VIEWS.values()) {
-            int index = stateValue.ordinal();
-            commandStateViewsMap.put(COMMANDS.valueOf(stateValue.toString()), stateViews[index]);
+            commandStateViewsMap.put(COMMANDS.valueOf(stateValue.toString()), stateViews[stateValue.INDEX()]);
         }
     }
 
@@ -504,10 +515,6 @@ public class MainActivity extends Activity {
         setState(COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST, addNewChronoTimerToList);
     }
 
-    private void setupKeepScreen() {
-        keepScreen = getSHPKeepScreen();
-    }
-
     private void setupButtonColors() {
         final String NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT = "668CFF";
         final String NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT = "0040FF";
@@ -519,9 +526,8 @@ public class MainActivity extends Activity {
                 unpressedColor = NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT;
                 pressedColor = NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT;
             }
-            int index = command.ordinal();
-            buttons[index].setUnpressedColor(unpressedColor);
-            buttons[index].setPressedColor(pressedColor);
+            buttons[command.INDEX()].setUnpressedColor(unpressedColor);
+            buttons[command.INDEX()].setPressedColor(pressedColor);
         }
     }
 
@@ -532,8 +538,7 @@ public class MainActivity extends Activity {
         Class rid = R.id.class;
         for (BAR_MENU_ITEMS barMenuItem : BAR_MENU_ITEMS.values())
             try {
-                int index = barMenuItem.ordinal();
-                barMenuItems[index] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
+                barMenuItems[barMenuItem.INDEX()] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {

@@ -317,7 +317,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(context, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
-        ((Activity) context).startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CT_DISPLAY.ordinal());
+        ((Activity) context).startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CT_DISPLAY.INDEX());
     }
 
 }

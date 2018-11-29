@@ -69,7 +69,11 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.timeMessageToP
 public class CtDisplayActivity extends Activity {
     //region Constantes
     public enum COLOR_ITEMS {
-        TIME, BUTTONS, BACK_SCREEN
+        TIME, BUTTONS, BACK_SCREEN;
+
+        public int INDEX() {
+            return ordinal();
+        }
     }
 
     private enum COMMANDS {
@@ -84,15 +88,24 @@ public class CtDisplayActivity extends Activity {
         public int ID() {
             return valueId;
         }
+
+        public int INDEX() {
+            return ordinal();
+        }
     }
 
-    private enum BAR_MENU_ITEMS {KEEP_SCREEN}
+    private enum BAR_MENU_ITEMS {
+        KEEP_SCREEN;
+
+        public int INDEX() {
+            return ordinal();
+        }
+    }
 
     public enum CTDISPLAY_EXTRA_KEYS {
         CURRENT_CHRONO_TIMER_ID
     }
 
-    private final long DELAY_ZERO_MS = 0;
     private final int ACTIVITY_CODE_MULTIPLIER = 100;  // Pour différencier les types d'appel à une même activité
     //endregion
     //region Variables
@@ -148,7 +161,7 @@ public class CtDisplayActivity extends Activity {
 
         long nowm = System.currentTimeMillis();
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car partagé avec MainActivity
-        setupKeepScreen();
+        keepScreen = getSHPKeepScreen();
         setupStringShelfDatabase();
         currentCtRecord = new CtRecord(this);
         setupCtDisplayTimeUpdater();
@@ -195,25 +208,25 @@ public class CtDisplayActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
         validReturnFromCalledActivity = false;
-        if (requestCode == PEKISLIB_ACTIVITIES.PRESETS.ordinal()) {
+        if (requestCode == PEKISLIB_ACTIVITIES.PRESETS.INDEX()) {
             calledActivity = PEKISLIB_ACTIVITIES.PRESETS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
-        if (requestCode == (PEKISLIB_ACTIVITIES.COLOR_PICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.TIME.ordinal()) {
+        if (requestCode == (PEKISLIB_ACTIVITIES.COLOR_PICKER.INDEX() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.TIME.INDEX()) {
             calledActivity = PEKISLIB_ACTIVITIES.COLOR_PICKER.toString() + COLOR_ITEMS.TIME.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
-        if (requestCode == (PEKISLIB_ACTIVITIES.COLOR_PICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.BUTTONS.ordinal()) {
+        if (requestCode == (PEKISLIB_ACTIVITIES.COLOR_PICKER.INDEX() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.BUTTONS.INDEX()) {
             calledActivity = PEKISLIB_ACTIVITIES.COLOR_PICKER.toString() + COLOR_ITEMS.BUTTONS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
-        if (requestCode == (PEKISLIB_ACTIVITIES.COLOR_PICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.BACK_SCREEN.ordinal()) {
+        if (requestCode == (PEKISLIB_ACTIVITIES.COLOR_PICKER.INDEX() + 1) * ACTIVITY_CODE_MULTIPLIER + COLOR_ITEMS.BACK_SCREEN.INDEX()) {
             calledActivity = PEKISLIB_ACTIVITIES.COLOR_PICKER.toString() + COLOR_ITEMS.BACK_SCREEN.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
@@ -358,11 +371,10 @@ public class CtDisplayActivity extends Activity {
     private void updateDisplayButtonColor(COMMANDS command) {  //   ON/BACK ou OFF/BACK
         int frontColorIndex = ((getButtonState(command)) ? getTimeButtonsColorOnIndex() : getTimeButtonsColorOffIndex());
         int alternateColorIndex = ((getButtonState(command)) ? getTimeButtonsColorOffIndex() : getTimeButtonsColorOnIndex());
-        int index = command.ordinal();
-        buttons[index].setFrontColorIndex(frontColorIndex);
-        buttons[index].setBackColorIndex(getTimeButtonsColorBackIndex());
-        buttons[index].setAlternateColorIndex(alternateColorIndex);
-        buttons[index].invalidate();
+        buttons[command.INDEX()].setFrontColorIndex(frontColorIndex);
+        buttons[command.INDEX()].setBackColorIndex(getTimeButtonsColorBackIndex());
+        buttons[command.INDEX()].setAlternateColorIndex(alternateColorIndex);
+        buttons[command.INDEX()].invalidate();
     }
 
     private void updateDisplayButtonColors() {
@@ -376,7 +388,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
-        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.ordinal()].setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
+        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.INDEX()].setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
     }
 
     private void updateDisplayKeepScreen() {
@@ -438,11 +450,10 @@ public class CtDisplayActivity extends Activity {
         Class rid = R.id.class;
         for (COMMANDS command : COMMANDS.values()) {
             try {
-                int index = command.ordinal();
-                buttons[index] = findViewById(rid.getField(BUTTON_XML_NAME_PREFIX + command.toString()).getInt(rid));
-                buttons[index].setSVGImageResource(command.ID());
+                buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_XML_NAME_PREFIX + command.toString()).getInt(rid));
+                buttons[command.INDEX()].setSVGImageResource(command.ID());
                 final COMMANDS fcommand = command;
-                buttons[index].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
+                buttons[command.INDEX()].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
                     @Override
                     public void onCustomClick() {
                         onButtonClick(fcommand);
@@ -470,10 +481,6 @@ public class CtDisplayActivity extends Activity {
         });
     }
 
-    private void setupKeepScreen() {
-        keepScreen = getSHPKeepScreen();
-    }
-
     private void setupStringShelfDatabase() {
         stringShelfDatabase = new StringShelfDatabase(this);
         stringShelfDatabase.open();
@@ -498,8 +505,7 @@ public class CtDisplayActivity extends Activity {
 
     private void setupButtonColors() {
         for (COMMANDS command : COMMANDS.values()) {
-            int index = command.ordinal();
-            buttons[index].setColors(buttonColors);
+            buttons[command.INDEX()].setColors(buttonColors);
         }
     }
 
@@ -510,8 +516,7 @@ public class CtDisplayActivity extends Activity {
         Class rid = R.id.class;
         for (BAR_MENU_ITEMS barMenuItem : BAR_MENU_ITEMS.values())
             try {
-                int index = barMenuItem.ordinal();
-                barMenuItems[index] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
+                barMenuItems[barMenuItem.INDEX()] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {
@@ -530,9 +535,9 @@ public class CtDisplayActivity extends Activity {
     private void launchColorPickerActivity(COLOR_ITEMS colorItem) {
         setStartStatusInColorPickerActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, ColorPickerActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), capitalize(colorItem.toString()) + " Colors (RRGGBB)");
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), capitalize(colorItem.toString()) + " Colors");
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorItemTableName(colorItem));
-        startActivityForResult(callingIntent, (PEKISLIB_ACTIVITIES.COLOR_PICKER.ordinal() + 1) * ACTIVITY_CODE_MULTIPLIER + colorItem.ordinal());  //  Il faut différencier les 3 types de couleur
+        startActivityForResult(callingIntent, (PEKISLIB_ACTIVITIES.COLOR_PICKER.INDEX() + 1) * ACTIVITY_CODE_MULTIPLIER + colorItem.INDEX());  //  Il faut différencier les 3 types de couleur
     }
 
     private void launchPresetsActivity() {
@@ -544,7 +549,7 @@ public class CtDisplayActivity extends Activity {
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.IS_COLOR_TYPE.toString(), String.valueOf((!PRESETS_ACTIVITY_IS_COLOR_TYPE) ? 1 : 0));
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getPresetsCTTableName());
-        startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.PRESETS.ordinal());
+        startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.PRESETS.INDEX());
     }
 
     private void launchHelpActivity() {
