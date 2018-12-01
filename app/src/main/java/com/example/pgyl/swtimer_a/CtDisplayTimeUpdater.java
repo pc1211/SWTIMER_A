@@ -25,6 +25,8 @@ public class CtDisplayTimeUpdater {
     //region Constantes
     public static final boolean DISPLAY_INITIALIZE = true;
     private final String SLEEP_MESSAGE = "...Sleep...";
+    final String EXTRA_FONT_TIME_CHARS = "::.";
+    final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC
     //endregion
     //region Variables
     private DotMatrixDisplayView timeDotMatrixDisplayView;
@@ -53,7 +55,7 @@ public class CtDisplayTimeUpdater {
 
     private void init() {
         setupExtraFont();
-        displayRect = new Rect(0, 0, getTimeDisplayWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), getDisplayHeight() + 1);   //  +1 pour la ligne du '.'
+        displayRect = new Rect(0, 0, getTimeDisplayWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), Math.max(getTimeDisplayHeight(), getMessageDisplayHeight()));   //  +1 pour la ligne du '.'
         extendedRect = new Rect(displayRect.left, displayRect.top, getMessageDisplayWidth() + getTimeDisplayWidth(), displayRect.height());
         timeDotMatrixDisplayView.setGridDimensions(displayRect, extendedRect);
         inAutomatic = false;
@@ -118,18 +120,19 @@ public class CtDisplayTimeUpdater {
     }
 
     private int getTimeDisplayWidth() {   //  Largeur nécessaire pour afficher "HH:MM:SS.CC"   (avec marge droite)
-        final String EXTRA_FONT_TIME_CHARS = "::.";
-        final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC
-
         return extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + timeDotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS);
+    }
+
+    private int getTimeDisplayHeight() {   //  Hauteur
+        return Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), timeDotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS));
     }
 
     private int getMessageDisplayWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
         return timeDotMatrixDisplayView.getDefautFont().getTextWidth(SLEEP_MESSAGE);
     }
 
-    private int getDisplayHeight() {   //  Hauteur nécessaire pour pouvoir utiliser à la fois extraFont et timeDotMatrixDisplayView.getDefautFont()
-        return Math.max(extraFont.getHeight(), timeDotMatrixDisplayView.getDefautFont().getHeight());
+    private int getMessageDisplayHeight() {   //  Hauteur
+        return timeDotMatrixDisplayView.getDefautFont().getTextHeight(SLEEP_MESSAGE);
     }
 
     private void setupExtraFont() {
@@ -145,12 +148,12 @@ public class CtDisplayTimeUpdater {
         extraFont = new DotMatrixFont();
         extraFont.setSymbols(EXTRA_FONT_SYMBOLS);
         extraFont.setRightMargin(EXTRA_FONT_RIGHT_MARGIN);
-        symbol = extraFont.getCharMap().get('.');
+        symbol = extraFont.getSymbol('.');
         //  Le "." est affiché sur le caractère précédent:
         symbol.setPosInitialOffset(new Point(-symbol.getWidth() - extraFont.getRightMargin() + 1, 1));
         symbol.setPosFinalOffset(new Point(symbol.getWidth() + extraFont.getRightMargin() - 1, -1));
         //  le ":" est affiché sur une largeur réduite:
-        symbol = extraFont.getCharMap().get(':');
+        symbol = extraFont.getSymbol(':');
         symbol.setPosInitialOffset(new Point(-symbol.getWidth() / 2, 0));
         symbol.setPosFinalOffset(new Point(symbol.getWidth() / 2 + extraFont.getRightMargin() + 1, 0));
         symbol = null;
