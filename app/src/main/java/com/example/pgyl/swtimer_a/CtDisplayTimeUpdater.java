@@ -55,8 +55,8 @@ public class CtDisplayTimeUpdater {
 
     private void init() {
         setupExtraFont();
-        displayRect = new Rect(0, 0, getTimeDisplayWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), Math.max(getTimeDisplayHeight(), getMessageDisplayHeight()));   //  +1 pour la ligne du '.'
-        extendedRect = new Rect(displayRect.left, displayRect.top, getMessageDisplayWidth() + getTimeDisplayWidth(), displayRect.height());
+        displayRect = new Rect(0, 0, getTimeWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), Math.max(getTimeHeight(), getSleepMessageHeight()));
+        extendedRect = new Rect(displayRect.left, displayRect.top, getSleepMessageWidth() + getTimeWidth(), displayRect.height());
         timeDotMatrixDisplayView.setGridDimensions(displayRect, extendedRect);
         inAutomatic = false;
         mOnExpiredTimerListener = null;
@@ -119,19 +119,19 @@ public class CtDisplayTimeUpdater {
         }
     }
 
-    private int getTimeDisplayWidth() {   //  Largeur nécessaire pour afficher "HH:MM:SS.CC"   (avec marge droite)
+    private int getTimeWidth() {   //  Largeur nécessaire pour afficher "HH:MM:SS.CC"   (avec marge droite)
         return extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + timeDotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS);
     }
 
-    private int getTimeDisplayHeight() {   //  Hauteur
+    private int getTimeHeight() {   //  Hauteur
         return Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), timeDotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS));
     }
 
-    private int getMessageDisplayWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
+    private int getSleepMessageWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
         return timeDotMatrixDisplayView.getDefautFont().getTextWidth(SLEEP_MESSAGE);
     }
 
-    private int getMessageDisplayHeight() {   //  Hauteur
+    private int getSleepMessageHeight() {   //  Hauteur
         return timeDotMatrixDisplayView.getDefautFont().getTextHeight(SLEEP_MESSAGE);
     }
 
