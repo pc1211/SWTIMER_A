@@ -24,7 +24,7 @@ public class CtDisplayTimeUpdater {
 
     //region Constantes
     public static final boolean DISPLAY_INITIALIZE = true;
-    private final String SLEEP_MESSAGE = "...Sleep...";
+    private final String MESSAGE_ON_RESET = "...Ready...";
     final String EXTRA_FONT_TIME_CHARS = "::.";
     final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC
     //endregion
@@ -55,8 +55,8 @@ public class CtDisplayTimeUpdater {
 
     private void init() {
         setupExtraFont();
-        displayRect = new Rect(0, 0, getTimeWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), Math.max(getTimeHeight(), getSleepMessageHeight()));
-        extendedRect = new Rect(displayRect.left, displayRect.top, getSleepMessageWidth() + getTimeWidth(), displayRect.height());
+        displayRect = new Rect(0, 0, getTimeWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), Math.max(getTimeHeight(), getResetMessageHeight()));
+        extendedRect = new Rect(displayRect.left, displayRect.top, getResetMessageWidth() + getTimeWidth(), displayRect.height());
         timeDotMatrixDisplayView.setGridDimensions(displayRect, extendedRect);
         inAutomatic = false;
         mOnExpiredTimerListener = null;
@@ -78,8 +78,8 @@ public class CtDisplayTimeUpdater {
     }
 
     public void updateCtDisplayTimeView(boolean displayInitialize) {
-        final long UPDATE_INTERVAL_SLEEP_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
-        final long UPDATE_INTERVAL_NO_SLEEP_MS = 10;    //   Affichage du temps au 1/100e de seconde
+        final long UPDATE_INTERVAL_RESET_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
+        final long UPDATE_INTERVAL_NO_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
 
         long nowm = System.currentTimeMillis();
         if (!currentCtRecord.updateTime(nowm)) {    //  Le timer a expiré
@@ -90,12 +90,12 @@ public class CtDisplayTimeUpdater {
         }
         if (displayInitialize) {
             if (currentCtRecord.isReset()) {
-                updateInterval = UPDATE_INTERVAL_SLEEP_MS;
+                updateInterval = UPDATE_INTERVAL_RESET_MS;
                 timeDotMatrixDisplayView.fillRectOff(extendedRect);
-                timeDotMatrixDisplayView.displayText(0, 0, SLEEP_MESSAGE, timeDotMatrixDisplayView.getDefautFont());
+                timeDotMatrixDisplayView.displayText(0, 0, MESSAGE_ON_RESET, timeDotMatrixDisplayView.getDefautFont());
                 timeDotMatrixDisplayView.appendText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             } else {
-                updateInterval = UPDATE_INTERVAL_NO_SLEEP_MS;
+                updateInterval = UPDATE_INTERVAL_NO_RESET_MS;
                 timeDotMatrixDisplayView.fillRectOff(displayRect);
                 timeDotMatrixDisplayView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
@@ -127,12 +127,12 @@ public class CtDisplayTimeUpdater {
         return Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), timeDotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS));
     }
 
-    private int getSleepMessageWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
-        return timeDotMatrixDisplayView.getDefautFont().getTextWidth(SLEEP_MESSAGE);
+    private int getResetMessageWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
+        return timeDotMatrixDisplayView.getDefautFont().getTextWidth(MESSAGE_ON_RESET);
     }
 
-    private int getSleepMessageHeight() {   //  Hauteur
-        return timeDotMatrixDisplayView.getDefautFont().getTextHeight(SLEEP_MESSAGE);
+    private int getResetMessageHeight() {   //  Hauteur
+        return timeDotMatrixDisplayView.getDefautFont().getTextHeight(MESSAGE_ON_RESET);
     }
 
     private void setupExtraFont() {
