@@ -10,6 +10,10 @@ import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorOnMessageIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorOnTimeIndex;
 
 public class CtDisplayTimeUpdater {
     public interface onExpiredTimerListener {
@@ -24,18 +28,23 @@ public class CtDisplayTimeUpdater {
 
     //region Constantes
     public static final boolean DISPLAY_INITIALIZE = true;
-    private final String MESSAGE_ON_RESET = "...Ready...";
-    final String EXTRA_FONT_TIME_CHARS = "::.";
-    final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC
+    private final String MESSAGE_ON_RESET = ".Ready.";
+    final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
+    final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
     //endregion
     //region Variables
     private DotMatrixDisplayView timeDotMatrixDisplayView;
     private DotMatrixFont extraFont;
+    private Rect gridRect;
+    private Rect displayRect;
+    private String[] colors;
+    private int onTimeColorIndex;
+    private int onMessageColorIndex;
+    private int offColorIndex;
+    private int backColorIndex;
     private CtRecord currentCtRecord;
     private long updateInterval;
     private boolean inAutomatic;
-    private Rect displayRect;
-    private Rect extendedRect;
     private final Handler handlerTime = new Handler();
     private Runnable runnableTime = new Runnable() {
         @Override
@@ -55,9 +64,12 @@ public class CtDisplayTimeUpdater {
 
     private void init() {
         setupExtraFont();
-        displayRect = new Rect(0, 0, getTimeWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), Math.max(getTimeHeight(), getResetMessageHeight()));
-        extendedRect = new Rect(displayRect.left, displayRect.top, getResetMessageWidth() + getTimeWidth(), displayRect.height());
-        timeDotMatrixDisplayView.setGridDimensions(displayRect, extendedRect);
+        setupColorIndexes();
+        gridRect = new Rect(0, 0, getResetMessageWidth() + getTimeWidth(), Math.max(getTimeHeight(), getResetMessageHeight()));
+        displayRect = new Rect(0, 0, getTimeWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), gridRect.bottom);
+        timeDotMatrixDisplayView.setGridRect(gridRect);
+        timeDotMatrixDisplayView.setDisplayRect(displayRect);
+        timeDotMatrixDisplayView.setScrollRect(gridRect);
         inAutomatic = false;
         mOnExpiredTimerListener = null;
     }
@@ -77,8 +89,15 @@ public class CtDisplayTimeUpdater {
         handlerTime.removeCallbacks(runnableTime);
     }
 
+    public void setColors(String[] colors) {
+        this.colors = colors;
+        timeDotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
+        timeDotMatrixDisplayView.setOffColor(colors[offColorIndex]);
+        timeDotMatrixDisplayView.setBackColor(colors[backColorIndex]);
+    }
+
     public void updateCtDisplayTimeView(boolean displayInitialize) {
-        final long UPDATE_INTERVAL_RESET_MS = 40;        //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
+        final long UPDATE_INTERVAL_RESET_MS = 40;       //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
         final long UPDATE_INTERVAL_NO_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
 
         long nowm = System.currentTimeMillis();
@@ -91,20 +110,23 @@ public class CtDisplayTimeUpdater {
         if (displayInitialize) {
             if (currentCtRecord.isReset()) {
                 updateInterval = UPDATE_INTERVAL_RESET_MS;
-                timeDotMatrixDisplayView.fillRectOff(extendedRect);
-                timeDotMatrixDisplayView.displayText(0, 0, MESSAGE_ON_RESET, timeDotMatrixDisplayView.getDefautFont());
+                timeDotMatrixDisplayView.fillRectOff(gridRect);
+                timeDotMatrixDisplayView.setOnColor(colors[onMessageColorIndex]);
+                timeDotMatrixDisplayView.writeText(0, 0, MESSAGE_ON_RESET, timeDotMatrixDisplayView.getDefautFont());
+                timeDotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
                 timeDotMatrixDisplayView.appendText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             } else {
                 updateInterval = UPDATE_INTERVAL_NO_RESET_MS;
                 timeDotMatrixDisplayView.fillRectOff(displayRect);
-                timeDotMatrixDisplayView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                timeDotMatrixDisplayView.writeText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         } else {
             if (currentCtRecord.isReset()) {
-                timeDotMatrixDisplayView.scrollLeft(extendedRect);
+                timeDotMatrixDisplayView.scrollLeft();
             } else {
+                timeDotMatrixDisplayView.noScroll();
                 timeDotMatrixDisplayView.fillRectOff(displayRect);
-                timeDotMatrixDisplayView.displayText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                timeDotMatrixDisplayView.writeText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         }
         timeDotMatrixDisplayView.invalidate();
@@ -135,11 +157,18 @@ public class CtDisplayTimeUpdater {
         return timeDotMatrixDisplayView.getDefautFont().getTextHeight(MESSAGE_ON_RESET);
     }
 
+    private void setupColorIndexes() {
+        onTimeColorIndex = getTimeColorOnTimeIndex();
+        onMessageColorIndex = getTimeColorOnMessageIndex();
+        offColorIndex = getTimeColorOffIndex();
+        backColorIndex = getTimeColorBackIndex();
+    }
+
     private void setupExtraFont() {
         //  Caractères redéfinis pour l'affichage du temps ("." et ":") (plus fins que la fonte par défaut de DotMatrixDisplayView)
         final DotMatrixSymbol[] EXTRA_FONT_SYMBOLS = {
-                new DotMatrixSymbol('.', new int[][]{{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 1}}),
-                new DotMatrixSymbol(':', new int[][]{{0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}})
+                new DotMatrixSymbol('.', new int[][]{{1}}),
+                new DotMatrixSymbol(':', new int[][]{{0}, {0}, {1}, {0}, {1}, {0}, {0}})
         };
 
         final int EXTRA_FONT_RIGHT_MARGIN = 1;
@@ -148,14 +177,12 @@ public class CtDisplayTimeUpdater {
         extraFont = new DotMatrixFont();
         extraFont.setSymbols(EXTRA_FONT_SYMBOLS);
         extraFont.setRightMargin(EXTRA_FONT_RIGHT_MARGIN);
-        symbol = extraFont.getSymbol('.');
-        //  Le "." est affiché sur le caractère précédent:
-        symbol.setPosInitialOffset(new Point(-symbol.getWidth() - extraFont.getRightMargin() + 1, 1));
-        symbol.setPosFinalOffset(new Point(symbol.getWidth() + extraFont.getRightMargin() - 1, -1));
-        //  le ":" est affiché sur une largeur réduite:
-        symbol = extraFont.getSymbol(':');
-        symbol.setPosInitialOffset(new Point(-symbol.getWidth() / 2, 0));
-        symbol.setPosFinalOffset(new Point(symbol.getWidth() / 2 + extraFont.getRightMargin() + 1, 0));
+        symbol = extraFont.getSymbol('.');     //  Le "." est affiché en-dessous à droite du caractère précédent:
+        symbol.setPosInitialOffset(new Point(-timeDotMatrixDisplayView.getDefautFont().getRightMargin(), timeDotMatrixDisplayView.getDefautFont().getMaxSymbolHeight()));
+        symbol.setPosFinalOffset(new Point(timeDotMatrixDisplayView.getDefautFont().getRightMargin(), -timeDotMatrixDisplayView.getDefautFont().getMaxSymbolHeight()));
+        symbol = extraFont.getSymbol(':');     //  le ":" est affiché sur une largeur réduite:
+        symbol.setPosInitialOffset(new Point(0, 0));
+        symbol.setPosFinalOffset(new Point(extraFont.getRightMargin() + 1, 0));
         symbol = null;
     }
 
