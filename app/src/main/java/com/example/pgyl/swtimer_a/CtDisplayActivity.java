@@ -271,19 +271,16 @@ public class CtDisplayActivity extends Activity {
             updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         }
         if (item.getItemId() == R.id.SET_TIME_COLORS) {
-            String[] timeColors = getCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.TIME.getTableName());
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, COLOR_ITEMS.TIME.getTableName(), timeColors);
             launchColorPickerActivity(COLOR_ITEMS.TIME);
             return true;
         }
         if (item.getItemId() == R.id.SET_BUTTON_COLORS) {
-            buttonColors = getCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BUTTONS.getTableName());
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, COLOR_ITEMS.BUTTONS.getTableName(), buttonColors);
             launchColorPickerActivity(COLOR_ITEMS.BUTTONS);
             return true;
         }
         if (item.getItemId() == R.id.SET_BACK_SCREEN_COLORS) {
-            backScreenColors = getCurrentColorsInCtDisplayActivity(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN.getTableName());
             setCurrentColorsInColorPickerActivity(stringShelfDatabase, COLOR_ITEMS.BACK_SCREEN.getTableName(), backScreenColors);
             launchColorPickerActivity(COLOR_ITEMS.BACK_SCREEN);
             return true;
