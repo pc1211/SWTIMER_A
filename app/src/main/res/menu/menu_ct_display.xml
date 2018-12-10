@@ -20,6 +20,10 @@
         </menu>
     </item>
     <item
+        android:id="@+id/SET_MESSAGES"
+        android:showAsAction="never"
+        android:title="Set Messages"></item>
+    <item
         android:id="@+id/BAR_MENU_KEEP_SCREEN"
         android:showAsAction="always"
         android:title="Keep screen (ON/OFF)" />

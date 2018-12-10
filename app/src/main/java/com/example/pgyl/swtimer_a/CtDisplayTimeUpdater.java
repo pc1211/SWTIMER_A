@@ -10,6 +10,7 @@ import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getMessageOnResetIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorOffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorOnMessageIndex;
@@ -28,7 +29,6 @@ public class CtDisplayTimeUpdater {
 
     //region Constantes
     public static final boolean DISPLAY_INITIALIZE = true;
-    private final String MESSAGE_ON_RESET = ".Ready.";
     final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
     final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
     //endregion
@@ -38,10 +38,12 @@ public class CtDisplayTimeUpdater {
     private Rect gridRect;
     private Rect displayRect;
     private String[] colors;
+    private String[] messages;
     private int onTimeColorIndex;
     private int onMessageColorIndex;
     private int offColorIndex;
     private int backColorIndex;
+    private int messageOnResetIndex;
     private CtRecord currentCtRecord;
     private long updateInterval;
     private boolean inAutomatic;
@@ -64,12 +66,7 @@ public class CtDisplayTimeUpdater {
 
     private void init() {
         setupExtraFont();
-        setupColorIndexes();
-        gridRect = new Rect(0, 0, getResetMessageWidth() + getTimeWidth(), Math.max(getTimeHeight(), getResetMessageHeight()));
-        displayRect = new Rect(0, 0, getTimeWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), gridRect.bottom);
-        timeDotMatrixDisplayView.setGridRect(gridRect);
-        timeDotMatrixDisplayView.setDisplayRect(displayRect);
-        timeDotMatrixDisplayView.setScrollRect(gridRect);
+        setupIndexes();
         inAutomatic = false;
         mOnExpiredTimerListener = null;
     }
@@ -89,11 +86,20 @@ public class CtDisplayTimeUpdater {
         handlerTime.removeCallbacks(runnableTime);
     }
 
-    public void setColors(String[] colors) {
+    public void setGridColors(String[] colors) {
         this.colors = colors;
         timeDotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
         timeDotMatrixDisplayView.setOffColor(colors[offColorIndex]);
         timeDotMatrixDisplayView.setBackColor(colors[backColorIndex]);
+    }
+
+    public void setGridDimensions(String[] messages) {
+        this.messages = messages;
+        gridRect = new Rect(0, 0, getResetMessageWidth() + getTimeWidth(), Math.max(getTimeHeight(), getResetMessageHeight()));
+        displayRect = new Rect(gridRect.left, gridRect.top, getTimeWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), gridRect.bottom);
+        timeDotMatrixDisplayView.setGridRect(gridRect);
+        timeDotMatrixDisplayView.setDisplayRect(displayRect);
+        timeDotMatrixDisplayView.setScrollRect(gridRect);
     }
 
     public void updateCtDisplayTimeView(boolean displayInitialize) {
@@ -112,13 +118,13 @@ public class CtDisplayTimeUpdater {
                 updateInterval = UPDATE_INTERVAL_RESET_MS;
                 timeDotMatrixDisplayView.fillRectOff(gridRect);
                 timeDotMatrixDisplayView.setOnColor(colors[onMessageColorIndex]);
-                timeDotMatrixDisplayView.writeText(0, 0, MESSAGE_ON_RESET, timeDotMatrixDisplayView.getDefautFont());
+                timeDotMatrixDisplayView.writeText(displayRect.left, displayRect.top, messages[messageOnResetIndex], timeDotMatrixDisplayView.getDefautFont());
                 timeDotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
                 timeDotMatrixDisplayView.appendText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             } else {
                 updateInterval = UPDATE_INTERVAL_NO_RESET_MS;
                 timeDotMatrixDisplayView.fillRectOff(displayRect);
-                timeDotMatrixDisplayView.writeText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                timeDotMatrixDisplayView.writeText(displayRect.left, displayRect.top, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         } else {
             if (currentCtRecord.isReset()) {
@@ -126,7 +132,7 @@ public class CtDisplayTimeUpdater {
             } else {
                 timeDotMatrixDisplayView.noScroll();
                 timeDotMatrixDisplayView.fillRectOff(displayRect);
-                timeDotMatrixDisplayView.writeText(0, 0, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                timeDotMatrixDisplayView.writeText(displayRect.left, displayRect.top, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         }
         timeDotMatrixDisplayView.invalidate();
@@ -150,18 +156,19 @@ public class CtDisplayTimeUpdater {
     }
 
     private int getResetMessageWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
-        return timeDotMatrixDisplayView.getDefautFont().getTextWidth(MESSAGE_ON_RESET);
+        return timeDotMatrixDisplayView.getDefautFont().getTextWidth(messages[messageOnResetIndex]);
     }
 
     private int getResetMessageHeight() {   //  Hauteur
-        return timeDotMatrixDisplayView.getDefautFont().getTextHeight(MESSAGE_ON_RESET);
+        return timeDotMatrixDisplayView.getDefautFont().getTextHeight(messages[messageOnResetIndex]);
     }
 
-    private void setupColorIndexes() {
+    private void setupIndexes() {
         onTimeColorIndex = getTimeColorOnTimeIndex();
         onMessageColorIndex = getTimeColorOnMessageIndex();
         offColorIndex = getTimeColorOffIndex();
         backColorIndex = getTimeColorBackIndex();
+        messageOnResetIndex = getMessageOnResetIndex();
     }
 
     private void setupExtraFont() {
