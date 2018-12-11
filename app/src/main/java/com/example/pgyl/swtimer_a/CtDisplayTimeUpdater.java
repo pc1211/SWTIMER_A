@@ -29,8 +29,6 @@ public class CtDisplayTimeUpdater {
 
     //region Constantes
     public static final boolean DISPLAY_INITIALIZE = true;
-    final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
-    final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
     //endregion
     //region Variables
     private DotMatrixDisplayView timeDotMatrixDisplayView;
@@ -86,20 +84,27 @@ public class CtDisplayTimeUpdater {
         handlerTime.removeCallbacks(runnableTime);
     }
 
+    public void setGridDimensions(String[] messages) {       //  La grille doit pouvoir contenir le message (on reset) et le temps
+        final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
+        final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
+
+        this.messages = messages;
+        int displayRectWidth = extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + timeDotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS) - timeDotMatrixDisplayView.getDefautFont().getRightMargin();   //  Largeur du temps sans marge droite
+        int displayRectHeight = Math.max(Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), timeDotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS)), timeDotMatrixDisplayView.getDefautFont().getTextHeight(messages[messageOnResetIndex]));   //  Hauteur du temps et du message
+        int gridRectWidth = displayRectWidth + timeDotMatrixDisplayView.getDefautFont().getRightMargin() + timeDotMatrixDisplayView.getDefautFont().getTextWidth(messages[messageOnResetIndex]);  //  Largeur du temps et du message, avec marge droite
+        int gridRectHeight = displayRectHeight;
+        gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
+        displayRect = new Rect(gridRect.left, gridRect.top, gridRect.left + displayRectWidth, gridRect.top + displayRectHeight);
+        timeDotMatrixDisplayView.setGridRect(gridRect);
+        timeDotMatrixDisplayView.setDisplayRect(displayRect);
+        timeDotMatrixDisplayView.setScrollRect(gridRect);
+    }
+
     public void setGridColors(String[] colors) {
         this.colors = colors;
         timeDotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
         timeDotMatrixDisplayView.setOffColor(colors[offColorIndex]);
         timeDotMatrixDisplayView.setBackColor(colors[backColorIndex]);
-    }
-
-    public void setGridDimensions(String[] messages) {
-        this.messages = messages;
-        gridRect = new Rect(0, 0, getResetMessageWidth() + getTimeWidth(), Math.max(getTimeHeight(), getResetMessageHeight()));
-        displayRect = new Rect(gridRect.left, gridRect.top, getTimeWidth() - timeDotMatrixDisplayView.getDefautFont().getRightMargin(), gridRect.bottom);
-        timeDotMatrixDisplayView.setGridRect(gridRect);
-        timeDotMatrixDisplayView.setDisplayRect(displayRect);
-        timeDotMatrixDisplayView.setScrollRect(gridRect);
     }
 
     public void updateCtDisplayTimeView(boolean displayInitialize) {
@@ -145,22 +150,6 @@ public class CtDisplayTimeUpdater {
             updateCtDisplayTimeView(!DISPLAY_INITIALIZE);
             inAutomatic = false;
         }
-    }
-
-    private int getTimeWidth() {   //  Largeur nécessaire pour afficher "HH:MM:SS.CC"   (avec marge droite)
-        return extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + timeDotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS);
-    }
-
-    private int getTimeHeight() {   //  Hauteur
-        return Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), timeDotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS));
-    }
-
-    private int getResetMessageWidth() {   //  Largeur nécessaire pour afficher le message en situation de Reset  (avec marge droite)
-        return timeDotMatrixDisplayView.getDefautFont().getTextWidth(messages[messageOnResetIndex]);
-    }
-
-    private int getResetMessageHeight() {   //  Hauteur
-        return timeDotMatrixDisplayView.getDefautFont().getTextHeight(messages[messageOnResetIndex]);
     }
 
     private void setupIndexes() {
