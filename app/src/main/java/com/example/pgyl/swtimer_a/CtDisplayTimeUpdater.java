@@ -84,6 +84,15 @@ public class CtDisplayTimeUpdater {
         handlerTime.removeCallbacks(runnableTime);
     }
 
+    private void automatic() {
+        handlerTime.postDelayed(runnableTime, updateInterval);
+        if ((!inAutomatic) && (!timeDotMatrixDisplayView.isDrawing())) {
+            inAutomatic = true;
+            update(!DISPLAY_INITIALIZE);
+            inAutomatic = false;
+        }
+    }
+
     public void setGridDimensions(String[] messages) {       //  La grille doit pouvoir contenir le message (on reset) et le temps
         final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
         final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
@@ -107,7 +116,7 @@ public class CtDisplayTimeUpdater {
         timeDotMatrixDisplayView.setBackColor(colors[backColorIndex]);
     }
 
-    public void updateCtDisplayTimeView(boolean displayInitialize) {
+    public void update(boolean displayInitialize) {
         final long UPDATE_INTERVAL_RESET_MS = 40;       //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
         final long UPDATE_INTERVAL_NO_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
 
@@ -141,15 +150,6 @@ public class CtDisplayTimeUpdater {
             }
         }
         timeDotMatrixDisplayView.invalidate();
-    }
-
-    private void automatic() {
-        handlerTime.postDelayed(runnableTime, updateInterval);
-        if ((!inAutomatic) && (!timeDotMatrixDisplayView.isDrawing())) {
-            inAutomatic = true;
-            updateCtDisplayTimeView(!DISPLAY_INITIALIZE);
-            inAutomatic = false;
-        }
     }
 
     private void setupIndexes() {

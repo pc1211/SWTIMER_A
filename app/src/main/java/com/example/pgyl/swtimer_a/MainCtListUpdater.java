@@ -61,8 +61,17 @@ public class MainCtListUpdater {
     }
 
     private void automatic() {
-        long nowm = System.currentTimeMillis();
         handlerTime.postDelayed(runnableTime, updateInterval);
+        update();
+    }
+
+    public void reload() {
+        mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
+        mainCtListItemAdapter.notifyDataSetChanged();
+    }
+
+    public void update() {
+        long nowm = System.currentTimeMillis();
         if (ctRecordsHandler.updateTimeAll(nowm) == 0) {
             mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
             int first = mainCtListView.getFirstVisiblePosition();

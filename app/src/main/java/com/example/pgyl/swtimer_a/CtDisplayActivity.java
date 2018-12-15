@@ -407,7 +407,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayTime() {
-        ctDisplayTimeUpdater.updateCtDisplayTimeView(DISPLAY_INITIALIZE);
+        ctDisplayTimeUpdater.update(DISPLAY_INITIALIZE);
     }
 
     private void updateDisplayBackScreenColor() {

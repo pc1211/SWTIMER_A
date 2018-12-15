@@ -168,7 +168,7 @@ public class MainActivity extends Activity {
         updateDisplayButtonColors();
         updateDisplayStateColors();
         updateDisplayKeepScreen();
-        rebuildList();
+        sortAndReloadMainCtList();
         mainCtListUpdater.startAutomatic();
         invalidateOptionsMenu();
     }
@@ -210,10 +210,10 @@ public class MainActivity extends Activity {
     private void onButtonClick(COMMANDS command) {
         long nowm = System.currentTimeMillis();
         if (command.equals(COMMANDS.NEW_CHRONO)) {
-            onButtonClickAddNewChrono(nowm);
+            onButtonClickAddNewChrono();
         }
         if (command.equals(COMMANDS.NEW_TIMER)) {
-            onButtonClickAddNewTimer(nowm);
+            onButtonClickAddNewTimer();
         }
         if (command.equals(COMMANDS.SHOW_EXPIRATION_TIME)) {
             onButtonClickShowExpirationTime();
@@ -238,6 +238,7 @@ public class MainActivity extends Activity {
             if (command.equals(COMMANDS.SELECT_ALL_CT)) {
                 ctRecordsHandler.selectAll();
             }
+            mainCtListUpdater.update();
             mainCtListUpdater.startAutomatic();
         } else {
             toastLong("The list must contain at least one Chrono or Timer", this);
@@ -262,19 +263,19 @@ public class MainActivity extends Activity {
             if (command.equals(COMMANDS.REMOVE_SELECTED_CT)) {
                 removeSelection();
             }
-            rebuildList();
+            sortAndReloadMainCtList();
             mainCtListUpdater.startAutomatic();
         } else {
             toastLong("The list must contain at least one selected Chrono or Timer", this);
         }
     }
 
-    private void onButtonClickAddNewChrono(long nowm) {
-        createChronoTimer(MODE.CHRONO, nowm);
+    private void onButtonClickAddNewChrono() {
+        createChronoTimer(MODE.CHRONO);
     }
 
-    private void onButtonClickAddNewTimer(long nowm) {
-        createChronoTimer(MODE.TIMER, nowm);
+    private void onButtonClickAddNewTimer() {
+        createChronoTimer(MODE.TIMER);
     }
 
     private void onButtonClickShowExpirationTime() {
@@ -282,7 +283,7 @@ public class MainActivity extends Activity {
         setState(COMMANDS.SHOW_EXPIRATION_TIME, showExpirationTime);
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
         updateDisplayStateColor(COMMANDS.SHOW_EXPIRATION_TIME);
-        rebuildList();
+        mainCtListUpdater.update();
     }
 
     private void onButtonClickAddNewChronoTimerToList() {
@@ -293,14 +294,14 @@ public class MainActivity extends Activity {
 
     private void onCtListExpiredTimers() {
         mainCtListUpdater.stopAutomatic();
-        rebuildList();
+        sortAndReloadMainCtList();
         mainCtListUpdater.startAutomatic();
         beep(this);
     }
 
     private void onCtListItemButtonClick() {
         mainCtListUpdater.stopAutomatic();
-        rebuildList();
+        sortAndReloadMainCtList();
         mainCtListUpdater.startAutomatic();
     }
 
@@ -347,7 +348,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialogInterface, int id) {
                 ctRecordsHandler.removeSelection();
-                rebuildList();
+                sortAndReloadMainCtList();
             }
         });
         builder.setNegativeButton("No", null);
@@ -355,11 +356,11 @@ public class MainActivity extends Activity {
         dialog.show();
     }
 
-    private void createChronoTimer(MODE mode, long nowm) {
+    private void createChronoTimer(MODE mode) {
         mainCtListUpdater.stopAutomatic();
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
-            rebuildList();
+            sortAndReloadMainCtList();
             mainCtListUpdater.startAutomatic();
         } else {
             launchCtDisplayActivity(idct);
@@ -370,12 +371,11 @@ public class MainActivity extends Activity {
         commandStateViewsMap.get(command).setState(value ? STATES.ON : STATES.OFF);
     }
 
-    private void rebuildList() {
+    private void sortAndReloadMainCtList() {
         long nowm = System.currentTimeMillis();
         ctRecordsHandler.updateTimeAll(nowm);
         ctRecordsHandler.sortCtRecords();
-        mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
-        mainCtListItemAdapter.notifyDataSetChanged();
+        mainCtListUpdater.reload();
     }
 
     private void savePreferences() {
