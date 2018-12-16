@@ -132,13 +132,15 @@ public class CtDisplayTimeUpdater {
                 updateInterval = UPDATE_INTERVAL_RESET_MS;
                 timeDotMatrixDisplayView.fillRectOff(gridRect);
                 timeDotMatrixDisplayView.setOnColor(colors[onMessageColorIndex]);
-                timeDotMatrixDisplayView.writeText(displayRect.left, displayRect.top, messages[messageOnResetIndex], timeDotMatrixDisplayView.getDefautFont());
+                timeDotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
+                timeDotMatrixDisplayView.writeText(messages[messageOnResetIndex], timeDotMatrixDisplayView.getDefautFont());
                 timeDotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-                timeDotMatrixDisplayView.appendText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                timeDotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             } else {
                 updateInterval = UPDATE_INTERVAL_NO_RESET_MS;
                 timeDotMatrixDisplayView.fillRectOff(displayRect);
-                timeDotMatrixDisplayView.writeText(displayRect.left, displayRect.top, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                timeDotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
+                timeDotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         } else {
             if (currentCtRecord.isReset()) {
@@ -146,7 +148,8 @@ public class CtDisplayTimeUpdater {
             } else {
                 timeDotMatrixDisplayView.noScroll();
                 timeDotMatrixDisplayView.fillRectOff(displayRect);
-                timeDotMatrixDisplayView.writeText(displayRect.left, displayRect.top, msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+                timeDotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
+                timeDotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             }
         }
         timeDotMatrixDisplayView.invalidate();
