@@ -17,8 +17,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         CHRONO, TIMER
     }
 
-    public static boolean USE_CLOCK_APP = true;
-
+    public static final boolean USE_CLOCK_APP = true;
+    private final long TIME_DEFAULT_VALUE = 0;
     //endregion
     //region Variables
     private Context context;
@@ -41,15 +41,13 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     //endregion
 
     public CtRecord(Context context) {
-        final long TIME_DEFAULT_VALUE = 0;
-
         this.context = context;
         fill(0, MODE.CHRONO, false, false, false, false, null, null, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, midnightTimeMillis(), TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
     }
 
-    public CtRecord(Context context, int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String message, String messageInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
+    public CtRecord(Context context, int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String message, String messageInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp) {  //  pas timeDisplay ni timeDisplayWithoutSplit, toujours mis à TIME_DEFAULT_VALUE à l'initialisation
         this.context = context;
-        fill(idct, mode, selected, running, splitted, clockAppAlarm, message, messageInit, timeStart, timeAcc, timeAccUntilSplit, timeDef, timeDefInit, timeExp, timeDisplay, timeDisplayWithoutSplit);
+        fill(idct, mode, selected, running, splitted, clockAppAlarm, message, messageInit, timeStart, timeAcc, timeAccUntilSplit, timeDef, timeDefInit, timeExp, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
     }
 
     public void close() {

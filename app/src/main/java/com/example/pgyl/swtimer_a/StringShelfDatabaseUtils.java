@@ -25,7 +25,7 @@ public class StringShelfDatabaseUtils {
 
         public int INDEX() {
             return ordinal() + 1;
-        }   //  INDEX 0 pour identifiant utilisateur
+        }   //  INDEX 0 pour identifiant utilisateur (idct)
     }
 
     private enum TABLE_PRESETS_CT_DATA_FIELDS {
@@ -329,9 +329,7 @@ public class StringShelfDatabaseUtils {
                 Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_ACC_UNTIL_SPLIT.INDEX()]),
                 Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF.INDEX()]),
                 Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF_INIT.INDEX()]),
-                Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_EXP.INDEX()]),
-                0,    //  Non stockés dans la base de donnnées
-                0);
+                Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_EXP.INDEX()]));
     }
 
     public static String[] ctRecordToChronoTimerRow(CtRecord ctRecord) {

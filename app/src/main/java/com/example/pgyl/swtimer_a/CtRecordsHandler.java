@@ -52,7 +52,7 @@ public class CtRecordsHandler {
     private void init() {
         requestedClockAppAlarmDismisses = getSHPRequestedClockAppAlarmsDismisses();
         processNextRequestedClockAppAlarmDismiss();
-        ctRecords = copyChronoTimerRowsToCtRecords(StringShelfDatabaseUtils.getChronoTimers(stringShelfDatabase));
+        ctRecords = chronoTimerRowsToCtRecords(StringShelfDatabaseUtils.getChronoTimers(stringShelfDatabase));
     }
 
     public void saveAndclose() {
@@ -114,7 +114,7 @@ public class CtRecordsHandler {
         }
     }
 
-    public ArrayList<CtRecord> copyChronoTimerRowsToCtRecords(String[][] chronoTimerRows) {
+    public ArrayList<CtRecord> chronoTimerRowsToCtRecords(String[][] chronoTimerRows) {
         ArrayList<CtRecord> ret = new ArrayList<CtRecord>();
         if (chronoTimerRows != null) {
             for (int i = 0; i <= (chronoTimerRows.length - 1); i = i + 1) {
