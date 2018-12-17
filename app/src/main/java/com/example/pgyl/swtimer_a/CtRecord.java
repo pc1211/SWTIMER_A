@@ -41,48 +41,15 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     //endregion
 
     public CtRecord(Context context) {
-        this.context = context;
-        init();
-    }
-
-    private void init() {
         final long TIME_DEFAULT_VALUE = 0;
 
-        idct = 0;
-        mode = MODE.CHRONO;
-        selected = false;
-        running = false;
-        splitted = false;
-        clockAppAlarm = false;
-        message = null;
-        messageInit = null;
-        timeStart = TIME_DEFAULT_VALUE;
-        timeAcc = TIME_DEFAULT_VALUE;
-        timeAccUntilSplit = TIME_DEFAULT_VALUE;
-        timeDef = TIME_DEFAULT_VALUE;
-        timeDefInit = TIME_DEFAULT_VALUE;
-        timeExp = midnightTimeMillis();
-        timeDisplay = TIME_DEFAULT_VALUE;
-        timeDisplayWithoutSplit = TIME_DEFAULT_VALUE;
+        this.context = context;
+        fill(0, MODE.CHRONO, false, false, false, false, null, null, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, midnightTimeMillis(), TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
     }
 
-    public void fill(int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String message, String messageInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
-        this.idct = idct;
-        this.mode = mode;
-        this.selected = selected;
-        this.running = running;
-        this.splitted = splitted;
-        this.clockAppAlarm = clockAppAlarm;
-        this.message = message;
-        this.messageInit = messageInit;
-        this.timeStart = timeStart;
-        this.timeAcc = timeAcc;
-        this.timeAccUntilSplit = timeAccUntilSplit;
-        this.timeDef = timeDef;
-        this.timeDefInit = timeDefInit;
-        this.timeExp = timeExp;
-        this.timeDisplay = timeDisplay;
-        this.timeDisplayWithoutSplit = timeDisplayWithoutSplit;
+    public CtRecord(Context context, int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String message, String messageInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
+        this.context = context;
+        fill(idct, mode, selected, running, splitted, clockAppAlarm, message, messageInit, timeStart, timeAcc, timeAccUntilSplit, timeDef, timeDefInit, timeExp, timeDisplay, timeDisplayWithoutSplit);
     }
 
     public void close() {
@@ -349,6 +316,25 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         if (!error) {
             clockAppAlarm = false;
         }
+    }
+
+    private void fill(int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String message, String messageInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
+        this.idct = idct;
+        this.mode = mode;
+        this.selected = selected;
+        this.running = running;
+        this.splitted = splitted;
+        this.clockAppAlarm = clockAppAlarm;
+        this.message = message;
+        this.messageInit = messageInit;
+        this.timeStart = timeStart;
+        this.timeAcc = timeAcc;
+        this.timeAccUntilSplit = timeAccUntilSplit;
+        this.timeDef = timeDef;
+        this.timeDefInit = timeDefInit;
+        this.timeExp = timeExp;
+        this.timeDisplay = timeDisplay;
+        this.timeDisplayWithoutSplit = timeDisplayWithoutSplit;
     }
 
 }

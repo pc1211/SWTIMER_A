@@ -46,7 +46,7 @@ import static com.example.pgyl.swtimer_a.CtDisplayTimeUpdater.DISPLAY_INITIALIZE
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.copyChronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.copyPresetCTRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.ctRecordToChronoTimerRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getBackScreenColorBackIndex;
@@ -193,9 +193,8 @@ public class CtDisplayActivity extends Activity {
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car partagé avec MainActivity
         keepScreen = getSHPKeepScreen();
         setupStringShelfDatabase();
-        currentCtRecord = new CtRecord(this);
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
-        copyChronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), currentCtRecord);
+        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         setupCtDisplayTimeUpdater();
 
         timeColors = getCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsTimeTableName());

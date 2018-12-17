@@ -18,7 +18,7 @@ import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.copyChronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.ctRecordToChronoTimerRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimers;
 
@@ -118,8 +118,7 @@ public class CtRecordsHandler {
         ArrayList<CtRecord> ret = new ArrayList<CtRecord>();
         if (chronoTimerRows != null) {
             for (int i = 0; i <= (chronoTimerRows.length - 1); i = i + 1) {
-                ret.add(new CtRecord(context));
-                copyChronoTimerRowToCtRecord(chronoTimerRows[i], ret.get(i));
+                ret.add(chronoTimerRowToCtRecord(chronoTimerRows[i], context));
             }
         }
         return ret;

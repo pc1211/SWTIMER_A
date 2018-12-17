@@ -1,5 +1,7 @@
 package com.example.pgyl.swtimer_a;
 
+import android.content.Context;
+
 import com.example.pgyl.pekislib_a.InputButtonsActivity.KEYBOARDS;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
@@ -311,8 +313,9 @@ public class StringShelfDatabaseUtils {
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.CHRONO_TIMERS.toString(), values);
     }
 
-    public static void copyChronoTimerRowToCtRecord(String[] chronoTimerRow, CtRecord ctRecord) {
-        ctRecord.fill(
+    public static CtRecord chronoTimerRowToCtRecord(String[] chronoTimerRow, Context context) {
+        return new CtRecord(
+                context,
                 Integer.parseInt(chronoTimerRow[TABLE_ID_INDEX]),
                 CtRecord.MODE.valueOf(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.MODE.INDEX()]),
                 (Integer.parseInt(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.SELECTED.INDEX()]) == 1),
@@ -327,7 +330,7 @@ public class StringShelfDatabaseUtils {
                 Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF.INDEX()]),
                 Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF_INIT.INDEX()]),
                 Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_EXP.INDEX()]),
-                0,    //  Non stockés dans la table
+                0,    //  Non stockés dans la base de donnnées
                 0);
     }
 
