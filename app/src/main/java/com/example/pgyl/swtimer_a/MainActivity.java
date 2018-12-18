@@ -19,6 +19,7 @@ import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.StateView;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 
+import java.util.EnumMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -94,7 +95,7 @@ public class MainActivity extends Activity {
     //endregion
     //region Variables
     private CustomImageButton[] buttons;
-    private StateView[] stateViews;
+    private EnumMap<COMMANDS, StateView> commandStateViewsMap;
     private Menu menu;
     private MenuItem[] barMenuItems;
     private CtRecordsHandler ctRecordsHandler;
@@ -117,7 +118,6 @@ public class MainActivity extends Activity {
         getActionBar().setTitle(ACTIVITY_TITLE);
         setContentView(R.layout.main);
         setupButtons();
-        setupStateViews();
     }
 
     @Override
@@ -133,6 +133,8 @@ public class MainActivity extends Activity {
         ctRecordsHandler = null;
         stringShelfDatabase.close();
         stringShelfDatabase = null;
+        commandStateViewsMap.clear();
+        commandStateViewsMap = null;
         menu = null;
         savePreferences();
     }
@@ -144,6 +146,7 @@ public class MainActivity extends Activity {
 
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car sera partagé avec CtDisplayActivity
         keepScreen = getSHPKeepScreen();
+        setupCommandStateViewsMap();
         setupStringShelfDatabase();
         setupCtRecordsHandler();
         setupMainCtList();
@@ -300,9 +303,7 @@ public class MainActivity extends Activity {
     }
 
     private void updateDisplayStateColor(COMMANDS command) {
-        if (stateViews[command.INDEX()] != null) {
-            stateViews[command.INDEX()].invalidate();
-        }
+        commandStateViewsMap.get(command).invalidate();
     }
 
     private void updateDisplayStateColors() {
@@ -364,9 +365,7 @@ public class MainActivity extends Activity {
     }
 
     private void setState(COMMANDS command, boolean value) {
-        if (stateViews[command.INDEX()] != null) {
-            stateViews[command.INDEX()].setState(value ? STATES.ON : STATES.OFF);
-        }
+        commandStateViewsMap.get(command).setState(value ? STATES.ON : STATES.OFF);
     }
 
     private void savePreferences() {
@@ -426,14 +425,17 @@ public class MainActivity extends Activity {
             }
     }
 
-    private void setupStateViews() {
+    private void setupCommandStateViewsMap() {
         final String BUTTON_STATE_XML_PREFIX = "STATE_";
 
         Class rid = R.id.class;
-        stateViews = new StateView[COMMANDS.values().length];
+        commandStateViewsMap = new EnumMap<COMMANDS, StateView>(COMMANDS.class);
         for (COMMANDS command : COMMANDS.values())
             try {
-                stateViews[command.INDEX()] = findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + command.toString()).getInt(rid));
+                StateView stateView = findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + command.toString()).getInt(rid));
+                if (stateView != null) {   //  Les boutons n'ont pas tous une StateView
+                    commandStateViewsMap.put(command, stateView);
+                }
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {
