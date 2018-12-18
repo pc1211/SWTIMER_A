@@ -19,7 +19,6 @@ import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.StateView;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 
-import java.util.EnumMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,14 +81,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private enum STATE_VIEWS {
-        SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST;
-
-        public int INDEX() {
-            return ordinal();
-        }
-    }
-
     private enum BAR_MENU_ITEMS {
         KEEP_SCREEN;
 
@@ -102,7 +93,6 @@ public class MainActivity extends Activity {
 
     //endregion
     //region Variables
-    private EnumMap<COMMANDS, StateView> commandStateViewsMap;
     private CustomImageButton[] buttons;
     private StateView[] stateViews;
     private Menu menu;
@@ -143,8 +133,6 @@ public class MainActivity extends Activity {
         ctRecordsHandler = null;
         stringShelfDatabase.close();
         stringShelfDatabase = null;
-        commandStateViewsMap.clear();
-        commandStateViewsMap = null;
         menu = null;
         savePreferences();
     }
@@ -156,7 +144,6 @@ public class MainActivity extends Activity {
 
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car sera partagé avec CtDisplayActivity
         keepScreen = getSHPKeepScreen();
-        linkButtonsToStateViews();
         setupStringShelfDatabase();
         setupCtRecordsHandler();
         setupMainCtList();
@@ -305,8 +292,17 @@ public class MainActivity extends Activity {
         mainCtListUpdater.startAutomatic();
     }
 
+    private void sortAndReloadMainCtList() {
+        long nowm = System.currentTimeMillis();
+        ctRecordsHandler.updateTimeAll(nowm);
+        ctRecordsHandler.sortCtRecords();
+        mainCtListUpdater.reload();
+    }
+
     private void updateDisplayStateColor(COMMANDS command) {
-        commandStateViewsMap.get(command).invalidate();
+        if (stateViews[command.INDEX()] != null) {
+            stateViews[command.INDEX()].invalidate();
+        }
     }
 
     private void updateDisplayStateColors() {
@@ -368,14 +364,9 @@ public class MainActivity extends Activity {
     }
 
     private void setState(COMMANDS command, boolean value) {
-        commandStateViewsMap.get(command).setState(value ? STATES.ON : STATES.OFF);
-    }
-
-    private void sortAndReloadMainCtList() {
-        long nowm = System.currentTimeMillis();
-        ctRecordsHandler.updateTimeAll(nowm);
-        ctRecordsHandler.sortCtRecords();
-        mainCtListUpdater.reload();
+        if (stateViews[command.INDEX()] != null) {
+            stateViews[command.INDEX()].setState(value ? STATES.ON : STATES.OFF);
+        }
     }
 
     private void savePreferences() {
@@ -439,10 +430,10 @@ public class MainActivity extends Activity {
         final String BUTTON_STATE_XML_PREFIX = "STATE_";
 
         Class rid = R.id.class;
-        stateViews = new StateView[STATE_VIEWS.values().length];
-        for (STATE_VIEWS stateValue : STATE_VIEWS.values())
+        stateViews = new StateView[COMMANDS.values().length];
+        for (COMMANDS command : COMMANDS.values())
             try {
-                stateViews[stateValue.INDEX()] = findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + stateValue.toString()).getInt(rid));
+                stateViews[command.INDEX()] = findViewById(rid.getField(BUTTON_STATE_XML_PREFIX + command.toString()).getInt(rid));
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {
@@ -452,13 +443,6 @@ public class MainActivity extends Activity {
             } catch (SecurityException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
-    }
-
-    private void linkButtonsToStateViews() {
-        commandStateViewsMap = new EnumMap<COMMANDS, StateView>(COMMANDS.class);
-        for (STATE_VIEWS stateValue : STATE_VIEWS.values()) {
-            commandStateViewsMap.put(COMMANDS.valueOf(stateValue.toString()), stateViews[stateValue.INDEX()]);
-        }
     }
 
     private void setupCtRecordsHandler() {

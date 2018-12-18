@@ -565,12 +565,12 @@ public class CtDisplayActivity extends Activity {
     private void launchPresetsActivity(PRESETS_ITEMS presetsItem) {
         final String SEPARATOR = " - ";
 
-        setStartStatusInPresetsActivity(stringShelfDatabase, com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS.COLD);
+        setStartStatusInPresetsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
-        callingIntent.putExtra(com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS.TITLE.toString(), capitalize(presetsItem.toString()));
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), capitalize(presetsItem.toString()));
         callingIntent.putExtra(PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
         callingIntent.putExtra(PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS.DISPLAY_TYPE.toString(), PRESETS_ACTIVITY_DISPLAY_TYPE.NO_COLORS.toString());
-        callingIntent.putExtra(com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.TABLE_EXTRA_KEYS.TABLE.toString(), presetsItem.getTableName());
+        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), presetsItem.getTableName());
         startActivityForResult(callingIntent, (PEKISLIB_ACTIVITIES.PRESETS.INDEX() + 1) * ACTIVITY_CODE_MULTIPLIER + presetsItem.INDEX());
     }
 
