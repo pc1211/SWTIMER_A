@@ -82,14 +82,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private enum BAR_MENU_ITEMS {
-        KEEP_SCREEN;
-
-        public int INDEX() {
-            return ordinal();
-        }
-    }
-
     public enum SWTIMER_SHP_KEY_NAMES {SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST, KEEP_SCREEN, REQUESTED_CLOCK_APP_ALARM_DISMISSES}
 
     //endregion
@@ -97,7 +89,7 @@ public class MainActivity extends Activity {
     private CustomImageButton[] buttons;
     private EnumMap<COMMANDS, StateView> commandStateViewsMap;
     private Menu menu;
-    private MenuItem[] barMenuItems;
+    private MenuItem barMenuItemKeepScreen;
     private CtRecordsHandler ctRecordsHandler;
     private MainCtListUpdater mainCtListUpdater;
     private boolean showExpirationTime;
@@ -189,7 +181,7 @@ public class MainActivity extends Activity {
             msgBox("Version: " + BuildConfig.VERSION_NAME, this);
             return true;
         }
-        if (item.getItemId() == R.id.BAR_MENU_KEEP_SCREEN) {
+        if (item.getItemId() == R.id.BAR_MENU_ITEM_KEEP_SCREEN) {
             keepScreen = !keepScreen;
             updateDisplayKeepScreen();
             uppdateDisplayKeepScreenBarMenuItemIcon(keepScreen);
@@ -321,7 +313,7 @@ public class MainActivity extends Activity {
     }
 
     private void uppdateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
-        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.INDEX()].setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
+        barMenuItemKeepScreen.setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
     }
 
     private void updateDisplayKeepScreen() {
@@ -524,34 +516,27 @@ public class MainActivity extends Activity {
         final String NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT = "0040FF";
 
         for (final COMMANDS command : COMMANDS.values()) {
-            String unpressedColor = BUTTON_STATES.UNPRESSED.DEFAULT_COLOR();
-            String pressedColor = BUTTON_STATES.PRESSED.DEFAULT_COLOR();
-            if (command.equals(COMMANDS.NEW_CHRONO) || (command.equals(COMMANDS.NEW_TIMER))) {
-                unpressedColor = NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT;
-                pressedColor = NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT;
-            }
-            buttons[command.INDEX()].setUnpressedColor(unpressedColor);
-            buttons[command.INDEX()].setPressedColor(pressedColor);
+            boolean needSpecialColor = (command.equals(COMMANDS.NEW_CHRONO) || (command.equals(COMMANDS.NEW_TIMER)));
+            buttons[command.INDEX()].setUnpressedColor(((needSpecialColor) ? NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR()));
+            buttons[command.INDEX()].setPressedColor(((needSpecialColor) ? NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT : BUTTON_STATES.PRESSED.DEFAULT_COLOR()));
         }
     }
 
     private void setupBarMenuItems() {
-        final String MENU_ITEM_XML_PREFIX = "BAR_MENU_";
+        final String BAR_MENU_ITEM_KEEP_SCREEN_NAME = "BAR_MENU_ITEM_KEEP_SCREEN";
 
-        barMenuItems = new MenuItem[BAR_MENU_ITEMS.values().length];
         Class rid = R.id.class;
-        for (BAR_MENU_ITEMS barMenuItem : BAR_MENU_ITEMS.values())
-            try {
-                barMenuItems[barMenuItem.INDEX()] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        try {
+            barMenuItemKeepScreen = menu.findItem(rid.getField(BAR_MENU_ITEM_KEEP_SCREEN_NAME).getInt(rid));
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchFieldException ex) {
+            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void launchHelpActivity() {

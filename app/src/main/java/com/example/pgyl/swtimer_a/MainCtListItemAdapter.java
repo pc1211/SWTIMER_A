@@ -194,36 +194,20 @@ public class MainCtListItemAdapter extends BaseAdapter {
             id = R.drawable.main_timer;
         }
         viewHolder.btnModeRun.setImageResource(id);
-        if (ctRecords.get(k).isRunning()) {
-            viewHolder.btnModeRun.setUnpressedColor(LIGHT_ON_UNPRESSED_COLOR);
-            viewHolder.btnModeRun.setPressedColor(LIGHT_ON_PRESSED_COLOR);
-        } else {
-            viewHolder.btnModeRun.setUnpressedColor(BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-            viewHolder.btnModeRun.setPressedColor(LIGHT_OFF_PRESSED_COLOR);
-        }
+        boolean needSpecialColor = (ctRecords.get(k).isRunning());
+        viewHolder.btnModeRun.setUnpressedColor((needSpecialColor) ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.btnModeRun.setPressedColor((needSpecialColor) ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
         viewHolder.btnModeRun.updateColor();
-        if (ctRecords.get(k).isSplitted()) {
-            viewHolder.btnSplit.setUnpressedColor(LIGHT_ON_UNPRESSED_COLOR);
-            viewHolder.btnSplit.setPressedColor(LIGHT_ON_PRESSED_COLOR);
-        } else {
-            viewHolder.btnSplit.setUnpressedColor(BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-            viewHolder.btnSplit.setPressedColor(LIGHT_OFF_PRESSED_COLOR);
-        }
+        needSpecialColor = (ctRecords.get(k).isSplitted());
+        viewHolder.btnSplit.setUnpressedColor((needSpecialColor) ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.btnSplit.setPressedColor((needSpecialColor) ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
         viewHolder.btnSplit.updateColor();
-        if (ctRecords.get(k).hasClockAppAlarm()) {
-            viewHolder.btnClockAppAlarm.setUnpressedColor(LIGHT_ON_UNPRESSED_COLOR);
-            viewHolder.btnClockAppAlarm.setPressedColor(LIGHT_ON_PRESSED_COLOR);
-        } else {
-            viewHolder.btnClockAppAlarm.setUnpressedColor(BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-            viewHolder.btnClockAppAlarm.setPressedColor(LIGHT_OFF_PRESSED_COLOR);
-        }
+        needSpecialColor = (ctRecords.get(k).hasClockAppAlarm());
+        viewHolder.btnClockAppAlarm.setUnpressedColor((needSpecialColor) ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.btnClockAppAlarm.setPressedColor((needSpecialColor) ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
         viewHolder.btnClockAppAlarm.updateColor();
         long timeDisplay = ctRecords.get(k).getTimeDisplay();
-        if ((ctRecords.get(k).isRunning()) && (!ctRecords.get(k).isSplitted())) {
-            tu = TIMEUNITS.SEC;
-        } else {
-            tu = TIMEUNITS.CS;
-        }
+        tu = (((ctRecords.get(k).isRunning()) && (!ctRecords.get(k).isSplitted())) ? TIMEUNITS.SEC : TIMEUNITS.CS);
         if (ctRecords.get(k).getMode().equals(MODE.TIMER)) {
             if (showExpirationTime) {
                 timeDisplay = ctRecords.get(k).getTimeZoneExpirationTime();

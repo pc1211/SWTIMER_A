@@ -122,14 +122,6 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private enum BAR_MENU_ITEMS {
-        KEEP_SCREEN;
-
-        public int INDEX() {
-            return ordinal();
-        }
-    }
-
     public enum CTDISPLAY_EXTRA_KEYS {
         CURRENT_CHRONO_TIMER_ID
     }
@@ -142,7 +134,7 @@ public class CtDisplayActivity extends Activity {
     private CtDisplayTimeUpdater ctDisplayTimeUpdater;
     private SymbolButtonView[] buttons;
     private Menu menu;
-    private MenuItem[] barMenuItems;
+    private MenuItem barMenuItemKeepScreen;
     private LinearLayout backLayout;
     private boolean keepScreen;
     private String[] timeColors;
@@ -170,8 +162,6 @@ public class CtDisplayActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
-        savePreferences();
-
         ctDisplayTimeUpdater.stopAutomatic();
         ctDisplayTimeUpdater.close();
         ctDisplayTimeUpdater = null;
@@ -183,6 +173,8 @@ public class CtDisplayActivity extends Activity {
         setCurrentValuesInCtDisplayActivity(stringShelfDatabase, PRESETS_ITEMS.MESSAGES.getTableName(), messages);
         stringShelfDatabase.close();
         stringShelfDatabase = null;
+        menu = null;
+        savePreferences();
     }
 
     @Override
@@ -280,7 +272,7 @@ public class CtDisplayActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {  //  Non appelé après changement d'orientation
         getMenuInflater().inflate(R.menu.menu_ct_display, menu);
         this.menu = menu;
-        setupBarMenuItems();
+        setupBarMenuItemKeepScreen();
         updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
@@ -297,7 +289,7 @@ public class CtDisplayActivity extends Activity {
             launchHelpActivity();
             return true;
         }
-        if (item.getItemId() == R.id.BAR_MENU_KEEP_SCREEN) {
+        if (item.getItemId() == R.id.BAR_MENU_ITEM_KEEP_SCREEN) {
             keepScreen = !keepScreen;
             updateDisplayKeepScreen();
             updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
@@ -431,7 +423,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
-        barMenuItems[BAR_MENU_ITEMS.KEEP_SCREEN.INDEX()].setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
+        barMenuItemKeepScreen.setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
     }
 
     private void updateDisplayKeepScreen() {
@@ -539,23 +531,21 @@ public class CtDisplayActivity extends Activity {
         });
     }
 
-    private void setupBarMenuItems() {
-        final String MENU_ITEM_XML_PREFIX = "BAR_MENU_";
+    private void setupBarMenuItemKeepScreen() {
+        final String BAR_MENU_ITEM_KEEP_SCREEN_NAME = "BAR_MENU_ITEM_KEEP_SCREEN";
 
-        barMenuItems = new MenuItem[BAR_MENU_ITEMS.values().length];
         Class rid = R.id.class;
-        for (BAR_MENU_ITEMS barMenuItem : BAR_MENU_ITEMS.values())
-            try {
-                barMenuItems[barMenuItem.INDEX()] = menu.findItem(rid.getField(MENU_ITEM_XML_PREFIX + barMenuItem.toString()).getInt(rid));
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        try {
+            barMenuItemKeepScreen = menu.findItem(rid.getField(BAR_MENU_ITEM_KEEP_SCREEN_NAME).getInt(rid));
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchFieldException ex) {
+            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void saveCurrentChronoTimer() {
