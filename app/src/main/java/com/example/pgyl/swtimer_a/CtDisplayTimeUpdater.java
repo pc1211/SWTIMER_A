@@ -179,9 +179,6 @@ public class CtDisplayTimeUpdater {
         symbol = extraFont.getSymbol('.');     //  Le "." est affiché en-dessous à droite du caractère précédent:
         symbol.setPosInitialOffset(new Point(-timeDotMatrixDisplayView.getDefautFont().getRightMargin(), timeDotMatrixDisplayView.getDefautFont().getMaxSymbolHeight()));
         symbol.setPosFinalOffset(new Point(timeDotMatrixDisplayView.getDefautFont().getRightMargin(), -timeDotMatrixDisplayView.getDefautFont().getMaxSymbolHeight()));
-        symbol = extraFont.getSymbol(':');     //  le ":" est affiché sur une largeur réduite:
-        symbol.setPosInitialOffset(new Point(0, 0));
-        symbol.setPosFinalOffset(new Point(extraFont.getRightMargin() + 1, 0));
         symbol = null;
     }
 
