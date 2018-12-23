@@ -40,6 +40,8 @@ public class CtRecordsHandler {
     private StringShelfDatabase stringShelfDatabase;
     private String shpFileName;
     private String requestedClockAppAlarmDismisses;
+    private long nowm;
+    private boolean setClockAppAlarmOnStart;
     //endregion
 
     public CtRecordsHandler(Context context, StringShelfDatabase stringShelfDatabase) {
@@ -136,46 +138,51 @@ public class CtRecordsHandler {
     }
 
     public int updateTimeAll(long nowm) {
-        return actionOnAll(ACTIONS_ON_ALL.UPDATE_TIME, nowm);
+        this.nowm = nowm;
+        return actionOnAll(ACTIONS_ON_ALL.UPDATE_TIME);
     }
 
     public void invertSelectionAll() {
-        actionOnAll(ACTIONS_ON_ALL.INVERT_SELECTION, DUMMY_VALUE);
+        actionOnAll(ACTIONS_ON_ALL.INVERT_SELECTION);
     }
 
     public void selectAll() {
-        actionOnAll(ACTIONS_ON_ALL.SELECT, DUMMY_VALUE);
+        actionOnAll(ACTIONS_ON_ALL.SELECT);
     }
 
     public int getCountAll() {
-        return actionOnAll(ACTIONS_ON_ALL.COUNT, DUMMY_VALUE);
+        return actionOnAll(ACTIONS_ON_ALL.COUNT);
     }
 
-    public void startSelection(long nowm) {
-        actionOnSelection(ACTIONS_ON_SELECTION.START, nowm);
+    public void startSelection(long nowm, boolean setClockAppAlarmOnStart) {
+        this.nowm = nowm;
+        this.setClockAppAlarmOnStart = setClockAppAlarmOnStart;
+        actionOnSelection(ACTIONS_ON_SELECTION.START);
     }
 
     public void stopSelection(long nowm) {
-        actionOnSelection(ACTIONS_ON_SELECTION.STOP, nowm);
+        this.nowm = nowm;
+        actionOnSelection(ACTIONS_ON_SELECTION.STOP);
     }
 
     public void splitSelection(long nowm) {
-        actionOnSelection(ACTIONS_ON_SELECTION.SPLIT, nowm);
+        this.nowm = nowm;
+        actionOnSelection(ACTIONS_ON_SELECTION.SPLIT);
     }
 
     public void resetSelection() {
-        actionOnSelection(ACTIONS_ON_SELECTION.RESET, DUMMY_VALUE);
+        actionOnSelection(ACTIONS_ON_SELECTION.RESET);
     }
 
     public void removeSelection() {
-        actionOnSelection(ACTIONS_ON_SELECTION.REMOVE, DUMMY_VALUE);
+        actionOnSelection(ACTIONS_ON_SELECTION.REMOVE);
     }
 
     public int getCountSelection() {
-        return actionOnSelection(ACTIONS_ON_SELECTION.COUNT, DUMMY_VALUE);
+        return actionOnSelection(ACTIONS_ON_SELECTION.COUNT);
     }
 
-    private int actionOnAll(ACTIONS_ON_ALL action, long nowm) {
+    private int actionOnAll(ACTIONS_ON_ALL action) {
         int ret = 0;
         if (!ctRecords.isEmpty()) {
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
@@ -203,7 +210,7 @@ public class CtRecordsHandler {
         return ret;
     }
 
-    private int actionOnSelection(ACTIONS_ON_SELECTION action, long nowm) {
+    private int actionOnSelection(ACTIONS_ON_SELECTION action) {
         int ret = 0;
         if (!ctRecords.isEmpty()) {
             int i = 0;
@@ -211,7 +218,11 @@ public class CtRecordsHandler {
                 if (ctRecords.get(i).isSelected()) {
                     ret = ret + 1;   //  Compter
                     if (action.equals(ACTIONS_ON_SELECTION.START)) {
-                        ctRecords.get(i).start(nowm);
+                        if (!ctRecords.get(i).start(nowm)) {
+                            if (setClockAppAlarmOnStart) {
+                                ctRecords.get(i).setClockAppAlarmOn(USE_CLOCK_APP);
+                            }
+                        }
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.STOP)) {
                         if (!ctRecords.get(i).stop(nowm)) {

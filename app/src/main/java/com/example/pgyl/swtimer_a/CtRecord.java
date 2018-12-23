@@ -239,16 +239,20 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public boolean start(long nowm) {
+        boolean ret = true;
         if (!running) {
             if ((mode.equals(MODE.CHRONO)) || (timeDef > 0)) {
                 running = true;
                 timeStart = nowm;
                 if (mode.equals(MODE.TIMER)) {
                     timeExp = nowm + timeDef - timeAcc;
+                    if (!clockAppAlarm) {
+                        ret = false;   //  Signaler la nécessité éventuelle d'activer l'alarme
+                    }
                 }
             }
         }
-        return true;
+        return ret;
     }
 
     public boolean stop(long nowm) {

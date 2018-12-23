@@ -41,6 +41,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private ArrayList<CtRecord> ctRecords;
     private StringShelfDatabase stringShelfDatabase;
     private boolean showExpirationTime;
+    private boolean setClockAppAlarmOnStart;
     //endregion
 
     public MainCtListItemAdapter(Context context, StringShelfDatabase stringShelfDatabase) {
@@ -63,6 +64,10 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     public void setItems(ArrayList<CtRecord> ctRecords) {
         this.ctRecords = ctRecords;
+    }
+
+    public void setClockAppAlarmOnStart(boolean setClockAppAlarmOnStart) {
+        this.setClockAppAlarmOnStart = setClockAppAlarmOnStart;
     }
 
     public void setShowExpirationTime(boolean showExpirationTime) {
@@ -99,7 +104,11 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private void onBtnModeRunClick(int pos) {
         long nowm = System.currentTimeMillis();
         if (!ctRecords.get(pos).isRunning()) {
-            ctRecords.get(pos).start(nowm);
+            if (!ctRecords.get(pos).start(nowm)) {
+                if (setClockAppAlarmOnStart) {
+                    ctRecords.get(pos).setClockAppAlarmOn(USE_CLOCK_APP);
+                }
+            }
         } else {
             if (!ctRecords.get(pos).stop(nowm)) {
                 ctRecords.get(pos).setClockAppAlarmOff(USE_CLOCK_APP);

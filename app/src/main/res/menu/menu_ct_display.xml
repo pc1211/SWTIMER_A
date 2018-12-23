@@ -24,6 +24,10 @@
         android:showAsAction="never"
         android:title="Set Messages"></item>
     <item
+        android:id="@+id/BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START"
+        android:showAsAction="always"
+        android:title="Set Clock App Alarm on Start (ON/OFF)" />
+    <item
         android:id="@+id/BAR_MENU_ITEM_KEEP_SCREEN"
         android:showAsAction="always"
         android:title="Keep screen (ON/OFF)" />
