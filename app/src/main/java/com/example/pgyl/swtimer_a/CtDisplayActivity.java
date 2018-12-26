@@ -134,10 +134,10 @@ public class CtDisplayActivity extends Activity {
     private CtDisplayTimeUpdater ctDisplayTimeUpdater;
     private SymbolButtonView[] buttons;
     private Menu menu;
-    private MenuItem barMenuItemSetClockAppAlarmOnStart;
+    private MenuItem barMenuItemSetClockAppAlarmOnStartTimer;
     private MenuItem barMenuItemKeepScreen;
     private LinearLayout backLayout;
-    private boolean setClockAppAlarmOnStart;
+    private boolean setClockAppAlarmOnStartTimer;
     private boolean keepScreen;
     private String[] timeColors;
     private String[] buttonColors;
@@ -185,7 +185,7 @@ public class CtDisplayActivity extends Activity {
 
         long nowm = System.currentTimeMillis();
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car partagé avec MainActivity
-        setClockAppAlarmOnStart = getSHPSetClockAppAlarmOnStart();
+        setClockAppAlarmOnStartTimer = getSHPSetClockAppAlarmOnStartTimer();
         keepScreen = getSHPKeepScreen();
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
@@ -276,14 +276,14 @@ public class CtDisplayActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_ct_display, menu);
         this.menu = menu;
         setupBarMenuItems();
-        updateDisplaySetClockAppAlarmOnStartBarMenuItemIcon(setClockAppAlarmOnStart);
+        updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
         updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {  // appelé par invalideOptionsMenu après changement d'orientation
-        updateDisplaySetClockAppAlarmOnStartBarMenuItemIcon(setClockAppAlarmOnStart);
+        updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
         updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
@@ -294,9 +294,9 @@ public class CtDisplayActivity extends Activity {
             launchHelpActivity();
             return true;
         }
-        if (item.getItemId() == R.id.BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START) {
-            setClockAppAlarmOnStart = !setClockAppAlarmOnStart;
-            updateDisplaySetClockAppAlarmOnStartBarMenuItemIcon(setClockAppAlarmOnStart);
+        if (item.getItemId() == R.id.BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER) {
+            setClockAppAlarmOnStartTimer = !setClockAppAlarmOnStartTimer;
+            updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
         }
         if (item.getItemId() == R.id.BAR_MENU_ITEM_KEEP_SCREEN) {
             keepScreen = !keepScreen;
@@ -355,7 +355,7 @@ public class CtDisplayActivity extends Activity {
     private void onButtonClickRun(long nowm) {
         if (!currentCtRecord.isRunning()) {
             if (!currentCtRecord.start(nowm)) {
-                if (setClockAppAlarmOnStart) {
+                if (setClockAppAlarmOnStartTimer) {
                     currentCtRecord.setClockAppAlarmOn(USE_CLOCK_APP);
                 }
             }
@@ -435,8 +435,8 @@ public class CtDisplayActivity extends Activity {
         getActionBar().setTitle(activityTitle);
     }
 
-    private void updateDisplaySetClockAppAlarmOnStartBarMenuItemIcon(boolean setClockAppAlarmOnStart) {
-        barMenuItemSetClockAppAlarmOnStart.setIcon((setClockAppAlarmOnStart ? R.drawable.main_bell_start_on : R.drawable.main_bell_start_off));
+    private void updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(boolean setClockAppAlarmOnStartTimer) {
+        barMenuItemSetClockAppAlarmOnStartTimer.setIcon((setClockAppAlarmOnStartTimer ? R.drawable.main_bell_start_on : R.drawable.main_bell_start_off));
     }
 
     private void updateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
@@ -476,16 +476,16 @@ public class CtDisplayActivity extends Activity {
     private void savePreferences() {
         SharedPreferences shp = getSharedPreferences(shpFileName, MODE_PRIVATE);
         SharedPreferences.Editor shpEditor = shp.edit();
-        shpEditor.putBoolean(SWTIMER_SHP_KEY_NAMES.SET_CLOCK_APP_ALARM_ON_START.toString(), setClockAppAlarmOnStart);
+        shpEditor.putBoolean(SWTIMER_SHP_KEY_NAMES.SET_CLOCK_APP_ALARM_ON_START_TIMER.toString(), setClockAppAlarmOnStartTimer);
         shpEditor.putBoolean(SWTIMER_SHP_KEY_NAMES.KEEP_SCREEN.toString(), keepScreen);
         shpEditor.commit();
     }
 
-    private boolean getSHPSetClockAppAlarmOnStart() {
-        final boolean SET_CLOCK_APP_ALARM_ON_START_DEFAULT_VALUE = true;
+    private boolean getSHPSetClockAppAlarmOnStartTimer() {
+        final boolean SET_CLOCK_APP_ALARM_ON_START_TIMER_DEFAULT_VALUE = true;
 
         SharedPreferences shp = getSharedPreferences(shpFileName, MODE_PRIVATE);
-        return shp.getBoolean(SWTIMER_SHP_KEY_NAMES.SET_CLOCK_APP_ALARM_ON_START.toString(), SET_CLOCK_APP_ALARM_ON_START_DEFAULT_VALUE);
+        return shp.getBoolean(SWTIMER_SHP_KEY_NAMES.SET_CLOCK_APP_ALARM_ON_START_TIMER.toString(), SET_CLOCK_APP_ALARM_ON_START_TIMER_DEFAULT_VALUE);
     }
 
     private boolean getSHPKeepScreen() {
@@ -557,12 +557,12 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupBarMenuItems() {
-        final String BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_NAME = "BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START";
+        final String BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER_NAME = "BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER";
         final String BAR_MENU_ITEM_KEEP_SCREEN_NAME = "BAR_MENU_ITEM_KEEP_SCREEN";
 
         Class rid = R.id.class;
         try {
-            barMenuItemSetClockAppAlarmOnStart = menu.findItem(rid.getField(BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_NAME).getInt(rid));
+            barMenuItemSetClockAppAlarmOnStartTimer = menu.findItem(rid.getField(BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER_NAME).getInt(rid));
             barMenuItemKeepScreen = menu.findItem(rid.getField(BAR_MENU_ITEM_KEEP_SCREEN_NAME).getInt(rid));
         } catch (IllegalAccessException ex) {
             Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);

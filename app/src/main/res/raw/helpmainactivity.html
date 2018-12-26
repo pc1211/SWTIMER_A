@@ -100,9 +100,8 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Set Clock App Alarm on Start (ON/OFF)
-                <br />
-                (if timer) (highlighted if ON)
+            <td style="border: 1px solid black;">Set Clock app alarm on Start timer<br />
+												(ON/OFF) (highlighted if ON)
             </td>
         </tr>
         <tr>
@@ -114,9 +113,9 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Keep Screen (ON/OFF)
+            <td style="border: 1px solid black;">Keep Screen
                 <br />
-                (highlighted if ON)
+                (ON/OFF) (highlighted if ON)
             </td>
         </tr>
         <tr>
@@ -141,8 +140,8 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Show Expiration time for timers (ON/OFF)
-                <br />(with a red strip if ON)
+            <td style="border: 1px solid black;">Show Expiration time for timers<br />
+												(ON/OFF) (with a red strip if ON)
             </td>
         </tr>
         <tr>
@@ -154,9 +153,8 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Add new CT directly to the list when created
-                (ON/OFF)
-                <br />(with a red strip if ON)
+            <td style="border: 1px solid black;">Add new CT directly to the list when created<br />
+												(ON/OFF) (with a red strip if ON)
             </td>
         </tr>
         <tr>
@@ -254,7 +252,7 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Start selected CT</td>
+            <td style="border: 1px solid black;">Start selected CT (*)</td>
         </tr>
         <tr>
             <td
@@ -335,7 +333,7 @@
             </td>
             <td style="border: 1px solid black;">Start/Stop (*) CT
                 <br />
-                (highlighted if Running)
+                (highlighted if running)
             </td>
         </tr>
         <tr>
@@ -349,7 +347,7 @@
             </td>
             <td style="border: 1px solid black;">Split/Reset CT
                 <br />
-                (highlighted if Splitted)
+                (highlighted if splitted)
                 <br />
                 (if already stopped and unsplitted: Reset CT)
             </td>
@@ -363,13 +361,9 @@
                         width="32"
                         height="32">
             </td>
-            <td style="border: 1px solid black;">Set Alarm in Clock app for CT (if running
-                timer)
-                (ON/OFF)
-                <br />
-                (highlighted if Alarm set)
-                <br />
-                (shows Alarms screen in Clock app on dismissing)
+            <td style="border: 1px solid black;">Set/Unset Clock app alarm for running timer<br />
+												(highlighted if set)<br />
+												(if Unset: shows Alarms screen in Clock app and dismisses alarm)
             </td>
         </tr>
         <tr>
@@ -386,7 +380,13 @@
         </tr>
     </tbody>
 </table>
-<p>(*) If running timer with alarm: shows Alarms screen in Clock app and dismisses alarm</p>
+<p>(*) If Start timer and <img
+            src="main_bell_start.png"
+            width="16"
+            height="16"> ON:<br />
+	sets an alarm in Clock app<br />
+	If Stop/Reset/Remove timer with Clock app alarm:<br />
+	shows Alarms screen in Clock app and dismisses alarm</p>
 <p>A menu is also available:</p>
 <table>
     <thead>

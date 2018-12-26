@@ -41,7 +41,7 @@ public class CtRecordsHandler {
     private String shpFileName;
     private String requestedClockAppAlarmDismisses;
     private long nowm;
-    private boolean setClockAppAlarmOnStart;
+    private boolean setClockAppAlarmOnStartTimer;
     //endregion
 
     public CtRecordsHandler(Context context, StringShelfDatabase stringShelfDatabase) {
@@ -154,9 +154,9 @@ public class CtRecordsHandler {
         return actionOnAll(ACTIONS_ON_ALL.COUNT);
     }
 
-    public void startSelection(long nowm, boolean setClockAppAlarmOnStart) {
+    public void startSelection(long nowm, boolean setClockAppAlarmOnStartTimer) {
         this.nowm = nowm;
-        this.setClockAppAlarmOnStart = setClockAppAlarmOnStart;
+        this.setClockAppAlarmOnStartTimer = setClockAppAlarmOnStartTimer;
         actionOnSelection(ACTIONS_ON_SELECTION.START);
     }
 
@@ -219,7 +219,7 @@ public class CtRecordsHandler {
                     ret = ret + 1;   //  Compter
                     if (action.equals(ACTIONS_ON_SELECTION.START)) {
                         if (!ctRecords.get(i).start(nowm)) {
-                            if (setClockAppAlarmOnStart) {
+                            if (setClockAppAlarmOnStartTimer) {
                                 ctRecords.get(i).setClockAppAlarmOn(USE_CLOCK_APP);
                             }
                         }
