@@ -265,8 +265,8 @@ public class CtRecordsHandler {
     }
 
     private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
-        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getMessage() + ALARM_FIELD_SEPARATOR + ctRecord.getMessage() + " @ " + formattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm);
-        ctRecord.setClockAppAlarmOff(!VIA_CLOCK_APP);
+        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getMessage() + ALARM_FIELD_SEPARATOR + "Dismissing Clock App alarm" + CRLF + ctRecord.getMessage() + " @ " + formattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm);
+        ctRecord.setClockAppAlarmOff(!VIA_CLOCK_APP);   //  => PAS de dismissClockAppAlarm, qui sera seulement appelé dans processNextRequestedClockAppAlarmDismiss()
     }
 
     private void processNextRequestedClockAppAlarmDismiss() {   //  Une alarme à la fois, la prochaine est traitée au prochain init() de CtRecordsHandler
@@ -276,8 +276,8 @@ public class CtRecordsHandler {
             requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses.substring(ALARM_SEPARATOR.length());
             int nextAlarmIndex = requestedClockAppAlarmDismisses.indexOf(ALARM_SEPARATOR);
             boolean nextAlarmFound = (nextAlarmIndex != NOT_FOUND);
-            content = ((nextAlarmFound) ? requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex) : requestedClockAppAlarmDismisses);
-            requestedClockAppAlarmDismisses = ((nextAlarmFound) ? requestedClockAppAlarmDismisses.substring(nextAlarmIndex) : "");
+            content = (nextAlarmFound ? requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex) : requestedClockAppAlarmDismisses);
+            requestedClockAppAlarmDismisses = (nextAlarmFound ? requestedClockAppAlarmDismisses.substring(nextAlarmIndex) : "");
             int nextFieldIndex = content.indexOf(ALARM_FIELD_SEPARATOR);   //  Toujours présent
             String alarmLabel = content.substring(0, nextFieldIndex);
             String toastMessage = content.substring(nextFieldIndex + ALARM_FIELD_SEPARATOR.length());
