@@ -4,12 +4,11 @@ import android.content.Context;
 
 import com.example.pgyl.pekislib_a.ClockAppAlarmUtils;
 
-import java.util.Calendar;
-
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightTimeMillis;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 
 class CtRecord {   //  Données d'un Chrono ou Timer
     // region Constantes
@@ -17,7 +16,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         CHRONO, TIMER
     }
 
-    public static final boolean USE_CLOCK_APP = true;
+    public static final boolean VIA_CLOCK_APP = true;
     private final long TIME_DEFAULT_VALUE = 0;
     //endregion
     //region Variables
@@ -200,18 +199,6 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return timeDisplayWithoutSplit;
     }
 
-    public String getTimeZoneExpirationMessage() {
-        return "Timer " + message + CRLF + "expired @" + msToHms(getTimeZoneExpirationTime(), TIMEUNITS.SEC);
-    }
-
-    public long getTimeZoneExpirationTime() {   //  OK TimeZone; Sans les ms de calendar
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeExp);
-        long ret = calendar.get(Calendar.HOUR_OF_DAY) * TIMEUNITS.HOUR.MS() + calendar.get(Calendar.MINUTE) * TIMEUNITS.MIN.MS() + calendar.get(Calendar.SECOND) * TIMEUNITS.SEC.MS();
-        calendar = null;
-        return ret;
-    }
-
     public boolean updateTime(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
         if (mode.equals(MODE.TIMER)) {
             if (running) {
@@ -296,10 +283,10 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return ret;
     }
 
-    public void setClockAppAlarmOn(boolean useClockApp) {
+    public void setClockAppAlarmOn(boolean viaClockApp) {
         boolean error = false;
-        if (useClockApp) {
-            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, message)) {
+        if (viaClockApp) {
+            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, message, "Setting Clock App alarm on " + formattedTimeZoneLongTimeDate(timeExp, HHmm))) {
                 error = true;
             }
         }
@@ -308,10 +295,10 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         }
     }
 
-    public void setClockAppAlarmOff(boolean useClockApp) {
+    public void setClockAppAlarmOff(boolean viaClockApp) {
         boolean error = false;
-        if (useClockApp) {
-            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, message)) {
+        if (viaClockApp) {
+            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, message, "Dismissing Clock App alarm" + CRLF + message + " @ " + formattedTimeZoneLongTimeDate(timeExp, HHmm))) {
                 error = true;
             }
         }

@@ -11,12 +11,16 @@ import java.util.Comparator;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.pgyl.pekislib_a.ClockAppAlarmUtils.dismissClockAppAlarm;
+import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.Constants.DUMMY_VALUE;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
-import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
+import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.ctRecordToChronoTimerRow;
@@ -33,6 +37,7 @@ public class CtRecordsHandler {
     }
 
     private final String ALARM_SEPARATOR = "£µ$***ALARM***$µ£";
+    private final String ALARM_FIELD_SEPARATOR = "£µ$***FIELD***$µ£";
     //endregion
     //region Variables
     private Context context;
@@ -188,7 +193,7 @@ public class CtRecordsHandler {
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
                 if (action.equals(ACTIONS_ON_ALL.UPDATE_TIME)) {
                     if (!ctRecords.get(i).updateTime(nowm)) {   //  Timer expiré
-                        toastLong(ctRecords.get(i).getTimeZoneExpirationMessage(), context);
+                        toastLong("Timer " + ctRecords.get(i).getMessage() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(ctRecords.get(i).getTimeExp(), HHmmss), context);
                         ret = ret + 1;
                     }
                 }
@@ -220,7 +225,7 @@ public class CtRecordsHandler {
                     if (action.equals(ACTIONS_ON_SELECTION.START)) {
                         if (!ctRecords.get(i).start(nowm)) {
                             if (setClockAppAlarmOnStartTimer) {
-                                ctRecords.get(i).setClockAppAlarmOn(USE_CLOCK_APP);
+                                ctRecords.get(i).setClockAppAlarmOn(VIA_CLOCK_APP);
                             }
                         }
                     }
@@ -260,24 +265,23 @@ public class CtRecordsHandler {
     }
 
     private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
-        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getMessage();
-        ctRecord.setClockAppAlarmOff(!USE_CLOCK_APP);
+        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getMessage() + ALARM_FIELD_SEPARATOR + ctRecord.getMessage() + " @ " + formattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm);
+        ctRecord.setClockAppAlarmOff(!VIA_CLOCK_APP);
     }
 
     private void processNextRequestedClockAppAlarmDismiss() {   //  Une alarme à la fois, la prochaine est traitée au prochain init() de CtRecordsHandler
-        String message;
+        String content;
 
         if (!requestedClockAppAlarmDismisses.equals("")) {
             requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses.substring(ALARM_SEPARATOR.length());
             int nextAlarmIndex = requestedClockAppAlarmDismisses.indexOf(ALARM_SEPARATOR);
-            if (nextAlarmIndex != NOT_FOUND) {
-                message = requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex);
-                requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses.substring(nextAlarmIndex);
-            } else {
-                message = requestedClockAppAlarmDismisses;
-                requestedClockAppAlarmDismisses = "";
-            }
-            dismissClockAppAlarm(context, message);
+            boolean nextAlarmFound = (nextAlarmIndex != NOT_FOUND);
+            content = ((nextAlarmFound) ? requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex) : requestedClockAppAlarmDismisses);
+            requestedClockAppAlarmDismisses = ((nextAlarmFound) ? requestedClockAppAlarmDismisses.substring(nextAlarmIndex) : "");
+            int nextFieldIndex = content.indexOf(ALARM_FIELD_SEPARATOR);   //  Toujours présent
+            String alarmLabel = content.substring(0, nextFieldIndex);
+            String toastMessage = content.substring(nextFieldIndex + ALARM_FIELD_SEPARATOR.length());
+            dismissClockAppAlarm(context, alarmLabel, toastMessage);
         }
     }
 

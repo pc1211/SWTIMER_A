@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.COLOR_PREFIX;
+import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
@@ -42,9 +43,11 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPre
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInColorPickerActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.swtimer_a.CtDisplayTimeUpdater.DISPLAY_INITIALIZE;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
-import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
+import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.copyPresetCTRowToCtRecord;
@@ -356,12 +359,12 @@ public class CtDisplayActivity extends Activity {
         if (!currentCtRecord.isRunning()) {
             if (!currentCtRecord.start(nowm)) {
                 if (setClockAppAlarmOnStartTimer) {
-                    currentCtRecord.setClockAppAlarmOn(USE_CLOCK_APP);
+                    currentCtRecord.setClockAppAlarmOn(VIA_CLOCK_APP);
                 }
             }
         } else {
             if (!currentCtRecord.stop(nowm)) {
-                currentCtRecord.setClockAppAlarmOff(USE_CLOCK_APP);
+                currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
             }
         }
     }
@@ -374,9 +377,9 @@ public class CtDisplayActivity extends Activity {
         if (currentCtRecord.getMode().equals(MODE.TIMER)) {
             if (currentCtRecord.isRunning()) {
                 if (!currentCtRecord.hasClockAppAlarm()) {
-                    currentCtRecord.setClockAppAlarmOn(USE_CLOCK_APP);
+                    currentCtRecord.setClockAppAlarmOn(VIA_CLOCK_APP);
                 } else {
-                    currentCtRecord.setClockAppAlarmOff(USE_CLOCK_APP);
+                    currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
                 }
             }
         }
@@ -384,7 +387,7 @@ public class CtDisplayActivity extends Activity {
 
     private void onButtonClickReset() {
         if (!currentCtRecord.reset()) {
-            currentCtRecord.setClockAppAlarmOff(USE_CLOCK_APP);
+            currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
         }
     }
 
@@ -398,7 +401,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void onExpiredTimerCurrentChronoTimer() {
-        toastLong(currentCtRecord.getTimeZoneExpirationMessage(), this);
+        toastLong("Timer " + currentCtRecord.getMessage() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(currentCtRecord.getTimeExp(), HHmmss), this);
         updateDisplayButtonColors();
         beep(this);
     }

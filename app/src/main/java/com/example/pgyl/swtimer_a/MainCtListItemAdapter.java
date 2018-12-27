@@ -16,12 +16,14 @@ import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATU
 import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
-import static com.example.pgyl.swtimer_a.CtRecord.USE_CLOCK_APP;
+import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 
 public class MainCtListItemAdapter extends BaseAdapter {
@@ -106,12 +108,12 @@ public class MainCtListItemAdapter extends BaseAdapter {
         if (!ctRecords.get(pos).isRunning()) {
             if (!ctRecords.get(pos).start(nowm)) {
                 if (setClockAppAlarmOnStartTimer) {
-                    ctRecords.get(pos).setClockAppAlarmOn(USE_CLOCK_APP);
+                    ctRecords.get(pos).setClockAppAlarmOn(VIA_CLOCK_APP);
                 }
             }
         } else {
             if (!ctRecords.get(pos).stop(nowm)) {
-                ctRecords.get(pos).setClockAppAlarmOff(USE_CLOCK_APP);
+                ctRecords.get(pos).setClockAppAlarmOff(VIA_CLOCK_APP);
             }
         }
         if (mOnButtonClickListener != null) {
@@ -125,7 +127,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
             ctRecords.get(pos).split(nowm);
         } else {
             if (!ctRecords.get(pos).reset()) {
-                ctRecords.get(pos).setClockAppAlarmOff(USE_CLOCK_APP);
+                ctRecords.get(pos).setClockAppAlarmOff(VIA_CLOCK_APP);
             }
         }
         if (mOnButtonClickListener != null) {
@@ -137,9 +139,9 @@ public class MainCtListItemAdapter extends BaseAdapter {
         if (ctRecords.get(pos).getMode().equals(MODE.TIMER)) {
             if (ctRecords.get(pos).isRunning()) {
                 if (!ctRecords.get(pos).hasClockAppAlarm()) {
-                    ctRecords.get(pos).setClockAppAlarmOn(USE_CLOCK_APP);
+                    ctRecords.get(pos).setClockAppAlarmOn(VIA_CLOCK_APP);
                 } else {
-                    ctRecords.get(pos).setClockAppAlarmOff(USE_CLOCK_APP);
+                    ctRecords.get(pos).setClockAppAlarmOff(VIA_CLOCK_APP);
                 }
                 if (mOnButtonClickListener != null) {
                     mOnButtonClickListener.onButtonClick();
@@ -189,7 +191,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
         final String LIGHT_ON_PRESSED_COLOR = "995400";
         final String LIGHT_OFF_PRESSED_COLOR = "666666";
         final String SEPARATOR = " - ";
-        TIMEUNITS tu;
         int id;
 
         id = 0;
@@ -203,31 +204,33 @@ public class MainCtListItemAdapter extends BaseAdapter {
             id = R.drawable.main_timer;
         }
         viewHolder.btnModeRun.setImageResource(id);
-        boolean needSpecialColor = (ctRecords.get(k).isRunning());
-        viewHolder.btnModeRun.setUnpressedColor((needSpecialColor) ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.btnModeRun.setPressedColor((needSpecialColor) ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+
+        boolean needSpecialColor = ctRecords.get(k).isRunning();
+        viewHolder.btnModeRun.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.btnModeRun.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
         viewHolder.btnModeRun.updateColor();
-        needSpecialColor = (ctRecords.get(k).isSplitted());
-        viewHolder.btnSplit.setUnpressedColor((needSpecialColor) ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.btnSplit.setPressedColor((needSpecialColor) ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+
+        needSpecialColor = ctRecords.get(k).isSplitted();
+        viewHolder.btnSplit.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.btnSplit.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
         viewHolder.btnSplit.updateColor();
-        needSpecialColor = (ctRecords.get(k).hasClockAppAlarm());
-        viewHolder.btnClockAppAlarm.setUnpressedColor((needSpecialColor) ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.btnClockAppAlarm.setPressedColor((needSpecialColor) ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+
+        needSpecialColor = ctRecords.get(k).hasClockAppAlarm();
+        viewHolder.btnClockAppAlarm.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.btnClockAppAlarm.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
         viewHolder.btnClockAppAlarm.updateColor();
-        long timeDisplay = ctRecords.get(k).getTimeDisplay();
-        tu = (((ctRecords.get(k).isRunning()) && (!ctRecords.get(k).isSplitted())) ? TIMEUNITS.SEC : TIMEUNITS.CS);
-        if (ctRecords.get(k).getMode().equals(MODE.TIMER)) {
-            if (showExpirationTime) {
-                timeDisplay = ctRecords.get(k).getTimeZoneExpirationTime();
-                tu = TIMEUNITS.SEC;
-            }
-        }
+
+        boolean needCSTimeUnit = ((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted()));
+        TIMEUNITS tu = (needCSTimeUnit ? TIMEUNITS.CS : TIMEUNITS.SEC);
+
+        boolean needSpecialTimeDisplay = ((ctRecords.get(k).getMode().equals(MODE.TIMER)) && showExpirationTime);
+        String timeText = (needSpecialTimeDisplay ? formattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToHms(ctRecords.get(k).getTimeDisplay(), tu));
+
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            viewHolder.tvTime.setText(msToHms(timeDisplay, tu));
+            viewHolder.tvTime.setText(timeText);
             viewHolder.tvMessage.setText(ctRecords.get(k).getMessage());
         } else {
-            viewHolder.tvTimeMessage.setText(msToHms(timeDisplay, tu) + SEPARATOR + ctRecords.get(k).getMessage());
+            viewHolder.tvTimeMessage.setText(timeText + SEPARATOR + ctRecords.get(k).getMessage());
         }
     }
 
