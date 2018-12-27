@@ -16,7 +16,6 @@ import static com.example.pgyl.pekislib_a.Constants.DUMMY_VALUE;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
@@ -265,7 +264,7 @@ public class CtRecordsHandler {
     }
 
     private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
-        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getMessage() + ALARM_FIELD_SEPARATOR + "Dismissing Clock App alarm" + CRLF + ctRecord.getMessage() + " @ " + formattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm);
+        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getMessage() + ALARM_FIELD_SEPARATOR + "Dismissing " + ctRecord.getClockAppAlarmDescription();
         ctRecord.setClockAppAlarmOff(!VIA_CLOCK_APP);   //  => PAS de dismissClockAppAlarm, qui sera seulement appelé dans processNextRequestedClockAppAlarmDismiss()
     }
 

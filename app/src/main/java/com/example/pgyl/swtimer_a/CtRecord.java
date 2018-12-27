@@ -283,10 +283,14 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return ret;
     }
 
+    public String getClockAppAlarmDescription() {
+        return "Clock App alarm" + CRLF + message + " @ " + formattedTimeZoneLongTimeDate(timeExp, HHmm);
+    }
+
     public void setClockAppAlarmOn(boolean viaClockApp) {
         boolean error = false;
         if (viaClockApp) {
-            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, message, "Setting Clock App alarm on " + formattedTimeZoneLongTimeDate(timeExp, HHmm))) {
+            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, message, "Setting " + getClockAppAlarmDescription())) {
                 error = true;
             }
         }
@@ -298,7 +302,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     public void setClockAppAlarmOff(boolean viaClockApp) {
         boolean error = false;
         if (viaClockApp) {
-            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, message, "Dismissing Clock App alarm" + CRLF + message + " @ " + formattedTimeZoneLongTimeDate(timeExp, HHmm))) {
+            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, message, "Dismissing " + getClockAppAlarmDescription())) {
                 error = true;
             }
         }
