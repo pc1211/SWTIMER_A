@@ -265,7 +265,7 @@ public class CtRecordsHandler {
 
     private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
         requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getMessage() + ALARM_FIELD_SEPARATOR + "Dismissing " + ctRecord.getClockAppAlarmDescription();
-        ctRecord.setClockAppAlarmOff(!VIA_CLOCK_APP);   //  => PAS de dismissClockAppAlarm, qui sera seulement appelé dans processNextRequestedClockAppAlarmDismiss()
+        ctRecord.setClockAppAlarmOff(!VIA_CLOCK_APP);   //  => setClockAppAlarmOff() ne fera pas appel à dismissClockAppAlarm() (processNextRequestedClockAppAlarmDismiss() le fera)
     }
 
     private void processNextRequestedClockAppAlarmDismiss() {   //  Une alarme à la fois, la prochaine est traitée au prochain init() de CtRecordsHandler
@@ -277,7 +277,7 @@ public class CtRecordsHandler {
             boolean nextAlarmFound = (nextAlarmIndex != NOT_FOUND);
             content = (nextAlarmFound ? requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex) : requestedClockAppAlarmDismisses);
             requestedClockAppAlarmDismisses = (nextAlarmFound ? requestedClockAppAlarmDismisses.substring(nextAlarmIndex) : "");
-            int nextFieldIndex = content.indexOf(ALARM_FIELD_SEPARATOR);   //  Toujours présent
+            int nextFieldIndex = content.indexOf(ALARM_FIELD_SEPARATOR);   //  ALARM_FIELD_SEPARATOR toujours présent
             String alarmLabel = content.substring(0, nextFieldIndex);
             String toastMessage = content.substring(nextFieldIndex + ALARM_FIELD_SEPARATOR.length());
             dismissClockAppAlarm(context, alarmLabel, toastMessage);
