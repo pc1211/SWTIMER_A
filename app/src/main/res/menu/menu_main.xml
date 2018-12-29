@@ -3,7 +3,7 @@
     <item
         android:id="@+id/BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER"
         android:showAsAction="always"
-        android:title="Set Clock App Alarm on Start (ON/OFF)" />
+        android:title="Set Clock App alarm\non Start timer (ON/OFF)" />
     <item
         android:id="@+id/BAR_MENU_ITEM_KEEP_SCREEN"
         android:showAsAction="always"
