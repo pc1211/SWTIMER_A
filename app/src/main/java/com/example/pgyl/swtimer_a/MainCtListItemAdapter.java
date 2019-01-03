@@ -1,6 +1,5 @@
 package com.example.pgyl.swtimer_a;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -16,11 +15,11 @@ import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATU
 import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
+import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
-import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
@@ -103,7 +102,18 @@ public class MainCtListItemAdapter extends BaseAdapter {
         }
     }
 
-    private void onBtnModeRunClick(int pos) {
+    private void onCbSelectionLongClick(int pos) {
+        for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
+            if (i != pos) {
+                ctRecords.get(i).setSelectedOff();
+            } else {
+                ctRecords.get(i).setSelectedOn();
+            }
+        }
+        notifyDataSetChanged();   //  Pas besoin d'un Rebuild List
+    }
+
+    private void onButtonModeRunClick(int pos) {
         long nowm = System.currentTimeMillis();
         if (!ctRecords.get(pos).isRunning()) {
             if (!ctRecords.get(pos).start(nowm)) {
@@ -121,7 +131,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         }
     }
 
-    private void onBtnSplitClick(int pos) {
+    private void onButtonSplitClick(int pos) {
         long nowm = System.currentTimeMillis();
         if ((ctRecords.get(pos).isRunning()) || (ctRecords.get(pos).isSplitted())) {
             ctRecords.get(pos).split(nowm);
@@ -135,7 +145,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         }
     }
 
-    private void onBtnClockAppAlarmClick(int pos) {
+    private void onButtonClockAppAlarmClick(int pos) {
         if (ctRecords.get(pos).getMode().equals(MODE.TIMER)) {
             if (ctRecords.get(pos).isRunning()) {
                 if (!ctRecords.get(pos).hasClockAppAlarm()) {
@@ -154,28 +164,14 @@ public class MainCtListItemAdapter extends BaseAdapter {
         launchCtDisplayActivity(ctRecords.get(pos).getIdct());
     }
 
-    private void onTimeMessageLongClick(int pos) {
-        for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
-            if (i != pos) {
-                ctRecords.get(i).setSelectedOff();
-            } else {
-                ctRecords.get(i).setSelectedOn();
-            }
-        }
-        notifyDataSetChanged();   //  Pas besoin d'un Rebuild List
-    }
-
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         MainCtListItemViewHolder viewHolder;
 
         if (convertView == null) {
+            int layoutId = ((orientation == Configuration.ORIENTATION_PORTRAIT) ? R.layout.mainlistitem_p : R.layout.mainlistitem_l);
             LayoutInflater inflater = LayoutInflater.from(context);
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                convertView = inflater.inflate(R.layout.mainlistitem_p, null);
-            } else {
-                convertView = inflater.inflate(R.layout.mainlistitem_l, null);
-            }
+            convertView = inflater.inflate(layoutId, null);
             viewHolder = buildViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
@@ -196,61 +192,54 @@ public class MainCtListItemAdapter extends BaseAdapter {
         id = 0;
         int k = index;
         MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) view.getTag();
+
         viewHolder.cbSelection.setChecked(ctRecords.get(k).isSelected());
+
         if (ctRecords.get(k).getMode().equals(MODE.CHRONO)) {
             id = R.drawable.main_chrono;
         }
         if (ctRecords.get(k).getMode().equals(MODE.TIMER)) {
             id = R.drawable.main_timer;
         }
-        viewHolder.btnModeRun.setImageResource(id);
+        viewHolder.buttonModeRun.setImageResource(id);
 
         boolean needSpecialColor = ctRecords.get(k).isRunning();
-        viewHolder.btnModeRun.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.btnModeRun.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.btnModeRun.updateColor();
+        viewHolder.buttonModeRun.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.buttonModeRun.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        viewHolder.buttonModeRun.updateColor();
 
         needSpecialColor = ctRecords.get(k).isSplitted();
-        viewHolder.btnSplit.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.btnSplit.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.btnSplit.updateColor();
+        viewHolder.buttonSplit.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.buttonSplit.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        viewHolder.buttonSplit.updateColor();
 
         needSpecialColor = ctRecords.get(k).hasClockAppAlarm();
-        viewHolder.btnClockAppAlarm.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.btnClockAppAlarm.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.btnClockAppAlarm.updateColor();
+        viewHolder.buttonClockAppAlarm.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.buttonClockAppAlarm.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        viewHolder.buttonClockAppAlarm.updateColor();
 
         boolean needCSTimeUnit = ((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted()));
         TIMEUNITS tu = (needCSTimeUnit ? TIMEUNITS.CS : TIMEUNITS.SEC);
-
         boolean needSpecialTimeDisplay = ((ctRecords.get(k).getMode().equals(MODE.TIMER)) && showExpirationTime);
         String timeText = (needSpecialTimeDisplay ? formattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToHms(ctRecords.get(k).getTimeDisplay(), tu));
+        String text = timeText + ((orientation == Configuration.ORIENTATION_PORTRAIT) ? CRLF : SEPARATOR) + ctRecords.get(k).getMessage();
+        viewHolder.buttonTimeMessage.setText(text);
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            viewHolder.tvTime.setText(timeText);
-            viewHolder.tvMessage.setText(ctRecords.get(k).getMessage());
-        } else {
-            viewHolder.tvTimeMessage.setText(timeText + SEPARATOR + ctRecords.get(k).getMessage());
-        }
     }
 
     private MainCtListItemViewHolder buildViewHolder(View convertView) {
         MainCtListItemViewHolder viewHolder = new MainCtListItemViewHolder();
         viewHolder.cbSelection = convertView.findViewById(R.id.CB_SELECTION);
-        viewHolder.btnModeRun = convertView.findViewById(R.id.BTN_MODE_RUN);
-        viewHolder.btnSplit = convertView.findViewById(R.id.BTN_SPLIT);
-        viewHolder.btnClockAppAlarm = convertView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            viewHolder.ltTimeMessage = convertView.findViewById(R.id.LT_TIME_MESSAGE);
-            viewHolder.tvTime = convertView.findViewById(R.id.TV_TIME);
-            viewHolder.tvMessage = convertView.findViewById(R.id.TV_MESSAGE);
-        } else {
-            viewHolder.tvTimeMessage = convertView.findViewById(R.id.TV_TIME_MESSAGE);
-        }
+        viewHolder.buttonModeRun = convertView.findViewById(R.id.BTN_MODE_RUN);
+        viewHolder.buttonSplit = convertView.findViewById(R.id.BTN_SPLIT);
+        viewHolder.buttonClockAppAlarm = convertView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
+        viewHolder.buttonTimeMessage = convertView.findViewById(R.id.BTN_TIME_MESSAGE);
         return viewHolder;
     }
 
     private void setupViewHolder(MainCtListItemViewHolder viewHolder, int position) {
+        final long BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
+
         final int pos = position;
         viewHolder.cbSelection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -258,62 +247,49 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onCbSelectionClick(pos, isChecked);
             }
         });
-        viewHolder.btnModeRun.setOnClickListener(new View.OnClickListener() {
+        viewHolder.cbSelection.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-                onBtnModeRunClick(pos);
+            public boolean onLongClick(View v) {
+                onCbSelectionLongClick(pos);
+                return false;
             }
         });
-        viewHolder.btnSplit.setImageResource(R.drawable.main_split);
-        viewHolder.btnSplit.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonModeRun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBtnSplitClick(pos);
+                onButtonModeRunClick(pos);
             }
         });
-        viewHolder.btnClockAppAlarm.setImageResource(R.drawable.main_bell);
-        viewHolder.btnClockAppAlarm.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonSplit.setImageResource(R.drawable.main_split);
+        viewHolder.buttonSplit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBtnClockAppAlarmClick(pos);
+                onButtonSplitClick(pos);
             }
         });
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            viewHolder.ltTimeMessage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onTimeMessageClick(pos);
-                }
-            });
-            viewHolder.ltTimeMessage.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    onTimeMessageLongClick(pos);
-                    return false;
-                }
-            });
-        } else {
-            viewHolder.tvTimeMessage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onTimeMessageClick(pos);
-                }
-            });
-            viewHolder.tvTimeMessage.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    onTimeMessageLongClick(pos);
-                    return false;
-                }
-            });
-        }
+        viewHolder.buttonClockAppAlarm.setImageResource(R.drawable.main_bell);
+        viewHolder.buttonClockAppAlarm.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+        viewHolder.buttonClockAppAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onButtonClockAppAlarmClick(pos);
+            }
+        });
+        viewHolder.buttonTimeMessage.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+        viewHolder.buttonTimeMessage.setUnpressedColor(BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.buttonTimeMessage.setPressedColor(BUTTON_STATES.PRESSED.DEFAULT_COLOR());
+        viewHolder.buttonTimeMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTimeMessageClick(pos);
+            }
+        });
     }
 
     private void launchCtDisplayActivity(int idct) {
         setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(context, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
-        ((Activity) context).startActivityForResult(callingIntent, SWTIMER_ACTIVITIES.CT_DISPLAY.INDEX());
+        context.startActivity(callingIntent);
     }
-
 }

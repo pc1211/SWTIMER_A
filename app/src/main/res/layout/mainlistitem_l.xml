@@ -1,60 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <CheckBox
         android:id="@+id/CB_SELECTION"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="2dp" />
+        android:layout_marginTop="2dp"
+        android:layout_weight="3" />
 
     <com.example.pgyl.pekislib_a.CustomImageButton
         android:id="@+id/BTN_MODE_RUN"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="4dp"
+        android:layout_weight="4"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/main_chrono" />
 
     <com.example.pgyl.pekislib_a.CustomImageButton
         android:id="@+id/BTN_SPLIT"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="4dp"
+        android:layout_weight="4"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/main_split" />
 
     <com.example.pgyl.pekislib_a.CustomImageButton
         android:id="@+id/BTN_CLOCK_APP_ALARM"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="4dp"
+        android:layout_weight="4"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/main_bell" />
 
-    <TextView
-        android:id="@+id/TV_TIME_MESSAGE"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
+    <com.example.pgyl.pekislib_a.CustomButton
+        android:id="@+id/BTN_TIME_MESSAGE"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="2dp"
-        android:background="@drawable/mainlistitembacksel"
-        android:ellipsize="end"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
-        android:paddingTop="3dp"
-        android:singleLine="true"
-        android:textColor="@color/mainlistitemtextsel"
-        android:textSize="25sp" />
+        android:layout_marginTop="4dp"
+        android:layout_weight="16"
+        android:background="@android:drawable/btn_default_small"
+        android:gravity="left|center_vertical"
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
+
 </LinearLayout>

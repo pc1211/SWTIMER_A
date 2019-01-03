@@ -330,7 +330,7 @@ public class CtDisplayActivity extends Activity {
     }
     //endregion
 
-    private void onButtonClick(COMMANDS command) {
+    private void onButtonCustomClick(COMMANDS command) {
         long nowm = System.currentTimeMillis();
         if (command.equals(COMMANDS.RUN)) {
             onButtonClickRun(nowm);
@@ -407,7 +407,7 @@ public class CtDisplayActivity extends Activity {
     }
 
 
-    private void onCtDisplayTimeViewClick() {
+    private void onCtDisplayTimeViewCustomClick() {
         setCurrentPresetInPresetsActivity(stringShelfDatabase, getPresetsCTTableName(), timeMessageToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getMessage()));
         setDefaults(stringShelfDatabase, getPresetsCTTableName(), timeMessageToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getMessageInit()));
         launchPresetsActivity(PRESETS_ITEMS.PRESETS_CT);
@@ -519,7 +519,7 @@ public class CtDisplayActivity extends Activity {
                 buttons[command.INDEX()].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
                     @Override
                     public void onCustomClick() {
-                        onButtonClick(fcommand);
+                        onButtonCustomClick(fcommand);
                     }
                 });
             } catch (IllegalAccessException ex) {
@@ -535,11 +535,14 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupTimeDotMatrixDisplayView() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un message
+        final long DOT_MATRIX_DISPLAY_VIEW_MIN_CLICK_TIME_INTERVAL_MS = 500;
+
         timeDotMatrixDisplayView = findViewById(R.id.DISPLAY_TIME);
+        timeDotMatrixDisplayView.setMinClickTimeInterval(DOT_MATRIX_DISPLAY_VIEW_MIN_CLICK_TIME_INTERVAL_MS);
         timeDotMatrixDisplayView.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
-                onCtDisplayTimeViewClick();
+                onCtDisplayTimeViewCustomClick();
             }
         });
     }

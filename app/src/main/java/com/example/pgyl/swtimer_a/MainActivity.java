@@ -414,6 +414,7 @@ public class MainActivity extends Activity {
 
     private void setupButtons() {
         final String BUTTON_COMMAND_XML_PREFIX = "BTN_";
+        final long BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
         buttons = new CustomImageButton[COMMANDS.values().length];
         Class rid = R.id.class;
@@ -421,6 +422,9 @@ public class MainActivity extends Activity {
             try {
                 buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_COMMAND_XML_PREFIX + command.toString()).getInt(rid));
                 buttons[command.INDEX()].setImageResource(command.ID());
+                if ((command.equals(COMMANDS.NEW_CHRONO)) || (command.equals(COMMANDS.NEW_TIMER)) || (command.equals(COMMANDS.REMOVE_SELECTED_CT))) {
+                    buttons[command.INDEX()].setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+                }
                 final COMMANDS fcommand = command;
                 buttons[command.INDEX()].setOnClickListener(new View.OnClickListener() {
                     @Override

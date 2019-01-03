@@ -74,10 +74,11 @@ public class MainCtListUpdater {
         long nowm = System.currentTimeMillis();
         if (ctRecordsHandler.updateTimeAll(nowm) == 0) {
             mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
-            int first = mainCtListView.getFirstVisiblePosition();
-            int last = mainCtListView.getLastVisiblePosition();
-            for (int i = first; i <= last; i = i + 1) {
-                View view = mainCtListView.getChildAt(i - first);
+            int firstVisiblePos = mainCtListView.getFirstVisiblePosition();
+            int lastVisiblePos = mainCtListView.getLastVisiblePosition();
+            int visibleCount = lastVisiblePos - firstVisiblePos + 1;
+            for (int i = firstVisiblePos; i <= lastVisiblePos; i = i + 1) {
+                View view = mainCtListView.getChildAt(i - firstVisiblePos);
                 mainCtListItemAdapter.paintView(view, i);
             }
         } else {    // Au moins 1 timer a expiré - Evacuation générale
