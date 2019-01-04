@@ -8,16 +8,15 @@
         android:id="@+id/CB_SELECTION"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="2dp"
-        android:layout_weight="3" />
+        android:layout_weight="2" />
 
     <com.example.pgyl.pekislib_a.CustomImageButton
         android:id="@+id/BTN_MODE_RUN"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="4dp"
         android:layout_marginTop="4dp"
         android:layout_weight="4"
         android:adjustViewBounds="true"
@@ -28,7 +27,6 @@
         android:id="@+id/BTN_SPLIT"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
         android:layout_marginTop="4dp"
         android:layout_weight="4"
         android:adjustViewBounds="true"
@@ -39,7 +37,6 @@
         android:id="@+id/BTN_CLOCK_APP_ALARM"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
         android:layout_marginTop="4dp"
         android:layout_weight="4"
         android:adjustViewBounds="true"
@@ -50,12 +47,11 @@
         android:id="@+id/BTN_TIME_MESSAGE"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="4dp"
-        android:layout_weight="16"
-        android:background="@android:drawable/btn_default_small"
-        android:gravity="left|center_vertical"
+        android:layout_marginTop="2dp"
+        android:layout_weight="15"
+        android:background="@android:drawable/btn_default"
+        android:gravity="start|center_vertical"
         android:textColor="@android:color/black"
-        android:textSize="14sp" />
+        android:textSize="15sp" />
 
 </LinearLayout>

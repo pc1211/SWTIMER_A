@@ -148,8 +148,6 @@
             android:layout_height="wrap_content"
             android:cacheColorHint="@android:color/black"
             android:divider="@null"
-            android:fastScrollAlwaysVisible="true"
-            android:fastScrollEnabled="true"
             android:scrollbars="vertical" />
     </LinearLayout>
 </LinearLayout>

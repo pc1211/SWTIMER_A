@@ -261,6 +261,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
             }
         });
         viewHolder.buttonSplit.setImageResource(R.drawable.main_split);
+        viewHolder.buttonSplit.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonSplit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

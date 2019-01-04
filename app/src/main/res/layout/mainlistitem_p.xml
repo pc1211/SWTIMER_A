@@ -8,18 +8,17 @@
         android:id="@+id/CB_SELECTION"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="2dp"
-        android:layout_weight="3" />
+        android:layout_weight="4" />
 
     <com.example.pgyl.pekislib_a.CustomImageButton
         android:id="@+id/BTN_MODE_RUN"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="4dp"
         android:layout_marginTop="4dp"
-        android:layout_weight="4"
+        android:layout_weight="6"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/main_chrono" />
@@ -28,9 +27,8 @@
         android:id="@+id/BTN_SPLIT"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
         android:layout_marginTop="4dp"
-        android:layout_weight="4"
+        android:layout_weight="6"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/main_split" />
@@ -39,9 +37,8 @@
         android:id="@+id/BTN_CLOCK_APP_ALARM"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
         android:layout_marginTop="4dp"
-        android:layout_weight="4"
+        android:layout_weight="6"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/main_bell" />
@@ -49,13 +46,12 @@
     <com.example.pgyl.pekislib_a.CustomButton
         android:id="@+id/BTN_TIME_MESSAGE"
         android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="4dp"
-        android:layout_weight="16"
+        android:layout_height="46dp"
+        android:layout_marginTop="-8dp"
+        android:layout_weight="15"
         android:background="@android:drawable/btn_default_small"
-        android:gravity="left|center_vertical"
+        android:gravity="start"
         android:textColor="@android:color/black"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
 </LinearLayout>

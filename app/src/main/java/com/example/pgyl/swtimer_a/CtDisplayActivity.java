@@ -508,6 +508,7 @@ public class CtDisplayActivity extends Activity {
 
     private void setupButtons() {
         final String BUTTON_XML_NAME_PREFIX = "BTN_";
+        final long BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
         buttons = new SymbolButtonView[COMMANDS.values().length];
         Class rid = R.id.class;
@@ -515,6 +516,9 @@ public class CtDisplayActivity extends Activity {
             try {
                 buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_XML_NAME_PREFIX + command.toString()).getInt(rid));
                 buttons[command.INDEX()].setSVGImageResource(command.ID());
+                if (!command.equals(COMMANDS.RUN)) {   //  Start/Stop doit pouvoir cliquer sans délai
+                    buttons[command.INDEX()].setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+                }
                 final COMMANDS fcommand = command;
                 buttons[command.INDEX()].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
                     @Override
