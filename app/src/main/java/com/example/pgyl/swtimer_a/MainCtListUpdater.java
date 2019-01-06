@@ -1,7 +1,6 @@
 package com.example.pgyl.swtimer_a;
 
 import android.os.Handler;
-import android.view.View;
 import android.widget.ListView;
 
 public class MainCtListUpdater {
@@ -71,35 +70,49 @@ public class MainCtListUpdater {
     public void reload() {
         mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
         mainCtListItemAdapter.notifyDataSetChanged();
+        mainCtListView.post(new Runnable() {   // Tous les items sont alors seulement dessinés
+            @Override
+            public void run() {
+                checkNeedScrollBar();
+            }
+        });
     }
 
     public void update() {
         long nowm = System.currentTimeMillis();
         if (ctRecordsHandler.updateTimeAll(nowm) == 0) {
             mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
-            int firstVisiblePos = mainCtListView.getFirstVisiblePosition();
-            int lastVisiblePos = mainCtListView.getLastVisiblePosition();
-            int firstFullVisiblePos = firstVisiblePos;
-            int lastFullVisiblePos = lastVisiblePos;
-            for (int i = firstVisiblePos; i <= lastVisiblePos; i = i + 1) {
-                View view = mainCtListView.getChildAt(i - firstVisiblePos);
-                if ((i == 0) && (view.getTop() < 0)) {   //  Le 1er item visible ne l'est que partiellement
-                    firstFullVisiblePos = firstFullVisiblePos + 1;
+            if (mainCtListView.getChildCount() > 0) {
+                int firstVisiblePos = mainCtListView.getFirstVisiblePosition();
+                int lastVisiblePos = mainCtListView.getLastVisiblePosition();
+                for (int i = firstVisiblePos; i <= lastVisiblePos; i = i + 1) {
+                    mainCtListItemAdapter.paintView(mainCtListView.getChildAt(i - firstVisiblePos), i);
                 }
-                if ((i == lastVisiblePos) && (view.getBottom() > mainCtListView.getHeight())) {   //  Le dernier item visible ne l'est que partiellement
-                    lastFullVisiblePos = lastFullVisiblePos - 1;
-                }
-                mainCtListItemAdapter.paintView(view, i);
-            }
-            boolean b = (((firstFullVisiblePos == 0) && (lastFullVisiblePos == (mainCtListView.getCount() - 1))) ? false : true);  // false si toute la liste est entièrement visible
-            if (b != needScrollBar) {
-                needScrollBar = b;
-                setScrollBar(needScrollBar);
             }
         } else {    // Au moins 1 timer a expiré - Evacuation générale
             handlerTime.removeCallbacks(runnableTime);
             if (mOnExpiredTimersListener != null) {
                 mOnExpiredTimersListener.onExpiredTimers();
+            }
+        }
+    }
+
+    private void checkNeedScrollBar() {
+        if (mainCtListView.getChildCount() > 0) {
+            int firstVisiblePos = mainCtListView.getFirstVisiblePosition();
+            int lastVisiblePos = mainCtListView.getLastVisiblePosition();
+            int firstFullVisiblePos = firstVisiblePos;
+            int lastFullVisiblePos = lastVisiblePos;
+            if (mainCtListView.getChildAt(0).getTop() < 0) {   //  Le 1er item visible ne l'est que partiellement
+                firstFullVisiblePos = firstFullVisiblePos + 1;
+            }
+            if (mainCtListView.getChildAt(lastVisiblePos - firstVisiblePos).getBottom() > mainCtListView.getHeight()) {   //  Le dernier item visible ne l'est que partiellement
+                lastFullVisiblePos = lastFullVisiblePos - 1;
+            }
+            boolean b = (((firstFullVisiblePos == 0) && (lastFullVisiblePos == (mainCtListView.getCount() - 1))) ? false : true);  // false si toute la liste est entièrement visible
+            if (b != needScrollBar) {
+                needScrollBar = b;
+                setScrollBar(needScrollBar);
             }
         }
     }
