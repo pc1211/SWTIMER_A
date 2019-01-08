@@ -223,7 +223,6 @@ public class MainActivity extends Activity {
 
     private void onButtonClickActionOnAll(COMMANDS command) {
         if (ctRecordsHandler.getCountAll() >= 1) {
-            mainCtListUpdater.stopAutomatic();
             if (command.equals(COMMANDS.INVERT_SELECTION_ALL_CT)) {
                 ctRecordsHandler.invertSelectionAll();
             }
@@ -231,7 +230,6 @@ public class MainActivity extends Activity {
                 ctRecordsHandler.selectAll();
             }
             mainCtListUpdater.update();
-            mainCtListUpdater.startAutomatic();
         } else {
             toastLong("The list must contain at least one Chrono or Timer", this);
         }
@@ -239,24 +237,26 @@ public class MainActivity extends Activity {
 
     private void onButtonClickActionOnSelection(COMMANDS command, long nowm) {
         if (ctRecordsHandler.getCountSelection() >= 1) {
-            mainCtListUpdater.stopAutomatic();
-            if (command.equals(COMMANDS.START_SELECTED_CT)) {
-                ctRecordsHandler.startSelection(nowm, setClockAppAlarmOnStartTimer);
-            }
-            if (command.equals(COMMANDS.STOP_SELECTED_CT)) {
-                ctRecordsHandler.stopSelection(nowm);
-            }
             if (command.equals(COMMANDS.SPLIT_SELECTED_CT)) {
                 ctRecordsHandler.splitSelection(nowm);
+                mainCtListUpdater.update();
+            } else {
+                mainCtListUpdater.stopAutomatic();
+                if (command.equals(COMMANDS.START_SELECTED_CT)) {
+                    ctRecordsHandler.startSelection(nowm, setClockAppAlarmOnStartTimer);
+                }
+                if (command.equals(COMMANDS.STOP_SELECTED_CT)) {
+                    ctRecordsHandler.stopSelection(nowm);
+                }
+                if (command.equals(COMMANDS.RESET_SELECTED_CT)) {
+                    ctRecordsHandler.resetSelection();
+                }
+                if (command.equals(COMMANDS.REMOVE_SELECTED_CT)) {
+                    removeSelection();
+                }
+                sortAndReloadMainCtList();
+                mainCtListUpdater.startAutomatic();
             }
-            if (command.equals(COMMANDS.RESET_SELECTED_CT)) {
-                ctRecordsHandler.resetSelection();
-            }
-            if (command.equals(COMMANDS.REMOVE_SELECTED_CT)) {
-                removeSelection();
-            }
-            sortAndReloadMainCtList();
-            mainCtListUpdater.startAutomatic();
         } else {
             toastLong("The list must contain at least one selected Chrono or Timer", this);
         }
@@ -291,10 +291,14 @@ public class MainActivity extends Activity {
         beep(this);
     }
 
-    private void onCtListItemButtonClick() {
-        mainCtListUpdater.stopAutomatic();
-        sortAndReloadMainCtList();
-        mainCtListUpdater.startAutomatic();
+    private void onCtListItemButtonClick(boolean needSortAndReload) {
+        if (needSortAndReload) {
+            mainCtListUpdater.stopAutomatic();
+            sortAndReloadMainCtList();
+            mainCtListUpdater.startAutomatic();
+        } else {
+            mainCtListUpdater.update();
+        }
     }
 
     private void sortAndReloadMainCtList() {
@@ -508,8 +512,8 @@ public class MainActivity extends Activity {
         mainCtListItemAdapter = new MainCtListItemAdapter(this, stringShelfDatabase);
         mainCtListItemAdapter.setOnItemButtonClick(new MainCtListItemAdapter.onButtonClickListener() {
             @Override
-            public void onButtonClick() {
-                onCtListItemButtonClick();
+            public void onButtonClick(boolean needSortAndReload) {
+                onCtListItemButtonClick(needSortAndReload);
             }
         });
         mainCtListView = findViewById(R.id.CT_LIST);

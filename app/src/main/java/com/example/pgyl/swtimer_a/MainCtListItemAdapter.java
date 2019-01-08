@@ -27,7 +27,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatus
 
 public class MainCtListItemAdapter extends BaseAdapter {
     public interface onButtonClickListener {
-        void onButtonClick();
+        void onButtonClick(boolean needSortAndReload);
     }
 
     public void setOnItemButtonClick(onButtonClickListener listener) {
@@ -36,6 +36,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     private onButtonClickListener mOnButtonClickListener;
 
+    private final boolean NEED_SORT_AND_RELOAD = true;
     //region Variables
     private Context context;
     private int orientation;
@@ -127,7 +128,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
             }
         }
         if (mOnButtonClickListener != null) {
-            mOnButtonClickListener.onButtonClick();
+            mOnButtonClickListener.onButtonClick(NEED_SORT_AND_RELOAD);
         }
     }
 
@@ -141,7 +142,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
             }
         }
         if (mOnButtonClickListener != null) {
-            mOnButtonClickListener.onButtonClick();
+            mOnButtonClickListener.onButtonClick(!NEED_SORT_AND_RELOAD);
         }
     }
 
@@ -154,7 +155,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
                     ctRecords.get(pos).setClockAppAlarmOff(VIA_CLOCK_APP);
                 }
                 if (mOnButtonClickListener != null) {
-                    mOnButtonClickListener.onButtonClick();
+                    mOnButtonClickListener.onButtonClick(!NEED_SORT_AND_RELOAD);
                 }
             }
         }

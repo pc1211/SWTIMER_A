@@ -30,6 +30,12 @@ public class MainCtListUpdater {
             automatic();
         }
     };
+    private Runnable runnableCheckNeedScrollBar = new Runnable() {
+        @Override
+        public void run() {
+            checkNeedScrollBar();
+        }
+    };
     //endregion
 
     public MainCtListUpdater(ListView mainCtListView, CtRecordsHandler ctRecordsHandler) {
@@ -49,6 +55,7 @@ public class MainCtListUpdater {
     }
 
     public void close() {
+        mainCtListView.removeCallbacks(runnableCheckNeedScrollBar);
         mainCtListItemAdapter = null;
         mainCtListView = null;
         ctRecordsHandler = null;
@@ -70,12 +77,7 @@ public class MainCtListUpdater {
     public void reload() {
         mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
         mainCtListItemAdapter.notifyDataSetChanged();
-        mainCtListView.post(new Runnable() {   // Tous les items sont alors seulement dessinés
-            @Override
-            public void run() {
-                checkNeedScrollBar();
-            }
-        });
+        mainCtListView.post(runnableCheckNeedScrollBar);
     }
 
     public void update() {
@@ -97,7 +99,7 @@ public class MainCtListUpdater {
         }
     }
 
-    private void checkNeedScrollBar() {
+    public void checkNeedScrollBar() {
         if (mainCtListView.getChildCount() > 0) {
             int firstVisiblePos = mainCtListView.getFirstVisiblePosition();
             int lastVisiblePos = mainCtListView.getLastVisiblePosition();
@@ -109,6 +111,7 @@ public class MainCtListUpdater {
             if (mainCtListView.getChildAt(lastVisiblePos - firstVisiblePos).getBottom() > mainCtListView.getHeight()) {   //  Le dernier item visible ne l'est que partiellement
                 lastFullVisiblePos = lastFullVisiblePos - 1;
             }
+            int n = mainCtListView.getCount();
             boolean b = (((firstFullVisiblePos == 0) && (lastFullVisiblePos == (mainCtListView.getCount() - 1))) ? false : true);  // false si toute la liste est entièrement visible
             if (b != needScrollBar) {
                 needScrollBar = b;
