@@ -45,13 +45,8 @@ public class CtDisplayTimeUpdater {
     private CtRecord currentCtRecord;
     private long updateInterval;
     private boolean inAutomatic;
-    private final Handler handlerTime = new Handler();
-    private Runnable runnableTime = new Runnable() {
-        @Override
-        public void run() {
-            automatic();
-        }
-    };
+    private Handler handlerTime;
+    private Runnable runnableTime;
     //endregion
 
     public CtDisplayTimeUpdater(DotMatrixDisplayView timeDotMatrixDisplayView, CtRecord currentCtRecord) {
@@ -63,6 +58,7 @@ public class CtDisplayTimeUpdater {
     }
 
     private void init() {
+        setupRunnableTime();
         setupExtraFont();
         setupIndexes();
         inAutomatic = false;
@@ -70,6 +66,8 @@ public class CtDisplayTimeUpdater {
     }
 
     public void close() {
+        runnableTime = null;
+        handlerTime = null;
         timeDotMatrixDisplayView = null;
         extraFont.close();
         extraFont = null;
@@ -180,6 +178,16 @@ public class CtDisplayTimeUpdater {
         symbol.setPosInitialOffset(new Point(-timeDotMatrixDisplayView.getDefautFont().getRightMargin(), timeDotMatrixDisplayView.getDefautFont().getMaxSymbolHeight()));
         symbol.setPosFinalOffset(new Point(timeDotMatrixDisplayView.getDefautFont().getRightMargin(), -timeDotMatrixDisplayView.getDefautFont().getMaxSymbolHeight()));
         symbol = null;
+    }
+
+    private void setupRunnableTime() {
+        handlerTime = new Handler();
+        runnableTime = new Runnable() {
+            @Override
+            public void run() {
+                automatic();
+            }
+        };
     }
 
 }

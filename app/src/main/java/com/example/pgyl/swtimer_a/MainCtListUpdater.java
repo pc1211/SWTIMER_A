@@ -23,19 +23,9 @@ public class MainCtListUpdater {
     private CtRecordsHandler ctRecordsHandler;
     private long updateInterval;
     private boolean needScrollBar;
-    private final Handler handlerTime = new Handler();
-    private Runnable runnableTime = new Runnable() {
-        @Override
-        public void run() {
-            automatic();
-        }
-    };
-    private Runnable runnableCheckNeedScrollBar = new Runnable() {
-        @Override
-        public void run() {
-            checkNeedScrollBar();
-        }
-    };
+    private Handler handlerTime;
+    private Runnable runnableTime;
+    private Runnable runnableCheckNeedScrollBar;
     //endregion
 
     public MainCtListUpdater(ListView mainCtListView, CtRecordsHandler ctRecordsHandler) {
@@ -47,6 +37,7 @@ public class MainCtListUpdater {
     }
 
     private void init() {
+        setupRunnables();
         updateInterval = UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS;
         mOnExpiredTimersListener = null;
         needScrollBar = false;
@@ -56,6 +47,9 @@ public class MainCtListUpdater {
 
     public void close() {
         mainCtListView.removeCallbacks(runnableCheckNeedScrollBar);
+        runnableTime = null;
+        handlerTime = null;
+        runnableCheckNeedScrollBar = null;
         mainCtListItemAdapter = null;
         mainCtListView = null;
         ctRecordsHandler = null;
@@ -77,7 +71,7 @@ public class MainCtListUpdater {
     public void reload() {
         mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
         mainCtListItemAdapter.notifyDataSetChanged();
-        mainCtListView.post(runnableCheckNeedScrollBar);
+        mainCtListView.post(runnableCheckNeedScrollBar);   //  Tous les items de la listview sont alors complètement dessinés
     }
 
     public void update() {
@@ -123,6 +117,22 @@ public class MainCtListUpdater {
     private void setScrollBar(boolean enabled) {
         mainCtListView.setFastScrollEnabled(enabled);
         mainCtListView.setFastScrollAlwaysVisible(enabled);
+    }
+
+    private void setupRunnables() {
+        handlerTime = new Handler();
+        runnableTime = new Runnable() {
+            @Override
+            public void run() {
+                automatic();
+            }
+        };
+        runnableCheckNeedScrollBar = new Runnable() {
+            @Override
+            public void run() {
+                checkNeedScrollBar();
+            }
+        };
     }
 
 }
