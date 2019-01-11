@@ -24,7 +24,7 @@
         android:src="@drawable/main_chrono" />
 
     <com.example.pgyl.pekislib_a.CustomImageButton
-        android:id="@+id/BTN_SPLIT"
+        android:id="@+id/BTN_SPLIT_RESET"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="4dp"

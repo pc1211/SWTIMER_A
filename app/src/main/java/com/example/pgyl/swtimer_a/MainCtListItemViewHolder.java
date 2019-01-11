@@ -9,7 +9,7 @@ public class MainCtListItemViewHolder {
     //region Variables
     CheckBox cbSelection;
     CustomImageButton buttonModeRun;
-    CustomImageButton buttonSplit;
+    CustomImageButton buttonSplitReset;
     CustomImageButton buttonClockAppAlarm;
     CustomButton buttonTimeMessage;
     //endregion

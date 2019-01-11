@@ -47,7 +47,7 @@
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_SPLIT"
+            android:id="@+id/BTN_SPLIT_RESET"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />

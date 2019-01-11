@@ -132,17 +132,21 @@ public class MainCtListItemAdapter extends BaseAdapter {
         }
     }
 
-    private void onButtonSplitClick(int pos) {
+    private void onButtonSplitResetClick(int pos) {
+        boolean b;
+
         long nowm = System.currentTimeMillis();
         if ((ctRecords.get(pos).isRunning()) || (ctRecords.get(pos).isSplitted())) {
             ctRecords.get(pos).split(nowm);
+            b = !NEED_SORT_AND_RELOAD;
         } else {
             if (!ctRecords.get(pos).reset()) {
                 ctRecords.get(pos).setClockAppAlarmOff(VIA_CLOCK_APP);
             }
+            b = NEED_SORT_AND_RELOAD;
         }
         if (mOnButtonClickListener != null) {
-            mOnButtonClickListener.onButtonClick(!NEED_SORT_AND_RELOAD);
+            mOnButtonClickListener.onButtonClick(b);
         }
     }
 
@@ -210,9 +214,9 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonModeRun.updateColor();
 
         needSpecialColor = ctRecords.get(k).isSplitted();
-        viewHolder.buttonSplit.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.buttonSplit.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.buttonSplit.updateColor();
+        viewHolder.buttonSplitReset.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.buttonSplitReset.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        viewHolder.buttonSplitReset.updateColor();
 
         needSpecialColor = ctRecords.get(k).hasClockAppAlarm();
         viewHolder.buttonClockAppAlarm.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
@@ -232,7 +236,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         MainCtListItemViewHolder viewHolder = new MainCtListItemViewHolder();
         viewHolder.cbSelection = convertView.findViewById(R.id.CB_SELECTION);
         viewHolder.buttonModeRun = convertView.findViewById(R.id.BTN_MODE_RUN);
-        viewHolder.buttonSplit = convertView.findViewById(R.id.BTN_SPLIT);
+        viewHolder.buttonSplitReset = convertView.findViewById(R.id.BTN_SPLIT_RESET);
         viewHolder.buttonClockAppAlarm = convertView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
         viewHolder.buttonTimeMessage = convertView.findViewById(R.id.BTN_TIME_MESSAGE);
         return viewHolder;
@@ -261,12 +265,12 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonModeRunClick(pos);
             }
         });
-        viewHolder.buttonSplit.setImageResource(R.drawable.main_split);
-        viewHolder.buttonSplit.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonSplit.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonSplitReset.setImageResource(R.drawable.main_split);
+        viewHolder.buttonSplitReset.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+        viewHolder.buttonSplitReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onButtonSplitClick(pos);
+                onButtonSplitResetClick(pos);
             }
         });
         viewHolder.buttonClockAppAlarm.setImageResource(R.drawable.main_bell);
