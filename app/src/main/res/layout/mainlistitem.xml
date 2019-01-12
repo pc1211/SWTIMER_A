@@ -43,15 +43,19 @@
         android:scaleType="fitCenter"
         android:src="@drawable/main_bell" />
 
-    <com.example.pgyl.pekislib_a.CustomButton
-        android:id="@+id/BTN_TIME_MESSAGE"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="0dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="-8dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
         android:layout_weight="15"
-        android:background="@android:drawable/btn_default_small"
-        android:gravity="start"
-        android:textColor="@android:color/black"
-        android:textSize="13sp" />
+        android:orientation="horizontal">
 
+        <com.example.pgyl.pekislib_a.CustomButton
+            android:id="@+id/BTN_TIME_MESSAGE"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:drawable/btn_default_small"
+            android:gravity="start|center_vertical"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
 </LinearLayout>

@@ -174,9 +174,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
         MainCtListItemViewHolder viewHolder;
 
         if (convertView == null) {
-            int layoutId = ((orientation == Configuration.ORIENTATION_PORTRAIT) ? R.layout.mainlistitem_p : R.layout.mainlistitem_l);
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(layoutId, null);
+            convertView = inflater.inflate(R.layout.mainlistitem, null);
             viewHolder = buildViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
