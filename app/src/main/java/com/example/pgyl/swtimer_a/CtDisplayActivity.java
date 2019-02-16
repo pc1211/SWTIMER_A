@@ -193,7 +193,6 @@ public class CtDisplayActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        getActionBar().setTitle(currentCtRecord.getMessage());
         setupCtDisplayTimeUpdater();
 
         timeColors = getCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsTimeTableName());
@@ -229,6 +228,7 @@ public class CtDisplayActivity extends Activity {
             }
         }
 
+        getActionBar().setTitle(currentCtRecord.getMessage());
         ctDisplayTimeUpdater.setGridDimensions(messages);
         ctDisplayTimeUpdater.setGridColors(timeColors);
         updateDisplayTime();
