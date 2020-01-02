@@ -42,16 +42,13 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableChr
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableColorsBackScreenIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableColorsButtonsIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableColorsTimeIfNotExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableMessagesIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTablePresetsCTIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsBackScreenTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsTimeTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getMessagesTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsBackScreen;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsButtons;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsTime;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableMessages;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentValuesInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
@@ -59,7 +56,6 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tableChronoTim
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tableColorsBackScreenExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tableColorsButtonsExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tableColorsTimeExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tableMessagesExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tablePresetsCTExists;
 
 public class MainActivity extends Activity {
@@ -403,7 +399,7 @@ public class MainActivity extends Activity {
     }
 
     private boolean getSHPSetClockAppAlarmOnStartTimer() {
-        final boolean SET_CLOCK_APP_ALARM_ON_START_TIMER_DEFAULT_VALUE = true;
+        final boolean SET_CLOCK_APP_ALARM_ON_START_TIMER_DEFAULT_VALUE = false;
 
         SharedPreferences shp = getSharedPreferences(shpFileName, MODE_PRIVATE);
         return shp.getBoolean(SWTIMER_SHP_KEY_NAMES.SET_CLOCK_APP_ALARM_ON_START_TIMER.toString(), SET_CLOCK_APP_ALARM_ON_START_TIMER_DEFAULT_VALUE);
@@ -500,11 +496,6 @@ public class MainActivity extends Activity {
         }
         if (!tableChronoTimersExists(stringShelfDatabase)) {
             createTableChronoTimersIfNotExists(stringShelfDatabase);
-        }
-        if (!tableMessagesExists(stringShelfDatabase)) {
-            createTableMessagesIfNotExists(stringShelfDatabase);
-            initializeTableMessages(stringShelfDatabase);
-            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getMessagesTableName(), getDefaults(stringShelfDatabase, getMessagesTableName()));
         }
     }
 

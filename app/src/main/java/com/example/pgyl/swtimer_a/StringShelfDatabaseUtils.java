@@ -17,7 +17,7 @@ import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 public class StringShelfDatabaseUtils {
     //region Constantes
     private enum SWTIMER_TABLES {
-        CHRONO_TIMERS, PRESETS_CT, COLORS_TIME, COLORS_BUTTONS, COLORS_BACK_SCREEN, MESSAGES
+        CHRONO_TIMERS, PRESETS_CT, COLORS_TIME, COLORS_BUTTONS, COLORS_BACK_SCREEN
     }
 
     private enum TABLE_CHRONO_TIMERS_DATA_FIELDS {
@@ -100,24 +100,6 @@ public class StringShelfDatabaseUtils {
         }
     }
 
-    private enum TABLE_MESSAGES_DATA_FIELDS {
-        ON_RESET("On reset");
-
-        private String valueLabel;
-
-        TABLE_MESSAGES_DATA_FIELDS(String valueLabel) {
-            this.valueLabel = valueLabel;
-        }
-
-        public int INDEX() {
-            return ordinal() + 1;
-        }   //  INDEX 0 pour identifiant utilisateur
-
-        public String LABEL() {
-            return valueLabel;
-        }
-    }
-
     private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  // Pour valider 6 caractères HEX dans INPUT_BUTTONS pour la table COLORS (RRGGBB)
     //endregion
 
@@ -141,7 +123,7 @@ public class StringShelfDatabaseUtils {
     public static void initializeTablePresetsCT(StringShelfDatabase stringShelfDatabase) {
         final String[][] TABLE_PRESETS_CT_INITS = {
                 {TABLE_IDS.LABEL.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.LABEL(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.TIME_XHMS.toString(), KEYBOARDS.ALPHANUM.toString()},
+                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.TIME_XHMS.toString(), KEYBOARDS.ASCII.toString()},
                 {TABLE_IDS.REGEXP.toString(), "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(c|$))?$", null},
                 {TABLE_IDS.MAX.toString(), String.valueOf(xhmsToMs("23h59m59s99c")), null},
                 {TABLE_IDS.TIMEUNIT.toString(), TIMEUNITS.CS.toString(), null}};
@@ -151,31 +133,6 @@ public class StringShelfDatabaseUtils {
 
     public static String getPresetsCTTableName() {
         return SWTIMER_TABLES.PRESETS_CT.toString();
-    }
-
-    public static boolean tableMessagesExists(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.tableExists(SWTIMER_TABLES.MESSAGES.toString());
-    }
-
-    public static void createTableMessagesIfNotExists(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.MESSAGES.toString(), 1 + TABLE_MESSAGES_DATA_FIELDS.values().length);   //  Champ ID + Données;
-    }
-
-    public static void initializeTableMessages(StringShelfDatabase stringShelfDatabase) {
-        final String[][] TABLE_MESSAGES_INITS = {
-                {TABLE_IDS.LABEL.toString(), TABLE_MESSAGES_DATA_FIELDS.ON_RESET.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.ASCII.toString()},
-                {TABLE_IDS.DEFAULT.toString(), ".Ready."}};
-
-        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.MESSAGES.toString(), TABLE_MESSAGES_INITS);
-    }
-
-    public static String getMessagesTableName() {
-        return SWTIMER_TABLES.MESSAGES.toString();
-    }
-
-    public static int getMessageOnResetIndex() {
-        return TABLE_MESSAGES_DATA_FIELDS.ON_RESET.INDEX();
     }
 
     public static boolean tableColorsTimeExists(StringShelfDatabase stringShelfDatabase) {

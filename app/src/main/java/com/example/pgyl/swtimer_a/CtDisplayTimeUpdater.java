@@ -10,7 +10,6 @@ import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getMessageOnResetIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorOffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getTimeColorOnMessageIndex;
@@ -36,12 +35,10 @@ public class CtDisplayTimeUpdater {
     private Rect gridRect;
     private Rect displayRect;
     private String[] colors;
-    private String[] messages;
     private int onTimeColorIndex;
     private int onMessageColorIndex;
     private int offColorIndex;
     private int backColorIndex;
-    private int messageOnResetIndex;
     private CtRecord currentCtRecord;
     private long updateInterval;
     private boolean inAutomatic;
@@ -91,14 +88,13 @@ public class CtDisplayTimeUpdater {
         }
     }
 
-    public void setGridDimensions(String[] messages) {       //  La grille doit pouvoir contenir le message (on reset) et le temps
+    public void setGridDimensions() {       //  La grille doit pouvoir contenir le message et le temps
         final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
         final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
 
-        this.messages = messages;
         int displayRectWidth = extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + timeDotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS) - timeDotMatrixDisplayView.getDefautFont().getRightMargin();   //  Largeur du temps sans marge droite
-        int displayRectHeight = Math.max(Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), timeDotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS)), timeDotMatrixDisplayView.getDefautFont().getTextHeight(messages[messageOnResetIndex]));   //  Hauteur du temps et du message
-        int gridRectWidth = displayRectWidth + timeDotMatrixDisplayView.getDefautFont().getRightMargin() + timeDotMatrixDisplayView.getDefautFont().getTextWidth(messages[messageOnResetIndex]);  //  Largeur du temps et du message, avec marge droite
+        int displayRectHeight = Math.max(Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), timeDotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS)), timeDotMatrixDisplayView.getDefautFont().getTextHeight(currentCtRecord.getMessage()));   //  Hauteur du temps et du message
+        int gridRectWidth = displayRectWidth + timeDotMatrixDisplayView.getDefautFont().getRightMargin() + timeDotMatrixDisplayView.getDefautFont().getTextWidth(currentCtRecord.getMessage());  //  Largeur du temps et du message, avec marge droite
         int gridRectHeight = displayRectHeight;
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
         displayRect = new Rect(gridRect.left, gridRect.top, gridRect.left + displayRectWidth, gridRect.top + displayRectHeight);
@@ -131,7 +127,7 @@ public class CtDisplayTimeUpdater {
                 timeDotMatrixDisplayView.fillRectOff(gridRect);
                 timeDotMatrixDisplayView.setOnColor(colors[onMessageColorIndex]);
                 timeDotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
-                timeDotMatrixDisplayView.writeText(messages[messageOnResetIndex], timeDotMatrixDisplayView.getDefautFont());
+                timeDotMatrixDisplayView.writeText(currentCtRecord.getMessage(), timeDotMatrixDisplayView.getDefautFont());
                 timeDotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
                 timeDotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
             } else {
@@ -158,7 +154,6 @@ public class CtDisplayTimeUpdater {
         onMessageColorIndex = getTimeColorOnMessageIndex();
         offColorIndex = getTimeColorOffIndex();
         backColorIndex = getTimeColorBackIndex();
-        messageOnResetIndex = getMessageOnResetIndex();
     }
 
     private void setupExtraFont() {
