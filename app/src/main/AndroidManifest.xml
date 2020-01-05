@@ -26,8 +26,8 @@
             android:name="com.example.pgyl.pekislib_a.InputButtonsActivity"
             android:label="InputButtonsActivity" />
         <activity
-            android:name="com.example.pgyl.pekislib_a.ColorPickerActivity"
-            android:label="ColorPickerActivity" />
+            android:name="com.example.pgyl.swtimer_a.CtDisplayColorsActivity"
+            android:label="CtDisplayColorsActivity" />
         <activity
             android:name="com.example.pgyl.pekislib_a.HelpActivity"
             android:label="HelpActivity" />

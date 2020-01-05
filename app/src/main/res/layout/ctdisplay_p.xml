@@ -12,7 +12,7 @@
         android:orientation="horizontal">
 
         <com.example.pgyl.pekislib_a.DotMatrixDisplayView
-            android:id="@+id/DISPLAY_TIME"
+            android:id="@+id/DOT_MATRIX_DISPLAY"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
