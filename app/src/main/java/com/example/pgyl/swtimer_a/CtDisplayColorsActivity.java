@@ -32,6 +32,7 @@ import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.COLOR_PREFIX;
 import static com.example.pgyl.pekislib_a.Constants.COLOR_RGB_MASK;
 import static com.example.pgyl.pekislib_a.Constants.HEX_RADIX;
+import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
@@ -47,10 +48,12 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPre
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentStringInInputButtonsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInInputButtonsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getBackScreenColorBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getButtonsColorBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getButtonsColorOffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getButtonsColorOnIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsBackScreenTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsDotMatrixDisplayTableName;
@@ -148,7 +151,9 @@ public class CtDisplayColorsActivity extends Activity {
     private Button[] buttons;
     private SeekBar[] seekBars;
     private Drawable[] processDrawables;
-    private LinearLayout backLayout;
+    private LinearLayout backLayoutPart1;
+    private LinearLayout backLayoutPart2;
+    private CtRecord currentCtRecord;
     private int colorTableIndex;
     private int colorIndex;   //  Au sein de la table pointée par colorTableIndex
     private String[][] colors = new String[COLOR_TYPES.values().length][];
@@ -168,7 +173,7 @@ public class CtDisplayColorsActivity extends Activity {
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getActionBar().setTitle("Set Colors");
-        setContentView(R.layout.ctdisplaycolors);
+        setContentView(R.layout.ctdisplaycolors);   //  Mode portrait uniquement (cf Manifest)
         setupDotMatrixDisplay();
         setupBackLayout();
         setupIconButtons();
@@ -183,6 +188,7 @@ public class CtDisplayColorsActivity extends Activity {
 
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
+        currentCtRecord = null;
         for (COLOR_TYPES colorType : COLOR_TYPES.values()) {
             setCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getTypedColorTableName(colorType.INDEX()), colors[colorType.INDEX()]);
         }
@@ -197,6 +203,8 @@ public class CtDisplayColorsActivity extends Activity {
 
         shpFileName = getPackageName() + "." + getClass().getSimpleName() + SHP_FILE_NAME_SUFFIX;
         setupStringShelfDatabase();
+        int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
+        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         setupDotMatrixDisplayUpdater();
         for (COLOR_TYPES colorType : COLOR_TYPES.values()) {
             colors[colorType.INDEX()] = getCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getTypedColorTableName(colorType.INDEX()));
@@ -376,7 +384,7 @@ public class CtDisplayColorsActivity extends Activity {
         final String DEFAULT_FONT_TEST_TEXT = "Abcd";
 
         dotMatrixDisplayUpdater.setGridColors(colors[COLOR_TYPES.DOT_MATRIX_DISPLAY.INDEX()]);
-        dotMatrixDisplayUpdater.writeTestTexts(EXTRA_FONT_TEST_TEXT, DEFAULT_FONT_TEST_TEXT);
+        dotMatrixDisplayUpdater.writeTestText(EXTRA_FONT_TEST_TEXT, DEFAULT_FONT_TEST_TEXT);
         dotMatrixDisplayView.invalidate();
     }
 
@@ -394,7 +402,9 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayBackScreenColors() {
-        backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + colors[COLOR_TYPES.BACK_SCREEN.INDEX()][getBackScreenColorBackIndex()]));
+        int color = Color.parseColor(COLOR_PREFIX + colors[COLOR_TYPES.BACK_SCREEN.INDEX()][getBackScreenColorBackIndex()]);
+        backLayoutPart2.setBackgroundColor(color);
+        backLayoutPart1.setBackgroundColor(color);
     }
 
     private void updateDisplayButtonTextNextColorType() {
@@ -489,7 +499,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayUpdater() {
-        dotMatrixDisplayUpdater = new CtDisplayDotMatrixDisplayUpdater(dotMatrixDisplayView, null);
+        dotMatrixDisplayUpdater = new CtDisplayDotMatrixDisplayUpdater(dotMatrixDisplayView, currentCtRecord);
     }
 
     private void setupIconButtons() {
@@ -591,7 +601,8 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void setupBackLayout() {
-        backLayout = findViewById(R.id.BACK_LAYOUT);
+        backLayoutPart1 = findViewById(R.id.BACK_LAYOUT_PART1);   //  2 layouts au lieu d'un, pour retrouver la même hauteur pour les iconButtons que dans CtDisplayActivity
+        backLayoutPart2 = findViewById(R.id.BACK_LAYOUT_PART2);
     }
 
     private String getTypedColorTableName(int index) {

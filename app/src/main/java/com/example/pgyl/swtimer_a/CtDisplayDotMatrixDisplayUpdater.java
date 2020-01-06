@@ -91,12 +91,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
     public void setGridDimensions() {       //  La grille doit pouvoir contenir le message et le temps
         final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
         final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
-        final String DEFAULT_MESSAGE = "Message";   //  Si currentCtRecord est null (p.ex. dans le cadre d'un test, initialisation avec dotMatrixDisplayView mais sans currentCtRecord)
 
-        String message = ((currentCtRecord == null) ? DEFAULT_MESSAGE : currentCtRecord.getMessage());
         int displayRectWidth = extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + dotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS) - dotMatrixDisplayView.getDefautFont().getRightMargin();   //  Largeur du temps sans marge droite
-        int displayRectHeight = Math.max(Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), dotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS)), dotMatrixDisplayView.getDefautFont().getTextHeight(message));   //  Hauteur du temps et du message
-        int gridRectWidth = displayRectWidth + dotMatrixDisplayView.getDefautFont().getRightMargin() + dotMatrixDisplayView.getDefautFont().getTextWidth(message);  //  Largeur du temps et du message, avec marge droite
+        int displayRectHeight = Math.max(Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), dotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS)), dotMatrixDisplayView.getDefautFont().getTextHeight(currentCtRecord.getMessage()));   //  Hauteur du temps et du message
+        int gridRectWidth = displayRectWidth + dotMatrixDisplayView.getDefautFont().getRightMargin() + dotMatrixDisplayView.getDefautFont().getTextWidth(currentCtRecord.getMessage());  //  Largeur du temps et du message, avec marge droite
         int gridRectHeight = displayRectHeight;
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
         displayRect = new Rect(gridRect.left, gridRect.top, gridRect.left + displayRectWidth, gridRect.top + displayRectHeight);
@@ -112,7 +110,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
     }
 
-    public void writeTestTexts(String timeFontText, String messageFontText) {
+    public void writeTestText(String timeFontText, String messageFontText) {
         dotMatrixDisplayView.fillRectOff(gridRect);
         dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
         dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);

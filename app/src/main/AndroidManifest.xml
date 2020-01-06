@@ -27,7 +27,8 @@
             android:label="InputButtonsActivity" />
         <activity
             android:name="com.example.pgyl.swtimer_a.CtDisplayColorsActivity"
-            android:label="CtDisplayColorsActivity" />
+            android:label="CtDisplayColorsActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="com.example.pgyl.pekislib_a.HelpActivity"
             android:label="HelpActivity" />
