@@ -573,12 +573,10 @@ public class CtDisplayColorsActivity extends Activity {
 
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {
-
                     }
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-
                     }
                 });
                 progressDrawables[colorParam.INDEX()] = (LayerDrawable) seekBars[colorParam.INDEX()].getProgressDrawable();
@@ -633,7 +631,7 @@ public class CtDisplayColorsActivity extends Activity {
 
         setStartStatusInPresetsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), "Color Presets");
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), typeLabels[colorTableIndex] + " Color Presets");
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.DISPLAY_TYPE.toString(), PRESETS_ACTIVITY_DISPLAY_TYPE.COLORS.toString());
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getTypedColorTableName(colorTableIndex));

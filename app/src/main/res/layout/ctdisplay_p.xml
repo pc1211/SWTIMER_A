@@ -3,24 +3,25 @@
     android:id="@+id/BACK_LAYOUT"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <com.example.pgyl.pekislib_a.DotMatrixDisplayView
             android:id="@+id/DOT_MATRIX_DISPLAY"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -28,19 +29,22 @@
             android:id="@+id/BTN_RUN"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
             android:id="@+id/BTN_SPLIT"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -48,19 +52,22 @@
             android:id="@+id/BTN_INVERT_CLOCK_APP_ALARM"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
             android:id="@+id/BTN_RESET"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -68,12 +75,16 @@
             android:id="@+id/BTN_CHRONO_MODE"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
             android:id="@+id/BTN_TIMER_MODE"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_weight="1" />
     </LinearLayout>
-</LinearLayout>    
+</LinearLayout>

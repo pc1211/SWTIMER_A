@@ -9,19 +9,14 @@
         android:id="@+id/BACK_LAYOUT_PART1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <LinearLayout
+        <com.example.pgyl.pekislib_a.DotMatrixDisplayView
+            android:id="@+id/DOT_MATRIX_DISPLAY"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <com.example.pgyl.pekislib_a.DotMatrixDisplayView
-                android:id="@+id/DOT_MATRIX_DISPLAY"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -29,26 +24,23 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.example.pgyl.pekislib_a.SymbolButtonView
+            android:id="@+id/ICON_BTN_RUN1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_weight="1" />
 
-            <com.example.pgyl.pekislib_a.SymbolButtonView
-                android:id="@+id/ICON_BTN_RUN1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <com.example.pgyl.pekislib_a.SymbolButtonView
-                android:id="@+id/ICON_BTN_RUN2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </LinearLayout>
+        <com.example.pgyl.pekislib_a.SymbolButtonView
+            android:id="@+id/ICON_BTN_RUN2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
@@ -61,20 +53,20 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/BTN_NEXT_COLOR_TYPE"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2" />
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/BTN_PRESETS"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2" />
+                android:layout_weight="1" />
         </LinearLayout>
 
         <LinearLayout
