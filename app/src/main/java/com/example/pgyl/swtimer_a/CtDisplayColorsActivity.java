@@ -67,14 +67,14 @@ public class CtDisplayColorsActivity extends Activity {
     private enum COMMANDS {
         NEXT_COLOR_TYPE(""), NEXT_COLOR(""), NEXT_COLOR_SPACE(""), CANCEL("Cancel"), COLOR_VALUE(""), PRESETS("Presets"), OK("OK");
 
-        private String valueText;
+        private String valueLabel;
 
         COMMANDS(String valueText) {
-            this.valueText = valueText;
+            this.valueLabel = valueLabel;
         }
 
-        public String TEXT() {
-            return valueText;
+        public String LABEL() {
+            return valueLabel;
         }
 
         public int INDEX() {
@@ -103,14 +103,14 @@ public class CtDisplayColorsActivity extends Activity {
     private enum COLOR_TYPES {
         DOT_MATRIX_DISPLAY("Dot matrix display"), BUTTONS("CT control buttons"), BACK_SCREEN("Back screen");
 
-        private String valueText;
+        private String valueLabel;
 
         COLOR_TYPES(String valueText) {
-            this.valueText = valueText;
+            this.valueLabel = valueLabel;
         }
 
-        public String TEXT() {
-            return valueText;
+        public String LABEL() {
+            return valueLabel;
         }
 
         public int INDEX() {
@@ -209,7 +209,7 @@ public class CtDisplayColorsActivity extends Activity {
         for (COLOR_TYPES colorType : COLOR_TYPES.values()) {
             colors[colorType.INDEX()] = getCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getTypedColorTableName(colorType.INDEX()));
             labels[colorType.INDEX()] = getLabels(stringShelfDatabase, getTypedColorTableName(colorType.INDEX()));
-            typeLabels[colorType.INDEX()] = colorType.TEXT();
+            typeLabels[colorType.INDEX()] = colorType.LABEL();
         }
         if (isColdStartStatusInCtDisplayColorsActivity(stringShelfDatabase)) {
             setStartStatusInCtDisplayColorsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
@@ -531,7 +531,7 @@ public class CtDisplayColorsActivity extends Activity {
         for (COMMANDS command : COMMANDS.values()) {
             try {
                 buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_XML_PREFIX + command.toString()).getInt(rid));   //  BTN_... dans le XML
-                buttons[command.INDEX()].setText(command.TEXT());
+                buttons[command.INDEX()].setText(command.LABEL());
                 final COMMANDS fcommand = command;
                 buttons[command.INDEX()].setOnClickListener(new Button.OnClickListener() {
                     @Override
@@ -631,7 +631,7 @@ public class CtDisplayColorsActivity extends Activity {
 
         setStartStatusInPresetsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), typeLabels[colorTableIndex] + " Color Presets");
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), typeLabels[colorTableIndex] + "-RGB");
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.DISPLAY_TYPE.toString(), PRESETS_ACTIVITY_DISPLAY_TYPE.COLORS.toString());
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getTypedColorTableName(colorTableIndex));

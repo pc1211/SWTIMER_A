@@ -46,6 +46,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTablePre
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsBackScreenTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsBackScreen;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsButtons;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsDotMatrixDisplay;
@@ -478,17 +479,14 @@ public class MainActivity extends Activity {
         if (!tableColorsDotMatrixDisplayExists(stringShelfDatabase)) {
             createTableColorsDotMatrixDisplayIfNotExists(stringShelfDatabase);
             initializeTableColorsDotMatrixDisplay(stringShelfDatabase);
-            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsDotMatrixDisplayTableName(), getDefaults(stringShelfDatabase, getColorsDotMatrixDisplayTableName()));
         }
         if (!tableColorsButtonsExists(stringShelfDatabase)) {
             createTableColorsButtonsIfNotExists(stringShelfDatabase);
             initializeTableColorsButtons(stringShelfDatabase);
-            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsButtonsTableName(), getDefaults(stringShelfDatabase, getColorsButtonsTableName()));
         }
         if (!tableColorsBackScreenExists(stringShelfDatabase)) {
             createTableColorsBackScreenIfNotExists(stringShelfDatabase);
             initializeTableColorsBackScreen(stringShelfDatabase);
-            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsBackScreenTableName(), getDefaults(stringShelfDatabase, getColorsBackScreenTableName()));
         }
         if (!tablePresetsCTExists(stringShelfDatabase)) {
             createTablePresetsCTIfNotExists(stringShelfDatabase);
@@ -496,6 +494,18 @@ public class MainActivity extends Activity {
         }
         if (!tableChronoTimersExists(stringShelfDatabase)) {
             createTableChronoTimersIfNotExists(stringShelfDatabase);
+        }
+    }
+
+    private void setNecessaryDefaultColorsForCtDisplayActivity() {   //  Si pas encore de couleurs définies pour CtDisplayActivity => Mettre celles par défaut
+        if (getCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsDotMatrixDisplayTableName()) == null) {
+            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsDotMatrixDisplayTableName(), getDefaults(stringShelfDatabase, getColorsDotMatrixDisplayTableName()));
+        }
+        if (getCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsButtonsTableName()) == null) {
+            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsButtonsTableName(), getDefaults(stringShelfDatabase, getColorsButtonsTableName()));
+        }
+        if (getCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsBackScreenTableName()) == null) {
+            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsBackScreenTableName(), getDefaults(stringShelfDatabase, getColorsBackScreenTableName()));
         }
     }
 
@@ -575,6 +585,7 @@ public class MainActivity extends Activity {
     }
 
     private void launchCtDisplayActivity(int idct) {
+        setNecessaryDefaultColorsForCtDisplayActivity();
         setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);

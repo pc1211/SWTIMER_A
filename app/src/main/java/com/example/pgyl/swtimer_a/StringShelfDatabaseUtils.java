@@ -11,6 +11,7 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosStartStatusIndex;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosTableName;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.xhmsToMs;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 
@@ -25,7 +26,7 @@ public class StringShelfDatabaseUtils {
 
         public int INDEX() {
             return ordinal() + 1;
-        }   //  INDEX 0 pour identifiant utilisateur (idct)
+        }   //  INDEX 0 pour identifiant utilisateur
     }
 
     private enum TABLE_PRESETS_CT_DATA_FIELDS {
@@ -126,8 +127,8 @@ public class StringShelfDatabaseUtils {
                 {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.TIME_XHMS.toString(), KEYBOARDS.ASCII.toString()},
                 {TABLE_IDS.REGEXP.toString(), "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(c|$))?$", null},
                 {TABLE_IDS.MAX.toString(), String.valueOf(xhmsToMs("23h59m59s99c")), null},
-                {TABLE_IDS.TIMEUNIT.toString(), TIMEUNITS.CS.toString(), null}};
-
+                {TABLE_IDS.TIMEUNIT.toString(), TIMEUNITS.CS.toString(), null}
+        };
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_PRESETS_CT_INITS);
     }
 
@@ -144,13 +145,14 @@ public class StringShelfDatabaseUtils {
     }
 
     public static void initializeTableColorsDotMatrixDisplay(StringShelfDatabase stringShelfDatabase) {
-        final String[][] TABLE_COLOR_TIME_INITS = {
+        final String[][] TABLE_COLOR_DOT_MATRIX_DISPLAY_INITS = {
                 {TABLE_IDS.LABEL.toString(), TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.ON_TIME.LABEL(), TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.ON_MESSAGE.LABEL(), TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.OFF.LABEL(), TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}};
-
-        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString(), TABLE_COLOR_TIME_INITS);
+                {TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}
+        };
+        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString(), TABLE_COLOR_DOT_MATRIX_DISPLAY_INITS);
+        stringShelfDatabase.insertOrReplaceRowById(SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString()));   //  PRESET1 = DEFAULT
     }
 
     public static String getColorsDotMatrixDisplayTableName() {
@@ -186,9 +188,10 @@ public class StringShelfDatabaseUtils {
                 {TABLE_IDS.LABEL.toString(), TABLE_COLORS_BUTTONS_DATA_FIELDS.ON.LABEL(), TABLE_COLORS_BUTTONS_DATA_FIELDS.OFF.LABEL(), TABLE_COLORS_BUTTONS_DATA_FIELDS.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "0061F3", "696969", "000000"}};
-
+                {TABLE_IDS.DEFAULT.toString(), "0061F3", "696969", "000000"}
+        };
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_BUTTONS.toString(), TABLE_COLOR_BUTTONS_INITS);
+        stringShelfDatabase.insertOrReplaceRowById(SWTIMER_TABLES.COLORS_BUTTONS.toString(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, SWTIMER_TABLES.COLORS_BUTTONS.toString()));   //  PRESET1 = DEFAULT
     }
 
     public static String getColorsButtonsTableName() {
@@ -220,9 +223,10 @@ public class StringShelfDatabaseUtils {
                 {TABLE_IDS.LABEL.toString(), TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "000000"}};
-
+                {TABLE_IDS.DEFAULT.toString(), "000000"}
+        };
         stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), TABLE_COLOR_BACK_SCREEN_INITS);
+        stringShelfDatabase.insertOrReplaceRowById(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, SWTIMER_TABLES.COLORS_BACK_SCREEN.toString()));   //  PRESET1 = DEFAULT
     }
 
     public static String getColorsBackScreenTableName() {
@@ -234,7 +238,7 @@ public class StringShelfDatabaseUtils {
     }
 
     public static String[] getCurrentValuesInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, String tableName) {
-        return stringShelfDatabase.selectRowByIdOrCreate(tableName, TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+        return stringShelfDatabase.selectRowById(tableName, TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
     }
 
     public static void setCurrentValuesInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, String tableName, String[] values) {
@@ -242,7 +246,7 @@ public class StringShelfDatabaseUtils {
     }
 
     public static String[] getCurrentValuesInCtDisplayColorsActivity(StringShelfDatabase stringShelfDatabase, String tableName) {
-        return stringShelfDatabase.selectRowByIdOrCreate(tableName, TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
+        return stringShelfDatabase.selectRowById(tableName, TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
     }
 
     public static void setCurrentValuesInCtDisplayColorsActivity(StringShelfDatabase stringShelfDatabase, String tableName, String[] colors) {
