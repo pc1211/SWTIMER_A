@@ -67,14 +67,14 @@ public class CtDisplayColorsActivity extends Activity {
     private enum COMMANDS {
         NEXT_COLOR_TYPE(""), NEXT_COLOR(""), NEXT_COLOR_SPACE(""), CANCEL("Cancel"), COLOR_VALUE(""), PRESETS("Presets"), OK("OK");
 
-        private String valueLabel;
+        private String valueText;
 
         COMMANDS(String valueText) {
-            this.valueLabel = valueLabel;
+            this.valueText = valueText;
         }
 
-        public String LABEL() {
-            return valueLabel;
+        public String TEXT() {
+            return valueText;
         }
 
         public int INDEX() {
@@ -105,7 +105,7 @@ public class CtDisplayColorsActivity extends Activity {
 
         private String valueLabel;
 
-        COLOR_TYPES(String valueText) {
+        COLOR_TYPES(String valueLabel) {
             this.valueLabel = valueLabel;
         }
 
@@ -531,7 +531,7 @@ public class CtDisplayColorsActivity extends Activity {
         for (COMMANDS command : COMMANDS.values()) {
             try {
                 buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_XML_PREFIX + command.toString()).getInt(rid));   //  BTN_... dans le XML
-                buttons[command.INDEX()].setText(command.LABEL());
+                buttons[command.INDEX()].setText(command.TEXT());
                 final COMMANDS fcommand = command;
                 buttons[command.INDEX()].setOnClickListener(new Button.OnClickListener() {
                     @Override
