@@ -1,242 +1,52 @@
 package com.example.pgyl.swtimer_a;
 
-import android.content.Context;
-
-import com.example.pgyl.pekislib_a.InputButtonsActivity.KEYBOARDS;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
-import com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 
-import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
+import static com.example.pgyl.pekislib_a.PekislibTableUtils.getActivityInfosStartStatusIndex;
+import static com.example.pgyl.pekislib_a.PekislibTableUtils.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.TABLE_IDS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosStartStatusIndex;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.xhmsToMs;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getChronoTimersTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsBackScreenInits;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsBackScreenTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsButtonsInits;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsButtonsTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsDotMatrixDisplayInits;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getPresetsCTInits;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getPresetsCTTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getSwtimerTableDataFieldsCount;
 
 public class StringShelfDatabaseUtils {
-    //region Constantes
-    private enum SWTIMER_TABLES {
-        CHRONO_TIMERS, PRESETS_CT, COLORS_DOT_MATRIX_DISPLAY, COLORS_BUTTONS, COLORS_BACK_SCREEN
-    }
-
-    private enum TABLE_CHRONO_TIMERS_DATA_FIELDS {
-        MODE, SELECTED, RUNNING, SPLITTED, ALARM_SET, MESSAGE, MESSAGE_INIT, TIME_START, TIME_ACC, TIME_ACC_UNTIL_SPLIT, TIME_DEF, TIME_DEF_INIT, TIME_EXP;
-
-        public int INDEX() {
-            return ordinal() + 1;
-        }   //  INDEX 0 pour identifiant utilisateur
-    }
-
-    private enum TABLE_PRESETS_CT_DATA_FIELDS {
-        TIME("Time"), MESSAGE("Message");
-
-        private String valueLabel;
-
-        TABLE_PRESETS_CT_DATA_FIELDS(String valueLabel) {
-            this.valueLabel = valueLabel;
-        }
-
-        public int INDEX() {
-            return ordinal() + 1;
-        }   //  INDEX 0 pour identifiant utilisateur
-
-        public String LABEL() {
-            return valueLabel;
-        }
-    }
-
-    private enum TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS {
-        ON_TIME("ON Time"), ON_MESSAGE("ON Message"), OFF("OFF"), BACK("Background");
-
-        private String valueLabel;
-
-        TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS(String valueLabel) {
-            this.valueLabel = valueLabel;
-        }
-
-        public int INDEX() {
-            return ordinal() + 1;
-        }   //  INDEX 0 pour identifiant utilisateur
-
-        public String LABEL() {
-            return valueLabel;
-        }
-    }
-
-    private enum TABLE_COLORS_BUTTONS_DATA_FIELDS {
-        ON("ON"), OFF("OFF"), BACK("Background");
-
-        private String valueLabel;
-
-        TABLE_COLORS_BUTTONS_DATA_FIELDS(String valueLabel) {
-            this.valueLabel = valueLabel;
-        }
-
-        public int INDEX() {
-            return ordinal() + 1;
-        }   //  INDEX 0 pour identifiant utilisateur
-
-        public String LABEL() {
-            return valueLabel;
-        }
-    }
-
-    private enum TABLE_COLORS_BACK_SCREEN_DATA_FIELDS {
-        BACK("Background");
-
-        private String valueLabel;
-
-        TABLE_COLORS_BACK_SCREEN_DATA_FIELDS(String valueLabel) {
-            this.valueLabel = valueLabel;
-        }
-
-        public int INDEX() {
-            return ordinal() + 1;
-        }   //  INDEX 0 pour identifiant utilisateur
-
-        public String LABEL() {
-            return valueLabel;
-        }
-    }
-
-    private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  // Pour valider 6 caractères HEX dans INPUT_BUTTONS pour la table COLORS (RRGGBB)
-    //endregion
 
     //region TABLES
-    public static boolean tableChronoTimersExists(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.tableExists(SWTIMER_TABLES.CHRONO_TIMERS.toString());
-    }
-
-    public static void createTableChronoTimersIfNotExists(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.CHRONO_TIMERS.toString(), 1 + TABLE_CHRONO_TIMERS_DATA_FIELDS.values().length);   //  Champ ID + Données
-    }
-
-    public static boolean tablePresetsCTExists(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.tableExists(SWTIMER_TABLES.PRESETS_CT.toString());
-    }
-
-    public static void createTablePresetsCTIfNotExists(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.PRESETS_CT.toString(), 1 + TABLE_PRESETS_CT_DATA_FIELDS.values().length);   //  Champ ID + Données
+    public static void createSwtimerTableIfNotExists(StringShelfDatabase stringShelfDatabase, String tableName) {
+        stringShelfDatabase.createTableIfNotExists(tableName, 1 + getSwtimerTableDataFieldsCount(tableName));   //  Champ ID + Données;
     }
 
     public static void initializeTablePresetsCT(StringShelfDatabase stringShelfDatabase) {
-        final String[][] TABLE_PRESETS_CT_INITS = {
-                {TABLE_IDS.LABEL.toString(), TABLE_PRESETS_CT_DATA_FIELDS.TIME.LABEL(), TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.TIME_XHMS.toString(), KEYBOARDS.ASCII.toString()},
-                {TABLE_IDS.REGEXP.toString(), "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(c|$))?$", null},
-                {TABLE_IDS.MAX.toString(), String.valueOf(xhmsToMs("23h59m59s99c")), null},
-                {TABLE_IDS.TIMEUNIT.toString(), TIMEUNITS.CS.toString(), null}
-        };
-        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.PRESETS_CT.toString(), TABLE_PRESETS_CT_INITS);
-    }
-
-    public static String getPresetsCTTableName() {
-        return SWTIMER_TABLES.PRESETS_CT.toString();
-    }
-
-    public static boolean tableColorsDotMatrixDisplayExists(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString());
-    }
-
-    public static void createTableColorsDotMatrixDisplayIfNotExists(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString(), 1 + TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.values().length);   //  Champ ID + Données;
+        stringShelfDatabase.insertOrReplaceRows(getPresetsCTTableName(), getPresetsCTInits());
     }
 
     public static void initializeTableColorsDotMatrixDisplay(StringShelfDatabase stringShelfDatabase) {
-        final String[][] TABLE_COLOR_DOT_MATRIX_DISPLAY_INITS = {
-                {TABLE_IDS.LABEL.toString(), TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.ON_TIME.LABEL(), TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.ON_MESSAGE.LABEL(), TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.OFF.LABEL(), TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.BACK.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}
-        };
-        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString(), TABLE_COLOR_DOT_MATRIX_DISPLAY_INITS);
-        stringShelfDatabase.insertOrReplaceRowById(SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString()));   //  PRESET1 = DEFAULT
-    }
-
-    public static String getColorsDotMatrixDisplayTableName() {
-        return SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY.toString();
-    }
-
-    public static int getDotMatrixDisplayColorOnTimeIndex() {
-        return TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.ON_TIME.INDEX();
-    }
-
-    public static int getDotMatrixDisplayColorOnMessageIndex() {
-        return TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.ON_MESSAGE.INDEX();
-    }
-
-    public static int getDotMatrixDisplayColorOffIndex() {
-        return TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.OFF.INDEX();
-    }
-
-    public static int getDotMatrixDisplayColorBackIndex() {
-        return TABLE_COLORS_DOT_MATRIX_DISPLAY_DATA_FIELDS.BACK.INDEX();
-    }
-
-    public static boolean tableColorsButtonsExists(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_BUTTONS.toString());
-    }
-
-    public static void createTableColorsButtonsIfNotExists(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.COLORS_BUTTONS.toString(), 1 + TABLE_COLORS_BUTTONS_DATA_FIELDS.values().length);   //  Champ ID + Données;
+        stringShelfDatabase.insertOrReplaceRows(getColorsDotMatrixDisplayTableName(), getColorsDotMatrixDisplayInits());
+        stringShelfDatabase.insertOrReplaceRowById(getColorsDotMatrixDisplayTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getColorsDotMatrixDisplayTableName()));   //  PRESET1 = DEFAULT
     }
 
     public static void initializeTableColorsButtons(StringShelfDatabase stringShelfDatabase) {
-        final String[][] TABLE_COLOR_BUTTONS_INITS = {
-                {TABLE_IDS.LABEL.toString(), TABLE_COLORS_BUTTONS_DATA_FIELDS.ON.LABEL(), TABLE_COLORS_BUTTONS_DATA_FIELDS.OFF.LABEL(), TABLE_COLORS_BUTTONS_DATA_FIELDS.BACK.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString(), KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "0061F3", "696969", "000000"}
-        };
-        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_BUTTONS.toString(), TABLE_COLOR_BUTTONS_INITS);
-        stringShelfDatabase.insertOrReplaceRowById(SWTIMER_TABLES.COLORS_BUTTONS.toString(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, SWTIMER_TABLES.COLORS_BUTTONS.toString()));   //  PRESET1 = DEFAULT
-    }
-
-    public static String getColorsButtonsTableName() {
-        return SWTIMER_TABLES.COLORS_BUTTONS.toString();
-    }
-
-    public static int getButtonsColorOnIndex() {
-        return TABLE_COLORS_BUTTONS_DATA_FIELDS.ON.INDEX();
-    }
-
-    public static int getButtonsColorOffIndex() {
-        return TABLE_COLORS_BUTTONS_DATA_FIELDS.OFF.INDEX();
-    }
-
-    public static int getButtonsColorBackIndex() {
-        return TABLE_COLORS_BUTTONS_DATA_FIELDS.BACK.INDEX();
-    }
-
-    public static boolean tableColorsBackScreenExists(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.tableExists(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString());
-    }
-
-    public static void createTableColorsBackScreenIfNotExists(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.createTableIfNotExists(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), 1 + TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.values().length);   //  Champ ID + Données;
+        stringShelfDatabase.insertOrReplaceRows(getColorsButtonsTableName(), getColorsButtonsInits());
+        stringShelfDatabase.insertOrReplaceRowById(getColorsButtonsTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getColorsButtonsTableName()));   //  PRESET1 = DEFAULT
     }
 
     public static void initializeTableColorsBackScreen(StringShelfDatabase stringShelfDatabase) {
-        final String[][] TABLE_COLOR_BACK_SCREEN_INITS = {
-                {TABLE_IDS.LABEL.toString(), TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.BACK.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "000000"}
-        };
-        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), TABLE_COLOR_BACK_SCREEN_INITS);
-        stringShelfDatabase.insertOrReplaceRowById(SWTIMER_TABLES.COLORS_BACK_SCREEN.toString(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, SWTIMER_TABLES.COLORS_BACK_SCREEN.toString()));   //  PRESET1 = DEFAULT
+        stringShelfDatabase.insertOrReplaceRows(getColorsBackScreenTableName(), getColorsBackScreenInits());
+        stringShelfDatabase.insertOrReplaceRowById(getColorsBackScreenTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getColorsBackScreenTableName()));   //  PRESET1 = DEFAULT
     }
+    //endregion
 
-    public static String getColorsBackScreenTableName() {
-        return SWTIMER_TABLES.COLORS_BACK_SCREEN.toString();
-    }
-
-    public static int getBackScreenColorBackIndex() {
-        return TABLE_COLORS_BACK_SCREEN_DATA_FIELDS.BACK.INDEX();
-    }
-
+    //region CURRENT
     public static String[] getCurrentValuesInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, String tableName) {
         return stringShelfDatabase.selectRowById(tableName, TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
     }
@@ -274,79 +84,20 @@ public class StringShelfDatabaseUtils {
 
     //region CT
     public static String[] getChronoTimerById(StringShelfDatabase stringShelfDatabase, int idct) {
-        return stringShelfDatabase.selectRowByIdOrCreate(SWTIMER_TABLES.CHRONO_TIMERS.toString(), String.valueOf(idct));
+        return stringShelfDatabase.selectRowByIdOrCreate(getChronoTimersTableName(), String.valueOf(idct));
     }
 
     public static String[][] getChronoTimers(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.selectRows(SWTIMER_TABLES.CHRONO_TIMERS.toString(), null);
+        return stringShelfDatabase.selectRows(getChronoTimersTableName(), null);
     }
 
     public static void saveChronoTimer(StringShelfDatabase stringShelfDatabase, String[] values) {
-        stringShelfDatabase.insertOrReplaceRow(SWTIMER_TABLES.CHRONO_TIMERS.toString(), values);
+        stringShelfDatabase.insertOrReplaceRow(getChronoTimersTableName(), values);
     }
 
     public static void saveChronoTimers(StringShelfDatabase stringShelfDatabase, String[][] values) {
-        stringShelfDatabase.deleteRows(SWTIMER_TABLES.CHRONO_TIMERS.toString(), null);
-        stringShelfDatabase.insertOrReplaceRows(SWTIMER_TABLES.CHRONO_TIMERS.toString(), values);
-    }
-
-    public static CtRecord chronoTimerRowToCtRecord(String[] chronoTimerRow, Context context) {
-        return new CtRecord(
-                context,
-                Integer.parseInt(chronoTimerRow[TABLE_ID_INDEX]),
-                CtRecord.MODE.valueOf(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.MODE.INDEX()]),
-                (Integer.parseInt(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.SELECTED.INDEX()]) == 1),
-                (Integer.parseInt(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.RUNNING.INDEX()]) == 1),
-                (Integer.parseInt(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.SPLITTED.INDEX()]) == 1),
-                (Integer.parseInt(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.ALARM_SET.INDEX()]) == 1),
-                chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.MESSAGE.INDEX()],
-                chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.MESSAGE_INIT.INDEX()],
-                Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_START.INDEX()]),
-                Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_ACC.INDEX()]),
-                Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_ACC_UNTIL_SPLIT.INDEX()]),
-                Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF.INDEX()]),
-                Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF_INIT.INDEX()]),
-                Long.parseLong(chronoTimerRow[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_EXP.INDEX()]));
-    }
-
-    public static String[] ctRecordToChronoTimerRow(CtRecord ctRecord) {
-        String[] ret = new String[1 + TABLE_CHRONO_TIMERS_DATA_FIELDS.values().length];  //  Champ ID + Données
-        ret[TABLE_ID_INDEX] = String.valueOf(ctRecord.getIdct());
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.MODE.INDEX()] = ctRecord.getMode().toString();
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.SELECTED.INDEX()] = String.valueOf(ctRecord.isSelected() ? 1 : 0);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.RUNNING.INDEX()] = String.valueOf(ctRecord.isRunning() ? 1 : 0);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.SPLITTED.INDEX()] = String.valueOf(ctRecord.isSplitted() ? 1 : 0);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.ALARM_SET.INDEX()] = String.valueOf(ctRecord.hasClockAppAlarm() ? 1 : 0);
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.MESSAGE.INDEX()] = ctRecord.getMessage();
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.MESSAGE_INIT.INDEX()] = ctRecord.getMessageInit();
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_START.INDEX()] = String.valueOf(ctRecord.getTimeStart());
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_ACC.INDEX()] = String.valueOf(ctRecord.getTimeAcc());
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_ACC_UNTIL_SPLIT.INDEX()] = String.valueOf(ctRecord.getTimeAccUntilSplit());
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF.INDEX()] = String.valueOf(ctRecord.getTimeDef());
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_DEF_INIT.INDEX()] = String.valueOf(ctRecord.getTimeDefInit());
-        ret[TABLE_CHRONO_TIMERS_DATA_FIELDS.TIME_EXP.INDEX()] = String.valueOf(ctRecord.getTimeExp());
-        return ret;
-    }
-    //endregion
-
-    //region PRESETS_CT
-    public static boolean copyPresetCTRowToCtRecord(String[] presetCTRow, CtRecord ctRecord, long nowm) {
-        boolean ret = true;
-        if (!ctRecord.setTimeDef(Long.parseLong(presetCTRow[TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX()]), nowm)) {
-            ret = false;
-        }
-        if (!ctRecord.setMessage(presetCTRow[TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX()])) {
-            ret = false;
-        }
-        return ret;
-    }
-
-    public static String[] timeMessageToPresetCTRow(long time, String message) {
-        String[] ret = new String[1 + TABLE_PRESETS_CT_DATA_FIELDS.values().length];  //  Champ ID + Données
-        ret[TABLE_ID_INDEX] = null;
-        ret[TABLE_PRESETS_CT_DATA_FIELDS.TIME.INDEX()] = String.valueOf(time);
-        ret[TABLE_PRESETS_CT_DATA_FIELDS.MESSAGE.INDEX()] = message;
-        return ret;
+        stringShelfDatabase.deleteRows(getChronoTimersTableName(), null);
+        stringShelfDatabase.insertOrReplaceRows(getChronoTimersTableName(), values);
     }
     //endregion
 

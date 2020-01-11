@@ -21,9 +21,9 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTim
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.ctRecordToChronoTimerRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimers;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.chronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.ctRecordToChronoTimerRow;
 
 public class CtRecordsHandler {
     //region Constantes

@@ -42,25 +42,29 @@ import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.TABLE_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentPresetInPresetsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentStringInInputButtonsActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValueInInputButtonsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getLabels;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPresetInPresetsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentStringInInputButtonsActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValueInInputButtonsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInInputButtonsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getBackScreenColorBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getButtonsColorBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getButtonsColorOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getButtonsColorOnIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsButtonsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentValuesInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.chronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getBackScreenColorBackIndex;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getButtonsColorBackIndex;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getButtonsColorOffIndex;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getButtonsColorOnIndex;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorTypeIndex;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorTypeLabel;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorTypesCount;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsBackScreenTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsButtonsTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsDotMatrixDisplayTableName;
 
 public class CtDisplayColorsActivity extends Activity {
     //region Constantes
@@ -93,24 +97,6 @@ public class CtDisplayColorsActivity extends Activity {
 
         public int ID() {
             return valueId;
-        }
-
-        public int INDEX() {
-            return ordinal();
-        }
-    }
-
-    private enum COLOR_TYPES {
-        DOT_MATRIX_DISPLAY("Dot matrix display"), BUTTONS("CT control buttons"), BACK_SCREEN("Back screen");
-
-        private String valueLabel;
-
-        COLOR_TYPES(String valueLabel) {
-            this.valueLabel = valueLabel;
-        }
-
-        public String LABEL() {
-            return valueLabel;
         }
 
         public int INDEX() {
@@ -154,11 +140,11 @@ public class CtDisplayColorsActivity extends Activity {
     private LinearLayout backLayoutPart1;
     private LinearLayout backLayoutPart2;
     private CtRecord currentCtRecord;
-    private int colorTableIndex;
-    private int colorIndex;   //  Au sein de la table pointée par colorTableIndex
-    private String[][] colors = new String[COLOR_TYPES.values().length][];
-    private String[][] labels = new String[COLOR_TYPES.values().length][];
-    private String[] typeLabels = new String[COLOR_TYPES.values().length];
+    private int colorTypeIndex;
+    private int colorIndex;   //  Au sein de la table pointée par colorTypeIndex
+    private String[][] colors = new String[getColorTypesCount()][];  //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
+    private String[][] labels = new String[getColorTypesCount()][];
+    private String[] typeLabels = new String[getColorTypesCount()];
     private COLOR_SPACES colorSpace;
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
@@ -189,9 +175,7 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         currentCtRecord = null;
-        for (COLOR_TYPES colorType : COLOR_TYPES.values()) {
-            setCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getTypedColorTableName(colorType.INDEX()), colors[colorType.INDEX()]);
-        }
+        saveCurrentColorsInDB();
         stringShelfDatabase.close();
         stringShelfDatabase = null;
         savePreferences();
@@ -206,31 +190,29 @@ public class CtDisplayColorsActivity extends Activity {
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         setupDotMatrixDisplayUpdater();
-        for (COLOR_TYPES colorType : COLOR_TYPES.values()) {
-            colors[colorType.INDEX()] = getCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getTypedColorTableName(colorType.INDEX()));
-            labels[colorType.INDEX()] = getLabels(stringShelfDatabase, getTypedColorTableName(colorType.INDEX()));
-            typeLabels[colorType.INDEX()] = colorType.LABEL();
-        }
+        getDBCurrentColors();
+        getDBCurrentColorLabels();
+
         if (isColdStartStatusInCtDisplayColorsActivity(stringShelfDatabase)) {
             setStartStatusInCtDisplayColorsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
-            colorTableIndex = COLOR_TABLE_INDEX_DEFAULT_VALUE;
+            colorTypeIndex = COLOR_TABLE_INDEX_DEFAULT_VALUE;
             colorIndex = COLOR_INDEX_DEFAULT_VALUE;
             colorSpace = COLOR_SPACE_DEFAULT_VALUE;
         } else {
-            colorTableIndex = getSHPcolorTableIndex();
+            colorTypeIndex = getSHPcolorTableIndex();
             colorIndex = getSHPcolorIndex();
             colorSpace = getSHPcolorSpace();
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (returnsFromInputButtonsActivity()) {
-                    String colorText = getCurrentStringInInputButtonsActivity(stringShelfDatabase, getTypedColorTableName(colorTableIndex), colorIndex);
+                    String colorText = getCurrentValueInInputButtonsActivity(stringShelfDatabase, getColorTableName(colorTypeIndex), colorIndex);
                     if (colorSpace.equals(COLOR_SPACES.HSV)) {
                         colorText = HSVToRGB(colorText);    //  HSV dégradé
                     }
-                    colors[colorTableIndex][colorIndex] = colorText;
+                    colors[colorTypeIndex][colorIndex] = colorText;
                 }
                 if (returnsFromPresetsActivity()) {
-                    colors[colorTableIndex] = getCurrentPresetInPresetsActivity(stringShelfDatabase, getTypedColorTableName(colorTableIndex));
+                    colors[colorTypeIndex] = getCurrentPresetInPresetsActivity(stringShelfDatabase, getColorTableName(colorTypeIndex));
                 }
             }
         }
@@ -304,9 +286,9 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void onButtonClickNextColorType() {
-        colorTableIndex = colorTableIndex + 1;
-        if (colorTableIndex >= colors.length) {
-            colorTableIndex = 0;
+        colorTypeIndex = colorTypeIndex + 1;
+        if (colorTypeIndex >= colors.length) {
+            colorTypeIndex = 0;
         }
         colorIndex = 1;
         updateDisplayButtonTextNextColorType();
@@ -317,7 +299,7 @@ public class CtDisplayColorsActivity extends Activity {
 
     private void onButtonClickNextColor() {
         colorIndex = colorIndex + 1;
-        if (colorIndex >= colors[colorTableIndex].length) {
+        if (colorIndex >= colors[colorTypeIndex].length) {
             colorIndex = 1;
         }
         updateDisplayButtonTextNextColor();
@@ -337,12 +319,12 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void onButtonClickColorValue() {
-        setCurrentStringInInputButtonsActivity(stringShelfDatabase, getTypedColorTableName(colorTableIndex), colorIndex, getSeekBarsProgressHexString());
+        setCurrentValueInInputButtonsActivity(stringShelfDatabase, getColorTableName(colorTypeIndex), colorIndex, getSeekBarsProgressHexString());
         launchInputButtonsActivity();
     }
 
     private void onButtonClickPresets() {
-        setCurrentPresetInPresetsActivity(stringShelfDatabase, getTypedColorTableName(colorTableIndex), colors[colorTableIndex]);
+        setCurrentPresetInPresetsActivity(stringShelfDatabase, getColorTableName(colorTypeIndex), colors[colorTypeIndex]);
         launchPresetsActivity();
     }
 
@@ -355,12 +337,12 @@ public class CtDisplayColorsActivity extends Activity {
     private void onSeekBarProgressChanged(boolean fromUser) {
         if (fromUser) {
             if (colorSpace.equals(COLOR_SPACES.RGB)) {
-                colors[colorTableIndex][colorIndex] = getSeekBarsProgressHexString();
+                colors[colorTypeIndex][colorIndex] = getSeekBarsProgressHexString();
             } else {
                 hsvStruc[0] = (float) seekBars[COLOR_PARAMS.RED_HUE.INDEX()].getProgress() / 65535f * 360f;
                 hsvStruc[1] = (float) seekBars[COLOR_PARAMS.GREEN_SAT.INDEX()].getProgress() / 65535f;
                 hsvStruc[2] = (float) seekBars[COLOR_PARAMS.BLUE_VAL.INDEX()].getProgress() / 65535f;
-                colors[colorTableIndex][colorIndex] = String.format("%06X", Color.HSVToColor(hsvStruc) & COLOR_RGB_MASK);
+                colors[colorTypeIndex][colorIndex] = String.format("%06X", Color.HSVToColor(hsvStruc) & COLOR_RGB_MASK);
             }
             updateDisplayButtonTextColorValue();
             updateDisplayColors();
@@ -368,13 +350,13 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayColors() {
-        if (colorTableIndex == COLOR_TYPES.DOT_MATRIX_DISPLAY.INDEX()) {
+        if (colorTypeIndex == getColorTypeIndex(getColorsDotMatrixDisplayTableName())) {
             updateDisplayDotMatrixDisplayColors();
         }
-        if (colorTableIndex == COLOR_TYPES.BUTTONS.INDEX()) {
+        if (colorTypeIndex == getColorTypeIndex(getColorsButtonsTableName())) {
             updateDisplayIconButtonColors();
         }
-        if (colorTableIndex == COLOR_TYPES.BACK_SCREEN.INDEX()) {
+        if (colorTypeIndex == getColorTypeIndex(getColorsBackScreenTableName())) {
             updateDisplayBackScreenColors();
         }
     }
@@ -383,15 +365,16 @@ public class CtDisplayColorsActivity extends Activity {
         final String EXTRA_FONT_TEST_TEXT = "12:34:.";
         final String DEFAULT_FONT_TEST_TEXT = "Abcd";
 
-        dotMatrixDisplayUpdater.setGridColors(colors[COLOR_TYPES.DOT_MATRIX_DISPLAY.INDEX()]);
+        dotMatrixDisplayUpdater.setGridColors(colors[getColorTypeIndex(getColorsDotMatrixDisplayTableName())]);
         dotMatrixDisplayUpdater.writeTestText(EXTRA_FONT_TEST_TEXT, DEFAULT_FONT_TEST_TEXT);
         dotMatrixDisplayView.invalidate();
     }
 
     private void updateDisplayButtonColor(ICON_COMMANDS iconCommand) {  //   ON/BACK ou OFF/BACK
-        iconButtons[iconCommand.INDEX()].setFrontColor(((getButtonState(iconCommand)) ? colors[COLOR_TYPES.BUTTONS.INDEX()][getButtonsColorOnIndex()] : colors[COLOR_TYPES.BUTTONS.INDEX()][getButtonsColorOffIndex()]));
-        iconButtons[iconCommand.INDEX()].setBackColor(colors[COLOR_TYPES.BUTTONS.INDEX()][getButtonsColorBackIndex()]);
-        iconButtons[iconCommand.INDEX()].setExtraColor(((getButtonState(iconCommand)) ? colors[COLOR_TYPES.BUTTONS.INDEX()][getButtonsColorOffIndex()] : colors[COLOR_TYPES.BUTTONS.INDEX()][getButtonsColorOnIndex()]));
+        int colorTypeIndex = getColorTypeIndex(getColorsButtonsTableName());
+        iconButtons[iconCommand.INDEX()].setFrontColor(((getButtonState(iconCommand)) ? colors[colorTypeIndex][getButtonsColorOnIndex()] : colors[colorTypeIndex][getButtonsColorOffIndex()]));
+        iconButtons[iconCommand.INDEX()].setBackColor(colors[colorTypeIndex][getButtonsColorBackIndex()]);
+        iconButtons[iconCommand.INDEX()].setExtraColor(((getButtonState(iconCommand)) ? colors[colorTypeIndex][getButtonsColorOffIndex()] : colors[colorTypeIndex][getButtonsColorOnIndex()]));
         iconButtons[iconCommand.INDEX()].invalidate();
     }
 
@@ -402,7 +385,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayBackScreenColors() {
-        int color = Color.parseColor(COLOR_PREFIX + colors[COLOR_TYPES.BACK_SCREEN.INDEX()][getBackScreenColorBackIndex()]);
+        int color = Color.parseColor(COLOR_PREFIX + colors[getColorTypeIndex(getColorsBackScreenTableName())][getBackScreenColorBackIndex()]);
         backLayoutPart2.setBackgroundColor(color);
         backLayoutPart1.setBackgroundColor(color);
     }
@@ -410,13 +393,13 @@ public class CtDisplayColorsActivity extends Activity {
     private void updateDisplayButtonTextNextColorType() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
-        buttons[COMMANDS.NEXT_COLOR_TYPE.INDEX()].setText(typeLabels[colorTableIndex] + SYMBOL_NEXT);
+        buttons[COMMANDS.NEXT_COLOR_TYPE.INDEX()].setText(typeLabels[colorTypeIndex] + SYMBOL_NEXT);
     }
 
     private void updateDisplayButtonTextNextColor() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
-        buttons[COMMANDS.NEXT_COLOR.INDEX()].setText(labels[colorTableIndex][colorIndex] + SYMBOL_NEXT);
+        buttons[COMMANDS.NEXT_COLOR.INDEX()].setText(labels[colorTypeIndex][colorIndex] + SYMBOL_NEXT);
     }
 
     private void updateDisplayButtonTextColorValue() {
@@ -435,9 +418,9 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplaySeekBarsProgress() {
-        int red = Integer.parseInt(colors[colorTableIndex][colorIndex].substring(0, 2), HEX_RADIX);  //  0..255
-        int green = Integer.parseInt(colors[colorTableIndex][colorIndex].substring(2, 4), HEX_RADIX);
-        int blue = Integer.parseInt(colors[colorTableIndex][colorIndex].substring(4, 6), HEX_RADIX);
+        int red = Integer.parseInt(colors[colorTypeIndex][colorIndex].substring(0, 2), HEX_RADIX);  //  0..255
+        int green = Integer.parseInt(colors[colorTypeIndex][colorIndex].substring(2, 4), HEX_RADIX);
+        int blue = Integer.parseInt(colors[colorTypeIndex][colorIndex].substring(4, 6), HEX_RADIX);
         if (colorSpace.equals(COLOR_SPACES.RGB)) {
             seekBars[COLOR_PARAMS.RED_HUE.INDEX()].setProgress(257 * red);    //  257 = 65535 / 255
             seekBars[COLOR_PARAMS.GREEN_SAT.INDEX()].setProgress(257 * green);
@@ -473,7 +456,7 @@ public class CtDisplayColorsActivity extends Activity {
     private void savePreferences() {
         SharedPreferences shp = getSharedPreferences(shpFileName, MODE_PRIVATE);
         SharedPreferences.Editor shpEditor = shp.edit();
-        shpEditor.putInt(SHP_KEY_NAMES.COLOR_TABLE_INDEX.toString(), colorTableIndex);
+        shpEditor.putInt(SHP_KEY_NAMES.COLOR_TABLE_INDEX.toString(), colorTypeIndex);
         shpEditor.putInt(SHP_KEY_NAMES.COLOR_INDEX.toString(), colorIndex);
         shpEditor.putString(SHP_KEY_NAMES.COLOR_SPACE.toString(), colorSpace.toString());
         shpEditor.commit();
@@ -603,25 +586,31 @@ public class CtDisplayColorsActivity extends Activity {
         backLayoutPart2 = findViewById(R.id.BACK_LAYOUT_PART2);
     }
 
-    private String getTypedColorTableName(int index) {
-        String typedColorTableName = "";
-        if (index == COLOR_TYPES.DOT_MATRIX_DISPLAY.INDEX()) {
-            typedColorTableName = getColorsDotMatrixDisplayTableName();
+    private void saveCurrentColorsInDB() {
+        for (int i = 0; i <= (getColorTypesCount() - 1); i = i + 1) {
+            setCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getColorTableName(i), colors[i]);
         }
-        if (index == COLOR_TYPES.BUTTONS.INDEX()) {
-            typedColorTableName = getColorsButtonsTableName();
-        }
-        if (index == COLOR_TYPES.BACK_SCREEN.INDEX()) {
-            typedColorTableName = getColorsBackScreenTableName();
-        }
-        return typedColorTableName;
     }
+
+    private void getDBCurrentColors() {
+        for (int i = 0; i <= (getColorTypesCount() - 1); i = i + 1) {
+            colors[i] = getCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getColorTableName(i));
+        }
+    }
+
+    private void getDBCurrentColorLabels() {
+        for (int i = 0; i <= (getColorTypesCount() - 1); i = i + 1) {
+            labels[i] = getLabels(stringShelfDatabase, getColorTableName(i));
+            typeLabels[i] = getColorTypeLabel(getColorTableName(i));
+        }
+    }
+
 
     private void launchInputButtonsActivity() {
         setStartStatusInInputButtonsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), labels[colorTableIndex][colorIndex]);
-        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getTypedColorTableName(colorTableIndex));
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), labels[colorTypeIndex][colorIndex]);
+        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorTableName(colorTypeIndex));
         callingIntent.putExtra(TABLE_EXTRA_KEYS.INDEX.toString(), colorIndex);
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.INDEX());
     }
@@ -631,10 +620,10 @@ public class CtDisplayColorsActivity extends Activity {
 
         setStartStatusInPresetsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), typeLabels[colorTableIndex] + "-RGB");
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), typeLabels[colorTypeIndex] + "-RGB");
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.DISPLAY_TYPE.toString(), PRESETS_ACTIVITY_DISPLAY_TYPE.COLORS.toString());
-        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getTypedColorTableName(colorTableIndex));
+        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorTableName(colorTypeIndex));
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.PRESETS.INDEX());
     }
 

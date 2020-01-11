@@ -31,33 +31,23 @@ import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
+import static com.example.pgyl.pekislib_a.PekislibTableUtils.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StateView.STATES;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createTableActivityInfosIfNotExists;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.tableActivityInfosExists;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createPekislibTableIfNotExists;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableChronoTimersIfNotExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableColorsBackScreenIfNotExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableColorsButtonsIfNotExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTableColorsDotMatrixDisplayIfNotExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createTablePresetsCTIfNotExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsButtonsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorsDotMatrixDisplayTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createSwtimerTableIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsBackScreen;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsButtons;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsDotMatrixDisplay;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentValuesInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tableChronoTimersExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tableColorsBackScreenExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tableColorsButtonsExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tableColorsDotMatrixDisplayExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.tablePresetsCTExists;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getChronoTimersTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsBackScreenTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsButtonsTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getPresetsCTTableName;
 
 public class MainActivity extends Activity {
     //region Constantes
@@ -473,39 +463,27 @@ public class MainActivity extends Activity {
     private void setupStringShelfDatabase() {
         stringShelfDatabase = new StringShelfDatabase(this);
         stringShelfDatabase.open();
-        if (!tableActivityInfosExists(stringShelfDatabase)) {
-            createTableActivityInfosIfNotExists(stringShelfDatabase);
+        if (!stringShelfDatabase.tableExists(getActivityInfosTableName())) {
+            createPekislibTableIfNotExists(stringShelfDatabase, getActivityInfosTableName());
         }
-        if (!tableColorsDotMatrixDisplayExists(stringShelfDatabase)) {
-            createTableColorsDotMatrixDisplayIfNotExists(stringShelfDatabase);
+        if (!stringShelfDatabase.tableExists(getColorsDotMatrixDisplayTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getColorsDotMatrixDisplayTableName());
             initializeTableColorsDotMatrixDisplay(stringShelfDatabase);
         }
-        if (!tableColorsButtonsExists(stringShelfDatabase)) {
-            createTableColorsButtonsIfNotExists(stringShelfDatabase);
+        if (!stringShelfDatabase.tableExists(getColorsButtonsTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getColorsButtonsTableName());
             initializeTableColorsButtons(stringShelfDatabase);
         }
-        if (!tableColorsBackScreenExists(stringShelfDatabase)) {
-            createTableColorsBackScreenIfNotExists(stringShelfDatabase);
+        if (!stringShelfDatabase.tableExists(getColorsBackScreenTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getColorsBackScreenTableName());
             initializeTableColorsBackScreen(stringShelfDatabase);
         }
-        if (!tablePresetsCTExists(stringShelfDatabase)) {
-            createTablePresetsCTIfNotExists(stringShelfDatabase);
+        if (!stringShelfDatabase.tableExists(getPresetsCTTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getPresetsCTTableName());
             initializeTablePresetsCT(stringShelfDatabase);
         }
-        if (!tableChronoTimersExists(stringShelfDatabase)) {
-            createTableChronoTimersIfNotExists(stringShelfDatabase);
-        }
-    }
-
-    private void setNecessaryDefaultColorsForCtDisplayActivity() {   //  Si pas encore de couleurs définies pour CtDisplayActivity => Mettre celles par défaut
-        if (getCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsDotMatrixDisplayTableName()) == null) {
-            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsDotMatrixDisplayTableName(), getDefaults(stringShelfDatabase, getColorsDotMatrixDisplayTableName()));
-        }
-        if (getCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsButtonsTableName()) == null) {
-            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsButtonsTableName(), getDefaults(stringShelfDatabase, getColorsButtonsTableName()));
-        }
-        if (getCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsBackScreenTableName()) == null) {
-            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorsBackScreenTableName(), getDefaults(stringShelfDatabase, getColorsBackScreenTableName()));
+        if (!stringShelfDatabase.tableExists(getChronoTimersTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getChronoTimersTableName());
         }
     }
 
@@ -585,7 +563,6 @@ public class MainActivity extends Activity {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setNecessaryDefaultColorsForCtDisplayActivity();
         setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
