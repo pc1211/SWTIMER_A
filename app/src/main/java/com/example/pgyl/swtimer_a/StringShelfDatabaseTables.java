@@ -6,11 +6,10 @@ import com.example.pgyl.pekislib_a.InputButtonsActivity;
 import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
-import static com.example.pgyl.pekislib_a.Constants.UNDEFINED;
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.xhmsToMs;
 
-public class SwTimerTableUtils {
+public class StringShelfDatabaseTables {
     private enum SWTIMER_TABLES {   //  "Enum of enums"
         CHRONO_TIMERS(SwTimerTableAndFields.ChronoTimers.class, ""),
         PRESETS_CT(SwTimerTableAndFields.PresetsCT.class, ""),
@@ -20,13 +19,13 @@ public class SwTimerTableUtils {
 
         private SwTimerTableAndFields[] tableFields;
         private int colorTypeIndex;
-        private String valueColorTypeLabel;
+        private String colorTypeLabel;
         private final int COLOR_TYPE_INDEX_UNDEFINED = -2;
         private final int COLOR_TYPE_INDEX_NOT_FOUND = -1;
 
-        SWTIMER_TABLES(Class<? extends SwTimerTableAndFields> swTimerTableFields, String valueColorTypeLabel) {
+        SWTIMER_TABLES(Class<? extends SwTimerTableAndFields> swTimerTableFields, String colorTypeLabel) {
             tableFields = swTimerTableFields.getEnumConstants();
-            this.valueColorTypeLabel = valueColorTypeLabel;
+            this.colorTypeLabel = colorTypeLabel;
             colorTypeIndex = COLOR_TYPE_INDEX_UNDEFINED;
         }
 
@@ -35,15 +34,16 @@ public class SwTimerTableUtils {
         }
 
         public String COLOR_TYPE_LABEL() {
-            return valueColorTypeLabel;
+            return colorTypeLabel;
         }
 
         public int COLOR_TYPE_INDEX() {
-            if (colorTypeIndex == COLOR_TYPE_INDEX_UNDEFINED) {   //  Au 1er appel (colorTypeIndex undefined), trouver l'index de la table dans colorTypes (qui doit attendre la construction complète de SWTIMERS_TABLES avant de pouvoir être utilisé)
+            if (colorTypeIndex == COLOR_TYPE_INDEX_UNDEFINED) {   //  Lazy ... Au 1er appel de COLOR_TYPE_INDEX() (après initialisation complète de SWTIMERS_TABLES), trouver l'index de la table dans colorTypes
                 colorTypeIndex = COLOR_TYPE_INDEX_NOT_FOUND;
                 for (int i = 0; i <= (colorTypes.length - 1); i = i + 1) {
-                    if (this.toString().equals(colorTypes[i].toString())) {
+                    if (this.toString().equals(colorTypes[i].toString())) {   //  Trouvé; on connaît maintenant l'index de la table dans colorTypes
                         colorTypeIndex = i;
+                        break;
                     }
                 }
             }

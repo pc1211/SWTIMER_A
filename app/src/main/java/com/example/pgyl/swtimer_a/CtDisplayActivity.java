@@ -57,21 +57,21 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentValu
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentValuesInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayColorsActivity;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.copyPresetCTRowToCtRecord;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.ctRecordToChronoTimerRow;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getBackScreenColorBackIndex;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getButtonsColorBackIndex;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getButtonsColorOffIndex;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getButtonsColorOnIndex;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorTypeIndex;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorTypesCount;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsBackScreenTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsButtonsTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsDotMatrixDisplayTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.timeMessageToPresetCTRow;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.copyPresetCTRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.ctRecordToChronoTimerRow;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsColorBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsColorOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsColorOnIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTypeIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTypesCount;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsBackScreenTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeMessageToPresetCTRow;
 
 public class CtDisplayActivity extends Activity {
     //region Constantes

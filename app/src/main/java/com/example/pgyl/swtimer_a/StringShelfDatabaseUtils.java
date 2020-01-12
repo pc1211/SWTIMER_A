@@ -3,21 +3,21 @@ package com.example.pgyl.swtimer_a;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
 
-import static com.example.pgyl.pekislib_a.PekislibTableUtils.getActivityInfosStartStatusIndex;
-import static com.example.pgyl.pekislib_a.PekislibTableUtils.getActivityInfosTableName;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosStartStatusIndex;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getChronoTimersTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsBackScreenInits;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsBackScreenTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsButtonsInits;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsButtonsTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsDotMatrixDisplayInits;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsDotMatrixDisplayTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getPresetsCTInits;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getSwtimerTableDataFieldsCount;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsBackScreenInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsBackScreenTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsButtonsInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsDotMatrixDisplayInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getSwtimerTableDataFieldsCount;
 
 public class StringShelfDatabaseUtils {
 

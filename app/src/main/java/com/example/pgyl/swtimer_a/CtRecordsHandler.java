@@ -22,8 +22,8 @@ import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimers;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.ctRecordToChronoTimerRow;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.ctRecordToChronoTimerRow;
 
 public class CtRecordsHandler {
     //region Constantes

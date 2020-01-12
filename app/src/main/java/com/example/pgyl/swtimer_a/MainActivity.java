@@ -31,7 +31,7 @@ import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
-import static com.example.pgyl.pekislib_a.PekislibTableUtils.getActivityInfosTableName;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StateView.STATES;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createPekislibTableIfNotExists;
@@ -43,11 +43,11 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTabl
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsDotMatrixDisplay;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getChronoTimersTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsBackScreenTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsButtonsTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getColorsDotMatrixDisplayTableName;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getPresetsCTTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsBackScreenTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 
 public class MainActivity extends Activity {
     //region Constantes

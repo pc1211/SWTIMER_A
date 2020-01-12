@@ -10,10 +10,10 @@ import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getDotMatrixDisplayColorBackIndex;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getDotMatrixDisplayColorOffIndex;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getDotMatrixDisplayColorOnMessageIndex;
-import static com.example.pgyl.swtimer_a.SwTimerTableUtils.getDotMatrixDisplayColorOnTimeIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorOnMessageIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorOnTimeIndex;
 
 public class CtDisplayDotMatrixDisplayUpdater {
     public interface onExpiredTimerListener {
