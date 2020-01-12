@@ -21,11 +21,13 @@ public class SwTimerTableUtils {
         private SwTimerTableAndFields[] tableFields;
         private int colorTypeIndex;
         private String valueColorTypeLabel;
+        private final int COLOR_TYPE_INDEX_UNDEFINED = -2;
+        private final int COLOR_TYPE_INDEX_NOT_FOUND = -1;
 
         SWTIMER_TABLES(Class<? extends SwTimerTableAndFields> swTimerTableFields, String valueColorTypeLabel) {
             tableFields = swTimerTableFields.getEnumConstants();
             this.valueColorTypeLabel = valueColorTypeLabel;
-            colorTypeIndex = UNDEFINED;
+            colorTypeIndex = COLOR_TYPE_INDEX_UNDEFINED;
         }
 
         public SwTimerTableAndFields[] TABLE_FIELDS() {
@@ -37,7 +39,8 @@ public class SwTimerTableUtils {
         }
 
         public int COLOR_TYPE_INDEX() {
-            if (colorTypeIndex == UNDEFINED) {   //  Au 1er appel (colorTypeIndex undefined), trouver l'index de la table dans colorTypes (qui doit attendre la construction complète de SWTIMERS_TABLES avant de pouvoir être utilisé)
+            if (colorTypeIndex == COLOR_TYPE_INDEX_UNDEFINED) {   //  Au 1er appel (colorTypeIndex undefined), trouver l'index de la table dans colorTypes (qui doit attendre la construction complète de SWTIMERS_TABLES avant de pouvoir être utilisé)
+                colorTypeIndex = COLOR_TYPE_INDEX_NOT_FOUND;
                 for (int i = 0; i <= (colorTypes.length - 1); i = i + 1) {
                     if (this.toString().equals(colorTypes[i].toString())) {
                         colorTypeIndex = i;
