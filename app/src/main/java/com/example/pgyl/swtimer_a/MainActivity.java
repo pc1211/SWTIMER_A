@@ -70,8 +70,8 @@ public class MainActivity extends Activity {
     }
 
     public enum SWTIMER_SHP_KEY_NAMES {SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST, SET_CLOCK_APP_ALARM_ON_START_TIMER, KEEP_SCREEN, REQUESTED_CLOCK_APP_ALARM_DISMISSES}
-
     //endregion
+
     //region Variables
     private CustomImageButton[] buttons;
     private EnumMap<COMMANDS, StateView> commandStateViewsMap;
