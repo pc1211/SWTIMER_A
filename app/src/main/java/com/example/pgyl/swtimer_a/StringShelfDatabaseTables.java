@@ -3,10 +3,10 @@ package com.example.pgyl.swtimer_a;
 import android.content.Context;
 
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
-import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.xhmsToMs;
 
 public class StringShelfDatabaseTables {
@@ -193,11 +193,11 @@ public class StringShelfDatabaseTables {
 
     public static String[][] getPresetsCTInits() {
         final String[][] TABLE_PRESETS_CT_INITS = {
-                {StringShelfDatabaseUtils.TABLE_IDS.LABEL.toString(), SwTimerTableAndFields.PresetsCT.TIME.LABEL(), SwTimerTableAndFields.PresetsCT.MESSAGE.LABEL()},
-                {StringShelfDatabaseUtils.TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_XHMS.toString(), InputButtonsActivity.KEYBOARDS.ASCII.toString()},
-                {StringShelfDatabaseUtils.TABLE_IDS.REGEXP.toString(), "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(c|$))?$", null},
-                {StringShelfDatabaseUtils.TABLE_IDS.MAX.toString(), String.valueOf(xhmsToMs("23h59m59s99c")), null},
-                {StringShelfDatabaseUtils.TABLE_IDS.TIMEUNIT.toString(), TimeDateUtils.TIMEUNITS.CS.toString(), null}
+                {TABLE_IDS.LABEL.toString(), SwTimerTableAndFields.PresetsCT.TIME.LABEL(), SwTimerTableAndFields.PresetsCT.MESSAGE.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_XHMS.toString(), InputButtonsActivity.KEYBOARDS.ASCII.toString()},
+                {TABLE_IDS.REGEXP.toString(), "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(c|$))?$", null},
+                {TABLE_IDS.MAX.toString(), String.valueOf(xhmsToMs("23h59m59s99c")), null},
+                {TABLE_IDS.TIMEUNIT.toString(), TimeDateUtils.TIMEUNITS.CS.toString(), null}
         };
         return TABLE_PRESETS_CT_INITS;
     }
@@ -229,10 +229,10 @@ public class StringShelfDatabaseTables {
 
     public static String[][] getColorsDotMatrixDisplayInits() {
         final String[][] TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS = {
-                {StringShelfDatabaseUtils.TABLE_IDS.LABEL.toString(), SwTimerTableAndFields.ColorsDotMatrixDisplay.ON_TIME.LABEL(), SwTimerTableAndFields.ColorsDotMatrixDisplay.ON_MESSAGE.LABEL(), SwTimerTableAndFields.ColorsDotMatrixDisplay.OFF.LABEL(), SwTimerTableAndFields.ColorsDotMatrixDisplay.BACK.LABEL()},
-                {StringShelfDatabaseUtils.TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {StringShelfDatabaseUtils.TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {StringShelfDatabaseUtils.TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}
+                {TABLE_IDS.LABEL.toString(), SwTimerTableAndFields.ColorsDotMatrixDisplay.ON_TIME.LABEL(), SwTimerTableAndFields.ColorsDotMatrixDisplay.ON_MESSAGE.LABEL(), SwTimerTableAndFields.ColorsDotMatrixDisplay.OFF.LABEL(), SwTimerTableAndFields.ColorsDotMatrixDisplay.BACK.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}
         };
         return TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS;
     }
@@ -261,10 +261,10 @@ public class StringShelfDatabaseTables {
 
     public static String[][] getColorsButtonsInits() {
         final String[][] TABLE_COLOR_BUTTONS_INITS = {
-                {StringShelfDatabaseUtils.TABLE_IDS.LABEL.toString(), SwTimerTableAndFields.ColorsButtons.ON.LABEL(), SwTimerTableAndFields.ColorsButtons.OFF.LABEL(), SwTimerTableAndFields.ColorsButtons.BACK.LABEL()},
-                {StringShelfDatabaseUtils.TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {StringShelfDatabaseUtils.TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {StringShelfDatabaseUtils.TABLE_IDS.DEFAULT.toString(), "0061F3", "696969", "000000"}
+                {TABLE_IDS.LABEL.toString(), SwTimerTableAndFields.ColorsButtons.ON.LABEL(), SwTimerTableAndFields.ColorsButtons.OFF.LABEL(), SwTimerTableAndFields.ColorsButtons.BACK.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString(), "0061F3", "696969", "000000"}
         };
         return TABLE_COLOR_BUTTONS_INITS;
     }
@@ -289,10 +289,10 @@ public class StringShelfDatabaseTables {
 
     public static String[][] getColorsBackScreenInits() {
         final String[][] TABLE_COLORS_BACK_SCREEN_INITS = {
-                {StringShelfDatabaseUtils.TABLE_IDS.LABEL.toString(), SwTimerTableAndFields.ColorsBackScreen.BACK.LABEL()},
-                {StringShelfDatabaseUtils.TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {StringShelfDatabaseUtils.TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {StringShelfDatabaseUtils.TABLE_IDS.DEFAULT.toString(), "000000"}
+                {TABLE_IDS.LABEL.toString(), SwTimerTableAndFields.ColorsBackScreen.BACK.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString(), "000000"}
         };
         return TABLE_COLORS_BACK_SCREEN_INITS;
     }

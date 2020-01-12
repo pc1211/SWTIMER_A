@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
-import com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.ACTIVITY_START_STATUS;
+import com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 
 import java.util.ArrayList;
 
