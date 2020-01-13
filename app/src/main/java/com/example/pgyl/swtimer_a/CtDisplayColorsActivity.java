@@ -54,9 +54,9 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsCol
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsColorOffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsColorOnIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTypeIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTypeLabel;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTypesCount;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableLabel;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesCount;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsBackScreenTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsDotMatrixDisplayTableName;
@@ -69,7 +69,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatus
 public class CtDisplayColorsActivity extends Activity {
     //region Constantes
     private enum COMMANDS {
-        NEXT_COLOR_TYPE(""), NEXT_COLOR(""), NEXT_COLOR_SPACE(""), CANCEL("Cancel"), COLOR_VALUE(""), PRESETS("Presets"), OK("OK");
+        NEXT_COLOR_TABLE(""), NEXT_COLOR(""), NEXT_COLOR_SPACE(""), CANCEL("Cancel"), COLOR_VALUE(""), PRESETS("Presets"), OK("OK");
 
         private String valueText;
 
@@ -104,18 +104,26 @@ public class CtDisplayColorsActivity extends Activity {
         }
     }
 
-    private enum COLOR_PARAMS {
+    private enum SEEKBARS {
         RED_HUE(Color.RED), GREEN_SAT(Color.GREEN), BLUE_VAL(Color.BLUE);
 
+        private final String HSV_SEEKBAR_COLOR = "C0C0C0";
         private int rgbColorValue;
+        private int hsvColorValue;
 
-        COLOR_PARAMS(int rgbColorValue) {
+        SEEKBARS(int rgbColorValue) {
             this.rgbColorValue = rgbColorValue;
+            hsvColorValue = Color.parseColor(COLOR_PREFIX + HSV_SEEKBAR_COLOR);
         }
 
         public int RGB_COLOR_VALUE() {
             return rgbColorValue;
         }
+
+        public int HSV_COLOR_VALUE() {
+            return hsvColorValue;
+        }
+
 
         public int INDEX() {
             return ordinal();
@@ -140,11 +148,11 @@ public class CtDisplayColorsActivity extends Activity {
     private LinearLayout backLayoutPart1;
     private LinearLayout backLayoutPart2;
     private CtRecord currentCtRecord;
-    private int colorTypeIndex;
-    private int colorIndex;   //  Au sein de la table pointée par colorTypeIndex
-    private String[][] colors = new String[getColorTypesCount()][];  //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
-    private String[][] labels = new String[getColorTypesCount()][];
-    private String[] typeLabels = new String[getColorTypesCount()];
+    private int colorTableIndex;
+    private int colorIndex;   //  Au sein de la table pointée par colorTableIndex
+    private String[][] colors = new String[getColorTablesCount()][];  //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
+    private String[][] colorTableFieldsLabels = new String[getColorTablesCount()][];
+    private String[] colorTableLabels = new String[getColorTablesCount()];
     private COLOR_SPACES colorSpace;
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
@@ -195,24 +203,24 @@ public class CtDisplayColorsActivity extends Activity {
 
         if (isColdStartStatusInCtDisplayColorsActivity(stringShelfDatabase)) {
             setStartStatusInCtDisplayColorsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
-            colorTypeIndex = COLOR_TABLE_INDEX_DEFAULT_VALUE;
+            colorTableIndex = COLOR_TABLE_INDEX_DEFAULT_VALUE;
             colorIndex = COLOR_INDEX_DEFAULT_VALUE;
             colorSpace = COLOR_SPACE_DEFAULT_VALUE;
         } else {
-            colorTypeIndex = getSHPcolorTableIndex();
+            colorTableIndex = getSHPcolorTableIndex();
             colorIndex = getSHPcolorIndex();
             colorSpace = getSHPcolorSpace();
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (returnsFromInputButtonsActivity()) {
-                    String colorText = getCurrentValueInInputButtonsActivity(stringShelfDatabase, getColorTableName(colorTypeIndex), colorIndex);
+                    String colorText = getCurrentValueInInputButtonsActivity(stringShelfDatabase, getColorTableName(colorTableIndex), colorIndex);
                     if (colorSpace.equals(COLOR_SPACES.HSV)) {
                         colorText = HSVToRGB(colorText);    //  HSV dégradé
                     }
-                    colors[colorTypeIndex][colorIndex] = colorText;
+                    colors[colorTableIndex][colorIndex] = colorText;
                 }
                 if (returnsFromPresetsActivity()) {
-                    colors[colorTypeIndex] = getCurrentPresetInPresetsActivity(stringShelfDatabase, getColorTableName(colorTypeIndex));
+                    colors[colorTableIndex] = getCurrentPresetInPresetsActivity(stringShelfDatabase, getColorTableName(colorTableIndex));
                 }
             }
         }
@@ -222,9 +230,9 @@ public class CtDisplayColorsActivity extends Activity {
         updateDisplayDotMatrixDisplayColors();
         updateDisplayIconButtonColors();
         updateDisplayBackScreenColors();
-        updateDisplayButtonTextNextColorType();
+        updateDisplayButtonTextNextColorTable();
         updateDisplayButtonTextNextColor();
-        updateDisplayColorSpace();
+        updateDisplayButtonTextColorSpace();
         updateDisplaySeekBarsProgress();
         updateDisplayButtonTextColorValue();
     }
@@ -262,8 +270,8 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void onButtonClick(COMMANDS command) {
-        if (command.equals(COMMANDS.NEXT_COLOR_TYPE)) {
-            onButtonClickNextColorType();
+        if (command.equals(COMMANDS.NEXT_COLOR_TABLE)) {
+            onButtonClickNextColorTable();
         }
         if (command.equals(COMMANDS.NEXT_COLOR)) {
             onButtonClickNextColor();
@@ -285,13 +293,13 @@ public class CtDisplayColorsActivity extends Activity {
         }
     }
 
-    private void onButtonClickNextColorType() {
-        colorTypeIndex = colorTypeIndex + 1;
-        if (colorTypeIndex >= colors.length) {
-            colorTypeIndex = 0;
+    private void onButtonClickNextColorTable() {
+        colorTableIndex = colorTableIndex + 1;
+        if (colorTableIndex >= colors.length) {
+            colorTableIndex = 0;
         }
         colorIndex = 1;
-        updateDisplayButtonTextNextColorType();
+        updateDisplayButtonTextNextColorTable();
         updateDisplayButtonTextNextColor();
         updateDisplaySeekBarsProgress();
         updateDisplayButtonTextColorValue();
@@ -299,7 +307,7 @@ public class CtDisplayColorsActivity extends Activity {
 
     private void onButtonClickNextColor() {
         colorIndex = colorIndex + 1;
-        if (colorIndex >= colors[colorTypeIndex].length) {
+        if (colorIndex >= colors[colorTableIndex].length) {
             colorIndex = 1;
         }
         updateDisplayButtonTextNextColor();
@@ -309,7 +317,7 @@ public class CtDisplayColorsActivity extends Activity {
 
     private void onButtonClickNextColorSpace() {
         colorSpace = ((colorSpace.equals(COLOR_SPACES.RGB)) ? COLOR_SPACES.HSV : COLOR_SPACES.RGB);
-        updateDisplayColorSpace();
+        updateDisplayButtonTextColorSpace();
         updateDisplaySeekBarsProgress();
         updateDisplayButtonTextColorValue();
     }
@@ -319,12 +327,12 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void onButtonClickColorValue() {
-        setCurrentValueInInputButtonsActivity(stringShelfDatabase, getColorTableName(colorTypeIndex), colorIndex, getSeekBarsProgressHexString());
+        setCurrentValueInInputButtonsActivity(stringShelfDatabase, getColorTableName(colorTableIndex), colorIndex, getSeekBarsProgressHexString());
         launchInputButtonsActivity();
     }
 
     private void onButtonClickPresets() {
-        setCurrentPresetInPresetsActivity(stringShelfDatabase, getColorTableName(colorTypeIndex), colors[colorTypeIndex]);
+        setCurrentPresetInPresetsActivity(stringShelfDatabase, getColorTableName(colorTableIndex), colors[colorTableIndex]);
         launchPresetsActivity();
     }
 
@@ -337,12 +345,12 @@ public class CtDisplayColorsActivity extends Activity {
     private void onSeekBarProgressChanged(boolean fromUser) {
         if (fromUser) {
             if (colorSpace.equals(COLOR_SPACES.RGB)) {
-                colors[colorTypeIndex][colorIndex] = getSeekBarsProgressHexString();
+                colors[colorTableIndex][colorIndex] = getSeekBarsProgressHexString();
             } else {
-                hsvStruc[0] = (float) seekBars[COLOR_PARAMS.RED_HUE.INDEX()].getProgress() / 65535f * 360f;
-                hsvStruc[1] = (float) seekBars[COLOR_PARAMS.GREEN_SAT.INDEX()].getProgress() / 65535f;
-                hsvStruc[2] = (float) seekBars[COLOR_PARAMS.BLUE_VAL.INDEX()].getProgress() / 65535f;
-                colors[colorTypeIndex][colorIndex] = String.format("%06X", Color.HSVToColor(hsvStruc) & COLOR_RGB_MASK);
+                hsvStruc[0] = (float) seekBars[SEEKBARS.RED_HUE.INDEX()].getProgress() / 65535f * 360f;
+                hsvStruc[1] = (float) seekBars[SEEKBARS.GREEN_SAT.INDEX()].getProgress() / 65535f;
+                hsvStruc[2] = (float) seekBars[SEEKBARS.BLUE_VAL.INDEX()].getProgress() / 65535f;
+                colors[colorTableIndex][colorIndex] = String.format("%06X", Color.HSVToColor(hsvStruc) & COLOR_RGB_MASK);
             }
             updateDisplayButtonTextColorValue();
             updateDisplayColors();
@@ -350,13 +358,13 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayColors() {
-        if (colorTypeIndex == getColorTypeIndex(getColorsDotMatrixDisplayTableName())) {
+        if (colorTableIndex == getColorTableIndex(getColorsDotMatrixDisplayTableName())) {
             updateDisplayDotMatrixDisplayColors();
         }
-        if (colorTypeIndex == getColorTypeIndex(getColorsButtonsTableName())) {
+        if (colorTableIndex == getColorTableIndex(getColorsButtonsTableName())) {
             updateDisplayIconButtonColors();
         }
-        if (colorTypeIndex == getColorTypeIndex(getColorsBackScreenTableName())) {
+        if (colorTableIndex == getColorTableIndex(getColorsBackScreenTableName())) {
             updateDisplayBackScreenColors();
         }
     }
@@ -365,78 +373,77 @@ public class CtDisplayColorsActivity extends Activity {
         final String EXTRA_FONT_TEST_TEXT = "12:34:.";
         final String DEFAULT_FONT_TEST_TEXT = "Abcd";
 
-        dotMatrixDisplayUpdater.setGridColors(colors[getColorTypeIndex(getColorsDotMatrixDisplayTableName())]);
+        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getColorsDotMatrixDisplayTableName())]);
         dotMatrixDisplayUpdater.writeTestText(EXTRA_FONT_TEST_TEXT, DEFAULT_FONT_TEST_TEXT);
         dotMatrixDisplayView.invalidate();
     }
 
-    private void updateDisplayButtonColor(ICON_COMMANDS iconCommand) {  //   ON/BACK ou OFF/BACK
-        int colorTypeIndex = getColorTypeIndex(getColorsButtonsTableName());
-        iconButtons[iconCommand.INDEX()].setFrontColor(((getButtonState(iconCommand)) ? colors[colorTypeIndex][getButtonsColorOnIndex()] : colors[colorTypeIndex][getButtonsColorOffIndex()]));
-        iconButtons[iconCommand.INDEX()].setBackColor(colors[colorTypeIndex][getButtonsColorBackIndex()]);
-        iconButtons[iconCommand.INDEX()].setExtraColor(((getButtonState(iconCommand)) ? colors[colorTypeIndex][getButtonsColorOffIndex()] : colors[colorTypeIndex][getButtonsColorOnIndex()]));
+    private void updateDisplayIconButtonColor(ICON_COMMANDS iconCommand) {  //   ON/BACK ou OFF/BACK
+        int colorTableIndex = getColorTableIndex(getColorsButtonsTableName());
+        iconButtons[iconCommand.INDEX()].setFrontColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsColorOnIndex()] : colors[colorTableIndex][getButtonsColorOffIndex()]));
+        iconButtons[iconCommand.INDEX()].setBackColor(colors[colorTableIndex][getButtonsColorBackIndex()]);
+        iconButtons[iconCommand.INDEX()].setExtraColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsColorOffIndex()] : colors[colorTableIndex][getButtonsColorOnIndex()]));
         iconButtons[iconCommand.INDEX()].invalidate();
     }
 
     private void updateDisplayIconButtonColors() {
         for (ICON_COMMANDS iconCommand : ICON_COMMANDS.values()) {
-            updateDisplayButtonColor(iconCommand);
+            updateDisplayIconButtonColor(iconCommand);
         }
     }
 
     private void updateDisplayBackScreenColors() {
-        int color = Color.parseColor(COLOR_PREFIX + colors[getColorTypeIndex(getColorsBackScreenTableName())][getBackScreenColorBackIndex()]);
+        int color = Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getColorsBackScreenTableName())][getBackScreenColorBackIndex()]);
         backLayoutPart2.setBackgroundColor(color);
         backLayoutPart1.setBackgroundColor(color);
     }
 
-    private void updateDisplayButtonTextNextColorType() {
+    private void updateDisplayButtonTextNextColorTable() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
-        buttons[COMMANDS.NEXT_COLOR_TYPE.INDEX()].setText(typeLabels[colorTypeIndex] + SYMBOL_NEXT);
+        buttons[COMMANDS.NEXT_COLOR_TABLE.INDEX()].setText(colorTableLabels[colorTableIndex] + SYMBOL_NEXT);
     }
 
     private void updateDisplayButtonTextNextColor() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
-        buttons[COMMANDS.NEXT_COLOR.INDEX()].setText(labels[colorTypeIndex][colorIndex] + SYMBOL_NEXT);
+        buttons[COMMANDS.NEXT_COLOR.INDEX()].setText(colorTableFieldsLabels[colorTableIndex][colorIndex] + SYMBOL_NEXT);
     }
 
     private void updateDisplayButtonTextColorValue() {
         buttons[COMMANDS.COLOR_VALUE.INDEX()].setText(getSeekBarsProgressHexString());
     }
 
-    private void updateDisplayColorSpace() {
+    private void updateDisplayButtonTextColorSpace() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
-        final String HSV_SEEKBAR_COLOR = "C0C0C0";
 
         buttons[COMMANDS.NEXT_COLOR_SPACE.INDEX()].setText(colorSpace.toString() + SYMBOL_NEXT);
-        for (COLOR_PARAMS colorParam : COLOR_PARAMS.values()) {
-            int seekBarColor = ((colorSpace.equals(COLOR_SPACES.RGB)) ? colorParam.RGB_COLOR_VALUE() : Color.parseColor(COLOR_PREFIX + HSV_SEEKBAR_COLOR));
-            processDrawables[colorParam.INDEX()].setColorFilter(seekBarColor, PorterDuff.Mode.SRC_IN);  // Colorier uniquement la 1e partie de la seekbar
+        for (SEEKBARS seekBar : SEEKBARS.values()) {
+            int seekBarColor = ((colorSpace.equals(COLOR_SPACES.RGB)) ? seekBar.RGB_COLOR_VALUE() : seekBar.HSV_COLOR_VALUE());
+            processDrawables[seekBar.INDEX()].setColorFilter(seekBarColor, PorterDuff.Mode.SRC_IN);  // Colorier uniquement la 1e partie de la seekbar
         }
     }
 
     private void updateDisplaySeekBarsProgress() {
-        int red = Integer.parseInt(colors[colorTypeIndex][colorIndex].substring(0, 2), HEX_RADIX);  //  0..255
-        int green = Integer.parseInt(colors[colorTypeIndex][colorIndex].substring(2, 4), HEX_RADIX);
-        int blue = Integer.parseInt(colors[colorTypeIndex][colorIndex].substring(4, 6), HEX_RADIX);
+        int red = Integer.parseInt(colors[colorTableIndex][colorIndex].substring(0, 2), HEX_RADIX);  //  0..255
+        int green = Integer.parseInt(colors[colorTableIndex][colorIndex].substring(2, 4), HEX_RADIX);
+        int blue = Integer.parseInt(colors[colorTableIndex][colorIndex].substring(4, 6), HEX_RADIX);
         if (colorSpace.equals(COLOR_SPACES.RGB)) {
-            seekBars[COLOR_PARAMS.RED_HUE.INDEX()].setProgress(257 * red);    //  257 = 65535 / 255
-            seekBars[COLOR_PARAMS.GREEN_SAT.INDEX()].setProgress(257 * green);
-            seekBars[COLOR_PARAMS.BLUE_VAL.INDEX()].setProgress(257 * blue);
+            seekBars[SEEKBARS.RED_HUE.INDEX()].setProgress(257 * red);    //  257 = 65535 / 255
+            seekBars[SEEKBARS.GREEN_SAT.INDEX()].setProgress(257 * green);
+            seekBars[SEEKBARS.BLUE_VAL.INDEX()].setProgress(257 * blue);
         } else {
             Color.RGBToHSV(red, green, blue, hsvStruc);
-            seekBars[COLOR_PARAMS.RED_HUE.INDEX()].setProgress((int) (hsvStruc[0] * 65535f / 360f + 0.5f));
-            seekBars[COLOR_PARAMS.GREEN_SAT.INDEX()].setProgress((int) (hsvStruc[1] * 65535f + 0.5f));
-            seekBars[COLOR_PARAMS.BLUE_VAL.INDEX()].setProgress((int) (hsvStruc[2] * 65535f + 0.5f));
+            seekBars[SEEKBARS.RED_HUE.INDEX()].setProgress((int) (hsvStruc[0] * 65535f / 360f + 0.5f));
+            seekBars[SEEKBARS.GREEN_SAT.INDEX()].setProgress((int) (hsvStruc[1] * 65535f + 0.5f));
+            seekBars[SEEKBARS.BLUE_VAL.INDEX()].setProgress((int) (hsvStruc[2] * 65535f + 0.5f));
         }
     }
 
     private String getSeekBarsProgressHexString() {  //  Hex RRGGBB ou HHSSVV
-        int redHueSeekBarValue = seekBars[COLOR_PARAMS.RED_HUE.INDEX()].getProgress();   //  0..65535
-        int greenSatSeekBarValue = seekBars[COLOR_PARAMS.GREEN_SAT.INDEX()].getProgress();
-        int blueValSeekBarValue = seekBars[COLOR_PARAMS.BLUE_VAL.INDEX()].getProgress();
+        int redHueSeekBarValue = seekBars[SEEKBARS.RED_HUE.INDEX()].getProgress();   //  0..65535
+        int greenSatSeekBarValue = seekBars[SEEKBARS.GREEN_SAT.INDEX()].getProgress();
+        int blueValSeekBarValue = seekBars[SEEKBARS.BLUE_VAL.INDEX()].getProgress();
         String hexString = String.format("%02X", (int) ((float) redHueSeekBarValue / 257f + 0.5f)) +    //  257 = 65535 / 255
                 String.format("%02X", (int) ((float) greenSatSeekBarValue / 257f + 0.5f)) +
                 String.format("%02X", (int) ((float) blueValSeekBarValue / 257f + 0.5f));
@@ -456,7 +463,7 @@ public class CtDisplayColorsActivity extends Activity {
     private void savePreferences() {
         SharedPreferences shp = getSharedPreferences(shpFileName, MODE_PRIVATE);
         SharedPreferences.Editor shpEditor = shp.edit();
-        shpEditor.putInt(SHP_KEY_NAMES.COLOR_TABLE_INDEX.toString(), colorTypeIndex);
+        shpEditor.putInt(SHP_KEY_NAMES.COLOR_TABLE_INDEX.toString(), colorTableIndex);
         shpEditor.putInt(SHP_KEY_NAMES.COLOR_INDEX.toString(), colorIndex);
         shpEditor.putString(SHP_KEY_NAMES.COLOR_SPACE.toString(), colorSpace.toString());
         shpEditor.commit();
@@ -486,13 +493,13 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void setupIconButtons() {
-        final String ICON_BUTTON_XML_NAME_PREFIX = "ICON_BTN_";
+        final String ICON_BUTTON_XML_PREFIX = "ICON_BTN_";
 
         iconButtons = new SymbolButtonView[ICON_COMMANDS.values().length];
         Class rid = R.id.class;
         for (ICON_COMMANDS iconCommand : ICON_COMMANDS.values()) {
             try {
-                iconButtons[iconCommand.INDEX()] = findViewById(rid.getField(ICON_BUTTON_XML_NAME_PREFIX + iconCommand.toString()).getInt(rid));
+                iconButtons[iconCommand.INDEX()] = findViewById(rid.getField(ICON_BUTTON_XML_PREFIX + iconCommand.toString()).getInt(rid));
                 iconButtons[iconCommand.INDEX()].setSVGImageResource(iconCommand.ID());
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(com.example.pgyl.swtimer_a.MainActivity.class.getName()).log(Level.SEVERE, null, ex);
@@ -541,11 +548,11 @@ public class CtDisplayColorsActivity extends Activity {
     private void setupSeekBars() {
         final String SEEKBAR_XML_PREFIX = "SEEKB_";
 
-        seekBars = new SeekBar[COLOR_PARAMS.values().length];
-        LayerDrawable[] progressDrawables = new LayerDrawable[COLOR_PARAMS.values().length];
-        processDrawables = new Drawable[COLOR_PARAMS.values().length];
+        seekBars = new SeekBar[SEEKBARS.values().length];
+        LayerDrawable[] progressDrawables = new LayerDrawable[SEEKBARS.values().length];
+        processDrawables = new Drawable[SEEKBARS.values().length];
         Class rid = R.id.class;
-        for (COLOR_PARAMS colorParam : COLOR_PARAMS.values()) {
+        for (SEEKBARS colorParam : SEEKBARS.values()) {
             try {
                 seekBars[colorParam.INDEX()] = findViewById(rid.getField(SEEKBAR_XML_PREFIX + colorParam.toString()).getInt(rid));
                 seekBars[colorParam.INDEX()].setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -587,30 +594,29 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void saveCurrentColorsInDB() {
-        for (int i = 0; i <= (getColorTypesCount() - 1); i = i + 1) {
+        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
             setCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getColorTableName(i), colors[i]);
         }
     }
 
     private void getDBCurrentColors() {
-        for (int i = 0; i <= (getColorTypesCount() - 1); i = i + 1) {
+        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
             colors[i] = getCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getColorTableName(i));
         }
     }
 
     private void getDBCurrentColorLabels() {
-        for (int i = 0; i <= (getColorTypesCount() - 1); i = i + 1) {
-            labels[i] = getLabels(stringShelfDatabase, getColorTableName(i));
-            typeLabels[i] = getColorTypeLabel(getColorTableName(i));
+        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
+            colorTableFieldsLabels[i] = getLabels(stringShelfDatabase, getColorTableName(i));
+            colorTableLabels[i] = getColorTableLabel(getColorTableName(i));
         }
     }
-
 
     private void launchInputButtonsActivity() {
         setStartStatusInInputButtonsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), labels[colorTypeIndex][colorIndex]);
-        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorTableName(colorTypeIndex));
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTableFieldsLabels[colorTableIndex][colorIndex]);
+        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorTableName(colorTableIndex));
         callingIntent.putExtra(TABLE_EXTRA_KEYS.INDEX.toString(), colorIndex);
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.INDEX());
     }
@@ -620,10 +626,10 @@ public class CtDisplayColorsActivity extends Activity {
 
         setStartStatusInPresetsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), typeLabels[colorTypeIndex] + "-RGB");
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTableLabels[colorTableIndex] + "(RGB)");
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.DISPLAY_TYPE.toString(), PRESETS_ACTIVITY_DISPLAY_TYPE.COLORS.toString());
-        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorTableName(colorTypeIndex));
+        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorTableName(colorTableIndex));
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.PRESETS.INDEX());
     }
 

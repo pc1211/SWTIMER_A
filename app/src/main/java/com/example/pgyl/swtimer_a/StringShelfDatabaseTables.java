@@ -18,40 +18,40 @@ public class StringShelfDatabaseTables {
         COLORS_BACK_SCREEN(SwTimerTableFields.ColorsBackScreen.class, "Back screen");
 
         private SwTimerTableFields[] tableFields;
-        private int colorTypeIndex;
-        private String colorTypeLabel;
-        private final int COLOR_TYPE_INDEX_UNDEFINED = -2;
-        private final int COLOR_TYPE_INDEX_NOT_FOUND = -1;
+        private int colorTableIndex;
+        private String colorTableLabel;
+        private final int COLOR_TABLE_INDEX_UNDEFINED = -2;
+        private final int COLOR_TABLE_INDEX_NOT_FOUND = -1;
 
-        SWTIMER_TABLES(Class<? extends SwTimerTableFields> swTimerTableFields, String colorTypeLabel) {
+        SWTIMER_TABLES(Class<? extends SwTimerTableFields> swTimerTableFields, String colorTableLabel) {
             tableFields = swTimerTableFields.getEnumConstants();
-            this.colorTypeLabel = colorTypeLabel;
-            colorTypeIndex = COLOR_TYPE_INDEX_UNDEFINED;
+            this.colorTableLabel = colorTableLabel;
+            colorTableIndex = COLOR_TABLE_INDEX_UNDEFINED;
         }
 
         public SwTimerTableFields[] TABLE_FIELDS() {
             return tableFields;
         }
 
-        public String COLOR_TYPE_LABEL() {
-            return colorTypeLabel;
+        public String COLOR_TABLE_LABEL() {
+            return colorTableLabel;
         }
 
-        public int COLOR_TYPE_INDEX() {
-            if (colorTypeIndex == COLOR_TYPE_INDEX_UNDEFINED) {   //  Lazy ... Au 1er appel de COLOR_TYPE_INDEX() (après initialisation complète de SWTIMERS_TABLES), trouver l'index de la table dans colorTypes
-                colorTypeIndex = COLOR_TYPE_INDEX_NOT_FOUND;
-                for (int i = 0; i <= (colorTypes.length - 1); i = i + 1) {
-                    if (this.toString().equals(colorTypes[i].toString())) {   //  Trouvé; on connaît maintenant l'index de la table dans colorTypes
-                        colorTypeIndex = i;
+        public int COLOR_TABLE_INDEX() {
+            if (colorTableIndex == COLOR_TABLE_INDEX_UNDEFINED) {   //  Lazy ... Au 1er appel de COLOR_TYPE_INDEX() (après initialisation complète de SWTIMERS_TABLES), trouver l'index de la table dans SWTIMER_COLOR_TABLES
+                colorTableIndex = COLOR_TABLE_INDEX_NOT_FOUND;
+                for (int i = 0; i <= (SWTIMER_COLOR_TABLES.length - 1); i = i + 1) {
+                    if (this.toString().equals(SWTIMER_COLOR_TABLES[i].toString())) {   //  Trouvé; on connaît maintenant l'index de la table dans SWTIMER_COLOR_TABLES
+                        colorTableIndex = i;
                         break;
                     }
                 }
             }
-            return colorTypeIndex;
+            return colorTableIndex;
         }
     }
 
-    private static final SWTIMER_TABLES[] colorTypes = {SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY, SWTIMER_TABLES.COLORS_BUTTONS, SWTIMER_TABLES.COLORS_BACK_SCREEN};  //  Chaque type de couleur utilisée dans CtDisplayActivity est reliée à la table correspondante
+    private static final SWTIMER_TABLES[] SWTIMER_COLOR_TABLES = {SWTIMER_TABLES.COLORS_DOT_MATRIX_DISPLAY, SWTIMER_TABLES.COLORS_BUTTONS, SWTIMER_TABLES.COLORS_BACK_SCREEN};  //  Chaque type de couleur utilisée dans CtDisplayActivity est reliée à la table correspondante
 
     private interface SwTimerTableFields {
         enum ChronoTimers implements SwTimerTableFields {
@@ -302,21 +302,21 @@ public class StringShelfDatabaseTables {
     }
     //endregion
 
-    //region COLOR_TYPES
-    public static int getColorTypesCount() {
-        return colorTypes.length;
+    //region COLOR_TABLES
+    public static int getColorTablesCount() {
+        return SWTIMER_COLOR_TABLES.length;
     }
 
-    public static String getColorTableName(int colorTypeIndex) {
-        return colorTypes[colorTypeIndex].toString();
+    public static String getColorTableName(int colorTableIndex) {
+        return SWTIMER_COLOR_TABLES[colorTableIndex].toString();
     }
 
-    public static int getColorTypeIndex(String colorTableName) {
-        return SWTIMER_TABLES.valueOf(colorTableName).COLOR_TYPE_INDEX();
+    public static int getColorTableIndex(String colorTableName) {
+        return SWTIMER_TABLES.valueOf(colorTableName).COLOR_TABLE_INDEX();
     }
 
-    public static String getColorTypeLabel(String colorTableName) {
-        return SWTIMER_TABLES.valueOf(colorTableName).COLOR_TYPE_LABEL();
+    public static String getColorTableLabel(String colorTableName) {
+        return SWTIMER_TABLES.valueOf(colorTableName).COLOR_TABLE_LABEL();
     }
     //endregion
 
