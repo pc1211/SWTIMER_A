@@ -9,12 +9,12 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityI
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsBackScreenInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsButtonsInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsButtonsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsDotMatrixDisplayInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getSwtimerTableDataFieldsCount;
@@ -30,19 +30,19 @@ public class StringShelfDatabaseUtils {
         stringShelfDatabase.insertOrReplaceRows(getPresetsCTTableName(), getPresetsCTInits());
     }
 
-    public static void initializeTableColorsDotMatrixDisplay(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.insertOrReplaceRows(getColorsDotMatrixDisplayTableName(), getColorsDotMatrixDisplayInits());
-        stringShelfDatabase.insertOrReplaceRowById(getColorsDotMatrixDisplayTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getColorsDotMatrixDisplayTableName()));   //  PRESET1 = DEFAULT
+    public static void initializeTableDotMatrixDisplay(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayTableName(), getDotMatrixDisplayInits());
+        stringShelfDatabase.insertOrReplaceRowById(getDotMatrixDisplayTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getDotMatrixDisplayTableName()));   //  PRESET1 = DEFAULT
     }
 
-    public static void initializeTableColorsButtons(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.insertOrReplaceRows(getColorsButtonsTableName(), getColorsButtonsInits());
-        stringShelfDatabase.insertOrReplaceRowById(getColorsButtonsTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getColorsButtonsTableName()));   //  PRESET1 = DEFAULT
+    public static void initializeTableButtons(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.insertOrReplaceRows(getButtonsTableName(), getButtonsInits());
+        stringShelfDatabase.insertOrReplaceRowById(getButtonsTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getButtonsTableName()));   //  PRESET1 = DEFAULT
     }
 
-    public static void initializeTableColorsBackScreen(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.insertOrReplaceRows(getColorsBackScreenTableName(), getColorsBackScreenInits());
-        stringShelfDatabase.insertOrReplaceRowById(getColorsBackScreenTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getColorsBackScreenTableName()));   //  PRESET1 = DEFAULT
+    public static void initializeTableBackScreen(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.insertOrReplaceRows(getBackScreenTableName(), getBackScreenInits());
+        stringShelfDatabase.insertOrReplaceRowById(getBackScreenTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getBackScreenTableName()));   //  PRESET1 = DEFAULT
     }
     //endregion
 

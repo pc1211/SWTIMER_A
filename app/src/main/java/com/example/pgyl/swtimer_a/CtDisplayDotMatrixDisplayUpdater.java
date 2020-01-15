@@ -10,10 +10,10 @@ import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorOnMessageIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorOnTimeIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOnMessageIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOnTimeIndex;
 
 public class CtDisplayDotMatrixDisplayUpdater {
     public interface onExpiredTimerListener {
@@ -160,10 +160,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void setupIndexes() {
-        onTimeColorIndex = getDotMatrixDisplayColorOnTimeIndex();
-        onMessageColorIndex = getDotMatrixDisplayColorOnMessageIndex();
-        offColorIndex = getDotMatrixDisplayColorOffIndex();
-        backColorIndex = getDotMatrixDisplayColorBackIndex();
+        onTimeColorIndex = getDotMatrixDisplayOnTimeIndex();
+        onMessageColorIndex = getDotMatrixDisplayOnMessageIndex();
+        offColorIndex = getDotMatrixDisplayOffIndex();
+        backColorIndex = getDotMatrixDisplayBackIndex();
     }
 
     private void setupExtraFont() {

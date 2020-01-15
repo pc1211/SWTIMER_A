@@ -49,17 +49,17 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentVal
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInInputButtonsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsColorBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsColorOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsColorOnIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsOnIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableLabel;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesCount;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsButtonsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayColorsActivity;
@@ -358,13 +358,13 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayColors() {
-        if (colorTableIndex == getColorTableIndex(getColorsDotMatrixDisplayTableName())) {
+        if (colorTableIndex == getColorTableIndex(getDotMatrixDisplayTableName())) {
             updateDisplayDotMatrixDisplayColors();
         }
-        if (colorTableIndex == getColorTableIndex(getColorsButtonsTableName())) {
+        if (colorTableIndex == getColorTableIndex(getButtonsTableName())) {
             updateDisplayIconButtonColors();
         }
-        if (colorTableIndex == getColorTableIndex(getColorsBackScreenTableName())) {
+        if (colorTableIndex == getColorTableIndex(getBackScreenTableName())) {
             updateDisplayBackScreenColors();
         }
     }
@@ -373,16 +373,16 @@ public class CtDisplayColorsActivity extends Activity {
         final String EXTRA_FONT_TEST_TEXT = "12:34:.";
         final String DEFAULT_FONT_TEST_TEXT = "Abcd";
 
-        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getColorsDotMatrixDisplayTableName())]);
+        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
         dotMatrixDisplayUpdater.writeTestText(EXTRA_FONT_TEST_TEXT, DEFAULT_FONT_TEST_TEXT);
         dotMatrixDisplayView.invalidate();
     }
 
     private void updateDisplayIconButtonColor(ICON_COMMANDS iconCommand) {  //   ON/BACK ou OFF/BACK
-        int colorTableIndex = getColorTableIndex(getColorsButtonsTableName());
-        iconButtons[iconCommand.INDEX()].setFrontColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsColorOnIndex()] : colors[colorTableIndex][getButtonsColorOffIndex()]));
-        iconButtons[iconCommand.INDEX()].setBackColor(colors[colorTableIndex][getButtonsColorBackIndex()]);
-        iconButtons[iconCommand.INDEX()].setExtraColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsColorOffIndex()] : colors[colorTableIndex][getButtonsColorOnIndex()]));
+        int colorTableIndex = getColorTableIndex(getButtonsTableName());
+        iconButtons[iconCommand.INDEX()].setFrontColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsOnIndex()] : colors[colorTableIndex][getButtonsOffIndex()]));
+        iconButtons[iconCommand.INDEX()].setBackColor(colors[colorTableIndex][getButtonsBackIndex()]);
+        iconButtons[iconCommand.INDEX()].setExtraColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsOffIndex()] : colors[colorTableIndex][getButtonsOnIndex()]));
         iconButtons[iconCommand.INDEX()].invalidate();
     }
 
@@ -393,7 +393,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayBackScreenColors() {
-        int color = Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getColorsBackScreenTableName())][getBackScreenColorBackIndex()]);
+        int color = Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getBackScreenTableName())][getBackScreenBackIndex()]);
         backLayoutPart2.setBackgroundColor(color);
         backLayoutPart1.setBackgroundColor(color);
     }
@@ -501,13 +501,7 @@ public class CtDisplayColorsActivity extends Activity {
             try {
                 iconButtons[iconCommand.INDEX()] = findViewById(rid.getField(ICON_BUTTON_XML_PREFIX + iconCommand.toString()).getInt(rid));
                 iconButtons[iconCommand.INDEX()].setSVGImageResource(iconCommand.ID());
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(com.example.pgyl.swtimer_a.MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(com.example.pgyl.swtimer_a.MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(com.example.pgyl.swtimer_a.MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
+            } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
                 Logger.getLogger(com.example.pgyl.swtimer_a.MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -529,13 +523,7 @@ public class CtDisplayColorsActivity extends Activity {
                         onButtonClick(fcommand);
                     }
                 });
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
+            } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -571,13 +559,7 @@ public class CtDisplayColorsActivity extends Activity {
                 });
                 progressDrawables[colorParam.INDEX()] = (LayerDrawable) seekBars[colorParam.INDEX()].getProgressDrawable();
                 processDrawables[colorParam.INDEX()] = progressDrawables[colorParam.INDEX()].findDrawableByLayerId(android.R.id.progress);
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(InputButtonsActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(InputButtonsActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(InputButtonsActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
+            } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
                 Logger.getLogger(InputButtonsActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

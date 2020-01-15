@@ -38,14 +38,14 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createPekisli
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsButtonsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorsDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createSwtimerTableIfNotExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsBackScreen;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsButtons;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableColorsDotMatrixDisplay;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableBackScreen;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableButtons;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplay;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 
@@ -423,13 +423,7 @@ public class MainActivity extends Activity {
                         onButtonClick(fcommand);
                     }
                 });
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
+            } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
     }
@@ -445,13 +439,7 @@ public class MainActivity extends Activity {
                 if (stateView != null) {   //  Les boutons n'ont pas tous une StateView
                     commandStateViewsMap.put(command, stateView);
                 }
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchFieldException ex) {
-                Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
+            } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
     }
@@ -466,17 +454,17 @@ public class MainActivity extends Activity {
         if (!stringShelfDatabase.tableExists(getActivityInfosTableName())) {
             createPekislibTableIfNotExists(stringShelfDatabase, getActivityInfosTableName());
         }
-        if (!stringShelfDatabase.tableExists(getColorsDotMatrixDisplayTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getColorsDotMatrixDisplayTableName());
-            initializeTableColorsDotMatrixDisplay(stringShelfDatabase);
+        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayTableName());
+            initializeTableDotMatrixDisplay(stringShelfDatabase);
         }
-        if (!stringShelfDatabase.tableExists(getColorsButtonsTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getColorsButtonsTableName());
-            initializeTableColorsButtons(stringShelfDatabase);
+        if (!stringShelfDatabase.tableExists(getButtonsTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getButtonsTableName());
+            initializeTableButtons(stringShelfDatabase);
         }
-        if (!stringShelfDatabase.tableExists(getColorsBackScreenTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getColorsBackScreenTableName());
-            initializeTableColorsBackScreen(stringShelfDatabase);
+        if (!stringShelfDatabase.tableExists(getBackScreenTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getBackScreenTableName());
+            initializeTableBackScreen(stringShelfDatabase);
         }
         if (!stringShelfDatabase.tableExists(getPresetsCTTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getPresetsCTTableName());
@@ -544,13 +532,7 @@ public class MainActivity extends Activity {
         try {
             barMenuItemSetClockAppAlarmOnStartTimer = menu.findItem(rid.getField(BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER_NAME).getInt(rid));
             barMenuItemKeepScreen = menu.findItem(rid.getField(BAR_MENU_ITEM_KEEP_SCREEN_NAME).getInt(rid));
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchFieldException ex) {
-            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
             Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
