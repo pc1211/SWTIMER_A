@@ -5,11 +5,6 @@ import android.content.Context;
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
@@ -17,29 +12,7 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.xhmsToMs;
 
 public class StringShelfDatabaseTables {
 
-    //  TYPES de TABLES
-    private enum SwTimerTableTypes {    //  Les types de table (Couleur ou non)
-        COLOR_YES(SwTimerTables.ColorYes.class), COLOR_NO(SwTimerTables.ColorNo.class);
-
-        private ArrayList<String> tables;
-
-        SwTimerTableTypes(Class<? extends SwTimerTables> swTimerTables) {
-            tables = new ArrayList<String>();
-            for (SwTimerTables table : swTimerTables.getEnumConstants()) {
-                tables.add(table.toString());
-            }
-        }
-
-        public int getTableIndex(String tableName) {
-            return tables.indexOf(tableName);
-        }
-
-        public int getTablesCount() {
-            return tables.size();
-        }
-    }
-
-    private interface SwTimerTables {  // Les tables, rattachées à leur type (Couleur ou non)
+    private interface SwTimerTables {  // Les tables, par type (Couleur ou non), rattachées à leurs champs de data
         //  TABLES
         enum ColorYes implements SwTimerTables {   //  Les tables Couleur
             DOT_MATRIX_DISPLAY(SwTimerTableDataFields.DotMatrixDisplay.class, "Dot matrix Display"),   //  Table avec les couleurs du Dot Matrix Display
@@ -56,7 +29,7 @@ public class StringShelfDatabaseTables {
 
             public int getDataFieldsCount() {
                 return dataFieldsCount;
-            }   //  Attention: getSwtimerTableDataFieldsCount(String tableName) invoque ce nom "getDataFieldsCount" dans son traitement (par réflexion)
+            }
 
             public String getLabel() {
                 return label;
@@ -75,11 +48,11 @@ public class StringShelfDatabaseTables {
 
             public int getDataFieldsCount() {
                 return dataFieldsCount;
-            }  //  Attention: getSwtimerTableDataFieldsCount(String tableName) invoque ce nom "getDataFieldsCount" dans son traitement (par réflexion)
+            }
         }
     }
 
-    private interface SwTimerTableDataFields {  //  Les champs de data, rattachés à leur table
+    private interface SwTimerTableDataFields {  //  Les champs de data, par table
         //  CHAMPS de DATA
         enum ChronoTimers implements SwTimerTableDataFields {   //  Les champs de data de la table CHRONO_TIMERS
             MODE, SELECTED, RUNNING, SPLITTED, ALARM_SET, MESSAGE, MESSAGE_INIT, TIME_START, TIME_ACC, TIME_ACC_UNTIL_SPLIT, TIME_DEF, TIME_DEF_INIT, TIME_EXP;
@@ -164,19 +137,15 @@ public class StringShelfDatabaseTables {
 
     private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
 
-    public static int getSwtimerTableDataFieldsCount(String tableName) {   //  Rechercher nombre de champs de data de tableName (existant dans l'enum SwTimerTables.ColorYes ou SwTimerTables.ColorNo)
+    public static int getSwTimerTableDataFieldsCount(String tableName) {   //  Rechercher nombre de champs de data de tableName (existant dans l'enum SwTimerTables.ColorYes ou SwTimerTables.ColorNo)
         int ret = NOT_FOUND;
-        for (Class c : SwTimerTables.class.getClasses()) {   //  Examiner les enum de SwTimerTables (SwTimerTables.ColorYes et SwTimerTables.ColorNo)
-            if (c.isEnum()) {
-                for (Object table : c.getEnumConstants()) {   //  Examiner les tables qui font partie de cette enum
-                    if (table.toString().equals(tableName)) {  //  Table trouvée
-                        try {
-                            ret = (int) c.getMethod("getDataFieldsCount").invoke(table);  //  On ne peut y accéder directement car on ne sait pas au départ s'il s'agit de l'enum SwTimerTables.ColorYes ou SwTimerTables.ColorNo
-                        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
-                            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }
+        int tableIndex = getInnerTableIndex(tableName, SwTimerTables.ColorYes.class);  //   Sans utiliser SwTimerTables.ColorYes.valueOf(tableName), pour éviter l'exception générée si tableName absent de l'enum
+        if (tableIndex >= 0) {  //  Table trouvée
+            ret = SwTimerTables.ColorYes.values()[tableIndex].getDataFieldsCount();
+        } else {   //  Table non trouvée
+            tableIndex = getInnerTableIndex(tableName, SwTimerTables.ColorNo.class);
+            if (tableIndex >= 0) {  //  Table trouvée
+                ret = SwTimerTables.ColorNo.values()[tableIndex].getDataFieldsCount();
             }
         }
         return ret;
@@ -208,7 +177,7 @@ public class StringShelfDatabaseTables {
     }
 
     public static String[] ctRecordToChronoTimerRow(CtRecord ctRecord) {
-        String[] ret = new String[1 + SwTimerTables.ColorNo.CHRONO_TIMERS.getDataFieldsCount()];  //  Champ ID + Données
+        String[] ret = new String[1 + SwTimerTableDataFields.ChronoTimers.values().length];  //  Champ ID + Données
         ret[TABLE_ID_INDEX] = String.valueOf(ctRecord.getIdct());
         ret[SwTimerTableDataFields.ChronoTimers.MODE.INDEX()] = ctRecord.getMode().toString();
         ret[SwTimerTableDataFields.ChronoTimers.SELECTED.INDEX()] = String.valueOf(ctRecord.isSelected() ? 1 : 0);
@@ -344,22 +313,34 @@ public class StringShelfDatabaseTables {
     //endregion
 
     //region TABLES COLOR_YES
+    public static int getColorTableIndex(String tableName) {
+        return getInnerTableIndex(tableName, SwTimerTables.ColorYes.class);
+    }
+
     public static int getColorTablesCount() {
-        return SwTimerTableTypes.COLOR_YES.getTablesCount();
+        return SwTimerTables.ColorYes.values().length;
     }
 
     public static String getColorTableName(int colorTableIndex) {
         return SwTimerTables.ColorYes.values()[colorTableIndex].toString();
     }
 
-    public static int getColorTableIndex(String colorTableName) {
-        return SwTimerTableTypes.COLOR_YES.getTableIndex(colorTableName);
-    }
-
     public static String getColorTableLabel(String colorTableName) {
         return SwTimerTables.ColorYes.valueOf(colorTableName).getLabel();
     }
     //endregion
+
+    private static int getInnerTableIndex(String tableName, Class<? extends SwTimerTables> tableClass) {   //  Trouver l'index de tableName dans tableClass
+        int ret = NOT_FOUND;
+        Object[] values = tableClass.getEnumConstants();
+        for (int i = 0; i <= (values.length - 1); i = i + 1) {
+            if (values[i].toString().equals(tableName)) {
+                ret = i;
+                break;
+            }
+        }
+        return ret;
+    }
 
 }
 

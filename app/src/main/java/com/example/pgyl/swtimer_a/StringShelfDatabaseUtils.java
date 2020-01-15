@@ -17,13 +17,13 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixD
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getSwtimerTableDataFieldsCount;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getSwTimerTableDataFieldsCount;
 
 public class StringShelfDatabaseUtils {
 
     //region TABLES
     public static void createSwtimerTableIfNotExists(StringShelfDatabase stringShelfDatabase, String tableName) {
-        stringShelfDatabase.createTableIfNotExists(tableName, 1 + getSwtimerTableDataFieldsCount(tableName));   //  Champ ID + Données;
+        stringShelfDatabase.createTableIfNotExists(tableName, 1 + getSwTimerTableDataFieldsCount(tableName));   //  Champ ID + Données;
     }
 
     public static void initializeTablePresetsCT(StringShelfDatabase stringShelfDatabase) {
