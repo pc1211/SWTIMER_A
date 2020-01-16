@@ -313,16 +313,16 @@ public class StringShelfDatabaseTables {
     //endregion
 
     //region TABLES COLOR_YES
-    public static int getColorTableIndex(String tableName) {
-        return getInnerTableIndex(tableName, SwTimerTables.ColorYes.class);
-    }
-
     public static int getColorTablesCount() {
         return SwTimerTables.ColorYes.values().length;
     }
 
     public static String getColorTableName(int colorTableIndex) {
         return SwTimerTables.ColorYes.values()[colorTableIndex].toString();
+    }
+
+    public static int getColorTableIndex(String colorTableName) {
+        return SwTimerTables.ColorYes.valueOf(colorTableName).ordinal();
     }
 
     public static String getColorTableLabel(String colorTableName) {
@@ -332,9 +332,9 @@ public class StringShelfDatabaseTables {
 
     private static int getInnerTableIndex(String tableName, Class<? extends SwTimerTables> tableClass) {   //  Trouver l'index de tableName dans tableClass
         int ret = NOT_FOUND;
-        Object[] values = tableClass.getEnumConstants();
-        for (int i = 0; i <= (values.length - 1); i = i + 1) {
-            if (values[i].toString().equals(tableName)) {
+        Object[] tables = tableClass.getEnumConstants();
+        for (int i = 0; i <= (tables.length - 1); i = i + 1) {
+            if (tables[i].toString().equals(tableName)) {
                 ret = i;
                 break;
             }
