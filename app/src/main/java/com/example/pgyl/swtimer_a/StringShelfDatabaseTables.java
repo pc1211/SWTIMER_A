@@ -14,7 +14,9 @@ public class StringShelfDatabaseTables {
 
     private interface SwTimerTables {  // Les tables, par type (Couleur ou non), rattachées à leurs champs de data
         //  TABLES
-        enum ColorYes implements SwTimerTables {   //  Les tables Couleur
+        int getDataFieldsCount();
+
+        enum ColorYes implements SwTimerTables {   //  Les tables Couleur  (utilisées dans CtDisplayActivity et CtDisplayColorsActivity)
             DOT_MATRIX_DISPLAY(SwTimerTableDataFields.DotMatrixDisplay.class, "Dot matrix Display"),   //  Table avec les couleurs du Dot Matrix Display
             BUTTONS(SwTimerTableDataFields.Buttons.class, "CT Control buttons"),
             BACK_SCREEN(SwTimerTableDataFields.BackScreen.class, "Back screen");
@@ -27,12 +29,13 @@ public class StringShelfDatabaseTables {
                 this.label = label;
             }
 
-            public int getDataFieldsCount() {
-                return dataFieldsCount;
-            }
-
             public String getLabel() {
                 return label;
+            }
+
+            @Override
+            public int getDataFieldsCount() {
+                return dataFieldsCount;
             }
         }
 
@@ -46,6 +49,7 @@ public class StringShelfDatabaseTables {
                 dataFieldsCount = swTimerTableFields.getEnumConstants().length;
             }
 
+            @Override
             public int getDataFieldsCount() {
                 return dataFieldsCount;
             }
@@ -138,14 +142,17 @@ public class StringShelfDatabaseTables {
     private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
 
     public static int getSwTimerTableDataFieldsCount(String tableName) {   //  Rechercher nombre de champs de data de tableName (existant dans l'enum SwTimerTables.ColorYes ou SwTimerTables.ColorNo)
-        int ret = NOT_FOUND;
-        int tableIndex = getInnerTableIndex(tableName, SwTimerTables.ColorYes.class);  //   Sans utiliser SwTimerTables.ColorYes.valueOf(tableName), pour éviter l'exception générée si tableName absent de l'enum
-        if (tableIndex >= 0) {  //  Table trouvée
-            ret = SwTimerTables.ColorYes.values()[tableIndex].getDataFieldsCount();
-        } else {   //  Table non trouvée
-            tableIndex = getInnerTableIndex(tableName, SwTimerTables.ColorNo.class);
-            if (tableIndex >= 0) {  //  Table trouvée
-                ret = SwTimerTables.ColorNo.values()[tableIndex].getDataFieldsCount();
+        int ret = NOT_FOUND;  //  Ne pas utiliser valueOf(tableName) avec ColorYes puis avec ColorNo à cause du risque d'exception générée si tableName absent de l'enum
+        mainLoop:
+        for (Class cl : SwTimerTables.class.getClasses()) {  //  Chaque classe de SwTimerTables
+            if (cl.isEnum()) {   //  Filtrer sur les enum
+                Class<? extends SwTimerTables> clEnum = (Class<? extends SwTimerTables>) cl;  //  Classe -> Classe de SwTimerTables (ColorYes ou ColorNo)
+                for (SwTimerTables table : clEnum.getEnumConstants()) {   //  Chaque table de l'enum
+                    if (table.toString().equals(tableName)) {   //  Table trouvée
+                        ret = table.getDataFieldsCount();
+                        break mainLoop;  // Go, Go, Go !!
+                    }
+                }
             }
         }
         return ret;
@@ -329,18 +336,6 @@ public class StringShelfDatabaseTables {
         return SwTimerTables.ColorYes.valueOf(colorTableName).getLabel();
     }
     //endregion
-
-    private static int getInnerTableIndex(String tableName, Class<? extends SwTimerTables> tableClass) {   //  Trouver l'index de tableName dans tableClass
-        int ret = NOT_FOUND;
-        Object[] tables = tableClass.getEnumConstants();
-        for (int i = 0; i <= (tables.length - 1); i = i + 1) {
-            if (tables[i].toString().equals(tableName)) {
-                ret = i;
-                break;
-            }
-        }
-        return ret;
-    }
 
 }
 
