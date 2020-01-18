@@ -27,8 +27,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     private boolean running;              //  True si en cours (Actif)
     private boolean splitted;             //  True si Split
     private boolean clockAppAlarm;        //  True si alarme active insérée dans Clock app pour l'expiration (si Timer)
-    private String message;               //  Message associé
-    private String messageInit;           //  Message associé initial (non éditable)
+    private String label;                 //  Label associé
+    private String labelInit;             //  Label associé initial (non éditable)
     private long timeStart;               //  Temps mesuré lors du dernier Start (en ms)
     private long timeAcc;                 //  Temps actif écoulé jusqu'au dernier Stop (en ms)
     private long timeAccUntilSplit;       //  Temps actif écoulé jusqu'au dernier Split (en ms)
@@ -44,9 +44,9 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         fill(0, MODE.CHRONO, false, false, false, false, null, null, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, midnightTimeMillis(), TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
     }
 
-    public CtRecord(Context context, int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String message, String messageInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp) {  //  pas timeDisplay ni timeDisplayWithoutSplit, toujours mis à TIME_DEFAULT_VALUE à l'initialisation
+    public CtRecord(Context context, int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String label, String labelInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp) {  //  pas timeDisplay ni timeDisplayWithoutSplit, toujours mis à TIME_DEFAULT_VALUE à l'initialisation
         this.context = context;
-        fill(idct, mode, selected, running, splitted, clockAppAlarm, message, messageInit, timeStart, timeAcc, timeAccUntilSplit, timeDef, timeDefInit, timeExp, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
+        fill(idct, mode, selected, running, splitted, clockAppAlarm, label, labelInit, timeStart, timeAcc, timeAccUntilSplit, timeDef, timeDefInit, timeExp, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
     }
 
     public void close() {
@@ -105,13 +105,13 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return clockAppAlarm;
     }
 
-    public String getMessage() {
-        return message;
+    public String getLabel() {
+        return label;
     }
 
-    public boolean setMessage(String newMessage) {
+    public boolean setLabel(String newLabel) {
         boolean ret = true;
-        if (message != newMessage) {
+        if (label != newLabel) {
             if (mode.equals(MODE.TIMER)) {
                 if (running) {
                     if (hasClockAppAlarm()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)
@@ -120,18 +120,18 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                 }
             }
             if (ret) {
-                message = newMessage;
+                label = newLabel;
             }
         }
         return ret;
     }
 
-    public String getMessageInit() {
-        return messageInit;
+    public String getLabelInit() {
+        return labelInit;
     }
 
-    public boolean setMessageInit(String newMessageInit) {
-        messageInit = newMessageInit;
+    public boolean setLabelInit(String newLabelInit) {
+        labelInit = newLabelInit;
         return true;
     }
 
@@ -284,13 +284,13 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public String getClockAppAlarmDescription() {
-        return "Clock App alarm" + CRLF + message + " @ " + formattedTimeZoneLongTimeDate(timeExp, HHmm);
+        return "Clock App alarm" + CRLF + label + " @ " + formattedTimeZoneLongTimeDate(timeExp, HHmm);
     }
 
     public void setClockAppAlarmOn(boolean viaClockApp) {
         boolean error = false;
         if (viaClockApp) {
-            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, message, "Setting " + getClockAppAlarmDescription())) {
+            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, label, "Setting " + getClockAppAlarmDescription())) {
                 error = true;
             }
         }
@@ -302,7 +302,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     public void setClockAppAlarmOff(boolean viaClockApp) {
         boolean error = false;
         if (viaClockApp) {
-            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, message, "Dismissing " + getClockAppAlarmDescription())) {
+            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, label, "Dismissing " + getClockAppAlarmDescription())) {
                 error = true;
             }
         }
@@ -311,15 +311,15 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         }
     }
 
-    private void fill(int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String message, String messageInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
+    private void fill(int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarm, String label, String labelInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
         this.idct = idct;
         this.mode = mode;
         this.selected = selected;
         this.running = running;
         this.splitted = splitted;
         this.clockAppAlarm = clockAppAlarm;
-        this.message = message;
-        this.messageInit = messageInit;
+        this.label = label;
+        this.labelInit = labelInit;
         this.timeStart = timeStart;
         this.timeAcc = timeAcc;
         this.timeAccUntilSplit = timeAccUntilSplit;

@@ -62,7 +62,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreen
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeMessageToPresetCTRow;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeLabelToPresetCTRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesInCtDisplayColorsActivity;
@@ -173,7 +173,7 @@ public class CtDisplayActivity extends Activity {
             }
         }
 
-        getActionBar().setTitle(currentCtRecord.getMessage());
+        getActionBar().setTitle(currentCtRecord.getLabel());
         dotMatrixDisplayUpdater.setGridDimensions();
         dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
         updateDotMatrixDisplay();
@@ -313,15 +313,15 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void onExpiredTimerCurrentChronoTimer() {
-        toastLong("Timer " + currentCtRecord.getMessage() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(currentCtRecord.getTimeExp(), HHmmss), this);
+        toastLong("Timer " + currentCtRecord.getLabel() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(currentCtRecord.getTimeExp(), HHmmss), this);
         updateDisplayButtonColors();
         beep(this);
     }
 
 
     private void onDotMatrixDisplayCustomClick() {
-        setCurrentPresetInPresetsActivity(stringShelfDatabase, getPresetsCTTableName(), timeMessageToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getMessage()));
-        setDefaults(stringShelfDatabase, getPresetsCTTableName(), timeMessageToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getMessageInit()));
+        setCurrentPresetInPresetsActivity(stringShelfDatabase, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getLabel()));
+        setDefaults(stringShelfDatabase, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));
         launchPresetsActivity();
     }
 
@@ -441,7 +441,7 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void setupDotMatrixDisplay() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un message
+    private void setupDotMatrixDisplay() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un label
         final long DOT_MATRIX_DISPLAY_VIEW_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
         dotMatrixDisplayView = findViewById(R.id.DOT_MATRIX_DISPLAY);

@@ -12,7 +12,7 @@ import com.example.pgyl.pekislib_a.TimeDateUtils;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOnMessageIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOnLabelIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOnTimeIndex;
 
 public class CtDisplayDotMatrixDisplayUpdater {
@@ -36,7 +36,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private Rect displayRect;
     private String[] colors;
     private int onTimeColorIndex;
-    private int onMessageColorIndex;
+    private int onLabelColorIndex;
     private int offColorIndex;
     private int backColorIndex;
     private CtRecord currentCtRecord;
@@ -88,13 +88,13 @@ public class CtDisplayDotMatrixDisplayUpdater {
         }
     }
 
-    public void setGridDimensions() {       //  La grille doit pouvoir contenir le message et le temps
+    public void setGridDimensions() {       //  La grille doit pouvoir contenir le label et le temps
         final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
         final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
 
         int displayRectWidth = extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + dotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS) - dotMatrixDisplayView.getDefautFont().getRightMargin();   //  Largeur du temps sans marge droite
-        int displayRectHeight = Math.max(Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), dotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS)), dotMatrixDisplayView.getDefautFont().getTextHeight(currentCtRecord.getMessage()));   //  Hauteur du temps et du message
-        int gridRectWidth = displayRectWidth + dotMatrixDisplayView.getDefautFont().getRightMargin() + dotMatrixDisplayView.getDefautFont().getTextWidth(currentCtRecord.getMessage());  //  Largeur du temps et du message, avec marge droite
+        int displayRectHeight = Math.max(Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), dotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS)), dotMatrixDisplayView.getDefautFont().getTextHeight(currentCtRecord.getLabel()));   //  Hauteur du temps et du label
+        int gridRectWidth = displayRectWidth + dotMatrixDisplayView.getDefautFont().getRightMargin() + dotMatrixDisplayView.getDefautFont().getTextWidth(currentCtRecord.getLabel());  //  Largeur du temps et du label, avec marge droite
         int gridRectHeight = displayRectHeight;
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
         displayRect = new Rect(gridRect.left, gridRect.top, gridRect.left + displayRectWidth, gridRect.top + displayRectHeight);
@@ -110,13 +110,13 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
     }
 
-    public void writeTestText(String timeFontText, String messageFontText) {
+    public void writeTestText(String timeFontText, String labelFontText) {
         dotMatrixDisplayView.fillRectOff(gridRect);
         dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
         dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
         dotMatrixDisplayView.writeText(timeFontText, extraFont);
-        dotMatrixDisplayView.setOnColor(colors[onMessageColorIndex]);
-        dotMatrixDisplayView.writeText(messageFontText, dotMatrixDisplayView.getDefautFont());
+        dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
+        dotMatrixDisplayView.writeText(labelFontText, dotMatrixDisplayView.getDefautFont());
     }
 
     public void update(boolean displayInitialize) {
@@ -137,8 +137,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
                 dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
                 dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
                 dotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
-                dotMatrixDisplayView.setOnColor(colors[onMessageColorIndex]);
-                dotMatrixDisplayView.writeText(currentCtRecord.getMessage(), dotMatrixDisplayView.getDefautFont());
+                dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
+                dotMatrixDisplayView.writeText(currentCtRecord.getLabel(), dotMatrixDisplayView.getDefautFont());
                 dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
             } else {
                 updateInterval = UPDATE_INTERVAL_NO_RESET_MS;
@@ -161,7 +161,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     private void setupIndexes() {
         onTimeColorIndex = getDotMatrixDisplayOnTimeIndex();
-        onMessageColorIndex = getDotMatrixDisplayOnMessageIndex();
+        onLabelColorIndex = getDotMatrixDisplayOnLabelIndex();
         offColorIndex = getDotMatrixDisplayOffIndex();
         backColorIndex = getDotMatrixDisplayBackIndex();
     }

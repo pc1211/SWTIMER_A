@@ -11,6 +11,6 @@ public class MainCtListItemViewHolder {
     CustomImageButton buttonModeRun;
     CustomImageButton buttonSplitReset;
     CustomImageButton buttonClockAppAlarm;
-    CustomButton buttonTimeMessage;
+    CustomButton buttonTimeLabel;
     //endregion
 }

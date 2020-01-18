@@ -74,7 +74,7 @@ public class CtRecordsHandler {
     }
 
     public int createChronoTimer(MODE mode) {
-        final String MESSAGE_INIT_DEFAULT_VALUE = "Message";
+        final String LABEL_INIT_DEFAULT_VALUE = "Label";
         final long TIMEDEFINIT_DEFAULT_VALUE = 0;
 
         CtRecord ctRecord = new CtRecord(context);
@@ -83,8 +83,8 @@ public class CtRecordsHandler {
         ctRecord.setMode(mode);
         ctRecord.setTimeDefInit(TIMEDEFINIT_DEFAULT_VALUE);
         ctRecord.setTimeDef(TIMEDEFINIT_DEFAULT_VALUE, DUMMY_VALUE);
-        ctRecord.setMessageInit(MESSAGE_INIT_DEFAULT_VALUE + idct);
-        ctRecord.setMessage(MESSAGE_INIT_DEFAULT_VALUE + idct);
+        ctRecord.setLabelInit(LABEL_INIT_DEFAULT_VALUE + idct);
+        ctRecord.setLabel(LABEL_INIT_DEFAULT_VALUE + idct);
         ctRecords.add(ctRecord);
         return ctRecord.getIdct();
     }
@@ -108,9 +108,9 @@ public class CtRecordsHandler {
                                 ret = -ret;
                             }
                             if (ret == 0) {     //  time1 = time2
-                                String message1 = ctRecord1.getMessage();
-                                String message2 = ctRecord2.getMessage();
-                                ret = message1.compareTo(message2);           //  ORDER BY message ASC
+                                String label1 = ctRecord1.getLabel();
+                                String label2 = ctRecord2.getLabel();
+                                ret = label1.compareTo(label2);           //  ORDER BY label ASC
                             }
                         }
                     }
@@ -192,7 +192,7 @@ public class CtRecordsHandler {
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
                 if (action.equals(ACTIONS_ON_ALL.UPDATE_TIME)) {
                     if (!ctRecords.get(i).updateTime(nowm)) {   //  Timer expiré
-                        toastLong("Timer " + ctRecords.get(i).getMessage() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(ctRecords.get(i).getTimeExp(), HHmmss), context);
+                        toastLong("Timer " + ctRecords.get(i).getLabel() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(ctRecords.get(i).getTimeExp(), HHmmss), context);
                         ret = ret + 1;
                     }
                 }
@@ -264,7 +264,7 @@ public class CtRecordsHandler {
     }
 
     private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
-        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getMessage() + ALARM_FIELD_SEPARATOR + "Dismissing " + ctRecord.getClockAppAlarmDescription();
+        requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getLabel() + ALARM_FIELD_SEPARATOR + "Dismissing " + ctRecord.getClockAppAlarmDescription();
         ctRecord.setClockAppAlarmOff(!VIA_CLOCK_APP);   //  => setClockAppAlarmOff() ne fera pas appel à dismissClockAppAlarm() (processNextRequestedClockAppAlarmDismiss() le fera)
     }
 

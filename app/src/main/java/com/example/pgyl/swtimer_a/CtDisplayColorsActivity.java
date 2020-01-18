@@ -484,7 +484,7 @@ public class CtDisplayColorsActivity extends Activity {
         return COLOR_SPACES.valueOf(shp.getString(SHP_KEY_NAMES.COLOR_SPACE.toString(), COLOR_SPACE_DEFAULT_VALUE.toString()));
     }
 
-    private void setupDotMatrixDisplay() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un message
+    private void setupDotMatrixDisplay() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un label
         dotMatrixDisplayView = findViewById(R.id.DOT_MATRIX_DISPLAY);
     }
 

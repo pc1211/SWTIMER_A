@@ -165,7 +165,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         }
     }
 
-    private void onTimeMessageClick(int pos) {
+    private void onTimeLabelClick(int pos) {
         launchCtDisplayActivity(ctRecords.get(pos).getIdct());
     }
 
@@ -226,8 +226,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
         TIMEUNITS tu = (needCSTimeUnit ? TIMEUNITS.CS : TIMEUNITS.SEC);
         boolean needSpecialTimeDisplay = ((ctRecords.get(k).getMode().equals(MODE.TIMER)) && showExpirationTime);
         String timeText = (needSpecialTimeDisplay ? formattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToHms(ctRecords.get(k).getTimeDisplay(), tu));
-        String text = timeText + ((orientation == Configuration.ORIENTATION_PORTRAIT) ? CRLF : SEPARATOR) + ctRecords.get(k).getMessage();
-        viewHolder.buttonTimeMessage.setText(text);
+        String text = timeText + ((orientation == Configuration.ORIENTATION_PORTRAIT) ? CRLF : SEPARATOR) + ctRecords.get(k).getLabel();
+        viewHolder.buttonTimeLabel.setText(text);
 
     }
 
@@ -237,7 +237,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonModeRun = convertView.findViewById(R.id.BTN_MODE_RUN);
         viewHolder.buttonSplitReset = convertView.findViewById(R.id.BTN_SPLIT_RESET);
         viewHolder.buttonClockAppAlarm = convertView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
-        viewHolder.buttonTimeMessage = convertView.findViewById(R.id.BTN_TIME_MESSAGE);
+        viewHolder.buttonTimeLabel = convertView.findViewById(R.id.BTN_TIME_LABEL);
         return viewHolder;
     }
 
@@ -280,13 +280,13 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonClockAppAlarmClick(pos);
             }
         });
-        viewHolder.buttonTimeMessage.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonTimeMessage.setUnpressedColor(BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.buttonTimeMessage.setPressedColor(BUTTON_STATES.PRESSED.DEFAULT_COLOR());
-        viewHolder.buttonTimeMessage.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonTimeLabel.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+        viewHolder.buttonTimeLabel.setUnpressedColor(BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.buttonTimeLabel.setPressedColor(BUTTON_STATES.PRESSED.DEFAULT_COLOR());
+        viewHolder.buttonTimeLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onTimeMessageClick(pos);
+                onTimeLabelClick(pos);
             }
         });
     }
