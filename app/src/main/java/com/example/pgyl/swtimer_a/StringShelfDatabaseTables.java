@@ -13,7 +13,6 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.xhmsToMs;
 public class StringShelfDatabaseTables {
 
     private interface SwTimerTables {  // Les tables, par type (Couleur ou non), rattachées à leurs champs de data
-        //  TABLES
         int getDataFieldsCount();
 
         enum ColorYes implements SwTimerTables {   //  Les tables Couleur  (utilisées dans CtDisplayActivity et CtDisplayColorsActivity)
@@ -57,9 +56,8 @@ public class StringShelfDatabaseTables {
     }
 
     private interface SwTimerTableDataFields {  //  Les champs de data, par table
-        //  CHAMPS de DATA
         enum ChronoTimers implements SwTimerTableDataFields {   //  Les champs de data de la table CHRONO_TIMERS
-            MODE, SELECTED, RUNNING, SPLITTED, ALARM_SET, LABEL, LABEL_INIT, TIME_START, TIME_ACC, TIME_ACC_UNTIL_SPLIT, TIME_DEF, TIME_DEF_INIT, TIME_EXP;
+            MODE, SELECTED, RUNNING, SPLITTED, CLOCK_APP_ALARM, LABEL, LABEL_INIT, TIME_START, TIME_ACC, TIME_ACC_UNTIL_SPLIT, TIME_DEF, TIME_DEF_INIT, TIME_EXP;
 
             public int INDEX() {
                 return ordinal() + 1;
@@ -171,7 +169,7 @@ public class StringShelfDatabaseTables {
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SELECTED.INDEX()]) == 1),
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.RUNNING.INDEX()]) == 1),
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SPLITTED.INDEX()]) == 1),
-                (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.ALARM_SET.INDEX()]) == 1),
+                (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM.INDEX()]) == 1),
                 chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL.INDEX()],
                 chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL_INIT.INDEX()],
                 Long.parseLong(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_START.INDEX()]),
@@ -190,7 +188,7 @@ public class StringShelfDatabaseTables {
         ret[SwTimerTableDataFields.ChronoTimers.SELECTED.INDEX()] = String.valueOf(ctRecord.isSelected() ? 1 : 0);
         ret[SwTimerTableDataFields.ChronoTimers.RUNNING.INDEX()] = String.valueOf(ctRecord.isRunning() ? 1 : 0);
         ret[SwTimerTableDataFields.ChronoTimers.SPLITTED.INDEX()] = String.valueOf(ctRecord.isSplitted() ? 1 : 0);
-        ret[SwTimerTableDataFields.ChronoTimers.ALARM_SET.INDEX()] = String.valueOf(ctRecord.hasClockAppAlarm() ? 1 : 0);
+        ret[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM.INDEX()] = String.valueOf(ctRecord.hasClockAppAlarm() ? 1 : 0);
         ret[SwTimerTableDataFields.ChronoTimers.LABEL.INDEX()] = ctRecord.getLabel();
         ret[SwTimerTableDataFields.ChronoTimers.LABEL_INIT.INDEX()] = ctRecord.getLabelInit();
         ret[SwTimerTableDataFields.ChronoTimers.TIME_START.INDEX()] = String.valueOf(ctRecord.getTimeStart());
@@ -212,7 +210,7 @@ public class StringShelfDatabaseTables {
         final String[][] TABLE_PRESETS_CT_INITS = {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.PresetsCT.TIME.LABEL(), SwTimerTableDataFields.PresetsCT.LABEL.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_XHMS.toString(), InputButtonsActivity.KEYBOARDS.ASCII.toString()},
-                {TABLE_IDS.REGEXP.toString(), "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(c|$))?$", null},
+                {TABLE_IDS.REGEXP.toString(), "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(c|$))?$", null},   //    [...h][...m][...s][...c]
                 {TABLE_IDS.MAX.toString(), String.valueOf(xhmsToMs("23h59m59s99c")), null},
                 {TABLE_IDS.TIMEUNIT.toString(), TimeDateUtils.TIMEUNITS.CS.toString(), null}
         };
