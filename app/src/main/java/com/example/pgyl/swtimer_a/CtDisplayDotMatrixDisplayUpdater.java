@@ -88,19 +88,19 @@ public class CtDisplayDotMatrixDisplayUpdater {
         }
     }
 
-    public void setGridDimensions() {       //  La grille doit pouvoir contenir le label et le temps
+    public void setGridDimensions() {       //  La grille doit pouvoir contenir le temps et le label
         final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
         final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
 
-        int displayRectWidth = extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + dotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS) - dotMatrixDisplayView.getDefautFont().getRightMargin();   //  Largeur du temps sans marge droite
+        int displayRectWidth = extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + dotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS) - dotMatrixDisplayView.getDefautFont().getRightMargin();   //  Largeur du temps sans la dernière marge droite
         int displayRectHeight = Math.max(Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), dotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS)), dotMatrixDisplayView.getDefautFont().getTextHeight(currentCtRecord.getLabel()));   //  Hauteur du temps et du label
         int gridRectWidth = displayRectWidth + dotMatrixDisplayView.getDefautFont().getRightMargin() + dotMatrixDisplayView.getDefautFont().getTextWidth(currentCtRecord.getLabel());  //  Largeur du temps et du label, avec marge droite
         int gridRectHeight = displayRectHeight;
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
-        displayRect = new Rect(gridRect.left, gridRect.top, gridRect.left + displayRectWidth, gridRect.top + displayRectHeight);
-        dotMatrixDisplayView.setGridRect(gridRect);
-        dotMatrixDisplayView.setDisplayRect(displayRect);
-        dotMatrixDisplayView.setScrollRect(gridRect);
+        displayRect = new Rect(0,0, displayRectWidth, displayRectHeight);
+        dotMatrixDisplayView.setGridRect(gridRect);  //  La grille entière est de la taille prévue pour le temps et le label
+        dotMatrixDisplayView.setDisplayRect(displayRect);  //  la zone à afficher est de la taille prévue pour le temps
+        dotMatrixDisplayView.setScrollRect(gridRect);  //  On scrolle la grille entière
     }
 
     public void setGridColors(String[] colors) {
