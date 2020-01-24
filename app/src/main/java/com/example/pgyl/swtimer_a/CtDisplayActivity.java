@@ -44,7 +44,6 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER;
-import static com.example.pgyl.swtimer_a.CtDisplayDotMatrixDisplayUpdater.DISPLAY_INITIALIZE;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
@@ -177,7 +176,6 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater.setGridDimensions();
         dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
         updateDotMatrixDisplay();
-        dotMatrixDisplayUpdater.startAutomatic();
         updateDisplayButtonColors();
         updateDisplayBackScreenColor();
         updateDisplayKeepScreen();
@@ -314,6 +312,7 @@ public class CtDisplayActivity extends Activity {
 
     private void onExpiredTimerCurrentChronoTimer() {
         toastLong("Timer " + currentCtRecord.getLabel() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(currentCtRecord.getTimeExp(), HHmmss), this);
+        updateDotMatrixDisplay();
         updateDisplayButtonColors();
         beep(this);
     }
@@ -326,7 +325,20 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDotMatrixDisplay() {
-        dotMatrixDisplayUpdater.update(DISPLAY_INITIALIZE);
+        final long UPDATE_INTERVAL_RESET_MS = 40;       //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
+        final long UPDATE_INTERVAL_NO_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
+
+        dotMatrixDisplayUpdater.resetDisplay();
+        if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
+            dotMatrixDisplayUpdater.setUpdateInterval(currentCtRecord.isReset() ? UPDATE_INTERVAL_RESET_MS : UPDATE_INTERVAL_NO_RESET_MS);  //  A la bonne fréquence
+            if (!dotMatrixDisplayUpdater.isAutomaticOn()) {
+                dotMatrixDisplayUpdater.startAutomatic();
+            }
+        } else {  //  Pas besoin de rafraichissement continu
+            if (dotMatrixDisplayUpdater.isAutomaticOn()) {
+                dotMatrixDisplayUpdater.stopAutomatic();
+            }
+        }
     }
 
     private void updateDisplayBackScreenColor() {

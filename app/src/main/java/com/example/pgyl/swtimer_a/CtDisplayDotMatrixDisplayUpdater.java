@@ -26,9 +26,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     private onExpiredTimerListener mOnExpiredTimerListener;
 
-    //region Constantes
-    public static final boolean DISPLAY_INITIALIZE = true;
-    //endregion
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
     private DotMatrixFont extraFont;
@@ -42,6 +39,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private CtRecord currentCtRecord;
     private long updateInterval;
     private boolean inAutomatic;
+    private boolean automaticOn;
     private Handler handlerTime;
     private Runnable runnableTime;
     //endregion
@@ -59,6 +57,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         setupExtraFont();
         setupIndexes();
         inAutomatic = false;
+        automaticOn = false;
         mOnExpiredTimerListener = null;
     }
 
@@ -71,19 +70,35 @@ public class CtDisplayDotMatrixDisplayUpdater {
         currentCtRecord = null;
     }
 
+    public void setUpdateInterval(long updateInterval) {
+        this.updateInterval = updateInterval;
+    }
+
     public void startAutomatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
+        automaticOn = true;
     }
 
     public void stopAutomatic() {
         handlerTime.removeCallbacks(runnableTime);
+        automaticOn = false;
+    }
+
+    public boolean isAutomaticOn() {
+        return automaticOn;
     }
 
     private void automatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
         if ((!inAutomatic) && (!dotMatrixDisplayView.isDrawing())) {
             inAutomatic = true;
-            update(!DISPLAY_INITIALIZE);
+            long nowm = System.currentTimeMillis();
+            if (!currentCtRecord.updateTime(nowm)) {    //  Le timer a expiré
+                if (mOnExpiredTimerListener != null) {
+                    mOnExpiredTimerListener.onExpiredTimer();
+                }
+            }
+            updateDisplay();
             inAutomatic = false;
         }
     }
@@ -97,7 +112,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         int gridRectWidth = displayRectWidth + dotMatrixDisplayView.getDefautFont().getRightMargin() + dotMatrixDisplayView.getDefautFont().getTextWidth(currentCtRecord.getLabel());  //  Largeur du temps et du label, avec marge droite
         int gridRectHeight = displayRectHeight;
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
-        displayRect = new Rect(0,0, displayRectWidth, displayRectHeight);
+        displayRect = new Rect(0, 0, displayRectWidth, displayRectHeight);
         dotMatrixDisplayView.setGridRect(gridRect);  //  La grille entière est de la taille prévue pour le temps et le label
         dotMatrixDisplayView.setDisplayRect(displayRect);  //  la zone à afficher est de la taille prévue pour le temps
         dotMatrixDisplayView.setScrollRect(gridRect);  //  On scrolle la grille entière
@@ -119,42 +134,25 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.writeText(labelFontText, dotMatrixDisplayView.getDefautFont());
     }
 
-    public void update(boolean displayInitialize) {
-        final long UPDATE_INTERVAL_RESET_MS = 40;       //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
-        final long UPDATE_INTERVAL_NO_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
+    public void resetDisplay() {
+        dotMatrixDisplayView.fillRectOff(gridRect);
+        dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
+        dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
+        dotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+        dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
+        dotMatrixDisplayView.writeText(currentCtRecord.getLabel(), dotMatrixDisplayView.getDefautFont());
+        dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
+        dotMatrixDisplayView.invalidate();
+    }
 
-        long nowm = System.currentTimeMillis();
-        if (!currentCtRecord.updateTime(nowm)) {    //  Le timer a expiré
-            if (mOnExpiredTimerListener != null) {
-                mOnExpiredTimerListener.onExpiredTimer();
-            }
-            displayInitialize = true;
-        }
-        if (displayInitialize) {
-            if (currentCtRecord.isReset()) {
-                updateInterval = UPDATE_INTERVAL_RESET_MS;
-                dotMatrixDisplayView.fillRectOff(gridRect);
-                dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
-                dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-                dotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
-                dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
-                dotMatrixDisplayView.writeText(currentCtRecord.getLabel(), dotMatrixDisplayView.getDefautFont());
-                dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-            } else {
-                updateInterval = UPDATE_INTERVAL_NO_RESET_MS;
-                dotMatrixDisplayView.fillRectOff(displayRect);
-                dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
-                dotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
-            }
+    public void updateDisplay() {
+        if (currentCtRecord.isReset()) {
+            dotMatrixDisplayView.scrollLeft();
         } else {
-            if (currentCtRecord.isReset()) {
-                dotMatrixDisplayView.scrollLeft();
-            } else {
-                dotMatrixDisplayView.noScroll();
-                dotMatrixDisplayView.fillRectOff(displayRect);
-                dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
-                dotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
-            }
+            dotMatrixDisplayView.noScroll();
+            dotMatrixDisplayView.fillRectOff(displayRect);
+            dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
+            dotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
         }
         dotMatrixDisplayView.invalidate();
     }
