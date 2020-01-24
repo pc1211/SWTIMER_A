@@ -125,23 +125,18 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
     }
 
-    public void writeTestText(String timeFontText, String labelFontText) {
+    public void writeTimeAndLabel(String timeFontText, String labelFontText) {  //  Appliquer ensuite dotMatrixDisplayView.invalidate() pour affichage effectif
         dotMatrixDisplayView.fillRectOff(gridRect);
         dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
         dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
         dotMatrixDisplayView.writeText(timeFontText, extraFont);
         dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
         dotMatrixDisplayView.writeText(labelFontText, dotMatrixDisplayView.getDefautFont());
+        dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
     }
 
     public void resetDisplay() {
-        dotMatrixDisplayView.fillRectOff(gridRect);
-        dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
-        dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-        dotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
-        dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
-        dotMatrixDisplayView.writeText(currentCtRecord.getLabel(), dotMatrixDisplayView.getDefautFont());
-        dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
+        writeTimeAndLabel(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), currentCtRecord.getLabel());
         dotMatrixDisplayView.invalidate();
     }
 

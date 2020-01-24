@@ -173,12 +173,11 @@ public class CtDisplayActivity extends Activity {
         }
 
         getActionBar().setTitle(currentCtRecord.getLabel());
-        dotMatrixDisplayUpdater.setGridDimensions();
-        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
+        updateDotMatrixDisplayColors();
         updateDotMatrixDisplay();
-        updateDisplayButtonColors();
-        updateDisplayBackScreenColor();
-        updateDisplayKeepScreen();
+        updateButtonColors();
+        updateBackScreenColor();
+        updateKeepScreen();
         invalidateOptionsMenu();
     }
 
@@ -204,15 +203,15 @@ public class CtDisplayActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_ct_display, menu);
         this.menu = menu;
         setupBarMenuItems();
-        updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
-        updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
+        updateSetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
+        updateKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {  // appelé par invalideOptionsMenu après changement d'orientation
-        updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
-        updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
+        updateSetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
+        updateKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
 
@@ -224,12 +223,12 @@ public class CtDisplayActivity extends Activity {
         }
         if (item.getItemId() == R.id.BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER) {
             setClockAppAlarmOnStartTimer = !setClockAppAlarmOnStartTimer;
-            updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
+            updateSetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
         }
         if (item.getItemId() == R.id.BAR_MENU_ITEM_KEEP_SCREEN) {
             keepScreen = !keepScreen;
-            updateDisplayKeepScreen();
-            updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
+            updateKeepScreen();
+            updateKeepScreenBarMenuItemIcon(keepScreen);
         }
         if (item.getItemId() == R.id.SET_COLORS) {
             saveCurrentColorsInDBCtDisplayColorsActivity();
@@ -261,7 +260,7 @@ public class CtDisplayActivity extends Activity {
             onButtonClickMode(MODE.TIMER);
         }
         currentCtRecord.updateTime(nowm);
-        updateDisplayButtonColors();
+        updateButtonColors();
         updateDotMatrixDisplay();
     }
 
@@ -313,7 +312,7 @@ public class CtDisplayActivity extends Activity {
     private void onExpiredTimerCurrentChronoTimer() {
         toastLong("Timer " + currentCtRecord.getLabel() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(currentCtRecord.getTimeExp(), HHmmss), this);
         updateDotMatrixDisplay();
-        updateDisplayButtonColors();
+        updateButtonColors();
         beep(this);
     }
 
@@ -341,11 +340,15 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void updateDisplayBackScreenColor() {
+    private void updateDotMatrixDisplayColors() {
+        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
+    }
+
+    private void updateBackScreenColor() {
         backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getBackScreenTableName())][getBackScreenBackIndex()]));
     }
 
-    private void updateDisplayButtonColor(COMMANDS command) {  //   ON/BACK ou OFF/BACK
+    private void updateButtonColor(COMMANDS command) {  //   ON/BACK ou OFF/BACK
         int colorTableIndex = getColorTableIndex(getButtonsTableName());
         buttons[command.INDEX()].setFrontColor(((getButtonState(command)) ? colors[colorTableIndex][getButtonsOnIndex()] : colors[colorTableIndex][getButtonsOffIndex()]));
         buttons[command.INDEX()].setBackColor(colors[colorTableIndex][getButtonsBackIndex()]);
@@ -353,21 +356,21 @@ public class CtDisplayActivity extends Activity {
         buttons[command.INDEX()].invalidate();
     }
 
-    private void updateDisplayButtonColors() {
+    private void updateButtonColors() {
         for (COMMANDS command : COMMANDS.values()) {
-            updateDisplayButtonColor(command);
+            updateButtonColor(command);
         }
     }
 
-    private void updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(boolean setClockAppAlarmOnStartTimer) {
+    private void updateSetClockAppAlarmOnStartTimerBarMenuItemIcon(boolean setClockAppAlarmOnStartTimer) {
         barMenuItemSetClockAppAlarmOnStartTimer.setIcon((setClockAppAlarmOnStartTimer ? R.drawable.main_bell_start_on : R.drawable.main_bell_start_off));
     }
 
-    private void updateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
+    private void updateKeepScreenBarMenuItemIcon(boolean keepScreen) {
         barMenuItemKeepScreen.setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
     }
 
-    private void updateDisplayKeepScreen() {
+    private void updateKeepScreen() {
         if (keepScreen) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
@@ -474,6 +477,7 @@ public class CtDisplayActivity extends Activity {
                 onExpiredTimerCurrentChronoTimer();
             }
         });
+        dotMatrixDisplayUpdater.setGridDimensions();
     }
 
     private void setupBarMenuItems() {
