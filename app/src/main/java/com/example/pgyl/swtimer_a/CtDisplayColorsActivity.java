@@ -226,15 +226,15 @@ public class CtDisplayColorsActivity extends Activity {
             }
         }
 
-        updateDotMatrixDisplayColors();
-        updateDotMatrixDisplay();
-        updateIconButtonColors();
-        updateBackScreenColors();
-        updateButtonTextNextColorTable();
-        updateButtonTextNextColor();
-        updateButtonTextColorSpace();
-        updateSeekBarsProgress();
-        updateButtonTextColorValue();
+        setupDotMatrixDisplayColors();
+        updateDisplayDotMatrixDisplay();
+        updateDisplayIconButtonColors();
+        updateDisplayBackScreenColors();
+        updateDisplayButtonTextNextColorTable();
+        updateDisplayButtonTextNextColor();
+        updateDisplayButtonTextColorSpace();
+        updateDisplaySeekBarsProgress();
+        updateDisplayButtonTextColorValue();
     }
 
     @Override
@@ -299,10 +299,10 @@ public class CtDisplayColorsActivity extends Activity {
             colorTableIndex = 0;
         }
         colorIndex = 1;
-        updateButtonTextNextColorTable();
-        updateButtonTextNextColor();
-        updateSeekBarsProgress();
-        updateButtonTextColorValue();
+        updateDisplayButtonTextNextColorTable();
+        updateDisplayButtonTextNextColor();
+        updateDisplaySeekBarsProgress();
+        updateDisplayButtonTextColorValue();
     }
 
     private void onButtonClickNextColor() {
@@ -310,16 +310,16 @@ public class CtDisplayColorsActivity extends Activity {
         if (colorIndex >= colors[colorTableIndex].length) {
             colorIndex = 1;
         }
-        updateButtonTextNextColor();
-        updateSeekBarsProgress();
-        updateButtonTextColorValue();
+        updateDisplayButtonTextNextColor();
+        updateDisplaySeekBarsProgress();
+        updateDisplayButtonTextColorValue();
     }
 
     private void onButtonClickNextColorSpace() {
         colorSpace = ((colorSpace.equals(COLOR_SPACES.RGB)) ? COLOR_SPACES.HSV : COLOR_SPACES.RGB);
-        updateButtonTextColorSpace();
-        updateSeekBarsProgress();
-        updateButtonTextColorValue();
+        updateDisplayButtonTextColorSpace();
+        updateDisplaySeekBarsProgress();
+        updateDisplayButtonTextColorValue();
     }
 
     private void onButtonClickCancel() {
@@ -352,36 +352,31 @@ public class CtDisplayColorsActivity extends Activity {
                 hsvStruc[2] = (float) seekBars[SEEKBARS.BLUE_VAL.INDEX()].getProgress() / 65535f;
                 colors[colorTableIndex][colorIndex] = String.format("%06X", Color.HSVToColor(hsvStruc) & COLOR_RGB_MASK);
             }
-            updateButtonTextColorValue();
-            updateColors();
+            updateDisplayButtonTextColorValue();
+            updateDisplayColors();
         }
     }
 
-    private void updateColors() {
+    private void updateDisplayColors() {
         if (colorTableIndex == getColorTableIndex(getDotMatrixDisplayTableName())) {
-            updateDotMatrixDisplay();
+            updateDisplayDotMatrixDisplay();
         }
         if (colorTableIndex == getColorTableIndex(getButtonsTableName())) {
-            updateIconButtonColors();
+            updateDisplayIconButtonColors();
         }
         if (colorTableIndex == getColorTableIndex(getBackScreenTableName())) {
-            updateBackScreenColors();
+            updateDisplayBackScreenColors();
         }
     }
 
-    private void updateDotMatrixDisplay() {
-        final String EXTRA_FONT_TEST_TEXT = "12:34:.";
-        final String DEFAULT_FONT_TEST_TEXT = "Abcd";
+    private void updateDisplayDotMatrixDisplay() {
+        final String TIME_TEXT = "12:34:.";
+        final String LABEL_TEXT = "Abcd";
 
-        dotMatrixDisplayUpdater.writeTimeAndLabel(EXTRA_FONT_TEST_TEXT, DEFAULT_FONT_TEST_TEXT);
-        dotMatrixDisplayView.invalidate();
+        dotMatrixDisplayUpdater.displayTimeAndLabel(TIME_TEXT, LABEL_TEXT);
     }
 
-    private void updateDotMatrixDisplayColors() {
-        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
-    }
-
-    private void updateIconButtonColor(ICON_COMMANDS iconCommand) {  //   ON/BACK ou OFF/BACK
+    private void updateDisplayIconButtonColor(ICON_COMMANDS iconCommand) {  //   ON/BACK ou OFF/BACK
         int colorTableIndex = getColorTableIndex(getButtonsTableName());
         iconButtons[iconCommand.INDEX()].setFrontColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsOnIndex()] : colors[colorTableIndex][getButtonsOffIndex()]));
         iconButtons[iconCommand.INDEX()].setBackColor(colors[colorTableIndex][getButtonsBackIndex()]);
@@ -389,35 +384,35 @@ public class CtDisplayColorsActivity extends Activity {
         iconButtons[iconCommand.INDEX()].invalidate();
     }
 
-    private void updateIconButtonColors() {
+    private void updateDisplayIconButtonColors() {
         for (ICON_COMMANDS iconCommand : ICON_COMMANDS.values()) {
-            updateIconButtonColor(iconCommand);
+            updateDisplayIconButtonColor(iconCommand);
         }
     }
 
-    private void updateBackScreenColors() {
+    private void updateDisplayBackScreenColors() {
         int color = Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getBackScreenTableName())][getBackScreenBackIndex()]);
         backLayoutPart2.setBackgroundColor(color);
         backLayoutPart1.setBackgroundColor(color);
     }
 
-    private void updateButtonTextNextColorTable() {
+    private void updateDisplayButtonTextNextColorTable() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
         buttons[COMMANDS.NEXT_COLOR_TABLE.INDEX()].setText(colorTableLabels[colorTableIndex] + SYMBOL_NEXT);
     }
 
-    private void updateButtonTextNextColor() {
+    private void updateDisplayButtonTextNextColor() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
         buttons[COMMANDS.NEXT_COLOR.INDEX()].setText(colorTableFieldsLabels[colorTableIndex][colorIndex] + SYMBOL_NEXT);
     }
 
-    private void updateButtonTextColorValue() {
+    private void updateDisplayButtonTextColorValue() {
         buttons[COMMANDS.COLOR_VALUE.INDEX()].setText(getSeekBarsProgressHexString());
     }
 
-    private void updateButtonTextColorSpace() {
+    private void updateDisplayButtonTextColorSpace() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
         buttons[COMMANDS.NEXT_COLOR_SPACE.INDEX()].setText(colorSpace.toString() + SYMBOL_NEXT);
@@ -427,7 +422,7 @@ public class CtDisplayColorsActivity extends Activity {
         }
     }
 
-    private void updateSeekBarsProgress() {
+    private void updateDisplaySeekBarsProgress() {
         int red = Integer.parseInt(colors[colorTableIndex][colorIndex].substring(0, 2), HEX_RADIX);  //  0..255
         int green = Integer.parseInt(colors[colorTableIndex][colorIndex].substring(2, 4), HEX_RADIX);
         int blue = Integer.parseInt(colors[colorTableIndex][colorIndex].substring(4, 6), HEX_RADIX);
@@ -489,6 +484,10 @@ public class CtDisplayColorsActivity extends Activity {
 
     private void setupDotMatrixDisplay() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un label
         dotMatrixDisplayView = findViewById(R.id.DOT_MATRIX_DISPLAY);
+    }
+
+    private void setupDotMatrixDisplayColors() {
+        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
     }
 
     private void setupDotMatrixDisplayUpdater() {

@@ -153,6 +153,7 @@ public class CtDisplayActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
+        currentCtRecord.updateTime(nowm);
         setupDotMatrixDisplayUpdater();
         getDBCurrentOrDefaultColors();
 
@@ -173,11 +174,11 @@ public class CtDisplayActivity extends Activity {
         }
 
         getActionBar().setTitle(currentCtRecord.getLabel());
-        updateDotMatrixDisplayColors();
-        updateDotMatrixDisplay();
-        updateButtonColors();
-        updateBackScreenColor();
-        updateKeepScreen();
+        setupDotMatrixDisplayColors();
+        updateDisplayDotMatrixDisplay();
+        updateDisplayButtonColors();
+        updateDisplayBackScreenColor();
+        updateDisplayKeepScreen();
         invalidateOptionsMenu();
     }
 
@@ -203,15 +204,15 @@ public class CtDisplayActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_ct_display, menu);
         this.menu = menu;
         setupBarMenuItems();
-        updateSetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
-        updateKeepScreenBarMenuItemIcon(keepScreen);
+        updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
+        updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {  // appelé par invalideOptionsMenu après changement d'orientation
-        updateSetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
-        updateKeepScreenBarMenuItemIcon(keepScreen);
+        updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
+        updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         return true;
     }
 
@@ -223,12 +224,12 @@ public class CtDisplayActivity extends Activity {
         }
         if (item.getItemId() == R.id.BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER) {
             setClockAppAlarmOnStartTimer = !setClockAppAlarmOnStartTimer;
-            updateSetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
+            updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
         }
         if (item.getItemId() == R.id.BAR_MENU_ITEM_KEEP_SCREEN) {
             keepScreen = !keepScreen;
-            updateKeepScreen();
-            updateKeepScreenBarMenuItemIcon(keepScreen);
+            updateDisplayKeepScreen();
+            updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         }
         if (item.getItemId() == R.id.SET_COLORS) {
             saveCurrentColorsInDBCtDisplayColorsActivity();
@@ -260,8 +261,8 @@ public class CtDisplayActivity extends Activity {
             onButtonClickMode(MODE.TIMER);
         }
         currentCtRecord.updateTime(nowm);
-        updateButtonColors();
-        updateDotMatrixDisplay();
+        updateDisplayButtonColors();
+        updateDisplayDotMatrixDisplay();
     }
 
     private void onButtonClickRun(long nowm) {
@@ -311,8 +312,8 @@ public class CtDisplayActivity extends Activity {
 
     private void onExpiredTimerCurrentChronoTimer() {
         toastLong("Timer " + currentCtRecord.getLabel() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(currentCtRecord.getTimeExp(), HHmmss), this);
-        updateDotMatrixDisplay();
-        updateButtonColors();
+        updateDisplayDotMatrixDisplay();
+        updateDisplayButtonColors();
         beep(this);
     }
 
@@ -323,11 +324,11 @@ public class CtDisplayActivity extends Activity {
         launchPresetsActivity();
     }
 
-    private void updateDotMatrixDisplay() {
+    private void updateDisplayDotMatrixDisplay() {
         final long UPDATE_INTERVAL_RESET_MS = 40;       //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
         final long UPDATE_INTERVAL_NO_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
 
-        dotMatrixDisplayUpdater.resetDisplay();
+        dotMatrixDisplayUpdater.displayCurrentRecordTimeAndLabel();
         if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
             dotMatrixDisplayUpdater.setUpdateInterval(currentCtRecord.isReset() ? UPDATE_INTERVAL_RESET_MS : UPDATE_INTERVAL_NO_RESET_MS);  //  A la bonne fréquence
             if (!dotMatrixDisplayUpdater.isAutomaticOn()) {
@@ -340,15 +341,11 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void updateDotMatrixDisplayColors() {
-        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
-    }
-
-    private void updateBackScreenColor() {
+    private void updateDisplayBackScreenColor() {
         backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getBackScreenTableName())][getBackScreenBackIndex()]));
     }
 
-    private void updateButtonColor(COMMANDS command) {  //   ON/BACK ou OFF/BACK
+    private void updateDisplayButtonColor(COMMANDS command) {  //   ON/BACK ou OFF/BACK
         int colorTableIndex = getColorTableIndex(getButtonsTableName());
         buttons[command.INDEX()].setFrontColor(((getButtonState(command)) ? colors[colorTableIndex][getButtonsOnIndex()] : colors[colorTableIndex][getButtonsOffIndex()]));
         buttons[command.INDEX()].setBackColor(colors[colorTableIndex][getButtonsBackIndex()]);
@@ -356,21 +353,21 @@ public class CtDisplayActivity extends Activity {
         buttons[command.INDEX()].invalidate();
     }
 
-    private void updateButtonColors() {
+    private void updateDisplayButtonColors() {
         for (COMMANDS command : COMMANDS.values()) {
-            updateButtonColor(command);
+            updateDisplayButtonColor(command);
         }
     }
 
-    private void updateSetClockAppAlarmOnStartTimerBarMenuItemIcon(boolean setClockAppAlarmOnStartTimer) {
+    private void updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(boolean setClockAppAlarmOnStartTimer) {
         barMenuItemSetClockAppAlarmOnStartTimer.setIcon((setClockAppAlarmOnStartTimer ? R.drawable.main_bell_start_on : R.drawable.main_bell_start_off));
     }
 
-    private void updateKeepScreenBarMenuItemIcon(boolean keepScreen) {
+    private void updateDisplayKeepScreenBarMenuItemIcon(boolean keepScreen) {
         barMenuItemKeepScreen.setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
     }
 
-    private void updateKeepScreen() {
+    private void updateDisplayKeepScreen() {
         if (keepScreen) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
@@ -467,6 +464,10 @@ public class CtDisplayActivity extends Activity {
                 onDotMatrixDisplayCustomClick();
             }
         });
+    }
+
+    private void setupDotMatrixDisplayColors() {
+        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
     }
 
     private void setupDotMatrixDisplayUpdater() {

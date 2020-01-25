@@ -98,7 +98,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
                     mOnExpiredTimerListener.onExpiredTimer();
                 }
             }
-            updateDisplay();
+            refreshDisplay();
             inAutomatic = false;
         }
     }
@@ -125,22 +125,22 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
     }
 
-    public void writeTimeAndLabel(String timeFontText, String labelFontText) {  //  Appliquer ensuite dotMatrixDisplayView.invalidate() pour affichage effectif
+    public void displayTimeAndLabel(String timeText, String labelText) {
         dotMatrixDisplayView.fillRectOff(gridRect);
         dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
         dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-        dotMatrixDisplayView.writeText(timeFontText, extraFont);
+        dotMatrixDisplayView.writeText(timeText, extraFont);   //  Temps avec police extra
         dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
-        dotMatrixDisplayView.writeText(labelFontText, dotMatrixDisplayView.getDefautFont());
+        dotMatrixDisplayView.writeText(labelText, dotMatrixDisplayView.getDefautFont());   //  Label avec police par défaut
         dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-    }
-
-    public void resetDisplay() {
-        writeTimeAndLabel(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), currentCtRecord.getLabel());
         dotMatrixDisplayView.invalidate();
     }
 
-    public void updateDisplay() {
+    public void displayCurrentRecordTimeAndLabel() {
+        displayTimeAndLabel(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), currentCtRecord.getLabel());
+    }
+
+    public void refreshDisplay() {
         if (currentCtRecord.isReset()) {
             dotMatrixDisplayView.scrollLeft();
         } else {
