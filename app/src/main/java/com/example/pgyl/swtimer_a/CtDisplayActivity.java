@@ -153,8 +153,6 @@ public class CtDisplayActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        updateCurrentRecord(nowm);
-        setupDotMatrixDisplayUpdater(currentCtRecord);
         getDBCurrentOrDefaultColors();
 
         if (isColdStartStatusInCtDisplayActivity(stringShelfDatabase)) {
@@ -172,8 +170,9 @@ public class CtDisplayActivity extends Activity {
                 }
             }
         }
-
+        updateCurrentRecord(nowm);
         getActionBar().setTitle(currentCtRecord.getLabel());
+        setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
         updateDisplayDotMatrixDisplay();
         updateDisplayButtonColors();

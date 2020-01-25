@@ -197,7 +197,6 @@ public class CtDisplayColorsActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        setupDotMatrixDisplayUpdater(currentCtRecord);
         setupHSVColorSpace();
         getDBCurrentColors();
         getDBCurrentColorLabels();
@@ -225,7 +224,7 @@ public class CtDisplayColorsActivity extends Activity {
                 }
             }
         }
-
+        setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
         updateDisplayDotMatrixDisplay();
         updateDisplayIconButtonColors();
