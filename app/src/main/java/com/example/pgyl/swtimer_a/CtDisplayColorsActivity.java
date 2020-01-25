@@ -197,7 +197,7 @@ public class CtDisplayColorsActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        setupDotMatrixDisplayUpdater();
+        setupDotMatrixDisplayUpdater(currentCtRecord);
         setupHSVColorSpace();
         getDBCurrentColors();
         getDBCurrentColorLabels();
@@ -490,7 +490,7 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
     }
 
-    private void setupDotMatrixDisplayUpdater() {
+    private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {
         dotMatrixDisplayUpdater = new CtDisplayDotMatrixDisplayUpdater(dotMatrixDisplayView, currentCtRecord);
         dotMatrixDisplayUpdater.setGridDimensions();
     }
@@ -568,14 +568,14 @@ public class CtDisplayColorsActivity extends Activity {
         }
     }
 
-    private void setupStringShelfDatabase() {
-        stringShelfDatabase = new StringShelfDatabase(this);
-        stringShelfDatabase.open();
-    }
-
     private void setupBackLayout() {
         backLayoutPart1 = findViewById(R.id.BACK_LAYOUT_PART1);   //  2 layouts au lieu d'un, pour retrouver la même hauteur pour les iconButtons que dans CtDisplayActivity
         backLayoutPart2 = findViewById(R.id.BACK_LAYOUT_PART2);
+    }
+
+    private void setupStringShelfDatabase() {
+        stringShelfDatabase = new StringShelfDatabase(this);
+        stringShelfDatabase.open();
     }
 
     private void saveCurrentColorsInDB() {

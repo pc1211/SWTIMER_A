@@ -153,8 +153,8 @@ public class CtDisplayActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        currentCtRecord.updateTime(nowm);
-        setupDotMatrixDisplayUpdater();
+        updateCurrentRecord(nowm);
+        setupDotMatrixDisplayUpdater(currentCtRecord);
         getDBCurrentOrDefaultColors();
 
         if (isColdStartStatusInCtDisplayActivity(stringShelfDatabase)) {
@@ -260,7 +260,7 @@ public class CtDisplayActivity extends Activity {
         if (command.equals(COMMANDS.TIMER_MODE)) {
             onButtonClickMode(MODE.TIMER);
         }
-        currentCtRecord.updateTime(nowm);
+        updateCurrentRecord(nowm);
         updateDisplayButtonColors();
         updateDisplayDotMatrixDisplay();
     }
@@ -470,7 +470,7 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
     }
 
-    private void setupDotMatrixDisplayUpdater() {
+    private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {
         dotMatrixDisplayUpdater = new CtDisplayDotMatrixDisplayUpdater(dotMatrixDisplayView, currentCtRecord);
         dotMatrixDisplayUpdater.setOnExpiredTimerListener(new CtDisplayDotMatrixDisplayUpdater.onExpiredTimerListener() {
             @Override
@@ -494,13 +494,13 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
+    private void setupBackLayout() {
+        backLayout = findViewById(R.id.BACK_LAYOUT);
+    }
+
     private void setupStringShelfDatabase() {
         stringShelfDatabase = new StringShelfDatabase(this);
         stringShelfDatabase.open();
-    }
-
-    private void setupBackLayout() {
-        backLayout = findViewById(R.id.BACK_LAYOUT);
     }
 
     private void saveCurrentChronoTimer() {
@@ -531,6 +531,12 @@ public class CtDisplayActivity extends Activity {
     private void getDBCurrentColorsFromCtDisplayColorsActivity() {
         for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
             colors[i] = getCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getColorTableName(i));
+        }
+    }
+
+    private void updateCurrentRecord(long nowm) {
+        if (!currentCtRecord.updateTime(nowm)) {    //  Le timer a expiré
+            onExpiredTimerCurrentChronoTimer();
         }
     }
 
