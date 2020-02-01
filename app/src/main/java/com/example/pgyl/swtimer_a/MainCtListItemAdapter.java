@@ -281,8 +281,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
             }
         });
         viewHolder.buttonTimeLabel.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonTimeLabel.setUnpressedColor(BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.buttonTimeLabel.setPressedColor(BUTTON_STATES.PRESSED.DEFAULT_COLOR());
         viewHolder.buttonTimeLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

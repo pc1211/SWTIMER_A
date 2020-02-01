@@ -23,7 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
@@ -150,8 +149,7 @@ public class MainActivity extends Activity {
         setupShowExpirationTime();
         setupSetClockAppAlarmOnStartTimer();
         setupAddNewChronoTimerToList();
-        setupButtonColors();
-        setupStateButtonColors();
+        setupButtonSpecialColors();
 
         updateDisplayButtonColors();
         updateDisplayStateButtonColors();
@@ -278,16 +276,16 @@ public class MainActivity extends Activity {
 
     private void onButtonClickShowExpirationTime() {
         showExpirationTime = !showExpirationTime;
-        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setState((showExpirationTime ? STATES.ON : STATES.OFF));
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
-        updateDisplayStateColor(STATE_COMMANDS.SHOW_EXPIRATION_TIME);
         mainCtListUpdater.update();
+        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setState((showExpirationTime ? STATES.ON : STATES.OFF));
+        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].updateStateColor();
     }
 
     private void onButtonClickAddNewChronoTimerToList() {
         addNewChronoTimerToList = !addNewChronoTimerToList;
         stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].setState((addNewChronoTimerToList ? STATES.ON : STATES.OFF));
-        updateDisplayStateColor(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST);
+        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].updateStateColor();
     }
 
     private void onCtListExpiredTimers() {
@@ -323,12 +321,8 @@ public class MainActivity extends Activity {
     private void updateDisplayStateButtonColors() {
         for (final STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
             stateButtons[stateCommand.INDEX()].updateColor();
-            updateDisplayStateColor(stateCommand);
+            stateButtons[stateCommand.INDEX()].updateStateColor();
         }
-    }
-
-    private void updateDisplayStateColor(STATE_COMMANDS stateCommand) {
-        stateButtons[stateCommand.INDEX()].updateStateColor();
     }
 
     private void updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(boolean setClockAppAlarmOnStartTimer) {
@@ -534,21 +528,15 @@ public class MainActivity extends Activity {
         stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].setState(addNewChronoTimerToList ? STATES.ON : STATES.OFF);
     }
 
-    private void setupButtonColors() {
+    private void setupButtonSpecialColors() {
         final String NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT = "668CFF";
         final String NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT = "0040FF";
 
         for (final COMMANDS command : COMMANDS.values()) {
-            boolean needSpecialColor = (command.equals(COMMANDS.NEW_CHRONO) || (command.equals(COMMANDS.NEW_TIMER)));
-            buttons[command.INDEX()].setUnpressedColor(((needSpecialColor) ? NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR()));
-            buttons[command.INDEX()].setPressedColor(((needSpecialColor) ? NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT : BUTTON_STATES.PRESSED.DEFAULT_COLOR()));
-        }
-    }
-
-    private void setupStateButtonColors() {
-        for (final STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
-            stateButtons[stateCommand.INDEX()].setUnpressedColor(BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-            stateButtons[stateCommand.INDEX()].setPressedColor((BUTTON_STATES.PRESSED.DEFAULT_COLOR()));
+            if (command.equals(COMMANDS.NEW_CHRONO) || (command.equals(COMMANDS.NEW_TIMER))) {
+                buttons[command.INDEX()].setUnpressedColor(NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT);
+                buttons[command.INDEX()].setPressedColor(NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT);
+            }
         }
     }
 
