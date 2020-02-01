@@ -278,14 +278,14 @@ public class MainActivity extends Activity {
         showExpirationTime = !showExpirationTime;
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
         mainCtListUpdater.update();
-        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setState((showExpirationTime ? STATES.ON : STATES.OFF));
-        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].updateStateColor();
+        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].getState().setState((showExpirationTime ? STATES.ON : STATES.OFF));
+        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].getState().updateColor();
     }
 
     private void onButtonClickAddNewChronoTimerToList() {
         addNewChronoTimerToList = !addNewChronoTimerToList;
-        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].setState((addNewChronoTimerToList ? STATES.ON : STATES.OFF));
-        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].updateStateColor();
+        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].getState().setState((addNewChronoTimerToList ? STATES.ON : STATES.OFF));
+        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].getState().updateColor();
     }
 
     private void onCtListExpiredTimers() {
@@ -320,8 +320,8 @@ public class MainActivity extends Activity {
 
     private void updateDisplayStateButtonColors() {
         for (final STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
-            stateButtons[stateCommand.INDEX()].updateColor();
-            stateButtons[stateCommand.INDEX()].updateStateColor();
+            stateButtons[stateCommand.INDEX()].getButton().updateColor();
+            stateButtons[stateCommand.INDEX()].getState().updateColor();
         }
     }
 
@@ -445,8 +445,8 @@ public class MainActivity extends Activity {
         for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values())
             try {
                 stateButtons[stateCommand.INDEX()] = findViewById(rid.getField(STATE_BUTTON_COMMAND_XML_PREFIX + stateCommand.toString()).getInt(rid));
-                stateButtons[stateCommand.INDEX()].setImageResource(stateCommand.ID());
-                stateButtons[stateCommand.INDEX()].setMinClickTimeInterval(STATE_BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+                stateButtons[stateCommand.INDEX()].getButton().setImageResource(stateCommand.ID());
+                stateButtons[stateCommand.INDEX()].getButton().setMinClickTimeInterval(STATE_BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
                 final STATE_COMMANDS fstatecommand = stateCommand;
                 stateButtons[stateCommand.INDEX()].setOnCustomClickListener(new StateCustomImageButton.onCustomClickListener() {
                     @Override
@@ -514,7 +514,7 @@ public class MainActivity extends Activity {
 
     private void setupShowExpirationTime() {
         showExpirationTime = getSHPShowExpirationTime();
-        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setState(showExpirationTime ? STATES.ON : STATES.OFF);
+        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].getState().setState(showExpirationTime ? STATES.ON : STATES.OFF);
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
     }
 
@@ -525,7 +525,7 @@ public class MainActivity extends Activity {
 
     private void setupAddNewChronoTimerToList() {
         addNewChronoTimerToList = getSHPaddNewChronoTimerToList();
-        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].setState(addNewChronoTimerToList ? STATES.ON : STATES.OFF);
+        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].getState().setState(addNewChronoTimerToList ? STATES.ON : STATES.OFF);
     }
 
     private void setupButtonSpecialColors() {
