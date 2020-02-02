@@ -372,6 +372,7 @@ public class CtDisplayColorsActivity extends Activity {
         final String TIME_TEXT = "12:34:.";
         final String LABEL_TEXT = "Abcd";
 
+        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
         dotMatrixDisplayUpdater.displayTimeAndLabel(TIME_TEXT, LABEL_TEXT);
     }
 
@@ -380,7 +381,7 @@ public class CtDisplayColorsActivity extends Activity {
         iconButtons[iconCommand.INDEX()].setFrontColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsOnIndex()] : colors[colorTableIndex][getButtonsOffIndex()]));
         iconButtons[iconCommand.INDEX()].setBackColor(colors[colorTableIndex][getButtonsBackIndex()]);
         iconButtons[iconCommand.INDEX()].setExtraColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsOffIndex()] : colors[colorTableIndex][getButtonsOnIndex()]));
-        iconButtons[iconCommand.INDEX()].invalidate();
+        iconButtons[iconCommand.INDEX()].updateDisplay();
     }
 
     private void updateDisplayIconButtonColors() {

@@ -349,7 +349,7 @@ public class CtDisplayActivity extends Activity {
         buttons[command.INDEX()].setFrontColor(((getButtonState(command)) ? colors[colorTableIndex][getButtonsOnIndex()] : colors[colorTableIndex][getButtonsOffIndex()]));
         buttons[command.INDEX()].setBackColor(colors[colorTableIndex][getButtonsBackIndex()]);
         buttons[command.INDEX()].setExtraColor(((getButtonState(command)) ? colors[colorTableIndex][getButtonsOffIndex()] : colors[colorTableIndex][getButtonsOnIndex()]));
-        buttons[command.INDEX()].invalidate();
+        buttons[command.INDEX()].updateDisplay();
     }
 
     private void updateDisplayButtonColors() {

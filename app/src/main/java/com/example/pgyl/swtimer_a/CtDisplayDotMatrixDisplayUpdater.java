@@ -133,7 +133,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
         dotMatrixDisplayView.writeText(labelText, dotMatrixDisplayView.getDefautFont());   //  Label avec police par défaut
         dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-        dotMatrixDisplayView.invalidate();
+        dotMatrixDisplayView.updateDisplay();
     }
 
     public void displayCurrentRecordTimeAndLabel() {
@@ -149,7 +149,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
             dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
             dotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
         }
-        dotMatrixDisplayView.invalidate();
+        dotMatrixDisplayView.updateDisplay();
     }
 
     private void setupIndexes() {
