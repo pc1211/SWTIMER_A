@@ -16,7 +16,7 @@ import android.widget.ListView;
 
 import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.HelpActivity;
-import com.example.pgyl.pekislib_a.StateCustomImageButton;
+import com.example.pgyl.pekislib_a.LEDCustomImageButton;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 
 import java.util.logging.Level;
@@ -29,7 +29,7 @@ import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
-import static com.example.pgyl.pekislib_a.StateView.STATES;
+import static com.example.pgyl.pekislib_a.LEDView.STATES;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createPekislibTableIfNotExists;
@@ -67,12 +67,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    private enum STATE_COMMANDS {
+    private enum LED_COMMANDS {
         SHOW_EXPIRATION_TIME(R.drawable.main_clock), ADD_NEW_CHRONOTIMER_TO_LIST(R.drawable.main_tolist);
 
         private int valueId;
 
-        STATE_COMMANDS(int valueId) {
+        LED_COMMANDS(int valueId) {
             this.valueId = valueId;
         }
 
@@ -90,7 +90,7 @@ public class MainActivity extends Activity {
 
     //region Variables
     private CustomImageButton[] buttons;
-    private StateCustomImageButton[] stateButtons;
+    private LEDCustomImageButton[] ledButtons;
     private Menu menu;
     private MenuItem barMenuItemSetClockAppAlarmOnStartTimer;
     private MenuItem barMenuItemKeepScreen;
@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
         getActionBar().setTitle(ACTIVITY_TITLE);
         setContentView(R.layout.main);
         setupButtons();
-        setupStateButtons();
+        setupLEDButtons();
     }
 
     @Override
@@ -152,7 +152,7 @@ public class MainActivity extends Activity {
         setupButtonSpecialColors();
 
         updateDisplayButtonColors();
-        updateDisplayStateButtonColors();
+        updateDisplayLEDButtonColors();
         updateDisplayKeepScreen();
         sortAndReloadMainCtList();
         mainCtListUpdater.startAutomatic();
@@ -216,11 +216,11 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void onStateButtonClick(STATE_COMMANDS stateCommand) {
-        if (stateCommand.equals(STATE_COMMANDS.SHOW_EXPIRATION_TIME)) {
+    private void onLEDButtonClick(LED_COMMANDS ledCommand) {
+        if (ledCommand.equals(LED_COMMANDS.SHOW_EXPIRATION_TIME)) {
             onButtonClickShowExpirationTime();
         }
-        if (stateCommand.equals(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) {
+        if (ledCommand.equals(LED_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) {
             onButtonClickAddNewChronoTimerToList();
         }
     }
@@ -278,14 +278,14 @@ public class MainActivity extends Activity {
         showExpirationTime = !showExpirationTime;
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
         mainCtListUpdater.update();
-        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].getState().setState((showExpirationTime ? STATES.ON : STATES.OFF));
-        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].getState().updateColor();
+        ledButtons[LED_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].getLED().setState((showExpirationTime ? STATES.ON : STATES.OFF));
+        ledButtons[LED_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].getLED().updateDisplay();
     }
 
     private void onButtonClickAddNewChronoTimerToList() {
         addNewChronoTimerToList = !addNewChronoTimerToList;
-        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].getState().setState((addNewChronoTimerToList ? STATES.ON : STATES.OFF));
-        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].getState().updateColor();
+        ledButtons[LED_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].getLED().setState((addNewChronoTimerToList ? STATES.ON : STATES.OFF));
+        ledButtons[LED_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].getLED().updateDisplay();
     }
 
     private void onCtListExpiredTimers() {
@@ -314,14 +314,14 @@ public class MainActivity extends Activity {
 
     private void updateDisplayButtonColors() {
         for (final COMMANDS command : COMMANDS.values()) {
-            buttons[command.INDEX()].updateColor();
+            buttons[command.INDEX()].updateDisplayColor();
         }
     }
 
-    private void updateDisplayStateButtonColors() {
-        for (final STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
-            stateButtons[stateCommand.INDEX()].getButton().updateColor();
-            stateButtons[stateCommand.INDEX()].getState().updateColor();
+    private void updateDisplayLEDButtonColors() {
+        for (final LED_COMMANDS ledCommand : LED_COMMANDS.values()) {
+            ledButtons[ledCommand.INDEX()].getButton().updateDisplayColor();
+            ledButtons[ledCommand.INDEX()].getLED().updateDisplay();
         }
     }
 
@@ -436,22 +436,22 @@ public class MainActivity extends Activity {
             }
     }
 
-    private void setupStateButtons() {
-        final String STATE_BUTTON_COMMAND_XML_PREFIX = "STATE_BTN_";
-        final long STATE_BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
+    private void setupLEDButtons() {
+        final String LED_BUTTON_COMMAND_XML_PREFIX = "LED_BTN_";
+        final long LED_BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
-        stateButtons = new StateCustomImageButton[STATE_COMMANDS.values().length];
+        ledButtons = new LEDCustomImageButton[LED_COMMANDS.values().length];
         Class rid = R.id.class;
-        for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values())
+        for (LED_COMMANDS ledCommand : LED_COMMANDS.values())
             try {
-                stateButtons[stateCommand.INDEX()] = findViewById(rid.getField(STATE_BUTTON_COMMAND_XML_PREFIX + stateCommand.toString()).getInt(rid));
-                stateButtons[stateCommand.INDEX()].getButton().setImageResource(stateCommand.ID());
-                stateButtons[stateCommand.INDEX()].getButton().setMinClickTimeInterval(STATE_BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-                final STATE_COMMANDS fstatecommand = stateCommand;
-                stateButtons[stateCommand.INDEX()].setOnCustomClickListener(new StateCustomImageButton.onCustomClickListener() {
+                ledButtons[ledCommand.INDEX()] = findViewById(rid.getField(LED_BUTTON_COMMAND_XML_PREFIX + ledCommand.toString()).getInt(rid));
+                ledButtons[ledCommand.INDEX()].getButton().setImageResource(ledCommand.ID());
+                ledButtons[ledCommand.INDEX()].getButton().setMinClickTimeInterval(LED_BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+                final LED_COMMANDS fledcommand = ledCommand;
+                ledButtons[ledCommand.INDEX()].setOnCustomClickListener(new LEDCustomImageButton.onCustomClickListener() {
                     @Override
                     public void onCustomClick() {
-                        onStateButtonClick(fstatecommand);
+                        onLEDButtonClick(fledcommand);
                     }
                 });
             } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
@@ -514,7 +514,7 @@ public class MainActivity extends Activity {
 
     private void setupShowExpirationTime() {
         showExpirationTime = getSHPShowExpirationTime();
-        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].getState().setState(showExpirationTime ? STATES.ON : STATES.OFF);
+        ledButtons[LED_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].getLED().setState(showExpirationTime ? STATES.ON : STATES.OFF);
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
     }
 
@@ -525,7 +525,7 @@ public class MainActivity extends Activity {
 
     private void setupAddNewChronoTimerToList() {
         addNewChronoTimerToList = getSHPaddNewChronoTimerToList();
-        stateButtons[STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].getState().setState(addNewChronoTimerToList ? STATES.ON : STATES.OFF);
+        ledButtons[LED_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].getLED().setState(addNewChronoTimerToList ? STATES.ON : STATES.OFF);
     }
 
     private void setupButtonSpecialColors() {

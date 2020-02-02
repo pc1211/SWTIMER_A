@@ -11,14 +11,14 @@
         android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
-        <com.example.pgyl.pekislib_a.StateCustomImageButton
-            android:id="@+id/STATE_BTN_SHOW_EXPIRATION_TIME"
+        <com.example.pgyl.pekislib_a.LEDCustomImageButton
+            android:id="@+id/LED_BTN_SHOW_EXPIRATION_TIME"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
 
-        <com.example.pgyl.pekislib_a.StateCustomImageButton
-            android:id="@+id/STATE_BTN_ADD_NEW_CHRONOTIMER_TO_LIST"
+        <com.example.pgyl.pekislib_a.LEDCustomImageButton
+            android:id="@+id/LED_BTN_ADD_NEW_CHRONOTIMER_TO_LIST"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>

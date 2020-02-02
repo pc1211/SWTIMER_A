@@ -210,17 +210,17 @@ public class MainCtListItemAdapter extends BaseAdapter {
         boolean needSpecialColor = ctRecords.get(k).isRunning();
         viewHolder.buttonModeRun.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonModeRun.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.buttonModeRun.updateColor();
+        viewHolder.buttonModeRun.updateDisplayColor();
 
         needSpecialColor = ctRecords.get(k).isSplitted();
         viewHolder.buttonSplitReset.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonSplitReset.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.buttonSplitReset.updateColor();
+        viewHolder.buttonSplitReset.updateDisplayColor();
 
         needSpecialColor = ctRecords.get(k).hasClockAppAlarm();
         viewHolder.buttonClockAppAlarm.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonClockAppAlarm.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.buttonClockAppAlarm.updateColor();
+        viewHolder.buttonClockAppAlarm.updateDisplayColor();
 
         boolean needCSTimeUnit = ((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted()));
         TIMEUNITS tu = (needCSTimeUnit ? TIMEUNITS.CS : TIMEUNITS.SEC);
