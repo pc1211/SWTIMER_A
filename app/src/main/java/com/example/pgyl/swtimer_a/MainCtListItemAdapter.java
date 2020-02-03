@@ -207,20 +207,17 @@ public class MainCtListItemAdapter extends BaseAdapter {
         }
         viewHolder.buttonModeRun.setImageResource(id);
 
-        boolean needSpecialColor = ctRecords.get(k).isRunning();
-        viewHolder.buttonModeRun.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.buttonModeRun.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.buttonModeRun.updateDisplayColor();
+        String pressedColor = (ctRecords.get(k).isRunning() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        String unpressedColor = (ctRecords.get(k).isRunning() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.buttonModeRun.setColors(pressedColor, unpressedColor);
 
-        needSpecialColor = ctRecords.get(k).isSplitted();
-        viewHolder.buttonSplitReset.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.buttonSplitReset.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.buttonSplitReset.updateDisplayColor();
+        pressedColor = (ctRecords.get(k).isSplitted() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        unpressedColor = (ctRecords.get(k).isSplitted() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.buttonSplitReset.setColors(pressedColor, unpressedColor);
 
-        needSpecialColor = ctRecords.get(k).hasClockAppAlarm();
-        viewHolder.buttonClockAppAlarm.setUnpressedColor(needSpecialColor ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
-        viewHolder.buttonClockAppAlarm.setPressedColor(needSpecialColor ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        viewHolder.buttonClockAppAlarm.updateDisplayColor();
+        pressedColor = (ctRecords.get(k).hasClockAppAlarm() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        unpressedColor = (ctRecords.get(k).hasClockAppAlarm() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        viewHolder.buttonClockAppAlarm.setColors(pressedColor, unpressedColor);
 
         boolean needCSTimeUnit = ((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted()));
         TIMEUNITS tu = (needCSTimeUnit ? TIMEUNITS.CS : TIMEUNITS.SEC);
@@ -228,7 +225,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
         String timeText = (needSpecialTimeDisplay ? formattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToHms(ctRecords.get(k).getTimeDisplay(), tu));
         String text = timeText + ((orientation == Configuration.ORIENTATION_PORTRAIT) ? CRLF : SEPARATOR) + ctRecords.get(k).getLabel();
         viewHolder.buttonTimeLabel.setText(text);
-
     }
 
     private MainCtListItemViewHolder buildViewHolder(View convertView) {
