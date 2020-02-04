@@ -275,12 +275,12 @@ public class MainActivity extends Activity {
         showExpirationTime = !showExpirationTime;
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
         mainCtListUpdater.update();
-        ledButtons[LED_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].light(showExpirationTime);
+        ledButtons[LED_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setLight(showExpirationTime);
     }
 
     private void onButtonClickAddNewChronoTimerToList() {
         addNewChronoTimerToList = !addNewChronoTimerToList;
-        ledButtons[LED_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].light(addNewChronoTimerToList);
+        ledButtons[LED_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].setLight(addNewChronoTimerToList);
     }
 
     private void onCtListExpiredTimers() {
@@ -496,18 +496,18 @@ public class MainActivity extends Activity {
 
     private void setupShowExpirationTime() {
         showExpirationTime = getSHPShowExpirationTime();
-        ledButtons[LED_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].light(showExpirationTime);
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
+        ledButtons[LED_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setLight(showExpirationTime);
+    }
+
+    private void setupAddNewChronoTimerToList() {
+        addNewChronoTimerToList = getSHPaddNewChronoTimerToList();
+        ledButtons[LED_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].setLight(addNewChronoTimerToList);
     }
 
     private void setupSetClockAppAlarmOnStartTimer() {
         setClockAppAlarmOnStartTimer = getSHPSetClockAppAlarmOnStartTimer();
         mainCtListItemAdapter.setClockAppAlarmOnStartTimer(setClockAppAlarmOnStartTimer);
-    }
-
-    private void setupAddNewChronoTimerToList() {
-        addNewChronoTimerToList = getSHPaddNewChronoTimerToList();
-        ledButtons[LED_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST.INDEX()].light(addNewChronoTimerToList);
     }
 
     private void setupButtonSpecialColors() {
