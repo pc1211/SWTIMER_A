@@ -12,26 +12,26 @@
         android:orientation="horizontal">
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/LED_BTN_SHOW_EXPIRATION_TIME"
+            android:id="@+id/LIGHT_BTN_SHOW_EXPIRATION_TIME"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="6dp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="3"/>
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/LED_BTN_ADD_NEW_CHRONOTIMER_TO_LIST"
+            android:id="@+id/LIGHT_BTN_ADD_NEW_CHRONOTIMER_TO_LIST"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="6dp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="3"/>
 
         <com.example.pgyl.pekislib_a.CustomImageButton
             android:id="@+id/BTN_NEW_CHRONO"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="4"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter" />
 
@@ -39,7 +39,7 @@
             android:id="@+id/BTN_NEW_TIMER"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="4"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter" />
 
@@ -47,7 +47,7 @@
             android:id="@+id/BTN_INVERT_SELECTION_ALL_CT"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="4"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter" />
 
@@ -55,7 +55,7 @@
             android:id="@+id/BTN_SELECT_ALL_CT"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="4"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter" />
     </LinearLayout>
