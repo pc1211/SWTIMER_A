@@ -308,9 +308,9 @@ public class MainActivity extends Activity {
         mainCtListUpdater.reload();
     }
 
-    private void updateDisplayLightButtonColor(LIGHT_COMMANDS lightCommand) {  //   ON/BACK ou OFF/BACK
+    private void updateDisplayLightButtonColor(LIGHT_COMMANDS lightCommand) {  //   On/Unpressed(ON/BACK), On/Pressed(BACK/OFF), Off/Unpressed(OFF/BACK), Off/Pressed(BACK/ON)
         final String LIGHT_BUTTON_ON_COLOR = "FF9A22";
-        final String LIGHT_BUTTON_OFF_COLOR = "808080";
+        final String LIGHT_BUTTON_OFF_COLOR = "404040";
         final String LIGHT_BUTTON_BACK_COLOR = "000000";
 
         lightButtons[lightCommand.INDEX()].setFrontColor(((getLightButtonState(lightCommand)) ? LIGHT_BUTTON_ON_COLOR : LIGHT_BUTTON_OFF_COLOR));
