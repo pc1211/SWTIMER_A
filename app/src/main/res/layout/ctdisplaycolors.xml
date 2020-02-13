@@ -27,7 +27,7 @@
         android:orientation="horizontal">
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/ICON_BTN_RUN1"
+            android:id="@+id/STATE_BTN_RUN1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -35,7 +35,7 @@
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/ICON_BTN_RUN2"
+            android:id="@+id/STATE_BTN_RUN2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"

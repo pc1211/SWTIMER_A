@@ -17,7 +17,7 @@ public class StringShelfDatabaseTables {
 
         enum ColorYes implements SwTimerTables {   //  Les tables Couleur  (utilisées dans CtDisplayActivity et CtDisplayColorsActivity)
             DOT_MATRIX_DISPLAY(SwTimerTableDataFields.DotMatrixDisplay.class, "Dot matrix Display"),   //  Table avec les couleurs du Dot Matrix Display
-            BUTTONS(SwTimerTableDataFields.Buttons.class, "CT Control buttons"),
+            STATE_BUTTONS(SwTimerTableDataFields.StateButtons.class, "CT Control buttons"),
             BACK_SCREEN(SwTimerTableDataFields.BackScreen.class, "Back screen");
 
             private int dataFieldsCount;
@@ -100,12 +100,12 @@ public class StringShelfDatabaseTables {
             }
         }
 
-        enum Buttons implements SwTimerTableDataFields {
+        enum StateButtons implements SwTimerTableDataFields {
             ON("ON"), OFF("OFF"), BACK("Background");
 
             private String valueLabel;
 
-            Buttons(String valueLabel) {
+            StateButtons(String valueLabel) {
                 this.valueLabel = valueLabel;
             }
 
@@ -269,31 +269,31 @@ public class StringShelfDatabaseTables {
     }
     //endregion
 
-    //region BUTTONS
-    public static String getButtonsTableName() {
-        return SwTimerTables.ColorYes.BUTTONS.toString();
+    //region STATE_BUTTONS
+    public static String getStateButtonsTableName() {
+        return SwTimerTables.ColorYes.STATE_BUTTONS.toString();
     }
 
-    public static String[][] getButtonsInits() {
-        final String[][] TABLE_COLOR_BUTTONS_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.Buttons.ON.LABEL(), SwTimerTableDataFields.Buttons.OFF.LABEL(), SwTimerTableDataFields.Buttons.BACK.LABEL()},
+    public static String[][] getStateButtonsInits() {
+        final String[][] TABLE_COLOR_STATE_BUTTONS_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.StateButtons.ON.LABEL(), SwTimerTableDataFields.StateButtons.OFF.LABEL(), SwTimerTableDataFields.StateButtons.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
                 {TABLE_IDS.DEFAULT.toString(), "0061F3", "696969", "000000"}
         };
-        return TABLE_COLOR_BUTTONS_INITS;
+        return TABLE_COLOR_STATE_BUTTONS_INITS;
     }
 
-    public static int getButtonsOnIndex() {
-        return SwTimerTableDataFields.Buttons.ON.INDEX();
+    public static int getStateButtonsOnIndex() {
+        return SwTimerTableDataFields.StateButtons.ON.INDEX();
     }
 
-    public static int getButtonsOffIndex() {
-        return SwTimerTableDataFields.Buttons.OFF.INDEX();
+    public static int getStateButtonsOffIndex() {
+        return SwTimerTableDataFields.StateButtons.OFF.INDEX();
     }
 
-    public static int getButtonsBackIndex() {
-        return SwTimerTableDataFields.Buttons.BACK.INDEX();
+    public static int getStateButtonsBackIndex() {
+        return SwTimerTableDataFields.StateButtons.BACK.INDEX();
     }
     //endregion
 

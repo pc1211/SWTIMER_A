@@ -50,15 +50,15 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatu
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsOnIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsOnIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableLabel;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesCount;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesInCtDisplayColorsActivity;
@@ -86,12 +86,12 @@ public class CtDisplayColorsActivity extends Activity {
         }
     }
 
-    private enum ICON_COMMANDS {
+    private enum STATE_COMMANDS {
         RUN1(R.raw.ct_run), RUN2(R.raw.ct_run);
 
         private int valueId;
 
-        ICON_COMMANDS(int valueId) {
+        STATE_COMMANDS(int valueId) {
             this.valueId = valueId;
         }
 
@@ -141,7 +141,7 @@ public class CtDisplayColorsActivity extends Activity {
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
     private CtDisplayDotMatrixDisplayUpdater dotMatrixDisplayUpdater;
-    private SymbolButtonView[] iconButtons;
+    private SymbolButtonView[] stateButtons;
     private Button[] buttons;
     private SeekBar[] seekBars;
     private Drawable[] processDrawables;
@@ -170,7 +170,7 @@ public class CtDisplayColorsActivity extends Activity {
         setContentView(R.layout.ctdisplaycolors);   //  Mode portrait uniquement (cf Manifest)
         setupDotMatrixDisplay();
         setupBackLayout();
-        setupIconButtons();
+        setupStateButtons();
         setupButtons();
         setupSeekBars();
         validReturnFromCalledActivity = false;
@@ -227,7 +227,7 @@ public class CtDisplayColorsActivity extends Activity {
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
         updateDisplayDotMatrixDisplay();
-        updateDisplayIconButtonColors();
+        updateDisplayStateButtonColors();
         updateDisplayBackScreenColors();
         updateDisplayButtonTextNextColorTable();
         updateDisplayButtonTextNextColor();
@@ -360,8 +360,8 @@ public class CtDisplayColorsActivity extends Activity {
         if (colorTableIndex == getColorTableIndex(getDotMatrixDisplayTableName())) {
             updateDisplayDotMatrixDisplay();
         }
-        if (colorTableIndex == getColorTableIndex(getButtonsTableName())) {
-            updateDisplayIconButtonColors();
+        if (colorTableIndex == getColorTableIndex(getStateButtonsTableName())) {
+            updateDisplayStateButtonColors();
         }
         if (colorTableIndex == getColorTableIndex(getBackScreenTableName())) {
             updateDisplayBackScreenColors();
@@ -376,17 +376,17 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.displayTimeAndLabel(TIME_TEXT, LABEL_TEXT);
     }
 
-    private void updateDisplayIconButtonColor(ICON_COMMANDS iconCommand) {  //   ON/BACK ou OFF/BACK
-        int colorTableIndex = getColorTableIndex(getButtonsTableName());
-        iconButtons[iconCommand.INDEX()].setFrontColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsOnIndex()] : colors[colorTableIndex][getButtonsOffIndex()]));
-        iconButtons[iconCommand.INDEX()].setBackColor(colors[colorTableIndex][getButtonsBackIndex()]);
-        iconButtons[iconCommand.INDEX()].setExtraColor(((getButtonState(iconCommand)) ? colors[colorTableIndex][getButtonsOffIndex()] : colors[colorTableIndex][getButtonsOnIndex()]));
-        iconButtons[iconCommand.INDEX()].updateDisplay();
+    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   ON/BACK ou OFF/BACK
+        int colorTableIndex = getColorTableIndex(getStateButtonsTableName());
+        stateButtons[stateCommand.INDEX()].setFrontColor(((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsOnIndex()] : colors[colorTableIndex][getStateButtonsOffIndex()]));
+        stateButtons[stateCommand.INDEX()].setBackColor(colors[colorTableIndex][getStateButtonsBackIndex()]);
+        stateButtons[stateCommand.INDEX()].setExtraColor(((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsOffIndex()] : colors[colorTableIndex][getStateButtonsOnIndex()]));
+        stateButtons[stateCommand.INDEX()].updateDisplay();
     }
 
-    private void updateDisplayIconButtonColors() {
-        for (ICON_COMMANDS iconCommand : ICON_COMMANDS.values()) {
-            updateDisplayIconButtonColor(iconCommand);
+    private void updateDisplayStateButtonColors() {
+        for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
+            updateDisplayStateButtonColor(stateCommand);
         }
     }
 
@@ -448,11 +448,11 @@ public class CtDisplayColorsActivity extends Activity {
         return hexString;
     }
 
-    private boolean getButtonState(ICON_COMMANDS iconCommand) {
-        if (iconCommand.equals(ICON_COMMANDS.RUN1)) {
+    private boolean getStateButtonState(STATE_COMMANDS stateCommand) {
+        if (stateCommand.equals(STATE_COMMANDS.RUN1)) {
             return true;   //  Toujours ON
         }
-        if (iconCommand.equals(ICON_COMMANDS.RUN2)) {
+        if (stateCommand.equals(STATE_COMMANDS.RUN2)) {
             return false;   //  Toujours OFF
         }
         return false;
@@ -495,15 +495,15 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.setGridDimensions();
     }
 
-    private void setupIconButtons() {
-        final String ICON_BUTTON_XML_PREFIX = "ICON_BTN_";
+    private void setupStateButtons() {
+        final String STATE_BUTTON_XML_PREFIX = "STATE_BTN_";
 
-        iconButtons = new SymbolButtonView[ICON_COMMANDS.values().length];
+        stateButtons = new SymbolButtonView[STATE_COMMANDS.values().length];
         Class rid = R.id.class;
-        for (ICON_COMMANDS iconCommand : ICON_COMMANDS.values()) {
+        for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
             try {
-                iconButtons[iconCommand.INDEX()] = findViewById(rid.getField(ICON_BUTTON_XML_PREFIX + iconCommand.toString()).getInt(rid));
-                iconButtons[iconCommand.INDEX()].setSVGImageResource(iconCommand.ID());
+                stateButtons[stateCommand.INDEX()] = findViewById(rid.getField(STATE_BUTTON_XML_PREFIX + stateCommand.toString()).getInt(rid));
+                stateButtons[stateCommand.INDEX()].setSVGImageResource(stateCommand.ID());
             } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
                 Logger.getLogger(com.example.pgyl.swtimer_a.MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -569,7 +569,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void setupBackLayout() {
-        backLayoutPart1 = findViewById(R.id.BACK_LAYOUT_PART1);   //  2 layouts au lieu d'un, pour retrouver la même hauteur pour les iconButtons que dans CtDisplayActivity
+        backLayoutPart1 = findViewById(R.id.BACK_LAYOUT_PART1);   //  2 layouts au lieu d'un, pour retrouver la même hauteur pour les stateButtons que dans CtDisplayActivity
         backLayoutPart2 = findViewById(R.id.BACK_LAYOUT_PART2);
     }
 

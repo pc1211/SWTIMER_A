@@ -11,8 +11,8 @@ import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTInits;
@@ -35,9 +35,9 @@ public class StringShelfDatabaseUtils {
         stringShelfDatabase.insertOrReplaceRowById(getDotMatrixDisplayTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getDotMatrixDisplayTableName()));   //  PRESET1 = DEFAULT
     }
 
-    public static void initializeTableButtons(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.insertOrReplaceRows(getButtonsTableName(), getButtonsInits());
-        stringShelfDatabase.insertOrReplaceRowById(getButtonsTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getButtonsTableName()));   //  PRESET1 = DEFAULT
+    public static void initializeTableStateButtons(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.insertOrReplaceRows(getStateButtonsTableName(), getStateButtonsInits());
+        stringShelfDatabase.insertOrReplaceRowById(getStateButtonsTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getStateButtonsTableName()));   //  PRESET1 = DEFAULT
     }
 
     public static void initializeTableBackScreen(StringShelfDatabase stringShelfDatabase) {

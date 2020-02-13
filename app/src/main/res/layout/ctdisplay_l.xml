@@ -25,42 +25,42 @@
         android:orientation="horizontal">
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_CHRONO_MODE"
+            android:id="@+id/STATE_BTN_CHRONO_MODE"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_TIMER_MODE"
+            android:id="@+id/STATE_BTN_TIMER_MODE"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_INVERT_CLOCK_APP_ALARM"
+            android:id="@+id/STATE_BTN_INVERT_CLOCK_APP_ALARM"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_RUN"
+            android:id="@+id/STATE_BTN_RUN"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_SPLIT"
+            android:id="@+id/STATE_BTN_SPLIT"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/BTN_RESET"
+            android:id="@+id/STATE_BTN_RESET"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"

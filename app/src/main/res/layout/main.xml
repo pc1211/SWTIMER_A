@@ -12,7 +12,7 @@
         android:orientation="horizontal">
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/LIGHT_BTN_SHOW_EXPIRATION_TIME"
+            android:id="@+id/STATE_BTN_SHOW_EXPIRATION_TIME"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="6dp"
             android:layout_width="0dp"
@@ -20,7 +20,7 @@
             android:layout_weight="3"/>
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/LIGHT_BTN_ADD_NEW_CHRONOTIMER_TO_LIST"
+            android:id="@+id/STATE_BTN_ADD_NEW_CHRONOTIMER_TO_LIST"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="6dp"
             android:layout_width="0dp"

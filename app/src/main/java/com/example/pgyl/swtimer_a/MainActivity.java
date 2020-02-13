@@ -35,13 +35,13 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createPekisli
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createSwtimerTableIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableBackScreen;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableButtons;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableStateButtons;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplay;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
@@ -66,12 +66,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    private enum LIGHT_COMMANDS {
+    private enum STATE_COMMANDS {
         SHOW_EXPIRATION_TIME(R.raw.main_clock), ADD_NEW_CHRONOTIMER_TO_LIST(R.raw.main_tolist);
 
         private int valueId;
 
-        LIGHT_COMMANDS(int valueId) {
+        STATE_COMMANDS(int valueId) {
             this.valueId = valueId;
         }
 
@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
 
     //region Variables
     private CustomImageButton[] buttons;
-    private SymbolButtonView[] lightButtons;
+    private SymbolButtonView[] stateButtons;
     private Menu menu;
     private MenuItem barMenuItemSetClockAppAlarmOnStartTimer;
     private MenuItem barMenuItemKeepScreen;
@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
         getActionBar().setTitle(ACTIVITY_TITLE);
         setContentView(R.layout.main);
         setupButtons();
-        setupLightButtons();
+        setupStateButtons();
     }
 
     @Override
@@ -150,7 +150,7 @@ public class MainActivity extends Activity {
         setupAddNewChronoTimerToList();
         setupButtonSpecialColors();
 
-        updateDisplayLightButtonColors();
+        updateDisplayStateButtonColors();
         updateDisplayKeepScreen();
         sortAndReloadMainCtList();
         mainCtListUpdater.startAutomatic();
@@ -214,12 +214,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void onLightButtonClick(LIGHT_COMMANDS lightCommand) {
-        if (lightCommand.equals(LIGHT_COMMANDS.SHOW_EXPIRATION_TIME)) {
-            onButtonClickShowExpirationTime();
+    private void onStateButtonClick(STATE_COMMANDS stateCommand) {
+        if (stateCommand.equals(STATE_COMMANDS.SHOW_EXPIRATION_TIME)) {
+            onStateButtonClickShowExpirationTime();
         }
-        if (lightCommand.equals(LIGHT_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) {
-            onButtonClickAddNewChronoTimerToList();
+        if (stateCommand.equals(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) {
+            onStateButtonClickAddNewChronoTimerToList();
         }
     }
 
@@ -272,16 +272,16 @@ public class MainActivity extends Activity {
         createChronoTimer(MODE.TIMER);
     }
 
-    private void onButtonClickShowExpirationTime() {
+    private void onStateButtonClickShowExpirationTime() {
         showExpirationTime = !showExpirationTime;
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
         mainCtListUpdater.update();
-        updateDisplayLightButtonColor(LIGHT_COMMANDS.SHOW_EXPIRATION_TIME);
+        updateDisplayStateButtonColor(STATE_COMMANDS.SHOW_EXPIRATION_TIME);
     }
 
-    private void onButtonClickAddNewChronoTimerToList() {
+    private void onStateButtonClickAddNewChronoTimerToList() {
         addNewChronoTimerToList = !addNewChronoTimerToList;
-        updateDisplayLightButtonColor(LIGHT_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST);
+        updateDisplayStateButtonColor(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST);
     }
 
     private void onCtListExpiredTimers() {
@@ -308,20 +308,20 @@ public class MainActivity extends Activity {
         mainCtListUpdater.reload();
     }
 
-    private void updateDisplayLightButtonColor(LIGHT_COMMANDS lightCommand) {  //   On/Unpressed(ON/BACK), On/Pressed(BACK/OFF), Off/Unpressed(OFF/BACK), Off/Pressed(BACK/ON)
-        final String LIGHT_BUTTON_ON_COLOR = "FF9A22";
-        final String LIGHT_BUTTON_OFF_COLOR = "404040";
-        final String LIGHT_BUTTON_BACK_COLOR = "000000";
+    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   On/Unpressed(ON/BACK), On/Pressed(BACK/OFF), Off/Unpressed(OFF/BACK), Off/Pressed(BACK/ON)
+        final String STATE_BUTTON_ON_COLOR = "FF9A22";
+        final String STATE_BUTTON_OFF_COLOR = "404040";
+        final String STATE_BUTTON_BACK_COLOR = "000000";
 
-        lightButtons[lightCommand.INDEX()].setFrontColor(((getLightButtonState(lightCommand)) ? LIGHT_BUTTON_ON_COLOR : LIGHT_BUTTON_OFF_COLOR));
-        lightButtons[lightCommand.INDEX()].setBackColor(LIGHT_BUTTON_BACK_COLOR);
-        lightButtons[lightCommand.INDEX()].setExtraColor(((getLightButtonState(lightCommand)) ? LIGHT_BUTTON_OFF_COLOR : LIGHT_BUTTON_ON_COLOR));
-        lightButtons[lightCommand.INDEX()].updateDisplay();
+        stateButtons[stateCommand.INDEX()].setFrontColor(((getStateButtonState(stateCommand)) ? STATE_BUTTON_ON_COLOR : STATE_BUTTON_OFF_COLOR));
+        stateButtons[stateCommand.INDEX()].setBackColor(STATE_BUTTON_BACK_COLOR);
+        stateButtons[stateCommand.INDEX()].setExtraColor(((getStateButtonState(stateCommand)) ? STATE_BUTTON_OFF_COLOR : STATE_BUTTON_ON_COLOR));
+        stateButtons[stateCommand.INDEX()].updateDisplay();
     }
 
-    private void updateDisplayLightButtonColors() {
-        for (LIGHT_COMMANDS lightCommand : LIGHT_COMMANDS.values()) {
-            updateDisplayLightButtonColor(lightCommand);
+    private void updateDisplayStateButtonColors() {
+        for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
+            updateDisplayStateButtonColor(stateCommand);
         }
     }
 
@@ -411,11 +411,11 @@ public class MainActivity extends Activity {
         return shp.getBoolean(SWTIMER_SHP_KEY_NAMES.KEEP_SCREEN.toString(), KEEP_SCREEN_DEFAULT_VALUE);
     }
 
-    private boolean getLightButtonState(LIGHT_COMMANDS command) {
-        if (command.equals(LIGHT_COMMANDS.SHOW_EXPIRATION_TIME)) {
+    private boolean getStateButtonState(STATE_COMMANDS command) {
+        if (command.equals(STATE_COMMANDS.SHOW_EXPIRATION_TIME)) {
             return showExpirationTime;
         }
-        if (command.equals(LIGHT_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) {
+        if (command.equals(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) {
             return addNewChronoTimerToList;
         }
         return false;
@@ -446,24 +446,24 @@ public class MainActivity extends Activity {
             }
     }
 
-    private void setupLightButtons() {
-        final String LIGHT_BUTTON_COMMAND_XML_PREFIX = "LIGHT_BTN_";
-        final float LIGHT_BUTTON_SYMBOL_SIZE_COEFF = 0.75f;   //  Pour que le symbole ne frôle pas les bords de sa View
-        final long LIGHT_BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
+    private void setupStateButtons() {
+        final String STATE_BUTTON_COMMAND_XML_PREFIX = "STATE_BTN_";
+        final float STATE_BUTTON_SYMBOL_SIZE_COEFF = 0.75f;   //  Pour que le symbole ne frôle pas les bords de sa View
+        final long STATE_BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
-        lightButtons = new SymbolButtonView[LIGHT_COMMANDS.values().length];
+        stateButtons = new SymbolButtonView[STATE_COMMANDS.values().length];
         Class rid = R.id.class;
-        for (LIGHT_COMMANDS lightCommand : LIGHT_COMMANDS.values()) {
+        for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
             try {
-                lightButtons[lightCommand.INDEX()] = findViewById(rid.getField(LIGHT_BUTTON_COMMAND_XML_PREFIX + lightCommand.toString()).getInt(rid));
-                lightButtons[lightCommand.INDEX()].setSymbolSizeCoeff(LIGHT_BUTTON_SYMBOL_SIZE_COEFF);
-                lightButtons[lightCommand.INDEX()].setSVGImageResource(lightCommand.ID());
-                lightButtons[lightCommand.INDEX()].setMinClickTimeInterval(LIGHT_BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-                final LIGHT_COMMANDS flightcommand = lightCommand;
-                lightButtons[lightCommand.INDEX()].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
+                stateButtons[stateCommand.INDEX()] = findViewById(rid.getField(STATE_BUTTON_COMMAND_XML_PREFIX + stateCommand.toString()).getInt(rid));
+                stateButtons[stateCommand.INDEX()].setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
+                stateButtons[stateCommand.INDEX()].setSVGImageResource(stateCommand.ID());
+                stateButtons[stateCommand.INDEX()].setMinClickTimeInterval(STATE_BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+                final STATE_COMMANDS fstatecommand = stateCommand;
+                stateButtons[stateCommand.INDEX()].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
                     @Override
                     public void onCustomClick() {
-                        onLightButtonClick(flightcommand);
+                        onStateButtonClick(fstatecommand);
                     }
                 });
             } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
@@ -486,9 +486,9 @@ public class MainActivity extends Activity {
             createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayTableName());
             initializeTableDotMatrixDisplay(stringShelfDatabase);
         }
-        if (!stringShelfDatabase.tableExists(getButtonsTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getButtonsTableName());
-            initializeTableButtons(stringShelfDatabase);
+        if (!stringShelfDatabase.tableExists(getStateButtonsTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getStateButtonsTableName());
+            initializeTableStateButtons(stringShelfDatabase);
         }
         if (!stringShelfDatabase.tableExists(getBackScreenTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getBackScreenTableName());
@@ -528,12 +528,12 @@ public class MainActivity extends Activity {
     private void setupShowExpirationTime() {
         showExpirationTime = getSHPShowExpirationTime();
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
-        updateDisplayLightButtonColor(LIGHT_COMMANDS.SHOW_EXPIRATION_TIME);
+        updateDisplayStateButtonColor(STATE_COMMANDS.SHOW_EXPIRATION_TIME);
     }
 
     private void setupAddNewChronoTimerToList() {
         addNewChronoTimerToList = getSHPaddNewChronoTimerToList();
-        updateDisplayLightButtonColor(LIGHT_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST);
+        updateDisplayStateButtonColor(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST);
     }
 
     private void setupSetClockAppAlarmOnStartTimer() {

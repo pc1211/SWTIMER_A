@@ -51,14 +51,14 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRo
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.copyPresetCTRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.ctRecordToChronoTimerRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsOnIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsOnIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesCount;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeLabelToPresetCTRow;
@@ -74,12 +74,12 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatus
 
 public class CtDisplayActivity extends Activity {
     //region Constantes
-    private enum COMMANDS {
+    private enum STATE_COMMANDS {
         RUN(R.raw.ct_run), SPLIT(R.raw.ct_split), INVERT_CLOCK_APP_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
 
         private int valueId;
 
-        COMMANDS(int valueId) {
+        STATE_COMMANDS(int valueId) {
             this.valueId = valueId;
         }
 
@@ -101,7 +101,7 @@ public class CtDisplayActivity extends Activity {
     private CtRecord currentCtRecord;
     private DotMatrixDisplayView dotMatrixDisplayView;
     private CtDisplayDotMatrixDisplayUpdater dotMatrixDisplayUpdater;
-    private SymbolButtonView[] buttons;
+    private SymbolButtonView[] stateButtons;
     private Menu menu;
     private MenuItem barMenuItemSetClockAppAlarmOnStartTimer;
     private MenuItem barMenuItemKeepScreen;
@@ -120,7 +120,7 @@ public class CtDisplayActivity extends Activity {
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setupOrientationLayout();
-        setupButtons();
+        setupStateButtons();
         setupDotMatrixDisplay();
         setupBackLayout();
         validReturnFromCalledActivity = false;
@@ -175,7 +175,7 @@ public class CtDisplayActivity extends Activity {
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
         updateDisplayDotMatrixDisplay();
-        updateDisplayButtonColors();
+        updateDisplayStateButtonColors();
         updateDisplayBackScreenColor();
         updateDisplayKeepScreen();
         invalidateOptionsMenu();
@@ -239,32 +239,32 @@ public class CtDisplayActivity extends Activity {
     }
     //endregion
 
-    private void onButtonCustomClick(COMMANDS command) {
+    private void onStateButtonCustomClick(STATE_COMMANDS command) {
         long nowm = System.currentTimeMillis();
-        if (command.equals(COMMANDS.RUN)) {
-            onButtonClickRun(nowm);
+        if (command.equals(STATE_COMMANDS.RUN)) {
+            onStateButtonClickRun(nowm);
         }
-        if (command.equals(COMMANDS.SPLIT)) {
-            onButtonClickSplit(nowm);
+        if (command.equals(STATE_COMMANDS.SPLIT)) {
+            onStateButtonClickSplit(nowm);
         }
-        if (command.equals(COMMANDS.INVERT_CLOCK_APP_ALARM)) {
-            onButtonClickInvertClockAppAlarm();
+        if (command.equals(STATE_COMMANDS.INVERT_CLOCK_APP_ALARM)) {
+            onStateButtonClickInvertClockAppAlarm();
         }
-        if (command.equals(COMMANDS.RESET)) {
-            onButtonClickReset();
+        if (command.equals(STATE_COMMANDS.RESET)) {
+            onStateButtonClickReset();
         }
-        if (command.equals(COMMANDS.CHRONO_MODE)) {
-            onButtonClickMode(MODE.CHRONO);
+        if (command.equals(STATE_COMMANDS.CHRONO_MODE)) {
+            onStateButtonClickMode(MODE.CHRONO);
         }
-        if (command.equals(COMMANDS.TIMER_MODE)) {
-            onButtonClickMode(MODE.TIMER);
+        if (command.equals(STATE_COMMANDS.TIMER_MODE)) {
+            onStateButtonClickMode(MODE.TIMER);
         }
         updateCurrentRecord(nowm);
-        updateDisplayButtonColors();
+        updateDisplayStateButtonColors();
         updateDisplayDotMatrixDisplay();
     }
 
-    private void onButtonClickRun(long nowm) {
+    private void onStateButtonClickRun(long nowm) {
         if (!currentCtRecord.isRunning()) {
             if (!currentCtRecord.start(nowm)) {
                 if (setClockAppAlarmOnStartTimer) {
@@ -278,11 +278,11 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void onButtonClickSplit(long nowm) {
+    private void onStateButtonClickSplit(long nowm) {
         currentCtRecord.split(nowm);
     }
 
-    private void onButtonClickInvertClockAppAlarm() {
+    private void onStateButtonClickInvertClockAppAlarm() {
         if (currentCtRecord.getMode().equals(MODE.TIMER)) {
             if (currentCtRecord.isRunning()) {
                 if (!currentCtRecord.hasClockAppAlarm()) {
@@ -294,13 +294,13 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void onButtonClickReset() {
+    private void onStateButtonClickReset() {
         if (!currentCtRecord.reset()) {
             currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
         }
     }
 
-    private void onButtonClickMode(MODE newMode) {
+    private void onStateButtonClickMode(MODE newMode) {
         MODE oldMode = currentCtRecord.getMode();
         if (!currentCtRecord.setMode(newMode)) {
             if (!newMode.equals(oldMode)) {
@@ -312,7 +312,7 @@ public class CtDisplayActivity extends Activity {
     private void onExpiredTimerCurrentChronoTimer() {
         toastLong("Timer " + currentCtRecord.getLabel() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(currentCtRecord.getTimeExp(), HHmmss), this);
         updateDisplayDotMatrixDisplay();
-        updateDisplayButtonColors();
+        updateDisplayStateButtonColors();
         beep(this);
     }
 
@@ -344,17 +344,17 @@ public class CtDisplayActivity extends Activity {
         backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getBackScreenTableName())][getBackScreenBackIndex()]));
     }
 
-    private void updateDisplayButtonColor(COMMANDS command) {  //   ON/BACK ou OFF/BACK
-        int colorTableIndex = getColorTableIndex(getButtonsTableName());
-        buttons[command.INDEX()].setFrontColor(((getButtonState(command)) ? colors[colorTableIndex][getButtonsOnIndex()] : colors[colorTableIndex][getButtonsOffIndex()]));
-        buttons[command.INDEX()].setBackColor(colors[colorTableIndex][getButtonsBackIndex()]);
-        buttons[command.INDEX()].setExtraColor(((getButtonState(command)) ? colors[colorTableIndex][getButtonsOffIndex()] : colors[colorTableIndex][getButtonsOnIndex()]));
-        buttons[command.INDEX()].updateDisplay();
+    private void updateDisplayStateButtonColor(STATE_COMMANDS command) {  //   ON/BACK ou OFF/BACK
+        int colorTableIndex = getColorTableIndex(getStateButtonsTableName());
+        stateButtons[command.INDEX()].setFrontColor(((getStateButtonState(command)) ? colors[colorTableIndex][getStateButtonsOnIndex()] : colors[colorTableIndex][getStateButtonsOffIndex()]));
+        stateButtons[command.INDEX()].setBackColor(colors[colorTableIndex][getStateButtonsBackIndex()]);
+        stateButtons[command.INDEX()].setExtraColor(((getStateButtonState(command)) ? colors[colorTableIndex][getStateButtonsOffIndex()] : colors[colorTableIndex][getStateButtonsOnIndex()]));
+        stateButtons[command.INDEX()].updateDisplay();
     }
 
-    private void updateDisplayButtonColors() {
-        for (COMMANDS command : COMMANDS.values()) {
-            updateDisplayButtonColor(command);
+    private void updateDisplayStateButtonColors() {
+        for (STATE_COMMANDS command : STATE_COMMANDS.values()) {
+            updateDisplayStateButtonColor(command);
         }
     }
 
@@ -374,23 +374,23 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private boolean getButtonState(COMMANDS command) {
-        if (command.equals(COMMANDS.CHRONO_MODE)) {
+    private boolean getStateButtonState(STATE_COMMANDS command) {
+        if (command.equals(STATE_COMMANDS.CHRONO_MODE)) {
             return currentCtRecord.getMode().equals(MODE.CHRONO);
         }
-        if (command.equals(COMMANDS.TIMER_MODE)) {
+        if (command.equals(STATE_COMMANDS.TIMER_MODE)) {
             return currentCtRecord.getMode().equals(MODE.TIMER);
         }
-        if (command.equals(COMMANDS.RUN)) {
+        if (command.equals(STATE_COMMANDS.RUN)) {
             return currentCtRecord.isRunning();
         }
-        if (command.equals(COMMANDS.SPLIT)) {
+        if (command.equals(STATE_COMMANDS.SPLIT)) {
             return currentCtRecord.isSplitted();
         }
-        if (command.equals(COMMANDS.RESET)) {
+        if (command.equals(STATE_COMMANDS.RESET)) {
             return false;
         }
-        if (command.equals(COMMANDS.INVERT_CLOCK_APP_ALARM)) {
+        if (command.equals(STATE_COMMANDS.INVERT_CLOCK_APP_ALARM)) {
             return currentCtRecord.hasClockAppAlarm();
         }
         return false;
@@ -426,24 +426,24 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void setupButtons() {
-        final String BUTTON_XML_NAME_PREFIX = "BTN_";
-        final long BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
+    private void setupStateButtons() {
+        final String STATE_BUTTON_XML_NAME_PREFIX = "STATE_BTN_";
+        final long STATE_BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
-        buttons = new SymbolButtonView[COMMANDS.values().length];
+        stateButtons = new SymbolButtonView[STATE_COMMANDS.values().length];
         Class rid = R.id.class;
-        for (COMMANDS command : COMMANDS.values()) {
+        for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
             try {
-                buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_XML_NAME_PREFIX + command.toString()).getInt(rid));
-                buttons[command.INDEX()].setSVGImageResource(command.ID());
-                if (!command.equals(COMMANDS.RUN)) {   //  Start/Stop doit pouvoir cliquer sans délai
-                    buttons[command.INDEX()].setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+                stateButtons[stateCommand.INDEX()] = findViewById(rid.getField(STATE_BUTTON_XML_NAME_PREFIX + stateCommand.toString()).getInt(rid));
+                stateButtons[stateCommand.INDEX()].setSVGImageResource(stateCommand.ID());
+                if (!stateCommand.equals(STATE_COMMANDS.RUN)) {   //  Start/Stop doit pouvoir cliquer sans délai
+                    stateButtons[stateCommand.INDEX()].setMinClickTimeInterval(STATE_BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
                 }
-                final COMMANDS fcommand = command;
-                buttons[command.INDEX()].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
+                final STATE_COMMANDS fstatecommand = stateCommand;
+                stateButtons[stateCommand.INDEX()].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
                     @Override
                     public void onCustomClick() {
-                        onButtonCustomClick(fcommand);
+                        onStateButtonCustomClick(fstatecommand);
                     }
                 });
             } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
