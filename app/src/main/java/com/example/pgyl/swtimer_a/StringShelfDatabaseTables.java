@@ -279,7 +279,7 @@ public class StringShelfDatabaseTables {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.StateButtons.ON.LABEL(), SwTimerTableDataFields.StateButtons.OFF.LABEL(), SwTimerTableDataFields.StateButtons.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "0061F3", "696969", "000000"}
+                {TABLE_IDS.DEFAULT.toString(), "0061F3", "404040", "000000"}
         };
         return TABLE_COLOR_STATE_BUTTONS_INITS;
     }
