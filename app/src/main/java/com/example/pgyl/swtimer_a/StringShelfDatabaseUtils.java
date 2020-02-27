@@ -6,17 +6,16 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_STA
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosStartStatusIndex;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosTableName;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getSwTimerTableDataFieldsCount;
 
 public class StringShelfDatabaseUtils {
@@ -32,17 +31,14 @@ public class StringShelfDatabaseUtils {
 
     public static void initializeTableDotMatrixDisplay(StringShelfDatabase stringShelfDatabase) {
         stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayTableName(), getDotMatrixDisplayInits());
-        stringShelfDatabase.insertOrReplaceRowById(getDotMatrixDisplayTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getDotMatrixDisplayTableName()));   //  PRESET1 = DEFAULT
     }
 
     public static void initializeTableStateButtons(StringShelfDatabase stringShelfDatabase) {
         stringShelfDatabase.insertOrReplaceRows(getStateButtonsTableName(), getStateButtonsInits());
-        stringShelfDatabase.insertOrReplaceRowById(getStateButtonsTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getStateButtonsTableName()));   //  PRESET1 = DEFAULT
     }
 
     public static void initializeTableBackScreen(StringShelfDatabase stringShelfDatabase) {
         stringShelfDatabase.insertOrReplaceRows(getBackScreenTableName(), getBackScreenInits());
-        stringShelfDatabase.insertOrReplaceRowById(getBackScreenTableName(), TABLE_IDS.PRESET.toString() + "1", getDefaults(stringShelfDatabase, getBackScreenTableName()));   //  PRESET1 = DEFAULT
     }
     //endregion
 

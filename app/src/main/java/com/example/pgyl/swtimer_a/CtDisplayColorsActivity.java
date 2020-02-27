@@ -378,10 +378,10 @@ public class CtDisplayColorsActivity extends Activity {
 
     private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   ON/BACK ou OFF/BACK
         int colorTableIndex = getColorTableIndex(getStateButtonsTableName());
-        stateButtons[stateCommand.INDEX()].setFrontColor(((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsOnIndex()] : colors[colorTableIndex][getStateButtonsOffIndex()]));
-        stateButtons[stateCommand.INDEX()].setBackColor(colors[colorTableIndex][getStateButtonsBackIndex()]);
-        stateButtons[stateCommand.INDEX()].setExtraColor(((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsOffIndex()] : colors[colorTableIndex][getStateButtonsOnIndex()]));
-        stateButtons[stateCommand.INDEX()].updateDisplay();
+        String frontColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsOnIndex()] : colors[colorTableIndex][getStateButtonsOffIndex()]);
+        String backColor = colors[colorTableIndex][getStateButtonsBackIndex()];
+        String extraColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsOffIndex()] : colors[colorTableIndex][getStateButtonsOnIndex()]);
+        stateButtons[stateCommand.INDEX()].setColors(frontColor, backColor, extraColor);
     }
 
     private void updateDisplayStateButtonColors() {

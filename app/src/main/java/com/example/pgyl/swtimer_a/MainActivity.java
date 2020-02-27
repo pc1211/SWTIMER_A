@@ -16,6 +16,7 @@ import android.widget.ListView;
 
 import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.HelpActivity;
+import com.example.pgyl.pekislib_a.PresetsHandler;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 import com.example.pgyl.pekislib_a.SymbolButtonView;
 
@@ -32,6 +33,7 @@ import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createPekislibTableIfNotExists;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
@@ -313,10 +315,10 @@ public class MainActivity extends Activity {
         final String STATE_BUTTON_OFF_COLOR = "404040";
         final String STATE_BUTTON_BACK_COLOR = "000000";
 
-        stateButtons[stateCommand.INDEX()].setFrontColor(((getStateButtonState(stateCommand)) ? STATE_BUTTON_ON_COLOR : STATE_BUTTON_OFF_COLOR));
-        stateButtons[stateCommand.INDEX()].setBackColor(STATE_BUTTON_BACK_COLOR);
-        stateButtons[stateCommand.INDEX()].setExtraColor(((getStateButtonState(stateCommand)) ? STATE_BUTTON_OFF_COLOR : STATE_BUTTON_ON_COLOR));
-        stateButtons[stateCommand.INDEX()].updateDisplay();
+        String frontColor = ((getStateButtonState(stateCommand)) ? STATE_BUTTON_ON_COLOR : STATE_BUTTON_OFF_COLOR);
+        String backColor = STATE_BUTTON_BACK_COLOR;
+        String extraColor = ((getStateButtonState(stateCommand)) ? STATE_BUTTON_OFF_COLOR : STATE_BUTTON_ON_COLOR);
+        stateButtons[stateCommand.INDEX()].setColors(frontColor, backColor, extraColor);
     }
 
     private void updateDisplayStateButtonColors() {
@@ -479,20 +481,24 @@ public class MainActivity extends Activity {
     private void setupStringShelfDatabase() {
         stringShelfDatabase = new StringShelfDatabase(this);
         stringShelfDatabase.open();
+
         if (!stringShelfDatabase.tableExists(getActivityInfosTableName())) {
             createPekislibTableIfNotExists(stringShelfDatabase, getActivityInfosTableName());
         }
         if (!stringShelfDatabase.tableExists(getDotMatrixDisplayTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayTableName());
             initializeTableDotMatrixDisplay(stringShelfDatabase);
+            createPresetWithDefaultValues(getDotMatrixDisplayTableName());   //  => PRESET1 = DEFAULT  dans la table de couleurs de DotMatrixDisplay
         }
         if (!stringShelfDatabase.tableExists(getStateButtonsTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getStateButtonsTableName());
             initializeTableStateButtons(stringShelfDatabase);
+            createPresetWithDefaultValues(getStateButtonsTableName());
         }
         if (!stringShelfDatabase.tableExists(getBackScreenTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getBackScreenTableName());
             initializeTableBackScreen(stringShelfDatabase);
+            createPresetWithDefaultValues(getBackScreenTableName());
         }
         if (!stringShelfDatabase.tableExists(getPresetsCTTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getPresetsCTTableName());
@@ -501,6 +507,14 @@ public class MainActivity extends Activity {
         if (!stringShelfDatabase.tableExists(getChronoTimersTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getChronoTimersTableName());
         }
+    }
+
+    private void createPresetWithDefaultValues(String tableName) {
+        PresetsHandler presetsHandler = new PresetsHandler(stringShelfDatabase);
+        presetsHandler.setTableName(tableName);
+        presetsHandler.createNewPreset(getDefaults(stringShelfDatabase, tableName));
+        presetsHandler.saveAndClose();
+        presetsHandler = null;
     }
 
     private void setupMainCtList() {
