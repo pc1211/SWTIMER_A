@@ -18,6 +18,7 @@ import com.example.pgyl.pekislib_a.PresetsActivity;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 import com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import com.example.pgyl.pekislib_a.SymbolButtonView;
+import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +43,7 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
@@ -327,7 +329,7 @@ public class CtDisplayActivity extends Activity {
         final long UPDATE_INTERVAL_RESET_MS = 40;       //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
         final long UPDATE_INTERVAL_NO_RESET_MS = 10;    //   Affichage du temps au 1/100e de seconde
 
-        dotMatrixDisplayUpdater.displayCurrentRecordTimeAndLabel();
+        dotMatrixDisplayUpdater.displayTimeAndLabel(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), currentCtRecord.getLabel());
         if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
             dotMatrixDisplayUpdater.setUpdateInterval(currentCtRecord.isReset() ? UPDATE_INTERVAL_RESET_MS : UPDATE_INTERVAL_NO_RESET_MS);  //  A la bonne fréquence
             if (!dotMatrixDisplayUpdater.isAutomaticOn()) {
@@ -477,7 +479,6 @@ public class CtDisplayActivity extends Activity {
                 onExpiredTimerCurrentChronoTimer();
             }
         });
-        dotMatrixDisplayUpdater.setGridDimensions();
     }
 
     private void setupBarMenuItems() {

@@ -492,7 +492,6 @@ public class CtDisplayColorsActivity extends Activity {
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {
         dotMatrixDisplayUpdater = new CtDisplayDotMatrixDisplayUpdater(dotMatrixDisplayView, currentCtRecord);
-        dotMatrixDisplayUpdater.setGridDimensions();
     }
 
     private void setupStateButtons() {

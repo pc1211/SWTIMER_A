@@ -6,9 +6,12 @@ import android.os.Handler;
 
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
+import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
 import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
+import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getTextHeight;
+import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getTextWidth;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOffIndex;
@@ -28,6 +31,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
+    private DotMatrixFont defaultFont;
     private DotMatrixFont extraFont;
     private Rect gridRect;
     private Rect displayRect;
@@ -54,17 +58,21 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     private void init() {
         setupRunnableTime();
+        setupDefaultFont();
         setupExtraFont();
         setupIndexes();
         inAutomatic = false;
         automaticOn = false;
         mOnExpiredTimerListener = null;
+        calcGridDimensions();
     }
 
     public void close() {
         runnableTime = null;
         handlerTime = null;
         dotMatrixDisplayView = null;
+        defaultFont.close();
+        defaultFont = null;
         extraFont.close();
         extraFont = null;
         currentCtRecord = null;
@@ -103,21 +111,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
         }
     }
 
-    public void setGridDimensions() {       //  La grille doit pouvoir contenir le temps et le label
-        final String EXTRA_FONT_TIME_CHARS = "::.";          //  ::.  dans HH:MM:SS.CC
-        final String DEFAULT_FONT_TIME_CHARS = "00000000";   //  HHMMSSCC  dans HH:MM:SS.CC
-
-        int displayRectWidth = extraFont.getTextWidth(EXTRA_FONT_TIME_CHARS) + dotMatrixDisplayView.getDefautFont().getTextWidth(DEFAULT_FONT_TIME_CHARS) - dotMatrixDisplayView.getDefautFont().getRightMargin();   //  Largeur du temps sans la dernière marge droite
-        int displayRectHeight = Math.max(Math.max(extraFont.getTextHeight(EXTRA_FONT_TIME_CHARS), dotMatrixDisplayView.getDefautFont().getTextHeight(DEFAULT_FONT_TIME_CHARS)), dotMatrixDisplayView.getDefautFont().getTextHeight(currentCtRecord.getLabel()));   //  Hauteur du temps et du label
-        int gridRectWidth = displayRectWidth + dotMatrixDisplayView.getDefautFont().getRightMargin() + dotMatrixDisplayView.getDefautFont().getTextWidth(currentCtRecord.getLabel());  //  Largeur du temps et du label, avec marge droite
-        int gridRectHeight = displayRectHeight;
-        gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
-        displayRect = new Rect(0, 0, displayRectWidth, displayRectHeight);
-        dotMatrixDisplayView.setGridRect(gridRect);  //  La grille entière est de la taille prévue pour le temps et le label
-        dotMatrixDisplayView.setDisplayRect(displayRect);  //  la zone à afficher est de la taille prévue pour le temps
-        dotMatrixDisplayView.setScrollRect(gridRect);  //  On scrolle la grille entière
-    }
-
     public void setGridColors(String[] colors) {
         this.colors = colors;
         dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
@@ -129,15 +122,17 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.fillRectOff(gridRect);
         dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
         dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-        dotMatrixDisplayView.writeText(timeText, extraFont);   //  Temps avec police extra
+        dotMatrixDisplayView.writeText(timeText, extraFont, defaultFont);   //  Temps avec police extra
         dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
-        dotMatrixDisplayView.writeText(labelText, dotMatrixDisplayView.getDefautFont());   //  Label avec police par défaut
+        dotMatrixDisplayView.writeText(labelText, defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
         dotMatrixDisplayView.updateDisplay();
     }
 
-    public void displayCurrentRecordTimeAndLabel() {
-        displayTimeAndLabel(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), currentCtRecord.getLabel());
+    public void displayTime(String timeText) {
+        dotMatrixDisplayView.fillRectOff(displayRect);
+        dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
+        dotMatrixDisplayView.writeText(timeText, extraFont, defaultFont);   //  Temps avec police extra
     }
 
     public void refreshDisplay() {
@@ -145,9 +140,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
             dotMatrixDisplayView.scrollLeft();
         } else {
             dotMatrixDisplayView.noScroll();
-            dotMatrixDisplayView.fillRectOff(displayRect);
-            dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
-            dotMatrixDisplayView.writeText(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont);
+            displayTime(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS));
         }
         dotMatrixDisplayView.updateDisplay();
     }
@@ -157,6 +150,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
         onLabelColorIndex = getDotMatrixDisplayOnLabelIndex();
         offColorIndex = getDotMatrixDisplayOffIndex();
         backColorIndex = getDotMatrixDisplayBackIndex();
+    }
+
+    private void setupDefaultFont() {
+        defaultFont = DotMatrixFontUtils.getDefaultFont();
     }
 
     private void setupExtraFont() {
@@ -173,9 +170,29 @@ public class CtDisplayDotMatrixDisplayUpdater {
         extraFont.setSymbols(EXTRA_FONT_SYMBOLS);
         extraFont.setRightMargin(EXTRA_FONT_RIGHT_MARGIN);
         symbol = extraFont.getSymbol('.');     //  Le "." est affiché en-dessous à droite du caractère précédent:
-        symbol.setPosInitialOffset(new Point(-dotMatrixDisplayView.getDefautFont().getRightMargin(), dotMatrixDisplayView.getDefautFont().getMaxSymbolHeight()));
-        symbol.setPosFinalOffset(new Point(dotMatrixDisplayView.getDefautFont().getRightMargin(), -dotMatrixDisplayView.getDefautFont().getMaxSymbolHeight()));
+        symbol.setPosInitialOffset(new Point(-defaultFont.getRightMargin(), defaultFont.getMaxSymbolHeight()));
+        symbol.setPosFinalOffset(new Point(defaultFont.getRightMargin(), -defaultFont.getMaxSymbolHeight()));
         symbol = null;
+    }
+
+    private void calcGridDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (displayRect, glissant en cas de scroll)
+        String timeText = msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS);
+        String labelText = currentCtRecord.getLabel();
+        int timeTextWidth = getTextWidth(timeText, extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
+        int timeTextHeight = getTextHeight(timeText, extraFont, defaultFont);
+        int labelTextWidth = getTextWidth(labelText, defaultFont);   //  labelText est uniquement affiché en defaultFont
+        int labelTextHeight = getTextHeight(labelText, defaultFont);
+
+        int displayRectWidth = timeTextWidth - defaultFont.getRightMargin();   //  La fenêtre d'affichage affiche (sur la largeur du temps sans la dernière marge droite) ...
+        int displayRectHeight = Math.max(timeTextHeight, labelTextHeight);   //  ... soit le temps uniquement, soit (via scroll) le temps et le label , sur la hauteur nécessaire
+        int gridRectWidth = timeTextWidth + labelTextWidth;   // La grille doit pouvoir contenir le temps et le label sur toute sa largeur ...
+        int gridRectHeight = displayRectHeight;   //  ... et la même hauteur que la fenêtre d'affichage
+
+        gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
+        displayRect = new Rect(0, 0, displayRectWidth, displayRectHeight);
+        dotMatrixDisplayView.setGridRect(gridRect);  //  La grille est de la taille prévue pour le temps et le label
+        dotMatrixDisplayView.setDisplayRect(displayRect);  //  la zone à afficher est de la taille prévue pour le temps
+        dotMatrixDisplayView.setScrollRect(gridRect);  //  On scrolle la grille entière
     }
 
     private void setupRunnableTime() {
