@@ -369,7 +369,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayDotMatrixDisplay() {
-        final String TIME_TEXT = "12:34:.";
+        final String TIME_TEXT = "12:34:";
         final String LABEL_TEXT = "Abcd";
 
         dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
