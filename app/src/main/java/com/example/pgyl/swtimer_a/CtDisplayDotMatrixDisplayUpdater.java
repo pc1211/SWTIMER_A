@@ -7,11 +7,11 @@ import android.os.Handler;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
+import com.example.pgyl.pekislib_a.DotMatrixFontUtils.TextDimensions;
 import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
-import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getTextHeight;
-import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getTextWidth;
+import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getTextDimensions;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOffIndex;
@@ -176,16 +176,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void calcGridDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (displayRect, glissant en cas de scroll)
-        String timeText = msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS);
-        String labelText = currentCtRecord.getLabel();
-        int timeTextWidth = getTextWidth(timeText, extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
-        int timeTextHeight = getTextHeight(timeText, extraFont, defaultFont);
-        int labelTextWidth = getTextWidth(labelText, defaultFont);   //  labelText est uniquement affiché en defaultFont
-        int labelTextHeight = getTextHeight(labelText, defaultFont);
+        TextDimensions timeTextDimensions = getTextDimensions(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
+        TextDimensions labelTextDimensions = getTextDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
 
-        int displayRectWidth = timeTextWidth - defaultFont.getRightMargin();   //  La fenêtre d'affichage affiche (sur la largeur du temps sans la dernière marge droite) ...
-        int displayRectHeight = Math.max(timeTextHeight, labelTextHeight);   //  ... soit le temps uniquement, soit (via scroll) le temps et le label , sur la hauteur nécessaire
-        int gridRectWidth = timeTextWidth + labelTextWidth;   // La grille doit pouvoir contenir le temps et le label sur toute sa largeur ...
+        int displayRectWidth = timeTextDimensions.width - defaultFont.getRightMargin();   //  La fenêtre d'affichage affiche (sur la largeur du temps sans la dernière marge droite) ...
+        int displayRectHeight = Math.max(timeTextDimensions.height, labelTextDimensions.height);   //  ... soit le temps uniquement, soit (via scroll) le temps et le label , sur la hauteur nécessaire
+        int gridRectWidth = timeTextDimensions.width + labelTextDimensions.width;   // La grille doit pouvoir contenir le temps et le label sur toute sa largeur ...
         int gridRectHeight = displayRectHeight;   //  ... et la même hauteur que la fenêtre d'affichage
 
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
