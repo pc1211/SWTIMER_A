@@ -37,15 +37,15 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createSwtimerTableIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableBackScreen;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableStateButtons;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplay;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableStateButtons;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 
 public class MainActivity extends Activity {
