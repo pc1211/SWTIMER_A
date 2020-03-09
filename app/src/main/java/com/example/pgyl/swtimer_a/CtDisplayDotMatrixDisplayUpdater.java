@@ -113,26 +113,21 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     public void setGridColors(String[] colors) {
         this.colors = colors;
-        dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-        dotMatrixDisplayView.setOffColor(colors[offColorIndex]);
         dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
     }
 
     public void displayTimeAndLabel(String timeText, String labelText) {
-        dotMatrixDisplayView.fillRectOff(gridRect);
+        dotMatrixDisplayView.fillGridRect(gridRect, colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
-        dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
-        dotMatrixDisplayView.writeText(timeText, extraFont, defaultFont);   //  Temps avec police extra
-        dotMatrixDisplayView.setOnColor(colors[onLabelColorIndex]);
-        dotMatrixDisplayView.writeText(labelText, defaultFont);   //  Label avec police par défaut
-        dotMatrixDisplayView.setOnColor(colors[onTimeColorIndex]);
+        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra
+        dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
     }
 
     public void displayTime(String timeText) {
-        dotMatrixDisplayView.fillRectOff(displayRect);
+        dotMatrixDisplayView.fillGridRect(displayRect, colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(displayRect.left, displayRect.top);
-        dotMatrixDisplayView.writeText(timeText, extraFont, defaultFont);   //  Temps avec police extra
+        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra
     }
 
     public void refreshDisplay() {
