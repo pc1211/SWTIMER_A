@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import static com.example.pgyl.pekislib_a.ColorUtils.HSVToRGB;
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.COLOR_PREFIX;
-import static com.example.pgyl.pekislib_a.Constants.COLOR_RGB_MASK;
+import static com.example.pgyl.pekislib_a.Constants.COLOR_MASK_AND;
 import static com.example.pgyl.pekislib_a.Constants.HEX_RADIX;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
@@ -349,7 +349,7 @@ public class CtDisplayColorsActivity extends Activity {
                 hsvStruc[0] = (float) seekBars[SEEKBARS.RED_HUE.INDEX()].getProgress() / 65535f * 360f;
                 hsvStruc[1] = (float) seekBars[SEEKBARS.GREEN_SAT.INDEX()].getProgress() / 65535f;
                 hsvStruc[2] = (float) seekBars[SEEKBARS.BLUE_VAL.INDEX()].getProgress() / 65535f;
-                colors[colorTableIndex][colorIndex] = String.format("%06X", Color.HSVToColor(hsvStruc) & COLOR_RGB_MASK);
+                colors[colorTableIndex][colorIndex] = String.format("%06X", Color.HSVToColor(hsvStruc) & COLOR_MASK_AND);
             }
             updateDisplayButtonTextColorValue();
             updateDisplayColors();
@@ -372,7 +372,7 @@ public class CtDisplayColorsActivity extends Activity {
         final String TIME_TEXT = "12:34:";
         final String LABEL_TEXT = "Abcd";
 
-        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
+        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
         dotMatrixDisplayUpdater.displayTimeAndLabel(TIME_TEXT, LABEL_TEXT);
     }
 
@@ -487,7 +487,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayColors() {
-        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
+        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
     }
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {

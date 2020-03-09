@@ -468,7 +468,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayColors() {
-        dotMatrixDisplayUpdater.setGridColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
+        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
     }
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {
