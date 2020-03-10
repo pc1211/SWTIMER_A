@@ -117,7 +117,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void displayTimeAndLabel(String timeText, String labelText) {
-        dotMatrixDisplayView.fillGridSubRect(gridRect, colors[offColorIndex]);
+        dotMatrixDisplayView.fillRect(gridRect, colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(gridDisplayRect.left, gridDisplayRect.top);
         dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
         dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
@@ -125,19 +125,20 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void displayTime(String timeText) {
-        dotMatrixDisplayView.fillGridSubRect(gridDisplayRect, colors[offColorIndex]);
+        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(gridDisplayRect.left, gridDisplayRect.top);
         dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        dotMatrixDisplayView.updateDisplay();
     }
 
     public void refreshDisplay() {
         if (currentCtRecord.isReset()) {
             dotMatrixDisplayView.scrollLeft();
+            dotMatrixDisplayView.updateDisplay();
         } else {
             dotMatrixDisplayView.noScroll();
             displayTime(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS));
         }
-        dotMatrixDisplayView.updateDisplay();
     }
 
     private void setupIndexes() {
