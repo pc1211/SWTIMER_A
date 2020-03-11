@@ -1,17 +1,16 @@
 package com.example.pgyl.swtimer_a;
 
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Handler;
 
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
-import com.example.pgyl.pekislib_a.DotMatrixFontUtils.TextDimensions;
 import com.example.pgyl.pekislib_a.DotMatrixSymbol;
+import com.example.pgyl.pekislib_a.PointRectUtils.RectDimensions;
 import com.example.pgyl.pekislib_a.TimeDateUtils;
 
-import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getTextDimensions;
+import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontRectDimensions;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOffIndex;
@@ -165,25 +164,25 @@ public class CtDisplayDotMatrixDisplayUpdater {
         extraFont = new DotMatrixFont();
         extraFont.setSymbols(EXTRA_FONT_SYMBOLS);
         extraFont.setRightMargin(EXTRA_FONT_RIGHT_MARGIN);
-        symbol = extraFont.getSymbol('.');     //  Le "." est affiché en-dessous à droite du caractère précédent:
-        symbol.setPosInitialOffset(new Point(-defaultFont.getRightMargin(), defaultFont.getMaxSymbolHeight()));
-        symbol.setPosFinalOffset(new Point(defaultFont.getRightMargin(), -defaultFont.getMaxSymbolHeight()));
+        symbol = extraFont.getSymbol('.');
+        symbol.setOverwrite(true);   //  Le "." surcharge le symbole précédent (en-dessous dans sa marge droite)
+        symbol.setPosOffset(defaultFont.getSymbolDimensions().width, defaultFont.getSymbolDimensions().height);
         symbol = null;
     }
 
     private void calcGridDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (gridDisplayRect, glissant en cas de scroll)
-        TextDimensions timeTextDimensions = getTextDimensions(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
-        TextDimensions labelTextDimensions = getTextDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
+        RectDimensions timeTextDimensions = getFontRectDimensions(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
+        RectDimensions labelTextDimensions = getFontRectDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         int gridDisplayRectWidth = timeTextDimensions.width - defaultFont.getRightMargin();   //  La fenêtre d'affichage affiche (sur la largeur du temps sans la dernière marge droite) ...
-        int gridDisplayRectHeight = Math.max(timeTextDimensions.height, labelTextDimensions.height);   //  ... soit le temps uniquement, soit (via scroll) le temps et le label , sur la hauteur nécessaire
+        int gridDisplayRectHeight = Math.max(timeTextDimensions.height, labelTextDimensions.height) + extraFont.getSymbol('.').getDimensions().height;   //  ... soit le temps uniquement, soit (via scroll) le temps et le label , sur la hauteur nécessaire (en ajoutant la hauteur du "." affiché en-dessous)
         int gridRectWidth = timeTextDimensions.width + labelTextDimensions.width;   // La grille doit pouvoir contenir le temps et le label sur toute sa largeur ...
         int gridRectHeight = gridDisplayRectHeight;   //  ... et la même hauteur que la fenêtre d'affichage
 
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
         gridDisplayRect = new Rect(0, 0, gridDisplayRectWidth, gridDisplayRectHeight);
-        dotMatrixDisplayView.setGridRect(gridRect);  //  La grille est de la taille prévue pour le temps et le label
-        dotMatrixDisplayView.setGridDisplayRect(gridDisplayRect);  //  la zone à afficher est de la taille prévue pour le temps
+        dotMatrixDisplayView.setGridRect(gridRect);
+        dotMatrixDisplayView.setGridDisplayRect(gridDisplayRect);
         dotMatrixDisplayView.setGridScrollRect(gridRect);  //  On scrolle la grille entière
     }
 
