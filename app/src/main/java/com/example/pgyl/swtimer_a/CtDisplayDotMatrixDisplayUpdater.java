@@ -8,10 +8,10 @@ import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
 import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.PointRectUtils.RectDimensions;
-import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontRectDimensions;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToHms;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOnLabelIndex;
@@ -136,7 +136,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
             dotMatrixDisplayView.updateDisplay();
         } else {
             dotMatrixDisplayView.noScroll();
-            displayTime(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS));
+            displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIMEUNITS.HS));
         }
     }
 
@@ -166,12 +166,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
         extraFont.setRightMargin(EXTRA_FONT_RIGHT_MARGIN);
         symbol = extraFont.getSymbol('.');
         symbol.setOverwrite(true);   //  Le "." surcharge le symbole précédent (en-dessous dans sa marge droite)
-        symbol.setPosOffset(defaultFont.getSymbolDimensions().width, defaultFont.getSymbolDimensions().height);
+        symbol.setPosOffset(-symbol.getDimensions().width, defaultFont.getSymbolDimensions().height);
         symbol = null;
     }
 
     private void calcGridDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (gridDisplayRect, glissant en cas de scroll)
-        RectDimensions timeTextDimensions = getFontRectDimensions(msToHms(currentCtRecord.getTimeDisplay(), TimeDateUtils.TIMEUNITS.CS), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
+        RectDimensions timeTextDimensions = getFontRectDimensions(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIMEUNITS.HS), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
         RectDimensions labelTextDimensions = getFontRectDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         int gridDisplayRectWidth = timeTextDimensions.width - defaultFont.getRightMargin();   //  La fenêtre d'affichage affiche (sur la largeur du temps sans la dernière marge droite) ...

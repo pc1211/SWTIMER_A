@@ -3,6 +3,8 @@ package com.example.pgyl.swtimer_a;
 import android.os.Handler;
 import android.widget.ListView;
 
+import com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
+
 public class MainCtListUpdater {
     public interface onExpiredTimersListener {
         void onExpiredTimers();
@@ -14,9 +16,6 @@ public class MainCtListUpdater {
 
     private onExpiredTimersListener mOnExpiredTimersListener;
 
-    //region Constantes
-    private final int UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS = 1000;
-    //endregion
     //region Variables
     private MainCtListItemAdapter mainCtListItemAdapter;
     private ListView mainCtListView;
@@ -38,7 +37,7 @@ public class MainCtListUpdater {
 
     private void init() {
         setupRunnables();
-        updateInterval = UPDATE_MAIN_CTLIST_TIME_INTERVAL_MS;
+        updateInterval = TIMEUNITS.SEC.MS();
         mOnExpiredTimersListener = null;
         needScrollBar = false;
         setScrollBar(needScrollBar);
