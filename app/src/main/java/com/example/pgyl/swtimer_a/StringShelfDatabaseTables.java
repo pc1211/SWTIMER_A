@@ -3,12 +3,13 @@ package com.example.pgyl.swtimer_a;
 import android.content.Context;
 
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
-import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.timeFormatDLToMs;
+import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 
 public class StringShelfDatabaseTables {
 
@@ -207,12 +208,29 @@ public class StringShelfDatabaseTables {
     }
 
     public static String[][] getPresetsCTInits() {
+        final String TF_REG_EXP_BEGIN = "^";
+        final String TF_REG_EXP_MID = "?";
+        final String TF_REG_EXP_END = "$";
+        final String TU_REG_EXP_BEGIN = "([0-9]+(";
+        final String TU_REG_EXP_END = "|$))";
+
+        String timeFormatDLRegExp = TF_REG_EXP_BEGIN;
+        TIMEUNITS tu = TIMEUNITS.HOUR;   //  1e unité à décoder
+        do {   //  Construire une regexp adaptée à TIME_UNIT_PRECISION
+            timeFormatDLRegExp = timeFormatDLRegExp + TU_REG_EXP_BEGIN + tu.SEPARATOR_DL() + TU_REG_EXP_END + TF_REG_EXP_MID;
+            if (tu.equals(TIME_UNIT_PRECISION)) {
+                break;
+            }
+            tu = tu.getNextDecodeUnit();
+        } while (tu != null);
+        timeFormatDLRegExp = timeFormatDLRegExp + TF_REG_EXP_END;    //  Si TIME_UNIT_PRECISION = TS => "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(t|$))?$"  cad [...h][...m][...s][...t]
+
         final String[][] TABLE_PRESETS_CT_INITS = {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.PresetsCT.TIME.LABEL(), SwTimerTableDataFields.PresetsCT.LABEL.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_FORMAT_DL.toString(), InputButtonsActivity.KEYBOARDS.ASCII.toString()},
-                {TABLE_IDS.REGEXP.toString(), "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(t|$))?([0-9]+(u|$))?$", null},   //    [...h][...m][...s][...t][...u]
-                {TABLE_IDS.MAX.toString(), String.valueOf(timeFormatDLToMs("23h59m59s99")), null},
-                {TABLE_IDS.TIMEUNIT.toString(), TimeDateUtils.TIMEUNITS.HS.toString(), null}
+                {TABLE_IDS.REGEXP.toString(), timeFormatDLRegExp, null},
+                {TABLE_IDS.MAX.toString(), String.valueOf(timeFormatDLToMs("23h59m59s999")), null},
+                {TABLE_IDS.TIMEUNIT.toString(), TIME_UNIT_PRECISION.toString(), null}
         };
         return TABLE_PRESETS_CT_INITS;
     }

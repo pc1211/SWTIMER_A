@@ -220,7 +220,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
             tacc = -tacc;
             taus = -taus;
         }
-        timeDisplayWithoutSplit = (timeDef + tacc) % TIMEUNITS.DAY.MS();      //  => Max 23h59m59s99c
+        timeDisplayWithoutSplit = (timeDef + tacc) % TIMEUNITS.DAY.MS();      //  => Back to 00:00:00.00 after 23:59:59.99
         timeDisplay = ((splitted) ? (timeDef + taus) % TIMEUNITS.DAY.MS() : timeDisplayWithoutSplit);
         return true;
     }
