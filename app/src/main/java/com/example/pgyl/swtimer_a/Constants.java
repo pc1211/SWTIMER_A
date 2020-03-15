@@ -1,6 +1,6 @@
 package com.example.pgyl.swtimer_a;
 
-import com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
+import com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 
 public class Constants {
     //region Constantes
@@ -12,7 +12,7 @@ public class Constants {
         }
     }
 
-    public static final TIMEUNITS TIME_UNIT_PRECISION = TIMEUNITS.TS;  //  Précision souhaitée dans l'affichage du temps
+    public static final TIME_UNITS TIME_UNIT_PRECISION = TIME_UNITS.TS;  //  Précision souhaitée dans l'affichage du temps
     public static final int SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER = 100;
 
 }

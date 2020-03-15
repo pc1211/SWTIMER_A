@@ -3,7 +3,7 @@ package com.example.pgyl.swtimer_a;
 import android.os.Handler;
 import android.widget.ListView;
 
-import com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
+import com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 
 public class MainCtListUpdater {
     public interface onExpiredTimersListener {
@@ -37,7 +37,7 @@ public class MainCtListUpdater {
 
     private void init() {
         setupRunnables();
-        updateInterval = TIMEUNITS.SEC.MS();
+        updateInterval = TIME_UNITS.SEC.MS();
         mOnExpiredTimersListener = null;
         needScrollBar = false;
         setScrollBar(needScrollBar);

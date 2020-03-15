@@ -6,7 +6,7 @@ import com.example.pgyl.pekislib_a.ClockAppAlarmUtils;
 
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightTimeMillis;
 
@@ -220,8 +220,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
             tacc = -tacc;
             taus = -taus;
         }
-        timeDisplayWithoutSplit = (timeDef + tacc) % TIMEUNITS.DAY.MS();      //  => Back to 00:00:00.00 after 23:59:59.99
-        timeDisplay = ((splitted) ? (timeDef + taus) % TIMEUNITS.DAY.MS() : timeDisplayWithoutSplit);
+        timeDisplayWithoutSplit = (timeDef + tacc) % TIME_UNITS.DAY.MS();      //  => Back to 00:00:00.00 after 23:59:59.99
+        timeDisplay = ((splitted) ? (timeDef + taus) % TIME_UNITS.DAY.MS() : timeDisplayWithoutSplit);
         return true;
     }
 

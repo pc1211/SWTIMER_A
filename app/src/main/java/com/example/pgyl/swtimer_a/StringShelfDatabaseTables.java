@@ -7,7 +7,7 @@ import com.example.pgyl.pekislib_a.InputButtonsActivity;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.TIMEUNITS;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.timeFormatDLToMs;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 
@@ -215,7 +215,7 @@ public class StringShelfDatabaseTables {
         final String TU_REG_EXP_END = "|$))";
 
         String timeFormatDLRegExp = TF_REG_EXP_BEGIN;
-        TIMEUNITS tu = TIMEUNITS.HOUR;   //  1e unité à décoder
+        TIME_UNITS tu = TIME_UNITS.HOUR;   //  1e unité à décoder
         do {   //  Construire une regexp adaptée à TIME_UNIT_PRECISION
             timeFormatDLRegExp = timeFormatDLRegExp + TU_REG_EXP_BEGIN + tu.SEPARATOR_DL() + TU_REG_EXP_END + TF_REG_EXP_MID;
             if (tu.equals(TIME_UNIT_PRECISION)) {
