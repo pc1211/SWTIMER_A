@@ -37,7 +37,7 @@ public class MainCtListUpdater {
 
     private void init() {
         setupRunnables();
-        updateInterval = TIME_UNITS.SEC.MS();
+        updateInterval = TIME_UNITS.SEC.DURATION_MS();
         mOnExpiredTimersListener = null;
         needScrollBar = false;
         setScrollBar(needScrollBar);

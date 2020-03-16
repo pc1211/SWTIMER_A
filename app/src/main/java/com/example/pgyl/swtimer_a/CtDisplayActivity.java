@@ -330,7 +330,7 @@ public class CtDisplayActivity extends Activity {
 
         dotMatrixDisplayUpdater.displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
         if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
-            dotMatrixDisplayUpdater.setUpdateInterval(currentCtRecord.isReset() ? UPDATE_INTERVAL_RESET_MS : TIME_UNIT_PRECISION.MS());  //  A la bonne fréquence
+            dotMatrixDisplayUpdater.setUpdateInterval(currentCtRecord.isReset() ? UPDATE_INTERVAL_RESET_MS : TIME_UNIT_PRECISION.DURATION_MS());  //  A la bonne fréquence
             if (!dotMatrixDisplayUpdater.isAutomaticOn()) {
                 dotMatrixDisplayUpdater.startAutomatic();
             }

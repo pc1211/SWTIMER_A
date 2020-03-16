@@ -101,6 +101,17 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.updateDisplay();
     }
 
+    public void displayHalfTimeAndLabel(String timeText, String labelText) {   //  Partager l'affichage entre Temps et Label (utilisé pour le réglage des couleurs dans CtDisplayColorsActivity)
+        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[offColorIndex]);
+        dotMatrixDisplayView.setSymbolPos(gridDisplayRect.left, gridDisplayRect.top);
+        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        int halfWidth = gridDisplayRect.width() / 2;
+        dotMatrixDisplayView.fillRect(new Rect(halfWidth, gridDisplayRect.top, gridDisplayRect.right, gridDisplayRect.bottom), colors[offColorIndex]);   //  Effacer la 2e moitié du temps
+        dotMatrixDisplayView.setSymbolPos(halfWidth + 1, gridDisplayRect.top);   //  Pour avoir un espace entre le 1/2 temps restant et le label
+        dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
+        dotMatrixDisplayView.updateDisplay();
+    }
+
     public void startAutomatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
         automaticOn = true;
@@ -125,12 +136,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
                     mOnExpiredTimerListener.onExpiredTimer();
                 }
             }
-            automaticRefreshDisplay();
+            automaticDisplay();
             inAutomatic = false;
         }
     }
 
-    private void automaticRefreshDisplay() {
+    private void automaticDisplay() {
         if (currentCtRecord.isReset()) {
             dotMatrixDisplayView.scrollLeft();
             dotMatrixDisplayView.updateDisplay();
