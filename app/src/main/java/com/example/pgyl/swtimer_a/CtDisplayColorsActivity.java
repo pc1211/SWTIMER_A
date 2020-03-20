@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 import static com.example.pgyl.pekislib_a.ColorUtils.HSVToRGB;
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.Constants.COLOR_MASK_AND;
+import static com.example.pgyl.pekislib_a.Constants.COLOR_MASK;
 import static com.example.pgyl.pekislib_a.Constants.COLOR_PREFIX;
 import static com.example.pgyl.pekislib_a.Constants.HEX_RADIX;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
@@ -351,7 +351,7 @@ public class CtDisplayColorsActivity extends Activity {
                 hsvStruc[0] = (float) seekBars[SEEKBARS.RED_HUE.INDEX()].getProgress() / 65535f * 360f;
                 hsvStruc[1] = (float) seekBars[SEEKBARS.GREEN_SAT.INDEX()].getProgress() / 65535f;
                 hsvStruc[2] = (float) seekBars[SEEKBARS.BLUE_VAL.INDEX()].getProgress() / 65535f;
-                colors[colorTableIndex][colorIndex] = String.format("%06X", Color.HSVToColor(hsvStruc) & COLOR_MASK_AND);
+                colors[colorTableIndex][colorIndex] = String.format("%06X", Color.HSVToColor(hsvStruc) & COLOR_MASK);
             }
             updateDisplayButtonTextColorValue();
             updateDisplayColors();
