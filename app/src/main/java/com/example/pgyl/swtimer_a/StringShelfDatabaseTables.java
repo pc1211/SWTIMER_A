@@ -229,7 +229,7 @@ public class StringShelfDatabaseTables {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.PresetsCT.TIME.LABEL(), SwTimerTableDataFields.PresetsCT.LABEL.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_FORMAT_DL.toString(), InputButtonsActivity.KEYBOARDS.ASCII.toString()},
                 {TABLE_IDS.REGEXP.toString(), timeFormatDLRegExp, null},
-                {TABLE_IDS.MAX.toString(), String.valueOf(TIME_UNITS.DAY.DURATION_MS() - 1), null},       //  Max 23:59:59.999
+                {TABLE_IDS.MAX.toString(), String.valueOf(TIME_UNITS.DAY.DURATION_MS() - TIME_UNIT_PRECISION.DURATION_MS()), null},       //  Si TS => Max 23:59:59.9
                 {TABLE_IDS.TIMEUNIT.toString(), TIME_UNIT_PRECISION.toString(), null}
         };
         return TABLE_PRESETS_CT_INITS;
