@@ -34,6 +34,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private DotMatrixFont extraFont;
     private Rect gridRect;
     private Rect gridDisplayRect;
+    private Rect gridHalfDisplayRect;
+    private Rect gridLabelRect;
     private String[] colors;
     private int onTimeColorIndex;
     private int onLabelColorIndex;
@@ -87,27 +89,27 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void displayTimeAndLabel(String timeText, String labelText) {
-        dotMatrixDisplayView.fillRect(gridRect, colors[offColorIndex]);
+        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[onTimeColorIndex], colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(gridDisplayRect.left, gridDisplayRect.top);
         dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        dotMatrixDisplayView.fillRect(gridLabelRect, colors[onLabelColorIndex], colors[offColorIndex]);
         dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
     }
 
     public void displayTime(String timeText) {
-        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[offColorIndex]);
+        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[onTimeColorIndex], colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(gridDisplayRect.left, gridDisplayRect.top);
         dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
         dotMatrixDisplayView.updateDisplay();
     }
 
     public void displayHalfTimeAndLabel(String timeText, String labelText) {   //  Partager l'affichage entre Temps et Label (utilisé pour le réglage des couleurs dans CtDisplayColorsActivity)
-        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[offColorIndex]);
+        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[onTimeColorIndex], colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(gridDisplayRect.left, gridDisplayRect.top);
         dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        int halfWidth = gridDisplayRect.width() / 2;
-        dotMatrixDisplayView.fillRect(new Rect(halfWidth, gridDisplayRect.top, gridDisplayRect.right, gridDisplayRect.bottom), colors[offColorIndex]);   //  Effacer la 2e moitié du temps
-        dotMatrixDisplayView.setSymbolPos(halfWidth + 1, gridDisplayRect.top);   //  Pour avoir un espace entre le 1/2 temps restant et le label
+        dotMatrixDisplayView.fillRect(gridHalfDisplayRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Effacer la 2e moitié du temps
+        dotMatrixDisplayView.setSymbolPos(gridHalfDisplayRect.left, gridDisplayRect.top);
         dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
     }
@@ -192,6 +194,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
         gridDisplayRect = new Rect(0, 0, gridDisplayRectWidth, gridDisplayRectHeight);
+        gridHalfDisplayRect = new Rect(gridDisplayRect.right / 2, gridDisplayRect.top, gridDisplayRect.right, gridDisplayRect.bottom);
+        gridLabelRect = new Rect(gridDisplayRect.right, gridRect.top, gridRect.right, gridRect.bottom);
         dotMatrixDisplayView.setGridRect(gridRect);
         dotMatrixDisplayView.setGridDisplayRect(gridDisplayRect);
         dotMatrixDisplayView.setGridScrollRect(gridRect);  //  On scrolle la grille entière
