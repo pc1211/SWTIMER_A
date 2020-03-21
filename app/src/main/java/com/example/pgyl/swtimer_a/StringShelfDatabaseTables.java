@@ -217,7 +217,7 @@ public class StringShelfDatabaseTables {
         String timeFormatDLRegExp = TF_REG_EXP_BEGIN;
         TIME_UNITS tu = getFirstTimeUnit();   //  1e unité à décoder
         do {   //  Construire une regexp adaptée à TIME_UNIT_PRECISION
-            timeFormatDLRegExp = timeFormatDLRegExp + TU_REG_EXP_BEGIN + tu.FORMAT_DL().separator + TU_REG_EXP_END + TF_REG_EXP_MID;
+            timeFormatDLRegExp = timeFormatDLRegExp + TU_REG_EXP_BEGIN + tu.FORMAT_DL_SEPARATOR() + TU_REG_EXP_END + TF_REG_EXP_MID;
             if (tu.equals(TIME_UNIT_PRECISION)) {
                 break;
             }
