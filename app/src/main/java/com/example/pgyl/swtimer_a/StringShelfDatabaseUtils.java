@@ -4,10 +4,10 @@ import com.example.pgyl.pekislib_a.StringShelfDatabase;
 
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosStartStatusIndex;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getLabels;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInActivity;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
@@ -48,9 +48,25 @@ public class StringShelfDatabaseUtils {
 
     //region COLORS
     public static String[][] getCurrentOrDefaultColorsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase) {
+        return getCurrentOrDefaultColorsInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+    }
+
+    public static String[][] getCurrentColorsInCtDisplayColorsActivity(StringShelfDatabase stringShelfDatabase) {
+        return getCurrentOrDefaultColorsInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
+    }
+
+    public static void setCurrentColorsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, String[][] values) {
+        setCurrentColorsInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), values);
+    }
+
+    public static void setCurrentColorsInCtDisplayColorsActivity(StringShelfDatabase stringShelfDatabase, String[][] values) {
+        setCurrentColorsInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), values);
+    }
+
+    public static String[][] getCurrentOrDefaultColorsInActivity(StringShelfDatabase stringShelfDatabase, String activityName) {
         String values[][] = new String[getColorTablesCount()][];
         for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            values[i] = stringShelfDatabase.selectRowById(getColorTableName(i), TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+            values[i] = stringShelfDatabase.selectRowById(getColorTableName(i), TABLE_IDS.CURRENT.toString() + activityName);
             if (values[i] == null) {
                 values[i] = getDefaults(stringShelfDatabase, getColorTableName(i));
             }
@@ -58,23 +74,9 @@ public class StringShelfDatabaseUtils {
         return values;
     }
 
-    public static void setCurrentColorsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, String[][] values) {
+    public static void setCurrentColorsInActivity(StringShelfDatabase stringShelfDatabase, String activityName, String[][] values) {
         for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            stringShelfDatabase.insertOrReplaceRowById(getColorTableName(i), TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), values[i]);
-        }
-    }
-
-    public static String[][] getCurrentColorsInCtDisplayColorsActivity(StringShelfDatabase stringShelfDatabase) {
-        String values[][] = new String[getColorTablesCount()][];
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            values[i] = stringShelfDatabase.selectRowById(getColorTableName(i), TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
-        }
-        return values;
-    }
-
-    public static void setCurrentColorsInCtDisplayColorsActivity(StringShelfDatabase stringShelfDatabase, String[][] values) {
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            stringShelfDatabase.insertOrReplaceRowById(getColorTableName(i), TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), values[i]);
+            stringShelfDatabase.insertOrReplaceRowById(getColorTableName(i), TABLE_IDS.CURRENT.toString() + activityName, values[i]);
         }
     }
 
@@ -89,19 +91,19 @@ public class StringShelfDatabaseUtils {
 
     //region ACTIVITY_INFOS
     public static boolean isColdStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.selectFieldByIdOrCreate(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartStatusIndex()).equals(ACTIVITY_START_STATUS.COLD.toString());
+        return isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
     }
 
     public static boolean isColdStartStatusInCtDisplayColorsActivity(StringShelfDatabase stringShelfDatabase) {
-        return stringShelfDatabase.selectFieldByIdOrCreate(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), getActivityInfosStartStatusIndex()).equals(ACTIVITY_START_STATUS.COLD.toString());
+        return isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
     }
 
     public static void setStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, ACTIVITY_START_STATUS activityStartStatus) {
-        stringShelfDatabase.insertOrReplaceFieldById(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getActivityInfosStartStatusIndex(), activityStartStatus.toString());
+        setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), activityStartStatus);
     }
 
     public static void setStartStatusInCtDisplayColorsActivity(StringShelfDatabase stringShelfDatabase, ACTIVITY_START_STATUS activityStartStatus) {
-        stringShelfDatabase.insertOrReplaceFieldById(getActivityInfosTableName(), SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), getActivityInfosStartStatusIndex(), activityStartStatus.toString());
+        setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), activityStartStatus);
     }
     //endregion
 
