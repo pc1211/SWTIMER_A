@@ -36,7 +36,6 @@ import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentPresetInPresetsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPresetInPresetsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
@@ -55,8 +54,6 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.ctRecordToChr
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesCount;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsBackIndex;
@@ -65,12 +62,12 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButto
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeLabelToPresetCTRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesInCtDisplayActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentColorsInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimer;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentValuesInCtDisplayActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentValuesInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayColorsActivity;
 
@@ -110,7 +107,7 @@ public class CtDisplayActivity extends Activity {
     private LinearLayout backLayout;
     private boolean setClockAppAlarmOnStartTimer;
     private boolean keepScreen;
-    private String[][] colors = new String[getColorTablesCount()][];  //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
+    private String[][] colors;   //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
     private StringShelfDatabase stringShelfDatabase;
@@ -135,9 +132,9 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater.stopAutomatic();
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
-        saveCurrentChronoTimer();
+        saveChronoTimer(stringShelfDatabase, ctRecordToChronoTimerRow(currentCtRecord));
         currentCtRecord = null;
-        saveCurrentColorsInDB();
+        setCurrentColorsInCtDisplayActivity(stringShelfDatabase, colors);
         stringShelfDatabase.close();
         stringShelfDatabase = null;
         menu = null;
@@ -155,7 +152,7 @@ public class CtDisplayActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        getDBCurrentOrDefaultColors();
+        colors = getCurrentOrDefaultColorsInCtDisplayActivity(stringShelfDatabase);
 
         if (isColdStartStatusInCtDisplayActivity(stringShelfDatabase)) {
             setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
@@ -168,7 +165,7 @@ public class CtDisplayActivity extends Activity {
                     }
                 }
                 if (returnsFromCtDisplayColorsActivity()) {
-                    getDBCurrentColorsFromCtDisplayColorsActivity();
+                    colors = getCurrentColorsInCtDisplayColorsActivity(stringShelfDatabase);
                 }
             }
         }
@@ -233,7 +230,7 @@ public class CtDisplayActivity extends Activity {
             updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         }
         if (item.getItemId() == R.id.SET_COLORS) {
-            saveCurrentColorsInDBCtDisplayColorsActivity();
+            setCurrentColorsInCtDisplayColorsActivity(stringShelfDatabase, colors);
             launchCtDisplayColorsActivity();
             return true;
         }
@@ -500,37 +497,6 @@ public class CtDisplayActivity extends Activity {
     private void setupStringShelfDatabase() {
         stringShelfDatabase = new StringShelfDatabase(this);
         stringShelfDatabase.open();
-    }
-
-    private void saveCurrentChronoTimer() {
-        saveChronoTimer(stringShelfDatabase, ctRecordToChronoTimerRow(currentCtRecord));
-    }
-
-    private void saveCurrentColorsInDB() {
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            setCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorTableName(i), colors[i]);
-        }
-    }
-
-    private void saveCurrentColorsInDBCtDisplayColorsActivity() {
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            setCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getColorTableName(i), colors[i]);
-        }
-    }
-
-    private void getDBCurrentOrDefaultColors() {
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            colors[i] = getCurrentValuesInCtDisplayActivity(stringShelfDatabase, getColorTableName(i));
-            if (colors[i] == null) {
-                colors[i] = getDefaults(stringShelfDatabase, getColorTableName(i));
-            }
-        }
-    }
-
-    private void getDBCurrentColorsFromCtDisplayColorsActivity() {
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            colors[i] = getCurrentValuesInCtDisplayColorsActivity(stringShelfDatabase, getColorTableName(i));
-        }
     }
 
     private void updateCurrentRecord(long nowm) {

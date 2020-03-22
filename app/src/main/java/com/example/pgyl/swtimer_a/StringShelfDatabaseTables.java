@@ -348,12 +348,13 @@ public class StringShelfDatabaseTables {
         return SwTimerTables.ColorYes.valueOf(colorTableName).ordinal();
     }
 
-    public static String getColorTableLabel(String colorTableName) {
-        return SwTimerTables.ColorYes.valueOf(colorTableName).getLabel();
+    public static String[] getColorTableLabels() {
+        String[] values = new String[getColorTablesCount()];
+        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
+            values[i] = SwTimerTables.ColorYes.valueOf(getColorTableName(i)).getLabel();
+        }
+        return values;
     }
     //endregion
 
 }
-
-
-
