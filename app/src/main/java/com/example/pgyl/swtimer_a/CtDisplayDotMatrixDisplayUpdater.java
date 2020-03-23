@@ -9,6 +9,7 @@ import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
 import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import com.example.pgyl.pekislib_a.PointRectUtils.RectDimensions;
 
+import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.SCROLL_DIRECTIONS;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontRectDimensions;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
@@ -36,6 +37,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private Rect gridDisplayRect;
     private Rect gridHalfDisplayRect;
     private Rect gridLabelRect;
+    private SCROLL_DIRECTIONS scrollDirection;
+    private int scrollCount;
     private String[] colors;
     private int onTimeColorIndex;
     private int onLabelColorIndex;
@@ -115,8 +118,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void startAutomatic() {
-        handlerTime.postDelayed(runnableTime, updateInterval);
+        scrollCount = 0;
+        scrollDirection = SCROLL_DIRECTIONS.LEFT;
         automaticOn = true;
+        handlerTime.postDelayed(runnableTime, updateInterval);
     }
 
     public void stopAutomatic() {
@@ -145,7 +150,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     private void automaticDisplay() {
         if (currentCtRecord.isReset()) {
-            dotMatrixDisplayView.scrollLeft();
+            if (scrollCount == 2 * gridRect.width()) {  //  Changer le sens du scroll après 2 grilles complètes
+                scrollCount = 0;
+                scrollDirection = (scrollDirection.equals(SCROLL_DIRECTIONS.LEFT)) ? SCROLL_DIRECTIONS.RIGHT : SCROLL_DIRECTIONS.LEFT;
+            }
+            dotMatrixDisplayView.scroll(scrollDirection);
+            scrollCount = scrollCount + 1;
             dotMatrixDisplayView.updateDisplay();
         } else {
             dotMatrixDisplayView.noScroll();
