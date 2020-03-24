@@ -62,8 +62,8 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButto
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeLabelToPresetCTRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentColorsInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimer;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayActivity;
@@ -74,7 +74,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatus
 public class CtDisplayActivity extends Activity {
     //region Constantes
     private enum STATE_COMMANDS {
-        RUN(R.raw.ct_run), SPLIT(R.raw.ct_split), INVERT_CLOCK_APP_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
+        RUN(R.raw.ct_run), SPLIT(R.raw.ct_split), CLOCK_APP_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
 
         private int valueId;
 
@@ -246,8 +246,8 @@ public class CtDisplayActivity extends Activity {
         if (command.equals(STATE_COMMANDS.SPLIT)) {
             onStateButtonClickSplit(nowm);
         }
-        if (command.equals(STATE_COMMANDS.INVERT_CLOCK_APP_ALARM)) {
-            onStateButtonClickInvertClockAppAlarm();
+        if (command.equals(STATE_COMMANDS.CLOCK_APP_ALARM)) {
+            onStateButtonClickClockAppAlarm();
         }
         if (command.equals(STATE_COMMANDS.RESET)) {
             onStateButtonClickReset();
@@ -281,7 +281,7 @@ public class CtDisplayActivity extends Activity {
         currentCtRecord.split(nowm);
     }
 
-    private void onStateButtonClickInvertClockAppAlarm() {
+    private void onStateButtonClickClockAppAlarm() {
         if (currentCtRecord.getMode().equals(MODE.TIMER)) {
             if (currentCtRecord.isRunning()) {
                 if (!currentCtRecord.hasClockAppAlarm()) {
@@ -328,13 +328,9 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater.displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
         if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
             dotMatrixDisplayUpdater.setUpdateInterval(currentCtRecord.isReset() ? UPDATE_INTERVAL_RESET_MS : TIME_UNIT_PRECISION.DURATION_MS());  //  A la bonne fréquence
-            if (!dotMatrixDisplayUpdater.isAutomaticOn()) {
-                dotMatrixDisplayUpdater.startAutomatic();
-            }
+            dotMatrixDisplayUpdater.startAutomatic();
         } else {  //  Pas besoin de rafraichissement continu
-            if (dotMatrixDisplayUpdater.isAutomaticOn()) {
-                dotMatrixDisplayUpdater.stopAutomatic();
-            }
+            dotMatrixDisplayUpdater.stopAutomatic();
         }
     }
 
@@ -388,7 +384,7 @@ public class CtDisplayActivity extends Activity {
         if (command.equals(STATE_COMMANDS.RESET)) {
             return false;
         }
-        if (command.equals(STATE_COMMANDS.INVERT_CLOCK_APP_ALARM)) {
+        if (command.equals(STATE_COMMANDS.CLOCK_APP_ALARM)) {
             return currentCtRecord.hasClockAppAlarm();
         }
         return false;

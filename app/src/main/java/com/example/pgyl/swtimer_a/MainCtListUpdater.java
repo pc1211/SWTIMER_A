@@ -46,6 +46,7 @@ public class MainCtListUpdater {
 
     public void close() {
         mainCtListView.removeCallbacks(runnableCheckNeedScrollBar);
+        handlerTime.removeCallbacks(runnableTime);
         runnableTime = null;
         handlerTime = null;
         runnableCheckNeedScrollBar = null;

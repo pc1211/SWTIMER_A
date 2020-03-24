@@ -37,8 +37,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private Rect gridDisplayRect;
     private Rect gridHalfDisplayRect;
     private Rect gridLabelRect;
-    private SCROLL_DIRECTIONS scrollDirection;
-    private int scrollCount;
     private String[] colors;
     private int onTimeColorIndex;
     private int onLabelColorIndex;
@@ -46,8 +44,11 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private int backColorIndex;
     private CtRecord currentCtRecord;
     private long updateInterval;
+    private SCROLL_DIRECTIONS scrollDirection;
+    private int scrollCount;
     private boolean inAutomatic;
     private boolean automaticOn;
+    private boolean scrollOn;
     private Handler handlerTime;
     private Runnable runnableTime;
     //endregion
@@ -65,13 +66,14 @@ public class CtDisplayDotMatrixDisplayUpdater {
         setupDefaultFont();
         setupExtraFont();
         setupIndexes();
-        inAutomatic = false;
         automaticOn = false;
+        inAutomatic = false;
         mOnExpiredTimerListener = null;
         calcGridDimensions();
     }
 
     public void close() {
+        handlerTime.removeCallbacks(runnableTime);
         runnableTime = null;
         handlerTime = null;
         dotMatrixDisplayView = null;
@@ -118,19 +120,19 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void startAutomatic() {
-        scrollCount = 0;
-        scrollDirection = SCROLL_DIRECTIONS.LEFT;
-        automaticOn = true;
-        handlerTime.postDelayed(runnableTime, updateInterval);
+        if (!automaticOn) {
+            automaticOn = true;
+            scrollOn = false;
+            dotMatrixDisplayView.resetScrollStart();
+            handlerTime.postDelayed(runnableTime, updateInterval);
+        }
     }
 
     public void stopAutomatic() {
-        handlerTime.removeCallbacks(runnableTime);
-        automaticOn = false;
-    }
-
-    public boolean isAutomaticOn() {
-        return automaticOn;
+        if (automaticOn) {
+            handlerTime.removeCallbacks(runnableTime);
+            automaticOn = false;
+        }
     }
 
     private void automatic() {
@@ -150,6 +152,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     private void automaticDisplay() {
         if (currentCtRecord.isReset()) {
+            if (!scrollOn) {
+                scrollOn = true;
+                scrollCount = 0;
+                scrollDirection = SCROLL_DIRECTIONS.LEFT;
+                dotMatrixDisplayView.resetScrollStart();
+            }
             if (scrollCount == 2 * gridRect.width()) {  //  Changer le sens du scroll après 2 grilles complètes
                 scrollCount = 0;
                 scrollDirection = (scrollDirection.equals(SCROLL_DIRECTIONS.LEFT)) ? SCROLL_DIRECTIONS.RIGHT : SCROLL_DIRECTIONS.LEFT;
@@ -158,7 +166,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
             scrollCount = scrollCount + 1;
             dotMatrixDisplayView.updateDisplay();
         } else {
-            dotMatrixDisplayView.noScroll();
+            if (scrollOn) {
+                scrollOn = false;
+                dotMatrixDisplayView.resetScrollStart();
+            }
             displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION));
         }
     }
