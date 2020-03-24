@@ -131,6 +131,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     public void stopAutomatic() {
         if (automaticOn) {
             handlerTime.removeCallbacks(runnableTime);
+            dotMatrixDisplayView.resetScrollStart();
             automaticOn = false;
         }
     }
