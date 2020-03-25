@@ -48,7 +48,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private int scrollCount;
     private boolean automaticScrollOn;
     private boolean inAutomatic;
-    private boolean automaticOn;
     private Handler handlerTime;
     private Runnable runnableTime;
     //endregion
@@ -66,7 +65,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
         setupDefaultFont();
         setupExtraFont();
         setupIndexes();
-        automaticOn = false;
         inAutomatic = false;
         mOnExpiredTimerListener = null;
         calcGridDimensions();
@@ -99,18 +97,18 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void displayTime(String timeText) {
-        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[onTimeColorIndex], colors[offColorIndex]);
+        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[onTimeColorIndex], colors[offColorIndex]);   //  Pressed=ON TIME  Unpressed=OFF
         dotMatrixDisplayView.setSymbolPos(gridDisplayRect.left, gridDisplayRect.top);
         dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
         dotMatrixDisplayView.updateDisplay();
     }
 
     public void displayHalfTimeAndLabel(String timeText, String labelText) {   //  Partager l'affichage entre Temps et Label (utilisé pour le réglage des couleurs dans CtDisplayColorsActivity)
-        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[onTimeColorIndex], colors[offColorIndex]);
+        dotMatrixDisplayView.fillRect(gridDisplayRect, colors[onTimeColorIndex], colors[offColorIndex]);   //  Pressed=ON TIME  Unpressed=OFF
         dotMatrixDisplayView.setSymbolPos(gridDisplayRect.left, gridDisplayRect.top);
         dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        dotMatrixDisplayView.fillRect(gridHalfDisplayRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Effacer la 2e moitié du temps
-        dotMatrixDisplayView.setSymbolPos(gridHalfDisplayRect.left, gridDisplayRect.top);
+        dotMatrixDisplayView.fillRect(gridHalfDisplayRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Effacer la 2e moitié du temps    Pressed=ON LABEL  Unpressed=OFF
+        dotMatrixDisplayView.setSymbolPos(gridHalfDisplayRect.left, gridHalfDisplayRect.top);
         dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
     }
@@ -128,17 +126,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
             updateInterval = TIME_UNIT_PRECISION.DURATION_MS();
         }
         dotMatrixDisplayView.resetScrollStart();
-        if (!automaticOn) {
-            automaticOn = true;
-            handlerTime.postDelayed(runnableTime, updateInterval);
-        }
+        handlerTime.removeCallbacks(runnableTime);   //  On efface tout et on recommence
+        handlerTime.postDelayed(runnableTime, updateInterval);
     }
 
     public void stopAutomatic() {
-        if (automaticOn) {
-            handlerTime.removeCallbacks(runnableTime);
-            automaticOn = false;
-        }
+        handlerTime.removeCallbacks(runnableTime);
     }
 
     private void automatic() {
