@@ -84,10 +84,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
         currentCtRecord = null;
     }
 
-    public void setUpdateInterval(long updateInterval) {
-        this.updateInterval = updateInterval;
-    }
-
     public void setColors(String[] colors) {
         this.colors = colors;
         dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
