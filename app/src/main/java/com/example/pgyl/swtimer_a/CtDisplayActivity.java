@@ -323,11 +323,8 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayDotMatrixDisplay() {
-        final long UPDATE_INTERVAL_RESET_MS = 40;       //   25 scrolls par seconde = +/- 4 caractères par secondes  (6 scrolls par caractère avec marge droite)
-
         dotMatrixDisplayUpdater.displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
         if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
-            dotMatrixDisplayUpdater.setUpdateInterval(currentCtRecord.isReset() ? UPDATE_INTERVAL_RESET_MS : TIME_UNIT_PRECISION.DURATION_MS());  //  A la bonne fréquence
             dotMatrixDisplayUpdater.startAutomatic();
         } else {  //  Pas besoin de rafraichissement continu
             dotMatrixDisplayUpdater.stopAutomatic();

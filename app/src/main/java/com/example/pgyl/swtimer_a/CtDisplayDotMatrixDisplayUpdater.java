@@ -48,7 +48,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private int scrollCount;
     private boolean inAutomatic;
     private boolean automaticOn;
-    private boolean scrollOn;
+    private boolean automaticScrollOn;
     private Handler handlerTime;
     private Runnable runnableTime;
     //endregion
@@ -120,10 +120,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void startAutomatic() {
+        final long UPDATE_INTERVAL_RESET_MS = 40;       //   40 ms => 25 scrolls par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite nécessite 6 scrolls)
+
+        updateInterval = (currentCtRecord.isReset() ? UPDATE_INTERVAL_RESET_MS : TIME_UNIT_PRECISION.DURATION_MS());  //  A la bonne fréquence
         if (!automaticOn) {
             automaticOn = true;
-            scrollOn = false;
-            dotMatrixDisplayView.resetScrollStart();
+            initAutomaticScrollOff();
             handlerTime.postDelayed(runnableTime, updateInterval);
         }
     }
@@ -131,7 +133,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
     public void stopAutomatic() {
         if (automaticOn) {
             handlerTime.removeCallbacks(runnableTime);
-            dotMatrixDisplayView.resetScrollStart();
             automaticOn = false;
         }
     }
@@ -141,7 +142,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         if ((!inAutomatic) && (!dotMatrixDisplayView.isDrawing())) {
             inAutomatic = true;
             long nowm = System.currentTimeMillis();
-            if (!currentCtRecord.updateTime(nowm)) {    //  Le timer a expiré
+            if (!currentCtRecord.updateTime(nowm)) {    //  Mise à jour du temps et signaler si le timer a expiré
                 if (mOnExpiredTimerListener != null) {
                     mOnExpiredTimerListener.onExpiredTimer();
                 }
@@ -152,27 +153,37 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void automaticDisplay() {
+        final int MAX_SCROLL_COUNT = 2 * gridRect.width();   //  2 grilles complètes
+
         if (currentCtRecord.isReset()) {
-            if (!scrollOn) {
-                scrollOn = true;
-                scrollCount = 0;
-                scrollDirection = SCROLL_DIRECTIONS.LEFT;
-                dotMatrixDisplayView.resetScrollStart();
+            if (!automaticScrollOn) {
+                initAutomaticScrollOn();
             }
-            if (scrollCount == 2 * gridRect.width()) {  //  Changer le sens du scroll après 2 grilles complètes
+            if (scrollCount == MAX_SCROLL_COUNT) {
                 scrollCount = 0;
-                scrollDirection = (scrollDirection.equals(SCROLL_DIRECTIONS.LEFT)) ? SCROLL_DIRECTIONS.RIGHT : SCROLL_DIRECTIONS.LEFT;
+                scrollDirection = (scrollDirection.equals(SCROLL_DIRECTIONS.LEFT)) ? SCROLL_DIRECTIONS.RIGHT : SCROLL_DIRECTIONS.LEFT;   //  Changer le sens du scroll
             }
             dotMatrixDisplayView.scroll(scrollDirection);
             scrollCount = scrollCount + 1;
             dotMatrixDisplayView.updateDisplay();
         } else {
-            if (scrollOn) {
-                scrollOn = false;
-                dotMatrixDisplayView.resetScrollStart();
+            if (automaticScrollOn) {
+                initAutomaticScrollOff();
             }
             displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION));
         }
+    }
+
+    private void initAutomaticScrollOn() {
+        automaticScrollOn = true;
+        scrollCount = 0;
+        scrollDirection = SCROLL_DIRECTIONS.LEFT;
+        dotMatrixDisplayView.resetScrollStart();
+    }
+
+    private void initAutomaticScrollOff() {
+        automaticScrollOn = false;
+        dotMatrixDisplayView.resetScrollStart();
     }
 
     private void setupIndexes() {
