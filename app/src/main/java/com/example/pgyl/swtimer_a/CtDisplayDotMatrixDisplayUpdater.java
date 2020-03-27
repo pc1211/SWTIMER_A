@@ -7,10 +7,10 @@ import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
 import com.example.pgyl.pekislib_a.DotMatrixSymbol;
-import com.example.pgyl.pekislib_a.PointRectUtils.RectDimensions;
 
 import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.SCROLL_DIRECTIONS;
-import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontRectDimensions;
+import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
+import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayBackIndex;
@@ -93,7 +93,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);    //  Pressed=ON TIME  Unpressed=OFF
         dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
         dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        dotMatrixDisplayView.fillRect(labelRect, colors[onLabelColorIndex], colors[offColorIndex]);
+        dotMatrixDisplayView.fillRect(labelRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Pressed=ON LABEL  Unpressed=OFF
         dotMatrixDisplayView.setSymbolPos(labelRect.left, labelRect.top + margins.top);
         dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
@@ -194,7 +194,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         extraFont.setRightMargin(EXTRA_FONT_RIGHT_MARGIN);
         symbol = extraFont.getSymbol('.');
         symbol.setOverwrite(true);   //  Le "." surcharge le symbole précédent (en-dessous dans sa marge droite)
-        symbol.setPosOffset(-symbol.getDimensions().width, defaultFont.getSymbolDimensions().height);
+        symbol.setPosOffset(-symbol.getDimensions().width, defaultFont.getDimensions().height);
         symbol = null;
     }
 
@@ -208,8 +208,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void setupGridDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (gridDisplayRect, glissant en cas de scroll)
-        RectDimensions timeTextDimensions = getFontRectDimensions(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
-        RectDimensions labelTextDimensions = getFontRectDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
+        BiDimensions timeTextDimensions = getFontTextDimensions(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
+        BiDimensions labelTextDimensions = getFontTextDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         int displayRectWidth = margins.left + timeTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du temps, avec margins.right remplaçant la dernière marge droite)
         int displayRectHeight = margins.top + Math.max(timeTextDimensions.height, labelTextDimensions.height) + margins.bottom;   //  Affichage du temps uniquement ou (via scroll) du temps et du label , sur la hauteur nécessaire
