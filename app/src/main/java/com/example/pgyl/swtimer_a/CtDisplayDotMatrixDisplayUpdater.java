@@ -47,6 +47,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private long updateInterval;
     private SCROLL_DIRECTIONS scrollDirection;
     private int scrollCount;
+    private int invertCount;
     private boolean automaticScrollOn;
     private boolean inAutomatic;
     private Handler handlerTime;
@@ -121,6 +122,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
         if (currentCtRecord.isReset()) {
             automaticScrollOn = true;
+            invertCount = 0;
             scrollCount = 0;
             scrollDirection = SCROLL_DIRECTIONS.LEFT;
             updateInterval = UPDATE_INTERVAL_RESET_MS;
@@ -153,15 +155,21 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void automaticDisplay() {
-        final int MAX_SCROLL_COUNT = 2 * gridRect.width();   //  2 grilles complètes
+        final int MAX_SCROLL_COUNT = 2 * gridRect.width();   //  Scroll de 2 grilles complètes
+        final int MAX_INVERT_COUNT = 6;   //  3 flashes avant scroll
 
         if (automaticScrollOn) {
             if (scrollCount == MAX_SCROLL_COUNT) {
                 scrollCount = 0;
                 scrollDirection = (scrollDirection.equals(SCROLL_DIRECTIONS.LEFT)) ? SCROLL_DIRECTIONS.RIGHT : SCROLL_DIRECTIONS.LEFT;   //  Changer le sens du scroll
             }
-            dotMatrixDisplayView.scroll(scrollDirection);
-            scrollCount = scrollCount + 1;
+            if (invertCount < MAX_INVERT_COUNT) {   //  Flashes avant le scroll
+                dotMatrixDisplayView.invert();
+                invertCount = invertCount + 1;
+            } else {
+                dotMatrixDisplayView.scroll(scrollDirection);
+                scrollCount = scrollCount + 1;
+            }
             dotMatrixDisplayView.updateDisplay();
         } else {
             displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION));
