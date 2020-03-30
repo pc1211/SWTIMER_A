@@ -47,7 +47,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private long updateInterval;
     private SCROLL_DIRECTIONS scrollDirection;
     private int scrollCount;
-    private int invertCount;
     private boolean automaticScrollOn;
     private boolean inAutomatic;
     private Handler handlerTime;
@@ -68,7 +67,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         setupExtraFont();
         setupColorIndexes();
         setupMargins();
-        setupGridDimensions();
+        setupDimensions();
         inAutomatic = false;
         mOnExpiredTimerListener = null;
     }
@@ -122,7 +121,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
         if (currentCtRecord.isReset()) {
             automaticScrollOn = true;
-            invertCount = 0;
             scrollCount = 0;
             scrollDirection = SCROLL_DIRECTIONS.LEFT;
             updateInterval = UPDATE_INTERVAL_RESET_MS;
@@ -130,7 +128,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
             automaticScrollOn = false;
             updateInterval = TIME_UNIT_PRECISION.DURATION_MS();
         }
-        dotMatrixDisplayView.resetScrollStart();
+        dotMatrixDisplayView.resetScrollOffset();
         handlerTime.removeCallbacks(runnableTime);   //  On efface tout et on recommence
         handlerTime.postDelayed(runnableTime, updateInterval);
     }
@@ -156,20 +154,14 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     private void automaticDisplay() {
         final int MAX_SCROLL_COUNT = 2 * gridRect.width();   //  Scroll de 2 grilles complètes
-        final int MAX_INVERT_COUNT = 6;   //  3 flashes avant scroll
 
         if (automaticScrollOn) {
             if (scrollCount == MAX_SCROLL_COUNT) {
                 scrollCount = 0;
                 scrollDirection = (scrollDirection.equals(SCROLL_DIRECTIONS.LEFT)) ? SCROLL_DIRECTIONS.RIGHT : SCROLL_DIRECTIONS.LEFT;   //  Changer le sens du scroll
             }
-            if (invertCount < MAX_INVERT_COUNT) {   //  Flashes avant le scroll
-                dotMatrixDisplayView.invert();
-                invertCount = invertCount + 1;
-            } else {
-                dotMatrixDisplayView.scroll(scrollDirection);
-                scrollCount = scrollCount + 1;
-            }
+            dotMatrixDisplayView.scroll(scrollDirection);
+            scrollCount = scrollCount + 1;
             dotMatrixDisplayView.updateDisplay();
         } else {
             displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION));
@@ -215,7 +207,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         margins = new Rect(MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, marginBottom);
     }
 
-    private void setupGridDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (gridDisplayRect, glissant en cas de scroll)
+    private void setupDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (gridDisplayRect, glissant en cas de scroll)
         BiDimensions timeTextDimensions = getFontTextDimensions(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
         BiDimensions labelTextDimensions = getFontTextDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
 
@@ -228,6 +220,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         displayRect = new Rect(gridRect.left, gridRect.top, displayRectWidth, displayRectHeight);  //  Affichage au début de la grille
         halfDisplayRect = new Rect(displayRect.right / 2, displayRect.top, displayRect.right, displayRect.bottom);  //  Pour affichage partagé dans CtDisplayColorsActivity
         labelRect = new Rect(displayRect.right, gridRect.top, gridRect.right, gridRect.bottom);   //  Espace restant de la grille
+
         dotMatrixDisplayView.setGridRect(gridRect);
         dotMatrixDisplayView.setDisplayRect(displayRect);
         dotMatrixDisplayView.setScrollRect(gridRect);   //  On scrolle la grille entière (margins.left servira de margins.right)
