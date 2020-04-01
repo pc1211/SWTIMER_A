@@ -81,12 +81,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return selected;
     }
 
-    public void setSelectedOn() {
-        selected = true;
-    }
-
-    public void setSelectedOff() {
-        selected = false;
+    public void setSelectedOn(boolean selectedOn) {
+        selected = selectedOn;
     }
 
     public boolean isRunning() {    //  Pas de set

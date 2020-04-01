@@ -197,14 +197,10 @@ public class CtRecordsHandler {
                     }
                 }
                 if (action.equals(ACTIONS_ON_ALL.INVERT_SELECTION)) {
-                    if (ctRecords.get(i).isSelected()) {
-                        ctRecords.get(i).setSelectedOff();
-                    } else {
-                        ctRecords.get(i).setSelectedOn();
-                    }
+                    ctRecords.get(i).setSelectedOn(!ctRecords.get(i).isSelected());
                 }
                 if (action.equals(ACTIONS_ON_ALL.SELECT)) {
-                    ctRecords.get(i).setSelectedOn();
+                    ctRecords.get(i).setSelectedOn(true);
                 }
             }
             if (!action.equals(ACTIONS_ON_ALL.UPDATE_TIME)) {

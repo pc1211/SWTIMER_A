@@ -37,6 +37,17 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     private onButtonClickListener mOnButtonClickListener;
 
+    public interface onCheckBoxClickListener {
+        void onCheckBoxClick();
+    }
+
+    public void setOnItemCheckBoxClick(onCheckBoxClickListener listener) {
+        mOnCheckBoxClickListener = listener;
+    }
+
+    private onCheckBoxClickListener mOnCheckBoxClickListener;
+
+
     private final boolean NEED_SORT_AND_RELOAD = true;
     //region Variables
     private Context context;
@@ -57,6 +68,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     private void init() {
         mOnButtonClickListener = null;
+        mOnCheckBoxClickListener = null;
         orientation = context.getResources().getConfiguration().orientation;
     }
 
@@ -97,22 +109,20 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     private void onCbSelectionClick(int pos, boolean isChecked) {
-        if (isChecked) {
-            ctRecords.get(pos).setSelectedOn();
-        } else {
-            ctRecords.get(pos).setSelectedOff();
+        ctRecords.get(pos).setSelectedOn(isChecked);
+        if (mOnCheckBoxClickListener != null) {
+            mOnCheckBoxClickListener.onCheckBoxClick();
         }
     }
 
     private void onCbSelectionLongClick(int pos) {
         for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
-            if (i != pos) {
-                ctRecords.get(i).setSelectedOff();
-            } else {
-                ctRecords.get(i).setSelectedOn();
-            }
+            ctRecords.get(i).setSelectedOn(i == pos);
         }
         notifyDataSetChanged();   //  Pas besoin d'un Rebuild List
+        if (mOnCheckBoxClickListener != null) {
+            mOnCheckBoxClickListener.onCheckBoxClick();
+        }
     }
 
     private void onButtonModeRunClick(int pos) {

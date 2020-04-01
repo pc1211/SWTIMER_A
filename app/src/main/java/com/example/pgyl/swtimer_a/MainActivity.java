@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.ListView;
 
 import com.example.pgyl.pekislib_a.CustomImageButton;
+import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.PresetsHandler;
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
@@ -92,6 +93,8 @@ public class MainActivity extends Activity {
     //region Variables
     private CustomImageButton[] buttons;
     private SymbolButtonView[] stateButtons;
+    private DotMatrixDisplayView dotMatrixDisplayView;
+    private MainDotMatrixDisplayUpdater dotMatrixDisplayUpdater;
     private Menu menu;
     private MenuItem barMenuItemSetClockAppAlarmOnStartTimer;
     private MenuItem barMenuItemKeepScreen;
@@ -117,6 +120,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
         setupButtons();
         setupStateButtons();
+        setupDotMatrixDisplay();
     }
 
     @Override
@@ -130,6 +134,8 @@ public class MainActivity extends Activity {
         mainCtListItemAdapter = null;
         ctRecordsHandler.saveAndclose();
         ctRecordsHandler = null;
+        dotMatrixDisplayUpdater.close();
+        dotMatrixDisplayUpdater = null;
         stringShelfDatabase.close();
         stringShelfDatabase = null;
         menu = null;
@@ -147,6 +153,7 @@ public class MainActivity extends Activity {
         setupCtRecordsHandler();
         setupMainCtList();
         setupMainCtListUpdater();
+        setupDotMatrixDisplayUpdater();
         setupShowExpirationTime();
         setupSetClockAppAlarmOnStartTimer();
         setupAddNewChronoTimerToList();
@@ -155,6 +162,7 @@ public class MainActivity extends Activity {
         updateDisplayStateButtonColors();
         updateDisplayKeepScreen();
         sortAndReloadMainCtList();
+        updateDisplayDotMatrixDisplay();
         mainCtListUpdater.startAutomatic();
         invalidateOptionsMenu();
     }
@@ -234,6 +242,7 @@ public class MainActivity extends Activity {
                 ctRecordsHandler.selectAll();
             }
             mainCtListUpdater.update();
+            updateDisplayDotMatrixDisplay();
         } else {
             toastLong("The list must contain at least one Chrono or Timer", this);
         }
@@ -259,6 +268,7 @@ public class MainActivity extends Activity {
                     removeSelection();
                 }
                 sortAndReloadMainCtList();
+                updateDisplayDotMatrixDisplay();
                 mainCtListUpdater.startAutomatic();
             }
         } else {
@@ -303,11 +313,32 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void onCtListItemCheckBoxClick() {
+        updateDisplayDotMatrixDisplay();
+    }
+
     private void sortAndReloadMainCtList() {
         long nowm = System.currentTimeMillis();
         ctRecordsHandler.updateTimeAll(nowm);
         ctRecordsHandler.sortCtRecords();
         mainCtListUpdater.reload();
+    }
+
+    private void updateDisplayDotMatrixDisplay() {
+        final String EMPTY_LIST = "No items in the list";
+        final String EMPTY_SELECTION = "No items selected";
+
+        if (ctRecordsHandler.getCountAll() >= 1) {
+            if (ctRecordsHandler.getCountSelection() >= 1) {
+                dotMatrixDisplayView.setVisibility(View.INVISIBLE);
+            } else {
+                dotMatrixDisplayUpdater.displayText(EMPTY_SELECTION);
+                dotMatrixDisplayView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            dotMatrixDisplayUpdater.displayText(EMPTY_LIST);
+            dotMatrixDisplayView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   On/Unpressed(ON/BACK), On/Pressed(BACK/OFF), Off/Unpressed(OFF/BACK), Off/Pressed(BACK/ON)
@@ -357,6 +388,7 @@ public class MainActivity extends Activity {
             public void onClick(DialogInterface dialogInterface, int id) {
                 ctRecordsHandler.removeSelection();
                 sortAndReloadMainCtList();
+                updateDisplayDotMatrixDisplay();
             }
         });
         builder.setNegativeButton("No", null);
@@ -369,6 +401,7 @@ public class MainActivity extends Activity {
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
             sortAndReloadMainCtList();
+            updateDisplayDotMatrixDisplay();
             mainCtListUpdater.startAutomatic();
         } else {
             launchCtDisplayActivity(idct);
@@ -474,6 +507,14 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void setupDotMatrixDisplay() {
+        dotMatrixDisplayView = findViewById(R.id.DOT_MATRIX_DISPLAY);
+    }
+
+    private void setupDotMatrixDisplayUpdater() {
+        dotMatrixDisplayUpdater = new MainDotMatrixDisplayUpdater(dotMatrixDisplayView);
+    }
+
     private void setupCtRecordsHandler() {
         ctRecordsHandler = new CtRecordsHandler(this, stringShelfDatabase);
     }
@@ -523,6 +564,12 @@ public class MainActivity extends Activity {
             @Override
             public void onButtonClick(boolean needSortAndReload) {
                 onCtListItemButtonClick(needSortAndReload);
+            }
+        });
+        mainCtListItemAdapter.setOnItemCheckBoxClick(new MainCtListItemAdapter.onCheckBoxClickListener() {
+            @Override
+            public void onCheckBoxClick() {
+                onCtListItemCheckBoxClick();
             }
         });
         mainCtListView = findViewById(R.id.CT_LIST);
