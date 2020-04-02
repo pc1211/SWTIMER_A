@@ -120,8 +120,8 @@ public class CtDisplayActivity extends Activity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setupOrientationLayout();
         setupStateButtons();
-        setupDotMatrixDisplay();
         setupBackLayout();
+        setupDotMatrixDisplay();
         validReturnFromCalledActivity = false;
     }
 

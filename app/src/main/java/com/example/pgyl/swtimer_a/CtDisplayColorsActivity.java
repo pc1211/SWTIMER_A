@@ -41,10 +41,10 @@ import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPL
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentPresetInPresetsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentEntryInInputButtonsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPresetInPresetsActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentPresetInPresetsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentEntryInInputButtonsActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPresetInPresetsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInInputButtonsActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
@@ -169,11 +169,11 @@ public class CtDisplayColorsActivity extends Activity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getActionBar().setTitle("Set Colors");
         setContentView(R.layout.ctdisplaycolors);   //  Mode portrait uniquement (cf Manifest)
-        setupDotMatrixDisplay();
         setupBackLayout();
         setupStateButtons();
         setupButtons();
         setupSeekBars();
+        setupDotMatrixDisplay();
         validReturnFromCalledActivity = false;
     }
 
