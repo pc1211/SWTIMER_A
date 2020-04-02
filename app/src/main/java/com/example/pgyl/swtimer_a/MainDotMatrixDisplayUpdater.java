@@ -18,16 +18,18 @@ public class MainDotMatrixDisplayUpdater {
 
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
+    private int maxTextLength;
     private DotMatrixFont defaultFont;
     private Rect margins;
     private Rect gridRect;
     private Rect displayRect;
     //endregion
 
-    public MainDotMatrixDisplayUpdater(DotMatrixDisplayView dotMatrixDisplayView) {
+    public MainDotMatrixDisplayUpdater(DotMatrixDisplayView dotMatrixDisplayView, int maxTextLenght) {
         super();
 
         this.dotMatrixDisplayView = dotMatrixDisplayView;
+        this.maxTextLength = maxTextLenght;
         init();
     }
 
@@ -35,7 +37,7 @@ public class MainDotMatrixDisplayUpdater {
         setupDefaultFont();
         setupBackColor();
         setupMargins();
-        setupDimensions();
+        setupDimensions(maxTextLength);
     }
 
     public void close() {
@@ -68,10 +70,8 @@ public class MainDotMatrixDisplayUpdater {
         margins = new Rect(MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM);
     }
 
-    private void setupDimensions() {
-        final int MAX_CHARS = 20;   //  Prévoir 20 caractères max, avec marge droite (sauf pour le dernier)
-
-        char[] chars = new char[MAX_CHARS];
+    private void setupDimensions(int maxTextLength) {
+        char[] chars = new char[maxTextLength];
         Arrays.fill(chars, '*');
         String maxText = new String(chars);
         BiDimensions textDimensions = getFontTextDimensions(maxText, defaultFont);

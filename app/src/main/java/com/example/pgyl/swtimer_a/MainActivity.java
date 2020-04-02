@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.pgyl.pekislib_a.CustomImageButton;
@@ -87,10 +88,25 @@ public class MainActivity extends Activity {
         }
     }
 
+    private enum DOT_MATRIX_DISPLAY_MESSAGES {
+        EMPTY_LIST("List empty"), EMPTY_SELECTION("Selection empty");
+        private String text;
+
+        DOT_MATRIX_DISPLAY_MESSAGES(String text) {
+            this.text = text;
+        }
+
+        public String TEXT() {
+            return text;
+        }
+    }
+
     public enum SWTIMER_SHP_KEY_NAMES {SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST, SET_CLOCK_APP_ALARM_ON_START_TIMER, KEEP_SCREEN, REQUESTED_CLOCK_APP_ALARM_DISMISSES}
     //endregion
 
     //region Variables
+    private LinearLayout layoutButtonsOnSelection;
+    private LinearLayout layoutDotMatrixDisplay;
     private CustomImageButton[] buttons;
     private SymbolButtonView[] stateButtons;
     private DotMatrixDisplayView dotMatrixDisplayView;
@@ -162,7 +178,7 @@ public class MainActivity extends Activity {
         updateDisplayStateButtonColors();
         updateDisplayKeepScreen();
         sortAndReloadMainCtList();
-        updateDisplayDotMatrixDisplay();
+        updateDisplaySecondRowLayout();
         mainCtListUpdater.startAutomatic();
         invalidateOptionsMenu();
     }
@@ -242,7 +258,7 @@ public class MainActivity extends Activity {
                 ctRecordsHandler.selectAll();
             }
             mainCtListUpdater.update();
-            updateDisplayDotMatrixDisplay();
+            updateDisplaySecondRowLayout();
         } else {
             toastLong("The list must contain at least one Chrono or Timer", this);
         }
@@ -268,7 +284,7 @@ public class MainActivity extends Activity {
                     removeSelection();
                 }
                 sortAndReloadMainCtList();
-                updateDisplayDotMatrixDisplay();
+                updateDisplaySecondRowLayout();
                 mainCtListUpdater.startAutomatic();
             }
         } else {
@@ -314,7 +330,7 @@ public class MainActivity extends Activity {
     }
 
     private void onCtListItemCheckBoxClick() {
-        updateDisplayDotMatrixDisplay();
+        updateDisplaySecondRowLayout();
     }
 
     private void sortAndReloadMainCtList() {
@@ -324,20 +340,17 @@ public class MainActivity extends Activity {
         mainCtListUpdater.reload();
     }
 
-    private void updateDisplayDotMatrixDisplay() {
-        final String EMPTY_LIST = "No items in the list";
-        final String EMPTY_SELECTION = "No items selected";
-
+    private void updateDisplaySecondRowLayout() {
         if (ctRecordsHandler.getCountAll() >= 1) {
             if (ctRecordsHandler.getCountSelection() >= 1) {
-                dotMatrixDisplayView.setVisibility(View.INVISIBLE);
+                setSecondRowLayoutVisible(layoutButtonsOnSelection);
             } else {
-                dotMatrixDisplayUpdater.displayText(EMPTY_SELECTION);
-                dotMatrixDisplayView.setVisibility(View.VISIBLE);
+                dotMatrixDisplayUpdater.displayText(DOT_MATRIX_DISPLAY_MESSAGES.EMPTY_SELECTION.TEXT());
+                setSecondRowLayoutVisible(layoutDotMatrixDisplay);
             }
         } else {
-            dotMatrixDisplayUpdater.displayText(EMPTY_LIST);
-            dotMatrixDisplayView.setVisibility(View.VISIBLE);
+            dotMatrixDisplayUpdater.displayText(DOT_MATRIX_DISPLAY_MESSAGES.EMPTY_LIST.TEXT());
+            setSecondRowLayoutVisible(layoutDotMatrixDisplay);
         }
     }
 
@@ -388,7 +401,7 @@ public class MainActivity extends Activity {
             public void onClick(DialogInterface dialogInterface, int id) {
                 ctRecordsHandler.removeSelection();
                 sortAndReloadMainCtList();
-                updateDisplayDotMatrixDisplay();
+                updateDisplaySecondRowLayout();
             }
         });
         builder.setNegativeButton("No", null);
@@ -401,7 +414,7 @@ public class MainActivity extends Activity {
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
             sortAndReloadMainCtList();
-            updateDisplayDotMatrixDisplay();
+            updateDisplaySecondRowLayout();
             mainCtListUpdater.startAutomatic();
         } else {
             launchCtDisplayActivity(idct);
@@ -446,6 +459,17 @@ public class MainActivity extends Activity {
         return shp.getBoolean(SWTIMER_SHP_KEY_NAMES.KEEP_SCREEN.toString(), KEEP_SCREEN_DEFAULT_VALUE);
     }
 
+    private void setSecondRowLayoutVisible(LinearLayout linearLayout) {
+        if (linearLayout.getId() == R.id.LAY_DOT_MATRIX_DISPLAY) {
+            layoutDotMatrixDisplay.setVisibility(View.VISIBLE);
+            layoutButtonsOnSelection.setVisibility(View.INVISIBLE);
+        }
+        if (linearLayout.getId() == R.id.LAY_BUTTONS_ON_SELECTION) {
+            layoutButtonsOnSelection.setVisibility(View.VISIBLE);
+            layoutDotMatrixDisplay.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private boolean getStateButtonState(STATE_COMMANDS command) {
         if (command.equals(STATE_COMMANDS.SHOW_EXPIRATION_TIME)) {
             return showExpirationTime;
@@ -479,6 +503,7 @@ public class MainActivity extends Activity {
             } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
                 Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
             }
+        layoutButtonsOnSelection = findViewById(R.id.LAY_BUTTONS_ON_SELECTION);
     }
 
     private void setupStateButtons() {
@@ -509,10 +534,17 @@ public class MainActivity extends Activity {
 
     private void setupDotMatrixDisplay() {
         dotMatrixDisplayView = findViewById(R.id.DOT_MATRIX_DISPLAY);
+        layoutDotMatrixDisplay = findViewById(R.id.LAY_DOT_MATRIX_DISPLAY);
     }
 
     private void setupDotMatrixDisplayUpdater() {
-        dotMatrixDisplayUpdater = new MainDotMatrixDisplayUpdater(dotMatrixDisplayView);
+        int maxTextLength = 0;
+        for (DOT_MATRIX_DISPLAY_MESSAGES dotMatrixDisplayMessage : DOT_MATRIX_DISPLAY_MESSAGES.values()) {
+            if (dotMatrixDisplayMessage.TEXT().length() > maxTextLength) {
+                maxTextLength = dotMatrixDisplayMessage.TEXT().length();
+            }
+        }
+        dotMatrixDisplayUpdater = new MainDotMatrixDisplayUpdater(dotMatrixDisplayView, maxTextLength);
     }
 
     private void setupCtRecordsHandler() {
