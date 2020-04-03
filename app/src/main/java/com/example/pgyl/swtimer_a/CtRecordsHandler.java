@@ -28,7 +28,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTime
 public class CtRecordsHandler {
     //region Constantes
     private enum ACTIONS_ON_ALL {
-        UPDATE_TIME, INVERT_SELECTION, SELECT, COUNT
+        UPDATE_TIME, INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT
     }
 
     private enum ACTIONS_ON_SELECTION {
@@ -158,6 +158,14 @@ public class CtRecordsHandler {
         return actionOnAll(ACTIONS_ON_ALL.COUNT);
     }
 
+    public int getCountAllChronos() {
+        return actionOnAll(ACTIONS_ON_ALL.COUNT_CHRONOS);
+    }
+
+    public int getCountAllTimers() {
+        return actionOnAll(ACTIONS_ON_ALL.COUNT_TIMERS);
+    }
+
     public void startSelection(long nowm, boolean setClockAppAlarmOnStartTimer) {
         this.nowm = nowm;
         this.setClockAppAlarmOnStartTimer = setClockAppAlarmOnStartTimer;
@@ -202,9 +210,19 @@ public class CtRecordsHandler {
                 if (action.equals(ACTIONS_ON_ALL.SELECT)) {
                     ctRecords.get(i).setSelectedOn(true);
                 }
-            }
-            if (!action.equals(ACTIONS_ON_ALL.UPDATE_TIME)) {
-                ret = ctRecords.size();
+                if (action.equals(ACTIONS_ON_ALL.COUNT_CHRONOS)) {
+                    if (ctRecords.get(i).getMode().equals(MODE.CHRONO)) {
+                        ret = ret + 1;
+                    }
+                }
+                if (action.equals(ACTIONS_ON_ALL.COUNT_TIMERS)) {
+                    if (ctRecords.get(i).getMode().equals(MODE.TIMER)) {
+                        ret = ret + 1;
+                    }
+                }
+                if (action.equals(ACTIONS_ON_ALL.COUNT)) {
+                    ret = ret + 1;
+                }
             }
         }
         return ret;

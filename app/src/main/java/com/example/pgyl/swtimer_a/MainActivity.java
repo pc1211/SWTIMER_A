@@ -178,7 +178,7 @@ public class MainActivity extends Activity {
         updateDisplayStateButtonColors();
         updateDisplayKeepScreen();
         sortAndReloadMainCtList();
-        updateDisplaySecondRowLayout();
+        updateDisplayButtonsVisibility();
         mainCtListUpdater.startAutomatic();
         invalidateOptionsMenu();
     }
@@ -258,7 +258,7 @@ public class MainActivity extends Activity {
                 ctRecordsHandler.selectAll();
             }
             mainCtListUpdater.update();
-            updateDisplaySecondRowLayout();
+            updateDisplayButtonsVisibility();
         } else {
             toastLong("The list must contain at least one Chrono or Timer", this);
         }
@@ -284,7 +284,7 @@ public class MainActivity extends Activity {
                     removeSelection();
                 }
                 sortAndReloadMainCtList();
-                updateDisplaySecondRowLayout();
+                updateDisplayButtonsVisibility();
                 mainCtListUpdater.startAutomatic();
             }
         } else {
@@ -330,7 +330,7 @@ public class MainActivity extends Activity {
     }
 
     private void onCtListItemCheckBoxClick() {
-        updateDisplaySecondRowLayout();
+        updateDisplayButtonsVisibility();
     }
 
     private void sortAndReloadMainCtList() {
@@ -340,17 +340,27 @@ public class MainActivity extends Activity {
         mainCtListUpdater.reload();
     }
 
-    private void updateDisplaySecondRowLayout() {
-        if (ctRecordsHandler.getCountAll() >= 1) {
-            if (ctRecordsHandler.getCountSelection() >= 1) {
-                setSecondRowLayoutVisible(layoutButtonsOnSelection);
-            } else {
+    private void updateDisplayButtonsVisibility() {
+        if (ctRecordsHandler.getCountAll() >= 1) {  //  Il y a au moins un chrono/timer dans la liste
+            if (ctRecordsHandler.getCountSelection() >= 1) {  //  Au moins un chrono/timer est sélectionné
+                setSecondRowLayoutVisible(layoutButtonsOnSelection);  //  Pour voir les boutons pouvant agir sur les chrono/timers sélectionnés et cacher le panneau d'affichage
+            } else {   //  Aucun chrono/timer n'est sélectionné
                 dotMatrixDisplayUpdater.displayText(DOT_MATRIX_DISPLAY_MESSAGES.EMPTY_SELECTION.TEXT());
-                setSecondRowLayoutVisible(layoutDotMatrixDisplay);
+                setSecondRowLayoutVisible(layoutDotMatrixDisplay);  //  Pour voir le panneau d'affichage et cacher les boutons pouvant agir sur les chrono/timers sélectionnés
             }
-        } else {
+            buttons[COMMANDS.INVERT_SELECTION_ALL_CT.INDEX()].setVisibility(View.VISIBLE);   //  Pour voir les boutons pouvant agir sur la sélection des chrono/timers de la liste
+            buttons[COMMANDS.SELECT_ALL_CT.INDEX()].setVisibility(View.VISIBLE);
+            if (ctRecordsHandler.getCountAllTimers() >= 1) {   //  Il y a au moins un timer dans la liste
+                stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setVisibility(View.VISIBLE);  //  Pour voir le bouton montrant l'heure d'expiration du timer ou sinon le temps restant
+            } else {
+                stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setVisibility(View.INVISIBLE);
+            }
+        } else {  //  La liste est vide
             dotMatrixDisplayUpdater.displayText(DOT_MATRIX_DISPLAY_MESSAGES.EMPTY_LIST.TEXT());
-            setSecondRowLayoutVisible(layoutDotMatrixDisplay);
+            setSecondRowLayoutVisible(layoutDotMatrixDisplay);   //  Pour voir le panneau d'affichage et cacher les boutons pouvant agir sur les chrono/timers sélectionnés
+            buttons[COMMANDS.INVERT_SELECTION_ALL_CT.INDEX()].setVisibility(View.INVISIBLE);   //  Cacher les boutons non pertinents en cas de liste vide
+            buttons[COMMANDS.SELECT_ALL_CT.INDEX()].setVisibility(View.INVISIBLE);
+            stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setVisibility(View.INVISIBLE);
         }
     }
 
@@ -401,7 +411,7 @@ public class MainActivity extends Activity {
             public void onClick(DialogInterface dialogInterface, int id) {
                 ctRecordsHandler.removeSelection();
                 sortAndReloadMainCtList();
-                updateDisplaySecondRowLayout();
+                updateDisplayButtonsVisibility();
             }
         });
         builder.setNegativeButton("No", null);
@@ -414,7 +424,7 @@ public class MainActivity extends Activity {
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
             sortAndReloadMainCtList();
-            updateDisplaySecondRowLayout();
+            updateDisplayButtonsVisibility();
             mainCtListUpdater.startAutomatic();
         } else {
             launchCtDisplayActivity(idct);
