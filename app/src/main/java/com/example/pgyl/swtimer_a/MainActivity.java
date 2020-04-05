@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
     }
 
     private enum DOT_MATRIX_DISPLAY_MESSAGES {
-        EMPTY_LIST("List empty"), EMPTY_SELECTION("Selection empty");
+        EMPTY_LIST("List empty"), EMPTY_SELECTION("Select for batch");
         private String text;
 
         DOT_MATRIX_DISPLAY_MESSAGES(String text) {

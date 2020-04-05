@@ -1,6 +1,7 @@
 package com.example.pgyl.swtimer_a;
 
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
@@ -10,6 +11,7 @@ import java.util.Arrays;
 
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
+import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_CENTER_Y;
 
 public class MainDotMatrixDisplayUpdater {
     final String ON_COLOR = "FF9A22";
@@ -61,7 +63,7 @@ public class MainDotMatrixDisplayUpdater {
         defaultFont = DotMatrixFontUtils.getDefaultFont();
     }
 
-    private void setupMargins() {    // Marges autour de l'affichage proprement dit
+    private void setupMargins() {    // Marges (en nombre de carrés autour de l'affichage proprement dit)
         final int MARGIN_LEFT = 1;
         final int MARGIN_RIGHT = 1;
         final int MARGIN_TOP = 1;
@@ -71,6 +73,8 @@ public class MainDotMatrixDisplayUpdater {
     }
 
     private void setupDimensions(int maxTextLength) {
+        final RectF INTERNAL_MARGIN_SIZE_COEFFS = new RectF(0.02f, 0, 0.02f, 0);   //  Marge autour de l'affichage proprement dit (% de largeur)
+
         char[] chars = new char[maxTextLength];
         Arrays.fill(chars, '*');
         String maxText = new String(chars);
@@ -84,6 +88,8 @@ public class MainDotMatrixDisplayUpdater {
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
         displayRect = new Rect(gridRect.left, gridRect.top, displayRectWidth, displayRectHeight);  //  Affichage au début de la grille
 
+        dotMatrixDisplayView.setInternalMarginCoeffs(INTERNAL_MARGIN_SIZE_COEFFS);
+        dotMatrixDisplayView.setExternalMarginCoeffs(ALIGN_LEFT_CENTER_Y);
         dotMatrixDisplayView.setGridRect(gridRect);
         dotMatrixDisplayView.setDisplayRect(displayRect);
         dotMatrixDisplayView.setScrollRect(gridRect);   //  Non utilisé (pas de scroll)
