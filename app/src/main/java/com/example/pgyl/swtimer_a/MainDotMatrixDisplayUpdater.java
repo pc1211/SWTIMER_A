@@ -7,8 +7,6 @@ import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
 
-import java.util.Arrays;
-
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_CENTER_Y;
@@ -20,18 +18,18 @@ public class MainDotMatrixDisplayUpdater {
 
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
-    private int maxTextLength;
+    private String maxText;
     private DotMatrixFont defaultFont;
     private Rect margins;
     private Rect gridRect;
     private Rect displayRect;
     //endregion
 
-    public MainDotMatrixDisplayUpdater(DotMatrixDisplayView dotMatrixDisplayView, int maxTextLenght) {
+    public MainDotMatrixDisplayUpdater(DotMatrixDisplayView dotMatrixDisplayView, String maxText) {
         super();
 
         this.dotMatrixDisplayView = dotMatrixDisplayView;
-        this.maxTextLength = maxTextLenght;
+        this.maxText = maxText;
         init();
     }
 
@@ -39,7 +37,7 @@ public class MainDotMatrixDisplayUpdater {
         setupDefaultFont();
         setupBackColor();
         setupMargins();
-        setupDimensions(maxTextLength);
+        setupDimensions(maxText);
     }
 
     public void close() {
@@ -64,20 +62,12 @@ public class MainDotMatrixDisplayUpdater {
     }
 
     private void setupMargins() {    // Marges (en nombre de carrés autour de l'affichage proprement dit)
-        final int MARGIN_LEFT = 1;
-        final int MARGIN_RIGHT = 1;
-        final int MARGIN_TOP = 1;
-        final int MARGIN_BOTTOM = 1;
-
-        margins = new Rect(MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM);
+        margins = new Rect(1, 1, 1, 1);
     }
 
-    private void setupDimensions(int maxTextLength) {
+    private void setupDimensions(String maxText) {
         final RectF INTERNAL_MARGIN_SIZE_COEFFS = new RectF(0.02f, 0, 0.02f, 0);   //  Marge autour de l'affichage proprement dit (% de largeur)
 
-        char[] chars = new char[maxTextLength];
-        Arrays.fill(chars, '*');
-        String maxText = new String(chars);
         BiDimensions textDimensions = getFontTextDimensions(maxText, defaultFont);
 
         int displayRectWidth = margins.left + textDimensions.width - defaultFont.getRightMargin() + margins.right;   //   margins.right remplace la dernière marge droite
@@ -92,7 +82,6 @@ public class MainDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setExternalMarginCoeffs(ALIGN_LEFT_CENTER_Y);
         dotMatrixDisplayView.setGridRect(gridRect);
         dotMatrixDisplayView.setDisplayRect(displayRect);
-        dotMatrixDisplayView.setScrollRect(gridRect);   //  Non utilisé (pas de scroll)
     }
 
 }

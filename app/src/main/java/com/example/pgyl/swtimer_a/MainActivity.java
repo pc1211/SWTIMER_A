@@ -548,13 +548,13 @@ public class MainActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayUpdater() {
-        int maxTextLength = 0;
+        String maxText = "";
         for (DOT_MATRIX_DISPLAY_MESSAGES dotMatrixDisplayMessage : DOT_MATRIX_DISPLAY_MESSAGES.values()) {
-            if (dotMatrixDisplayMessage.TEXT().length() > maxTextLength) {
-                maxTextLength = dotMatrixDisplayMessage.TEXT().length();
+            if (dotMatrixDisplayMessage.TEXT().length() > maxText.length()) {
+                maxText = dotMatrixDisplayMessage.TEXT();
             }
         }
-        dotMatrixDisplayUpdater = new MainDotMatrixDisplayUpdater(dotMatrixDisplayView, maxTextLength);
+        dotMatrixDisplayUpdater = new MainDotMatrixDisplayUpdater(dotMatrixDisplayView, maxText);
     }
 
     private void setupCtRecordsHandler() {
