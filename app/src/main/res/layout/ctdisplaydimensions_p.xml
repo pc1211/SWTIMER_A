@@ -42,13 +42,6 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/BTN_FILLER1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:visibility="invisible" />
-
-        <Button
             android:id="@+id/BTN_PRESETS"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -75,7 +68,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/BTN_FILLER2"
+            android:id="@+id/BTN_FILLER"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
