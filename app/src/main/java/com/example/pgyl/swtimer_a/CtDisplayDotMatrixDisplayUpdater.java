@@ -13,10 +13,10 @@ import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensio
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOnLabelIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayOnTimeIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsOnLabelIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsOnTimeIndex;
 
 public class CtDisplayDotMatrixDisplayUpdater {
     public interface onExpiredTimerListener {
@@ -88,6 +88,18 @@ public class CtDisplayDotMatrixDisplayUpdater {
         this.colors = colors;
         dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
     }
+
+    public void setInterDotSizeCoeff(String interDotSizeCoeff) {
+        dotMatrixDisplayView.setInterDotSizeCoeff(interDotSizeCoeff);
+    }
+
+    public void rebuildDimensions() {
+        dotMatrixDisplayView.rebuildDimensions();
+    }   //  A appeler uniquement si redimensionnement en temps réel
+
+    public void rebuildDrawParameters() {
+        dotMatrixDisplayView.rebuildDrawParameters();
+    }   //  A appeler uniquement si redimensionnement en temps réel et DotMatrixDisplay déjà affiché
 
     public void displayTimeAndLabel(String timeText, String labelText) {
         dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);    //  Pressed=ON TIME  Unpressed=OFF
@@ -169,10 +181,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void setupColorIndexes() {
-        onTimeColorIndex = getDotMatrixDisplayOnTimeIndex();
-        onLabelColorIndex = getDotMatrixDisplayOnLabelIndex();
-        offColorIndex = getDotMatrixDisplayOffIndex();
-        backColorIndex = getDotMatrixDisplayBackIndex();
+        onTimeColorIndex = getDotMatrixDisplayColorsOnTimeIndex();
+        onLabelColorIndex = getDotMatrixDisplayColorsOnLabelIndex();
+        offColorIndex = getDotMatrixDisplayColorsOffIndex();
+        backColorIndex = getDotMatrixDisplayColorsBackIndex();
     }
 
     private void setupDefaultFont() {

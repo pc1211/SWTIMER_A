@@ -51,25 +51,32 @@ import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.copyPresetCTRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.ctRecordToChronoTimerRow;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsOnIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOnIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeLabelToPresetCTRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentColorsInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimer;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentDotMatrixDisplayDimensionsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayDimensionsActivity;
 
 public class CtDisplayActivity extends Activity {
     //region Constantes
@@ -108,6 +115,7 @@ public class CtDisplayActivity extends Activity {
     private boolean setClockAppAlarmOnStartTimer;
     private boolean keepScreen;
     private String[][] colors;   //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
+    private String[] dotMatrixDisplayDimensions;  //  Dimensions pour DotMatrixDisplay
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
     private StringShelfDatabase stringShelfDatabase;
@@ -135,6 +143,7 @@ public class CtDisplayActivity extends Activity {
         saveChronoTimer(stringShelfDatabase, ctRecordToChronoTimerRow(currentCtRecord));
         currentCtRecord = null;
         setCurrentColorsInCtDisplayActivity(stringShelfDatabase, colors);
+        setCurrentDotMatrixDisplayDimensionsInCtDisplayActivity(stringShelfDatabase, dotMatrixDisplayDimensions);
         stringShelfDatabase.close();
         stringShelfDatabase = null;
         menu = null;
@@ -153,6 +162,7 @@ public class CtDisplayActivity extends Activity {
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         colors = getCurrentOrDefaultColorsInCtDisplayActivity(stringShelfDatabase);
+        dotMatrixDisplayDimensions = getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayActivity(stringShelfDatabase);
 
         if (isColdStartStatusInCtDisplayActivity(stringShelfDatabase)) {
             setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
@@ -165,7 +175,10 @@ public class CtDisplayActivity extends Activity {
                     }
                 }
                 if (returnsFromCtDisplayColorsActivity()) {
-                    colors = getCurrentColorsInCtDisplayColorsActivity(stringShelfDatabase);
+                    colors = getCurrentOrDefaultColorsInCtDisplayColorsActivity(stringShelfDatabase);
+                }
+                if (returnsFromCtDisplayDimensionsActivity()) {
+                    dotMatrixDisplayDimensions = getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity(stringShelfDatabase);
                 }
             }
         }
@@ -173,6 +186,7 @@ public class CtDisplayActivity extends Activity {
         getActionBar().setTitle(currentCtRecord.getLabel());
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
+        setupDotMatrixDisplayDimensions();
         updateDisplayDotMatrixDisplay();
         updateDisplayStateButtonColors();
         updateDisplayBackScreenColor();
@@ -191,6 +205,12 @@ public class CtDisplayActivity extends Activity {
         }
         if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER) {
             calledActivity = SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString();
+            if (resultCode == RESULT_OK) {
+                validReturnFromCalledActivity = true;
+            }
+        }
+        if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER) {
+            calledActivity = SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
@@ -232,6 +252,11 @@ public class CtDisplayActivity extends Activity {
         if (item.getItemId() == R.id.SET_COLORS) {
             setCurrentColorsInCtDisplayColorsActivity(stringShelfDatabase, colors);
             launchCtDisplayColorsActivity();
+            return true;
+        }
+        if (item.getItemId() == R.id.SET_DIMENSIONS) {
+            setCurrentDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity(stringShelfDatabase, dotMatrixDisplayDimensions);
+            launchCtDisplayDimensionsActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -332,14 +357,14 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayBackScreenColor() {
-        backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getBackScreenTableName())][getBackScreenBackIndex()]));
+        backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getBackScreenColorsTableName())][getBackScreenColorsBackIndex()]));
     }
 
     private void updateDisplayStateButtonColor(STATE_COMMANDS command) {  //   ON/BACK ou OFF/BACK
-        int colorTableIndex = getColorTableIndex(getStateButtonsTableName());
-        String frontColor = ((getStateButtonState(command)) ? colors[colorTableIndex][getStateButtonsOnIndex()] : colors[colorTableIndex][getStateButtonsOffIndex()]);
-        String backColor = colors[colorTableIndex][getStateButtonsBackIndex()];
-        String extraColor = ((getStateButtonState(command)) ? colors[colorTableIndex][getStateButtonsOffIndex()] : colors[colorTableIndex][getStateButtonsOnIndex()]);
+        int colorTableIndex = getColorTableIndex(getStateButtonsColorsTableName());
+        String frontColor = ((getStateButtonState(command)) ? colors[colorTableIndex][getStateButtonsColorsOnIndex()] : colors[colorTableIndex][getStateButtonsColorsOffIndex()]);
+        String backColor = colors[colorTableIndex][getStateButtonsColorsBackIndex()];
+        String extraColor = ((getStateButtonState(command)) ? colors[colorTableIndex][getStateButtonsColorsOffIndex()] : colors[colorTableIndex][getStateButtonsColorsOnIndex()]);
         stateButtons[command.INDEX()].setColors(frontColor, backColor, extraColor);
     }
 
@@ -457,8 +482,21 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayColors() {
-        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
+        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayColorsTableName())]);
     }
+
+
+    private void setupDotMatrixDisplayDimensions() {
+        int interDotCoeffIndex;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            interDotCoeffIndex = getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex();
+        } else {
+            interDotCoeffIndex = getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex();
+        }
+        dotMatrixDisplayUpdater.setInterDotSizeCoeff(dotMatrixDisplayDimensions[interDotCoeffIndex]);
+        dotMatrixDisplayUpdater.rebuildDimensions();
+    }
+
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {
         dotMatrixDisplayUpdater = new CtDisplayDotMatrixDisplayUpdater(dotMatrixDisplayView, currentCtRecord);
@@ -517,6 +555,13 @@ public class CtDisplayActivity extends Activity {
         startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);
     }
 
+    private void launchCtDisplayDimensionsActivity() {
+        setStartStatusInCtDisplayDimensionsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
+        Intent callingIntent = new Intent(this, CtDisplayDimensionsActivity.class);
+        callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
+        startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);
+    }
+
     private void launchHelpActivity() {
         Intent callingIntent = new Intent(this, HelpActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), HELP_ACTIVITY_TITLE);
@@ -530,6 +575,10 @@ public class CtDisplayActivity extends Activity {
 
     private boolean returnsFromCtDisplayColorsActivity() {
         return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString()));
+    }
+
+    private boolean returnsFromCtDisplayDimensionsActivity() {
+        return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.toString()));
     }
 
 }

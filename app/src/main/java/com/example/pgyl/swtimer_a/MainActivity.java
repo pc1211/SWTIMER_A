@@ -38,16 +38,18 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createPekisli
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createSwtimerTableIfNotExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableBackScreen;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplay;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableBackScreenColors;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayColors;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayDimensions;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableStateButtons;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableStateButtonsColors;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 
 public class MainActivity extends Activity {
@@ -568,20 +570,25 @@ public class MainActivity extends Activity {
         if (!stringShelfDatabase.tableExists(getActivityInfosTableName())) {
             createPekislibTableIfNotExists(stringShelfDatabase, getActivityInfosTableName());
         }
-        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayTableName());
-            initializeTableDotMatrixDisplay(stringShelfDatabase);
-            createPresetWithDefaultValues(getDotMatrixDisplayTableName());   //  => PRESET1 = DEFAULT  dans la table de couleurs de DotMatrixDisplay
+        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayColorsTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayColorsTableName());
+            initializeTableDotMatrixDisplayColors(stringShelfDatabase);
+            createPresetWithDefaultValues(getDotMatrixDisplayColorsTableName());   //  => PRESET1 = DEFAULT  dans la table de couleurs de DotMatrixDisplay
         }
-        if (!stringShelfDatabase.tableExists(getStateButtonsTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getStateButtonsTableName());
-            initializeTableStateButtons(stringShelfDatabase);
-            createPresetWithDefaultValues(getStateButtonsTableName());
+        if (!stringShelfDatabase.tableExists(getStateButtonsColorsTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getStateButtonsColorsTableName());
+            initializeTableStateButtonsColors(stringShelfDatabase);
+            createPresetWithDefaultValues(getStateButtonsColorsTableName());
         }
-        if (!stringShelfDatabase.tableExists(getBackScreenTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getBackScreenTableName());
-            initializeTableBackScreen(stringShelfDatabase);
-            createPresetWithDefaultValues(getBackScreenTableName());
+        if (!stringShelfDatabase.tableExists(getBackScreenColorsTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getBackScreenColorsTableName());
+            initializeTableBackScreenColors(stringShelfDatabase);
+            createPresetWithDefaultValues(getBackScreenColorsTableName());
+        }
+        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayDimensionsTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayDimensionsTableName());
+            initializeTableDotMatrixDisplayDimensions(stringShelfDatabase);
+            createPresetWithDefaultValues(getDotMatrixDisplayDimensionsTableName());
         }
         if (!stringShelfDatabase.tableExists(getPresetsCTTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getPresetsCTTableName());

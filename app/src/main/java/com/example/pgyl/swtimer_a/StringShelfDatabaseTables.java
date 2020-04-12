@@ -17,9 +17,9 @@ public class StringShelfDatabaseTables {
         int getDataFieldsCount();
 
         enum ColorYes implements SwTimerTables {   //  Les tables Couleur  (utilisées dans CtDisplayActivity et CtDisplayColorsActivity)
-            DOT_MATRIX_DISPLAY(SwTimerTableDataFields.DotMatrixDisplay.class, "Dot matrix Display"),   //  Table avec les couleurs du Dot Matrix Display
-            STATE_BUTTONS(SwTimerTableDataFields.StateButtons.class, "CT Control buttons"),
-            BACK_SCREEN(SwTimerTableDataFields.BackScreen.class, "Back screen");
+            DOT_MATRIX_DISPLAY_COLORS(SwTimerTableDataFields.DotMatrixDisplayColors.class, "Dot matrix Display"),   //  Table avec les couleurs du Dot Matrix Display
+            STATE_BUTTONS_COLORS(SwTimerTableDataFields.StateButtonsColors.class, "CT Control buttons"),
+            BACK_SCREEN_COLORS(SwTimerTableDataFields.BackScreenColors.class, "Back screen");
 
             private int dataFieldsCount;
             private String label;
@@ -41,7 +41,8 @@ public class StringShelfDatabaseTables {
 
         enum ColorNo implements SwTimerTables {  //  Les tables Non Couleur
             CHRONO_TIMERS(SwTimerTableDataFields.ChronoTimers.class),   //  Table des Chronos et Timers
-            PRESETS_CT(SwTimerTableDataFields.PresetsCT.class);
+            PRESETS_CT(SwTimerTableDataFields.PresetsCT.class),
+            DOT_MATRIX_DISPLAY_DIMENSIONS(SwTimerTableDataFields.DotMatrixDisplayDimensions.class);
 
             private int dataFieldsCount;
 
@@ -83,12 +84,30 @@ public class StringShelfDatabaseTables {
             }
         }
 
-        enum DotMatrixDisplay implements SwTimerTableDataFields {
+        enum DotMatrixDisplayDimensions implements SwTimerTableDataFields {
+            INTER_DOT_COEFF_LANDSCAPE("Landscape"), INTER_DOT_COEFF_PORTRAIT("Portrait");
+
+            private String valueLabel;
+
+            DotMatrixDisplayDimensions(String valueLabel) {
+                this.valueLabel = valueLabel;
+            }
+
+            public int INDEX() {
+                return ordinal() + 1;
+            }   //  INDEX 0 pour identifiant utilisateur
+
+            public String LABEL() {
+                return valueLabel;
+            }
+        }
+
+        enum DotMatrixDisplayColors implements SwTimerTableDataFields {
             ON_TIME("ON Time"), ON_LABEL("ON Label"), OFF("OFF"), BACK("Background");
 
             private String valueLabel;
 
-            DotMatrixDisplay(String valueLabel) {
+            DotMatrixDisplayColors(String valueLabel) {
                 this.valueLabel = valueLabel;
             }
 
@@ -101,12 +120,12 @@ public class StringShelfDatabaseTables {
             }
         }
 
-        enum StateButtons implements SwTimerTableDataFields {
+        enum StateButtonsColors implements SwTimerTableDataFields {
             ON("ON"), OFF("OFF"), BACK("Background");
 
             private String valueLabel;
 
-            StateButtons(String valueLabel) {
+            StateButtonsColors(String valueLabel) {
                 this.valueLabel = valueLabel;
             }
 
@@ -119,12 +138,12 @@ public class StringShelfDatabaseTables {
             }
         }
 
-        enum BackScreen implements SwTimerTableDataFields {
+        enum BackScreenColors implements SwTimerTableDataFields {
             BACK("Background");
 
             private String valueLabel;
 
-            BackScreen(String valueLabel) {
+            BackScreenColors(String valueLabel) {
                 this.valueLabel = valueLabel;
             }
 
@@ -139,6 +158,7 @@ public class StringShelfDatabaseTables {
     }
 
     private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
+    private static final String TABLE_DIMENSIONS_PERCENT_REGEXP_DEFAULT = "^(100|[1-9]?[0-9])$";  //  Nombre entier de 0 à 100, sans décimales
 
     public static int getSwTimerTableDataFieldsCount(String tableName) {   //  Rechercher nombre de champs de data de tableName (existant dans l'enum SwTimerTables.ColorYes ou SwTimerTables.ColorNo)
         int ret = NOT_FOUND;  //  Ne pas utiliser valueOf(tableName) avec ColorYes puis avec ColorNo à cause du risque d'exception générée si tableName absent de l'enum
@@ -255,14 +275,37 @@ public class StringShelfDatabaseTables {
     }
     //endregion
 
-    //region DOT_MATRIX_DISPLAY
-    public static String getDotMatrixDisplayTableName() {
-        return SwTimerTables.ColorYes.DOT_MATRIX_DISPLAY.toString();
+    //region DOT_MATRIX_DISPLAY_DIMENSIONS
+    public static String getDotMatrixDisplayDimensionsTableName() {
+        return SwTimerTables.ColorNo.DOT_MATRIX_DISPLAY_DIMENSIONS.toString();
     }
 
-    public static String[][] getDotMatrixDisplayInits() {
+    public static String[][] getDotMatrixDisplayDimensionsInits() {
+        final String[][] TABLE_DIMENSIONS_DOT_MATRIX_DISPLAY_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayDimensions.INTER_DOT_COEFF_LANDSCAPE.LABEL(), SwTimerTableDataFields.DotMatrixDisplayDimensions.INTER_DOT_COEFF_PORTRAIT.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_DIMENSIONS_PERCENT_REGEXP_DEFAULT, TABLE_DIMENSIONS_PERCENT_REGEXP_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString(), "20", "20"}
+        };
+        return TABLE_DIMENSIONS_DOT_MATRIX_DISPLAY_INITS;
+    }
+
+    public static int getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayDimensions.INTER_DOT_COEFF_LANDSCAPE.INDEX();
+    }
+
+    public static int getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayDimensions.INTER_DOT_COEFF_PORTRAIT.INDEX();
+    }
+
+    //region DOT_MATRIX_DISPLAY_COLORS
+    public static String getDotMatrixDisplayColorsTableName() {
+        return SwTimerTables.ColorYes.DOT_MATRIX_DISPLAY_COLORS.toString();
+    }
+
+    public static String[][] getDotMatrixDisplayColorsInits() {
         final String[][] TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplay.ON_TIME.LABEL(), SwTimerTableDataFields.DotMatrixDisplay.ON_LABEL.LABEL(), SwTimerTableDataFields.DotMatrixDisplay.OFF.LABEL(), SwTimerTableDataFields.DotMatrixDisplay.BACK.LABEL()},
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_TIME.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_LABEL.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.OFF.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
                 {TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}
@@ -270,31 +313,31 @@ public class StringShelfDatabaseTables {
         return TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS;
     }
 
-    public static int getDotMatrixDisplayOnTimeIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplay.ON_TIME.INDEX();
+    public static int getDotMatrixDisplayColorsOnTimeIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayColors.ON_TIME.INDEX();
     }
 
-    public static int getDotMatrixDisplayOnLabelIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplay.ON_LABEL.INDEX();
+    public static int getDotMatrixDisplayColorsOnLabelIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayColors.ON_LABEL.INDEX();
     }
 
-    public static int getDotMatrixDisplayOffIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplay.OFF.INDEX();
+    public static int getDotMatrixDisplayColorsOffIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayColors.OFF.INDEX();
     }
 
-    public static int getDotMatrixDisplayBackIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplay.BACK.INDEX();
+    public static int getDotMatrixDisplayColorsBackIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayColors.BACK.INDEX();
     }
     //endregion
 
-    //region STATE_BUTTONS
-    public static String getStateButtonsTableName() {
-        return SwTimerTables.ColorYes.STATE_BUTTONS.toString();
+    //region STATE_BUTTONS_COLORS
+    public static String getStateButtonsColorsTableName() {
+        return SwTimerTables.ColorYes.STATE_BUTTONS_COLORS.toString();
     }
 
-    public static String[][] getStateButtonsInits() {
+    public static String[][] getStateButtonsColorsInits() {
         final String[][] TABLE_COLOR_STATE_BUTTONS_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.StateButtons.ON.LABEL(), SwTimerTableDataFields.StateButtons.OFF.LABEL(), SwTimerTableDataFields.StateButtons.BACK.LABEL()},
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.StateButtonsColors.ON.LABEL(), SwTimerTableDataFields.StateButtonsColors.OFF.LABEL(), SwTimerTableDataFields.StateButtonsColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
                 {TABLE_IDS.DEFAULT.toString(), "0061F3", "404040", "000000"}
@@ -302,27 +345,27 @@ public class StringShelfDatabaseTables {
         return TABLE_COLOR_STATE_BUTTONS_INITS;
     }
 
-    public static int getStateButtonsOnIndex() {
-        return SwTimerTableDataFields.StateButtons.ON.INDEX();
+    public static int getStateButtonsColorsOnIndex() {
+        return SwTimerTableDataFields.StateButtonsColors.ON.INDEX();
     }
 
-    public static int getStateButtonsOffIndex() {
-        return SwTimerTableDataFields.StateButtons.OFF.INDEX();
+    public static int getStateButtonsColorsOffIndex() {
+        return SwTimerTableDataFields.StateButtonsColors.OFF.INDEX();
     }
 
-    public static int getStateButtonsBackIndex() {
-        return SwTimerTableDataFields.StateButtons.BACK.INDEX();
+    public static int getStateButtonsColorsBackIndex() {
+        return SwTimerTableDataFields.StateButtonsColors.BACK.INDEX();
     }
     //endregion
 
-    //region COLORS_BACKSCREEN
-    public static String getBackScreenTableName() {
-        return SwTimerTables.ColorYes.BACK_SCREEN.toString();
+    //region BACKSCREEN_COLORS
+    public static String getBackScreenColorsTableName() {
+        return SwTimerTables.ColorYes.BACK_SCREEN_COLORS.toString();
     }
 
-    public static String[][] getBackScreenInits() {
+    public static String[][] getBackScreenColorsInits() {
         final String[][] TABLE_COLORS_BACK_SCREEN_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.BackScreen.BACK.LABEL()},
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.BackScreenColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
                 {TABLE_IDS.DEFAULT.toString(), "000000"}
@@ -330,8 +373,8 @@ public class StringShelfDatabaseTables {
         return TABLE_COLORS_BACK_SCREEN_INITS;
     }
 
-    public static int getBackScreenBackIndex() {
-        return SwTimerTableDataFields.BackScreen.BACK.INDEX();
+    public static int getBackScreenColorsBackIndex() {
+        return SwTimerTableDataFields.BackScreenColors.BACK.INDEX();
     }
     //endregion
 
@@ -348,7 +391,7 @@ public class StringShelfDatabaseTables {
         return SwTimerTables.ColorYes.valueOf(colorTableName).ordinal();
     }
 
-    public static String[] getColorTableLabels() {
+    public static String[] getColorTablesLabels() {
         String[] values = new String[getColorTablesCount()];
         for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
             values[i] = SwTimerTables.ColorYes.valueOf(getColorTableName(i)).getLabel();

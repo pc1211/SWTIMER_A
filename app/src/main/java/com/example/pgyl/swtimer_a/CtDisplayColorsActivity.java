@@ -3,6 +3,7 @@ package com.example.pgyl.swtimer_a;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -50,19 +51,22 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatu
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableLabels;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsOnIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesLabels;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOnIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorTableFieldLabels;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentColorsInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorTablesFieldLabels;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayColorsActivity;
@@ -152,9 +156,10 @@ public class CtDisplayColorsActivity extends Activity {
     private int colorTableIndex;
     private int colorIndex;   //  Au sein de la table pointée par colorTableIndex
     private String[][] colors;  //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
-    private String[][] colorTableFieldsLabels;
-    private String[] colorTableLabels;
+    private String[][] colorTablesFieldsLabels;
+    private String[] colorTablesLabels;
     private COLOR_SPACES colorSpace;
+    private String[] dotMatrixDisplayDimensions;  //  Dimensions pour DotMatrixDisplay
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
@@ -199,9 +204,10 @@ public class CtDisplayColorsActivity extends Activity {
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         setupHSVColorSpace();
-        colors = getCurrentColorsInCtDisplayColorsActivity(stringShelfDatabase);
-        colorTableLabels = getColorTableLabels();
-        colorTableFieldsLabels = getColorTableFieldLabels(stringShelfDatabase);
+        colors = getCurrentOrDefaultColorsInCtDisplayColorsActivity(stringShelfDatabase);
+        dotMatrixDisplayDimensions = getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayActivity(stringShelfDatabase);   //  Prendre les dimensions actuelles de CtDisplayActivity
+        colorTablesLabels = getColorTablesLabels();
+        colorTablesFieldsLabels = getColorTablesFieldLabels(stringShelfDatabase);
 
         if (isColdStartStatusInCtDisplayColorsActivity(stringShelfDatabase)) {
             setStartStatusInCtDisplayColorsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
@@ -228,6 +234,7 @@ public class CtDisplayColorsActivity extends Activity {
         }
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
+        setupDotMatrixDisplayDimensions();
         updateDisplayDotMatrixDisplay();
         updateDisplayStateButtonColors();
         updateDisplayBackScreenColors();
@@ -359,27 +366,27 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayColors() {
-        if (colorTableIndex == getColorTableIndex(getDotMatrixDisplayTableName())) {
+        if (colorTableIndex == getColorTableIndex(getDotMatrixDisplayColorsTableName())) {
             updateDisplayDotMatrixDisplay();
         }
-        if (colorTableIndex == getColorTableIndex(getStateButtonsTableName())) {
+        if (colorTableIndex == getColorTableIndex(getStateButtonsColorsTableName())) {
             updateDisplayStateButtonColors();
         }
-        if (colorTableIndex == getColorTableIndex(getBackScreenTableName())) {
+        if (colorTableIndex == getColorTableIndex(getBackScreenColorsTableName())) {
             updateDisplayBackScreenColors();
         }
     }
 
     private void updateDisplayDotMatrixDisplay() {
-        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
+        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayColorsTableName())]);
         dotMatrixDisplayUpdater.displayHalfTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabelInit());   //  Partager l'affichage entre Temps et Label
     }
 
     private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   ON/BACK ou OFF/BACK
-        int colorTableIndex = getColorTableIndex(getStateButtonsTableName());
-        String frontColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsOnIndex()] : colors[colorTableIndex][getStateButtonsOffIndex()]);
-        String backColor = colors[colorTableIndex][getStateButtonsBackIndex()];
-        String extraColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsOffIndex()] : colors[colorTableIndex][getStateButtonsOnIndex()]);
+        int colorTableIndex = getColorTableIndex(getStateButtonsColorsTableName());
+        String frontColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsColorsOnIndex()] : colors[colorTableIndex][getStateButtonsColorsOffIndex()]);
+        String backColor = colors[colorTableIndex][getStateButtonsColorsBackIndex()];
+        String extraColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsColorsOffIndex()] : colors[colorTableIndex][getStateButtonsColorsOnIndex()]);
         stateButtons[stateCommand.INDEX()].setColors(frontColor, backColor, extraColor);
     }
 
@@ -390,7 +397,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayBackScreenColors() {
-        int color = Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getBackScreenTableName())][getBackScreenBackIndex()]);
+        int color = Color.parseColor(COLOR_PREFIX + colors[getColorTableIndex(getBackScreenColorsTableName())][getBackScreenColorsBackIndex()]);
         backLayoutPart2.setBackgroundColor(color);
         backLayoutPart1.setBackgroundColor(color);
     }
@@ -398,13 +405,13 @@ public class CtDisplayColorsActivity extends Activity {
     private void updateDisplayButtonTextNextColorTable() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
-        buttons[COMMANDS.NEXT_COLOR_TABLE.INDEX()].setText(colorTableLabels[colorTableIndex] + SYMBOL_NEXT);
+        buttons[COMMANDS.NEXT_COLOR_TABLE.INDEX()].setText(colorTablesLabels[colorTableIndex] + SYMBOL_NEXT);
     }
 
     private void updateDisplayButtonTextNextColor() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
-        buttons[COMMANDS.NEXT_COLOR.INDEX()].setText(colorTableFieldsLabels[colorTableIndex][colorIndex] + SYMBOL_NEXT);
+        buttons[COMMANDS.NEXT_COLOR.INDEX()].setText(colorTablesFieldsLabels[colorTableIndex][colorIndex] + SYMBOL_NEXT);
     }
 
     private void updateDisplayButtonTextColorValue() {
@@ -486,7 +493,17 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayColors() {
-        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayTableName())]);
+        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayColorsTableName())]);
+    }
+
+    private void setupDotMatrixDisplayDimensions() {
+        int interDotCoeffIndex;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            interDotCoeffIndex = getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex();
+        } else {
+            interDotCoeffIndex = getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex();
+        }
+        dotMatrixDisplayUpdater.setInterDotSizeCoeff(dotMatrixDisplayDimensions[interDotCoeffIndex]);
     }
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {
@@ -579,7 +596,7 @@ public class CtDisplayColorsActivity extends Activity {
     private void launchInputButtonsActivity() {
         setStartStatusInInputButtonsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTableFieldsLabels[colorTableIndex][colorIndex]);
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTablesFieldsLabels[colorTableIndex][colorIndex]);
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorTableName(colorTableIndex));
         callingIntent.putExtra(TABLE_EXTRA_KEYS.INDEX.toString(), colorIndex);
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.INDEX());
@@ -590,7 +607,7 @@ public class CtDisplayColorsActivity extends Activity {
 
         setStartStatusInPresetsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTableLabels[colorTableIndex] + "(RGB)");
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTablesLabels[colorTableIndex] + "(RGB)");
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.DISPLAY_TYPE.toString(), PRESETS_ACTIVITY_DISPLAY_TYPE.COLORS.toString());
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorTableName(colorTableIndex));

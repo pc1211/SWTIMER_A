@@ -9,13 +9,9 @@ import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
 
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
-import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_CENTER_Y;
+import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_HEIGHT;
 
 public class MainDotMatrixDisplayUpdater {
-    final String ON_COLOR = "FF9A22";
-    final String OFF_COLOR = "404040";
-    final String BACK_COLOR = "000000";
-
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
     private String maxText;
@@ -47,6 +43,9 @@ public class MainDotMatrixDisplayUpdater {
     }
 
     public void displayText(String text) {
+        final String ON_COLOR = "FF9A22";
+        final String OFF_COLOR = "404040";
+
         dotMatrixDisplayView.fillRect(displayRect, ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
         dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
         dotMatrixDisplayView.writeText(text, ON_COLOR, defaultFont);
@@ -54,6 +53,8 @@ public class MainDotMatrixDisplayUpdater {
     }
 
     private void setupBackColor() {
+        final String BACK_COLOR = "000000";
+
         dotMatrixDisplayView.setBackColor(BACK_COLOR);
     }
 
@@ -79,7 +80,7 @@ public class MainDotMatrixDisplayUpdater {
         displayRect = new Rect(gridRect.left, gridRect.top, displayRectWidth, displayRectHeight);  //  Affichage au début de la grille
 
         dotMatrixDisplayView.setInternalMarginCoeffs(INTERNAL_MARGIN_SIZE_COEFFS);
-        dotMatrixDisplayView.setExternalMarginCoeffs(ALIGN_LEFT_CENTER_Y);
+        dotMatrixDisplayView.setExternalMarginCoeffs(ALIGN_LEFT_HEIGHT);
         dotMatrixDisplayView.setGridRect(gridRect);
         dotMatrixDisplayView.setDisplayRect(displayRect);
     }
