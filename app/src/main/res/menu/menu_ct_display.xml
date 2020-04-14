@@ -12,7 +12,7 @@
     <item
         android:id="@+id/SET_DOT_FORM"
         android:showAsAction="never"
-        android:title="Dot Form">
+        android:title="Dot form">
         <menu>
             <group android:checkableBehavior="single">
                 <item

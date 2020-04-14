@@ -286,7 +286,7 @@ public class StringShelfDatabaseTables {
     }
     //endregion
 
-    //region DOT_MATRIX_DISPLAY_INTER_DOT_SIZE_COEFFS
+    //region DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS
     public static String getDotMatrixDisplayDotSpacingCoeffsTableName() {
         return SwTimerTables.ColorNo.DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS.toString();
     }
