@@ -30,7 +30,7 @@
             android:label="CtDisplayColorsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.example.pgyl.swtimer_a.CtDisplayDimensionsActivity"
+            android:name="com.example.pgyl.swtimer_a.CtDisplayDotSpacingActivity"
             android:label="CtDisplayDimensionsActivity" />
         <activity
             android:name="com.example.pgyl.pekislib_a.HelpActivity"

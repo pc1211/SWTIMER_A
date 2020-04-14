@@ -5,7 +5,7 @@ import com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 public class Constants {
     //region Constantes
     public enum SWTIMER_ACTIVITIES {
-        MAIN, CT_DISPLAY, CT_DISPLAY_COLORS, CT_DISPLAY_DIMENSIONS;
+        MAIN, CT_DISPLAY, CT_DISPLAY_COLORS, CT_DISPLAY_DOT_SPACING;
 
         public int INDEX() {
             return ordinal();

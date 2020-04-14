@@ -41,13 +41,15 @@ import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createSwtimerTableIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableBackScreenColors;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayColors;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayDimensions;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayDotForm;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayDotSpacingCoeffs;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableStateButtonsColors;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
@@ -585,10 +587,14 @@ public class MainActivity extends Activity {
             initializeTableBackScreenColors(stringShelfDatabase);
             createPresetWithDefaultValues(getBackScreenColorsTableName());
         }
-        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayDimensionsTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayDimensionsTableName());
-            initializeTableDotMatrixDisplayDimensions(stringShelfDatabase);
-            createPresetWithDefaultValues(getDotMatrixDisplayDimensionsTableName());
+        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayDotSpacingCoeffsTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
+            initializeTableDotMatrixDisplayDotSpacingCoeffs(stringShelfDatabase);
+            createPresetWithDefaultValues(getDotMatrixDisplayDotSpacingCoeffsTableName());
+        }
+        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayDotFormTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayDotFormTableName());
+            initializeTableDotMatrixDisplayDotForm(stringShelfDatabase);
         }
         if (!stringShelfDatabase.tableExists(getPresetsCTTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getPresetsCTTableName());

@@ -28,6 +28,7 @@ import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
+import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.DOT_FORM;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
@@ -55,8 +56,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreen
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getOrientationDotMatrixDisplayDotSpacingCoeffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOffIndex;
@@ -66,17 +66,19 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeLabelToPr
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayColorsActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDotForm;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimer;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveDotMatrixDisplayDotForm;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayColorsActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentDotMatrixDisplayDimensionsInCtDisplayActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayColorsActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayDimensionsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayDotSpacingActivity;
 
 public class CtDisplayActivity extends Activity {
     //region Constantes
@@ -111,11 +113,15 @@ public class CtDisplayActivity extends Activity {
     private Menu menu;
     private MenuItem barMenuItemSetClockAppAlarmOnStartTimer;
     private MenuItem barMenuItemKeepScreen;
+    private Menu menuSetDotForm;
+    private MenuItem menuItemSquareDots;
+    private MenuItem menuItemRoundDots;
     private LinearLayout backLayout;
     private boolean setClockAppAlarmOnStartTimer;
     private boolean keepScreen;
     private String[][] colors;   //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
-    private String[] dotMatrixDisplayDimensions;  //  Dimensions pour DotMatrixDisplay
+    private String[] dotMatrixDisplayDotSpacingCoeffs;  //  Espacement des pints de DotMatrixDisplay
+    private DOT_FORM dotForm;
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
     private StringShelfDatabase stringShelfDatabase;
@@ -141,11 +147,13 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         saveChronoTimer(stringShelfDatabase, ctRecordToChronoTimerRow(currentCtRecord));
+        saveDotMatrixDisplayDotForm(stringShelfDatabase, dotForm);
         currentCtRecord = null;
         setCurrentColorsInCtDisplayActivity(stringShelfDatabase, colors);
-        setCurrentDotMatrixDisplayDimensionsInCtDisplayActivity(stringShelfDatabase, dotMatrixDisplayDimensions);
+        setCurrentDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity(stringShelfDatabase, dotMatrixDisplayDotSpacingCoeffs);
         stringShelfDatabase.close();
         stringShelfDatabase = null;
+        menuSetDotForm = null;
         menu = null;
         savePreferences();
     }
@@ -162,7 +170,8 @@ public class CtDisplayActivity extends Activity {
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         colors = getCurrentOrDefaultColorsInCtDisplayActivity(stringShelfDatabase);
-        dotMatrixDisplayDimensions = getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayActivity(stringShelfDatabase);
+        dotMatrixDisplayDotSpacingCoeffs = getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity(stringShelfDatabase);
+        dotForm = getCurrentOrDefaultDotMatrixDisplayDotForm(stringShelfDatabase);
 
         if (isColdStartStatusInCtDisplayActivity(stringShelfDatabase)) {
             setStartStatusInCtDisplayActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
@@ -177,8 +186,8 @@ public class CtDisplayActivity extends Activity {
                 if (returnsFromCtDisplayColorsActivity()) {
                     colors = getCurrentOrDefaultColorsInCtDisplayColorsActivity(stringShelfDatabase);
                 }
-                if (returnsFromCtDisplayDimensionsActivity()) {
-                    dotMatrixDisplayDimensions = getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity(stringShelfDatabase);
+                if (returnsFromCtDisplayDotSpacingActivity()) {
+                    dotMatrixDisplayDotSpacingCoeffs = getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity(stringShelfDatabase);
                 }
             }
         }
@@ -186,7 +195,8 @@ public class CtDisplayActivity extends Activity {
         getActionBar().setTitle(currentCtRecord.getLabel());
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
-        setupDotMatrixDisplayDimensions();
+        setupDotMatrixDisplayDotForm();
+        setupDotMatrixDisplayDotSpacingCoeffs();
         updateDisplayDotMatrixDisplay();
         updateDisplayStateButtonColors();
         updateDisplayBackScreenColor();
@@ -209,8 +219,8 @@ public class CtDisplayActivity extends Activity {
                 validReturnFromCalledActivity = true;
             }
         }
-        if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER) {
-            calledActivity = SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.toString();
+        if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER) {
+            calledActivity = SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
@@ -222,8 +232,12 @@ public class CtDisplayActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_ct_display, menu);
         this.menu = menu;
         setupBarMenuItems();
+        setupDotFormMenuItems();
         updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
         updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
+        if (dotForm != null) {
+            updateDisplayDotFormMenuItems(dotForm);
+        }
         return true;
     }
 
@@ -231,6 +245,9 @@ public class CtDisplayActivity extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {  // appelé par invalideOptionsMenu après changement d'orientation
         updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(setClockAppAlarmOnStartTimer);
         updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
+        if (dotForm != null) {
+            updateDisplayDotFormMenuItems(dotForm);
+        }
         return true;
     }
 
@@ -254,9 +271,21 @@ public class CtDisplayActivity extends Activity {
             launchCtDisplayColorsActivity();
             return true;
         }
-        if (item.getItemId() == R.id.SET_DIMENSIONS) {
-            setCurrentDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity(stringShelfDatabase, dotMatrixDisplayDimensions);
-            launchCtDisplayDimensionsActivity();
+        if (item.getItemId() == R.id.SET_DOT_SPACING) {
+            setCurrentDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity(stringShelfDatabase, dotMatrixDisplayDotSpacingCoeffs);
+            launchCtDisplayDotSpacingActivity();
+            return true;
+        }
+        if (item.getItemId() == R.id.SET_SQUARE_DOTS) {
+            dotForm = DOT_FORM.SQUARE;
+            setupDotMatrixDisplayDotForm();
+            updateDisplayDotMatrixDisplay();
+            return true;
+        }
+        if (item.getItemId() == R.id.SET_ROUND_DOTS) {
+            dotForm = DOT_FORM.ROUND;
+            setupDotMatrixDisplayDotForm();
+            updateDisplayDotMatrixDisplay();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -382,6 +411,14 @@ public class CtDisplayActivity extends Activity {
         barMenuItemKeepScreen.setIcon((keepScreen ? R.drawable.main_light_on : R.drawable.main_light_off));
     }
 
+    private void updateDisplayDotFormMenuItems(DOT_FORM dotForm) {
+        if (dotForm.equals(DOT_FORM.SQUARE)) {
+            menuItemSquareDots.setChecked(true);
+        } else {   //  Round
+            menuItemRoundDots.setChecked(true);
+        }
+    }
+
     private void updateDisplayKeepScreen() {
         if (keepScreen) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -468,7 +505,7 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void setupDotMatrixDisplay() {  //  Pour Afficher HH:MM:SS.CC et éventuellement un label
+    private void setupDotMatrixDisplay() {  //  Pour Afficher HH:MM:SS.C et éventuellement un label
         final long DOT_MATRIX_DISPLAY_VIEW_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
         dotMatrixDisplayView = findViewById(R.id.DOT_MATRIX_DISPLAY);
@@ -486,17 +523,14 @@ public class CtDisplayActivity extends Activity {
     }
 
 
-    private void setupDotMatrixDisplayDimensions() {
-        int interDotCoeffIndex;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            interDotCoeffIndex = getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex();
-        } else {
-            interDotCoeffIndex = getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex();
-        }
-        dotMatrixDisplayUpdater.setInterDotSizeCoeff(dotMatrixDisplayDimensions[interDotCoeffIndex]);
+    private void setupDotMatrixDisplayDotSpacingCoeffs() {
+        dotMatrixDisplayUpdater.setDotSpacingCoeff(dotMatrixDisplayDotSpacingCoeffs[getOrientationDotMatrixDisplayDotSpacingCoeffIndex(getResources().getConfiguration().orientation)]);
         dotMatrixDisplayUpdater.rebuildDimensions();
     }
 
+    private void setupDotMatrixDisplayDotForm() {
+        dotMatrixDisplayUpdater.setDotForm(dotForm);
+    }
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {
         dotMatrixDisplayUpdater = new CtDisplayDotMatrixDisplayUpdater(dotMatrixDisplayView, currentCtRecord);
@@ -506,6 +540,10 @@ public class CtDisplayActivity extends Activity {
                 onExpiredTimerCurrentChronoTimer();
             }
         });
+    }
+
+    private void setupBackLayout() {
+        backLayout = findViewById(R.id.BACK_LAYOUT);
     }
 
     private void setupBarMenuItems() {
@@ -521,8 +559,19 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void setupBackLayout() {
-        backLayout = findViewById(R.id.BACK_LAYOUT);
+    private void setupDotFormMenuItems() {
+        final String MENU_SET_DOT_FORM_NAME = "SET_DOT_FORM";
+        final String MENU_ITEM_SET_SQUARE_DOTS_NAME = "SET_SQUARE_DOTS";
+        final String MENU_ITEM_SET_ROUND_DOTS_NAME = "SET_ROUND_DOTS";
+
+        Class rid = R.id.class;
+        try {
+            menuSetDotForm = menu.findItem(rid.getField(MENU_SET_DOT_FORM_NAME).getInt(rid)).getSubMenu();
+            menuItemSquareDots = menuSetDotForm.findItem(rid.getField(MENU_ITEM_SET_SQUARE_DOTS_NAME).getInt(rid));
+            menuItemRoundDots = menuSetDotForm.findItem(rid.getField(MENU_ITEM_SET_ROUND_DOTS_NAME).getInt(rid));
+        } catch (IllegalAccessException | NoSuchFieldException ex) {
+            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void setupStringShelfDatabase() {
@@ -555,11 +604,11 @@ public class CtDisplayActivity extends Activity {
         startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);
     }
 
-    private void launchCtDisplayDimensionsActivity() {
-        setStartStatusInCtDisplayDimensionsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
-        Intent callingIntent = new Intent(this, CtDisplayDimensionsActivity.class);
+    private void launchCtDisplayDotSpacingActivity() {
+        setStartStatusInCtDisplayDotSpacingActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
+        Intent callingIntent = new Intent(this, CtDisplayDotSpacingActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
-        startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);
+        startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);
     }
 
     private void launchHelpActivity() {
@@ -577,8 +626,8 @@ public class CtDisplayActivity extends Activity {
         return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString()));
     }
 
-    private boolean returnsFromCtDisplayDimensionsActivity() {
-        return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.toString()));
+    private boolean returnsFromCtDisplayDotSpacingActivity() {
+        return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString()));
     }
 
 }

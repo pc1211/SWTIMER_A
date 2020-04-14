@@ -2,6 +2,7 @@ package com.example.pgyl.swtimer_a;
 
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 
+import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.DOT_FORM;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
@@ -16,8 +17,11 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTable
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesCount;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormValueIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsInits;
@@ -39,8 +43,12 @@ public class StringShelfDatabaseUtils {
         stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayColorsTableName(), getDotMatrixDisplayColorsInits());
     }
 
-    public static void initializeTableDotMatrixDisplayDimensions(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayDimensionsTableName(), getDotMatrixDisplayDimensionsInits());
+    public static void initializeTableDotMatrixDisplayDotSpacingCoeffs(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayDotSpacingCoeffsTableName(), getDotMatrixDisplayDotSpacingCoeffsInits());
+    }
+
+    public static void initializeTableDotMatrixDisplayDotForm(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormInits());
     }
 
     public static void initializeTableStateButtonsColors(StringShelfDatabase stringShelfDatabase) {
@@ -95,33 +103,47 @@ public class StringShelfDatabaseUtils {
     }
     //endregion
 
-    //region DIMENSIONS
-    public static String[] getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase) {
-        return getCurrentOrDefaultDotMatrixDisplayDimensionsInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+    //region DOT_SPACING_COEFFS
+    public static String[] getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase) {
+        return getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
     }
 
-    public static String[] getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity(StringShelfDatabase stringShelfDatabase) {
-        return getCurrentOrDefaultDotMatrixDisplayDimensionsInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.toString());
+    public static String[] getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity(StringShelfDatabase stringShelfDatabase) {
+        return getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString());
     }
 
-    public static void setCurrentDotMatrixDisplayDimensionsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, String[] values) {
-        stringShelfDatabase.insertOrReplaceRowById(getDotMatrixDisplayDimensionsTableName(), TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), values);
+    public static void setCurrentDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, String[] values) {
+        stringShelfDatabase.insertOrReplaceRowById(getDotMatrixDisplayDotSpacingCoeffsTableName(), TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), values);
     }
 
-    public static void setCurrentDotMatrixDisplayDimensionsInCtDisplayDimensionsActivity(StringShelfDatabase stringShelfDatabase, String[] values) {
-        stringShelfDatabase.insertOrReplaceRowById(getDotMatrixDisplayDimensionsTableName(), TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.toString(), values);
+    public static void setCurrentDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity(StringShelfDatabase stringShelfDatabase, String[] values) {
+        stringShelfDatabase.insertOrReplaceRowById(getDotMatrixDisplayDotSpacingCoeffsTableName(), TABLE_IDS.CURRENT.toString() + SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), values);
     }
 
-    public static String[] getDotMatrixDisplayDimensionsLabels(StringShelfDatabase stringShelfDatabase) {
-        return getLabels(stringShelfDatabase, getDotMatrixDisplayDimensionsTableName());
+    public static String[] getDotMatrixDisplayDotSpacingCoeffsLabels(StringShelfDatabase stringShelfDatabase) {
+        return getLabels(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
     }
 
-    public static String[] getCurrentOrDefaultDotMatrixDisplayDimensionsInActivity(StringShelfDatabase stringShelfDatabase, String activityName) {
-        String[] ret = stringShelfDatabase.selectRowById(getDotMatrixDisplayDimensionsTableName(), TABLE_IDS.CURRENT.toString() + activityName);
+    public static String[] getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInActivity(StringShelfDatabase stringShelfDatabase, String activityName) {
+        String[] ret = stringShelfDatabase.selectRowById(getDotMatrixDisplayDotSpacingCoeffsTableName(), TABLE_IDS.CURRENT.toString() + activityName);
         if (ret == null) {
-            ret = getDefaults(stringShelfDatabase, getDotMatrixDisplayDimensionsTableName());
+            ret = getDefaults(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
         }
         return ret;
+    }
+    //endregion
+
+    //region DOT_MATRIX_DISPLAY_DOT_FORM
+    public static void saveDotMatrixDisplayDotForm(StringShelfDatabase stringShelfDatabase, DOT_FORM value) {
+        stringShelfDatabase.insertOrReplaceFieldById(getDotMatrixDisplayDotFormTableName(), TABLE_IDS.CURRENT.toString(), getDotMatrixDisplayDotFormValueIndex(), value.toString());
+    }
+
+    public static DOT_FORM getCurrentOrDefaultDotMatrixDisplayDotForm(StringShelfDatabase stringShelfDatabase) {
+        String[] ret = stringShelfDatabase.selectRowById(getDotMatrixDisplayDotFormTableName(), TABLE_IDS.CURRENT.toString());
+        if (ret == null) {
+            ret = getDefaults(stringShelfDatabase, getDotMatrixDisplayDotFormTableName());
+        }
+        return DOT_FORM.valueOf(ret[getDotMatrixDisplayDotFormValueIndex()]);
     }
     //endregion
 
@@ -134,8 +156,8 @@ public class StringShelfDatabaseUtils {
         return isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
     }
 
-    public static boolean isColdStartStatusInCtDisplayDimensionsActivity(StringShelfDatabase stringShelfDatabase) {
-        return isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.toString());
+    public static boolean isColdStartStatusInCtDisplayDotSpacingActivity(StringShelfDatabase stringShelfDatabase) {
+        return isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString());
     }
 
     public static void setStartStatusInCtDisplayActivity(StringShelfDatabase stringShelfDatabase, ACTIVITY_START_STATUS activityStartStatus) {
@@ -146,8 +168,8 @@ public class StringShelfDatabaseUtils {
         setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), activityStartStatus);
     }
 
-    public static void setStartStatusInCtDisplayDimensionsActivity(StringShelfDatabase stringShelfDatabase, ACTIVITY_START_STATUS activityStartStatus) {
-        setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DIMENSIONS.toString(), activityStartStatus);
+    public static void setStartStatusInCtDisplayDotSpacingActivity(StringShelfDatabase stringShelfDatabase, ACTIVITY_START_STATUS activityStartStatus) {
+        setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), activityStartStatus);
     }
     //endregion
 

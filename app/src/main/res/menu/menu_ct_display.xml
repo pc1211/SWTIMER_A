@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/SET_COLORS"
         android:showAsAction="never"
-        android:title="Set Colors" />
+        android:title="Colors..." />
     <item
-        android:id="@+id/SET_DIMENSIONS"
+        android:id="@+id/SET_DOT_SPACING"
         android:showAsAction="never"
-        android:title="Set Dimensions" />
+        android:title="Dot spacing..." />
+    <item
+        android:id="@+id/SET_DOT_FORM"
+        android:showAsAction="never"
+        android:title="Dot Form">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/SET_SQUARE_DOTS"
+                    android:title="Square dots" />
+                <item
+                    android:id="@+id/SET_ROUND_DOTS"
+                    android:title="Round dots" />
+            </group>
+        </menu>
+    </item>
     <item
         android:id="@+id/BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER"
         android:showAsAction="always"

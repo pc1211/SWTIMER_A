@@ -8,6 +8,7 @@ import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
 import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 
+import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.DOT_FORM;
 import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.SCROLL_DIRECTIONS;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
@@ -89,8 +90,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
     }
 
-    public void setInterDotSizeCoeff(String interDotSizeCoeff) {
-        dotMatrixDisplayView.setInterDotSizeCoeff(interDotSizeCoeff);
+    public void setDotSpacingCoeff(String interDotSizeCoeff) {
+        dotMatrixDisplayView.setDotSpacingCoeff(interDotSizeCoeff);
+    }
+
+    public void setDotForm(DOT_FORM dotForm) {
+        dotMatrixDisplayView.setDotForm(dotForm);
     }
 
     public void rebuildDimensions() {

@@ -3,7 +3,6 @@ package com.example.pgyl.swtimer_a;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -36,6 +35,7 @@ import static com.example.pgyl.pekislib_a.Constants.HEX_RADIX;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
+import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.DOT_FORM;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
@@ -57,8 +57,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTable
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesLabels;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getOrientationDotMatrixDisplayDotSpacingCoeffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOnIndex;
@@ -66,7 +65,8 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButto
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorTablesFieldLabels;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayColorsActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDotForm;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayColorsActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayColorsActivity;
@@ -159,7 +159,8 @@ public class CtDisplayColorsActivity extends Activity {
     private String[][] colorTablesFieldsLabels;
     private String[] colorTablesLabels;
     private COLOR_SPACES colorSpace;
-    private String[] dotMatrixDisplayDimensions;  //  Dimensions pour DotMatrixDisplay
+    private String[] dotMatrixDisplayDotSpacingCoeffs;  //  Espacement des carrés de DotMatrixDisplay
+    private DOT_FORM dotForm;
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
@@ -205,9 +206,10 @@ public class CtDisplayColorsActivity extends Activity {
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         setupHSVColorSpace();
         colors = getCurrentOrDefaultColorsInCtDisplayColorsActivity(stringShelfDatabase);
-        dotMatrixDisplayDimensions = getCurrentOrDefaultDotMatrixDisplayDimensionsInCtDisplayActivity(stringShelfDatabase);   //  Prendre les dimensions actuelles de CtDisplayActivity
+        dotMatrixDisplayDotSpacingCoeffs = getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity(stringShelfDatabase);   //  Prendre les coefficients actuels de CtDisplayActivity
         colorTablesLabels = getColorTablesLabels();
         colorTablesFieldsLabels = getColorTablesFieldLabels(stringShelfDatabase);
+        dotForm = getCurrentOrDefaultDotMatrixDisplayDotForm(stringShelfDatabase);
 
         if (isColdStartStatusInCtDisplayColorsActivity(stringShelfDatabase)) {
             setStartStatusInCtDisplayColorsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
@@ -234,7 +236,8 @@ public class CtDisplayColorsActivity extends Activity {
         }
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
-        setupDotMatrixDisplayDimensions();
+        setupDotMatrixDisplayDotFormSquareOn();
+        setupDotMatrixDisplayDotSpacingCoeffs();
         updateDisplayDotMatrixDisplay();
         updateDisplayStateButtonColors();
         updateDisplayBackScreenColors();
@@ -496,14 +499,13 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayColorsTableName())]);
     }
 
-    private void setupDotMatrixDisplayDimensions() {
-        int interDotCoeffIndex;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            interDotCoeffIndex = getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex();
-        } else {
-            interDotCoeffIndex = getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex();
-        }
-        dotMatrixDisplayUpdater.setInterDotSizeCoeff(dotMatrixDisplayDimensions[interDotCoeffIndex]);
+    private void setupDotMatrixDisplayDotSpacingCoeffs() {
+        dotMatrixDisplayUpdater.setDotSpacingCoeff(dotMatrixDisplayDotSpacingCoeffs[getOrientationDotMatrixDisplayDotSpacingCoeffIndex(getResources().getConfiguration().orientation)]);
+        dotMatrixDisplayUpdater.rebuildDimensions();
+    }
+
+    private void setupDotMatrixDisplayDotFormSquareOn() {
+        dotMatrixDisplayUpdater.setDotForm(dotForm);
     }
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {

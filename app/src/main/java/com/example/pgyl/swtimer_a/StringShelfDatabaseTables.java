@@ -1,10 +1,12 @@
 package com.example.pgyl.swtimer_a;
 
 import android.content.Context;
+import android.content.res.Configuration;
 
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
 
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
+import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.DOT_FORM;
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
@@ -42,7 +44,8 @@ public class StringShelfDatabaseTables {
         enum ColorNo implements SwTimerTables {  //  Les tables Non Couleur
             CHRONO_TIMERS(SwTimerTableDataFields.ChronoTimers.class),   //  Table des Chronos et Timers
             PRESETS_CT(SwTimerTableDataFields.PresetsCT.class),
-            DOT_MATRIX_DISPLAY_DIMENSIONS(SwTimerTableDataFields.DotMatrixDisplayDimensions.class);
+            DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS(SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.class),
+            DOT_MATRIX_DISPLAY_DOT_FORM(SwTimerTableDataFields.DotMatrixDisplayDotForm.class);
 
             private int dataFieldsCount;
 
@@ -84,12 +87,20 @@ public class StringShelfDatabaseTables {
             }
         }
 
-        enum DotMatrixDisplayDimensions implements SwTimerTableDataFields {
-            INTER_DOT_COEFF_LANDSCAPE("Landscape"), INTER_DOT_COEFF_PORTRAIT("Portrait");
+        enum DotMatrixDisplayDotForm implements SwTimerTableDataFields {
+            VALUE;
+
+            public int INDEX() {
+                return ordinal() + 1;
+            }   //  INDEX 0 pour identifiant utilisateur
+        }
+
+        enum DotMatrixDisplayDotSpacingCoeffs implements SwTimerTableDataFields {
+            LANDSCAPE("Landscape"), PORTRAIT("Portrait");
 
             private String valueLabel;
 
-            DotMatrixDisplayDimensions(String valueLabel) {
+            DotMatrixDisplayDotSpacingCoeffs(String valueLabel) {
                 this.valueLabel = valueLabel;
             }
 
@@ -158,7 +169,7 @@ public class StringShelfDatabaseTables {
     }
 
     private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
-    private static final String TABLE_DIMENSIONS_PERCENT_REGEXP_DEFAULT = "^(100|[1-9]?[0-9])$";  //  Nombre entier de 0 à 100, sans décimales
+    private static final String TABLE_PERCENT_REGEXP_DEFAULT = "^(100|[1-9]?[0-9])$";  //  Nombre entier de 0 à 100, sans décimales
 
     public static int getSwTimerTableDataFieldsCount(String tableName) {   //  Rechercher nombre de champs de data de tableName (existant dans l'enum SwTimerTables.ColorYes ou SwTimerTables.ColorNo)
         int ret = NOT_FOUND;  //  Ne pas utiliser valueOf(tableName) avec ColorYes puis avec ColorNo à cause du risque d'exception générée si tableName absent de l'enum
@@ -275,28 +286,48 @@ public class StringShelfDatabaseTables {
     }
     //endregion
 
-    //region DOT_MATRIX_DISPLAY_DIMENSIONS
-    public static String getDotMatrixDisplayDimensionsTableName() {
-        return SwTimerTables.ColorNo.DOT_MATRIX_DISPLAY_DIMENSIONS.toString();
+    //region DOT_MATRIX_DISPLAY_INTER_DOT_SIZE_COEFFS
+    public static String getDotMatrixDisplayDotSpacingCoeffsTableName() {
+        return SwTimerTables.ColorNo.DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS.toString();
     }
 
-    public static String[][] getDotMatrixDisplayDimensionsInits() {
-        final String[][] TABLE_DIMENSIONS_DOT_MATRIX_DISPLAY_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayDimensions.INTER_DOT_COEFF_LANDSCAPE.LABEL(), SwTimerTableDataFields.DotMatrixDisplayDimensions.INTER_DOT_COEFF_PORTRAIT.LABEL()},
+    public static String[][] getDotMatrixDisplayDotSpacingCoeffsInits() {
+        final String[][] TABLE_DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.LANDSCAPE.LABEL(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.PORTRAIT.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_DIMENSIONS_PERCENT_REGEXP_DEFAULT, TABLE_DIMENSIONS_PERCENT_REGEXP_DEFAULT},
+                {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT},
                 {TABLE_IDS.DEFAULT.toString(), "20", "20"}
         };
-        return TABLE_DIMENSIONS_DOT_MATRIX_DISPLAY_INITS;
+        return TABLE_DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS_INITS;
     }
 
-    public static int getDotMatrixDisplayDimensionsInterDotCoeffLandscapeIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayDimensions.INTER_DOT_COEFF_LANDSCAPE.INDEX();
+    public static int getDotMatrixDisplayDotSpacingCoeffLandscapeIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.LANDSCAPE.INDEX();
     }
 
-    public static int getDotMatrixDisplayDimensionsInterDotCoeffPortraitIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayDimensions.INTER_DOT_COEFF_PORTRAIT.INDEX();
+    public static int getDotMatrixDisplayDotSpacingCoeffPortraitIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.PORTRAIT.INDEX();
     }
+
+    public static int getOrientationDotMatrixDisplayDotSpacingCoeffIndex(int orientation) {
+        return (orientation == Configuration.ORIENTATION_PORTRAIT) ? getDotMatrixDisplayDotSpacingCoeffPortraitIndex() : getDotMatrixDisplayDotSpacingCoeffLandscapeIndex();
+    }
+
+    //region DOT_MATRIX_DISPLAY_DOT_FORM
+    public static String getDotMatrixDisplayDotFormTableName() {
+        return SwTimerTables.ColorNo.DOT_MATRIX_DISPLAY_DOT_FORM.toString();
+    }
+
+    public static String[][] getDotMatrixDisplayDotFormInits() {
+        final String[][] TABLE_DOT_MATRIX_DISPLAY_DOT_FORM_INITS = {
+                {TABLE_IDS.DEFAULT.toString(), DOT_FORM.SQUARE.toString()}};
+        return TABLE_DOT_MATRIX_DISPLAY_DOT_FORM_INITS;
+    }
+
+    public static int getDotMatrixDisplayDotFormValueIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayDotForm.VALUE.INDEX();
+    }
+    //endregion
 
     //region DOT_MATRIX_DISPLAY_COLORS
     public static String getDotMatrixDisplayColorsTableName() {
