@@ -87,16 +87,8 @@ public class StringShelfDatabaseTables {
             }
         }
 
-        enum DotMatrixDisplayDotForm implements SwTimerTableDataFields {
-            VALUE;
-
-            public int INDEX() {
-                return ordinal() + 1;
-            }   //  INDEX 0 pour identifiant utilisateur
-        }
-
         enum DotMatrixDisplayDotSpacingCoeffs implements SwTimerTableDataFields {
-            LANDSCAPE("Landscape"), PORTRAIT("Portrait");
+            PORTRAIT("Portrait"), LANDSCAPE("Landscape");
 
             private String valueLabel;
 
@@ -112,6 +104,15 @@ public class StringShelfDatabaseTables {
                 return valueLabel;
             }
         }
+
+        enum DotMatrixDisplayDotForm implements SwTimerTableDataFields {
+            VALUE;
+
+            public int INDEX() {
+                return ordinal() + 1;
+            }   //  INDEX 0 pour identifiant utilisateur
+        }
+
 
         enum DotMatrixDisplayColors implements SwTimerTableDataFields {
             ON_TIME("ON Time"), ON_LABEL("ON Label"), OFF("OFF"), BACK("Background");
@@ -293,7 +294,7 @@ public class StringShelfDatabaseTables {
 
     public static String[][] getDotMatrixDisplayDotSpacingCoeffsInits() {
         final String[][] TABLE_DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.LANDSCAPE.LABEL(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.PORTRAIT.LABEL()},
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.PORTRAIT.LABEL(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.LANDSCAPE.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT},
                 {TABLE_IDS.DEFAULT.toString(), "20", "20"}
