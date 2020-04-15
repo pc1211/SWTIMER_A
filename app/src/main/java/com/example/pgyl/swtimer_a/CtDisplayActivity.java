@@ -120,8 +120,8 @@ public class CtDisplayActivity extends Activity {
     private boolean setClockAppAlarmOnStartTimer;
     private boolean keepScreen;
     private String[][] colors;   //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
-    private String[] dotMatrixDisplayDotSpacingCoeffs;  //  Espacement des pints de DotMatrixDisplay
-    private DOT_FORM dotForm;
+    private String[] dotMatrixDisplayDotSpacingCoeffs;  //  Espacement des points de DotMatrixDisplay
+    private DOT_FORM dotForm;   //  Forme des points
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
     private StringShelfDatabase stringShelfDatabase;

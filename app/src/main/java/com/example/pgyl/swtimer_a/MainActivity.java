@@ -182,7 +182,7 @@ public class MainActivity extends Activity {
         updateDisplayStateButtonColors();
         updateDisplayKeepScreen();
         sortAndReloadMainCtList();
-        updateDisplayButtonsVisibility();
+        updateDisplayButtonsAndDotMatrixDisplayVisibility();
         mainCtListUpdater.startAutomatic();
         invalidateOptionsMenu();
     }
@@ -262,7 +262,7 @@ public class MainActivity extends Activity {
                 ctRecordsHandler.selectAll();
             }
             mainCtListUpdater.update();
-            updateDisplayButtonsVisibility();
+            updateDisplayButtonsAndDotMatrixDisplayVisibility();
         } else {
             toastLong("The list must contain at least one Chrono or Timer", this);
         }
@@ -288,7 +288,7 @@ public class MainActivity extends Activity {
                     removeSelection();
                 }
                 sortAndReloadMainCtList();
-                updateDisplayButtonsVisibility();
+                updateDisplayButtonsAndDotMatrixDisplayVisibility();
                 mainCtListUpdater.startAutomatic();
             }
         } else {
@@ -334,7 +334,7 @@ public class MainActivity extends Activity {
     }
 
     private void onCtListItemCheckBoxClick() {
-        updateDisplayButtonsVisibility();
+        updateDisplayButtonsAndDotMatrixDisplayVisibility();
     }
 
     private void sortAndReloadMainCtList() {
@@ -344,7 +344,7 @@ public class MainActivity extends Activity {
         mainCtListUpdater.reload();
     }
 
-    private void updateDisplayButtonsVisibility() {
+    private void updateDisplayButtonsAndDotMatrixDisplayVisibility() {
         if (ctRecordsHandler.getCountAll() >= 1) {  //  Il y a au moins un chrono/timer dans la liste
             if (ctRecordsHandler.getCountSelection() >= 1) {  //  Au moins un chrono/timer est sélectionné
                 setSecondRowLayoutVisible(layoutButtonsOnSelection);  //  Pour voir les boutons pouvant agir sur les chrono/timers sélectionnés et cacher le panneau d'affichage
@@ -415,7 +415,7 @@ public class MainActivity extends Activity {
             public void onClick(DialogInterface dialogInterface, int id) {
                 ctRecordsHandler.removeSelection();
                 sortAndReloadMainCtList();
-                updateDisplayButtonsVisibility();
+                updateDisplayButtonsAndDotMatrixDisplayVisibility();
             }
         });
         builder.setNegativeButton("No", null);
@@ -428,7 +428,7 @@ public class MainActivity extends Activity {
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
             sortAndReloadMainCtList();
-            updateDisplayButtonsVisibility();
+            updateDisplayButtonsAndDotMatrixDisplayVisibility();
             mainCtListUpdater.startAutomatic();
         } else {
             launchCtDisplayActivity(idct);
