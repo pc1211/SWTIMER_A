@@ -48,13 +48,13 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/BTN_NEXT_DIMENSION"
+            android:id="@+id/BTN_NEXT_DOT_SPACING_COEFF"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/BTN_DIMENSION_VALUE"
+            android:id="@+id/BTN_DOT_SPACING_COEFF_VALUE"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
