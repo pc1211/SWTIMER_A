@@ -98,13 +98,9 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setDotForm(dotForm);
     }
 
-    public void rebuildDimensions() {
-        dotMatrixDisplayView.rebuildDimensions();
-    }   //  A appeler uniquement si redimensionnement en temps réel
-
-    public void rebuildDrawParameters() {
-        dotMatrixDisplayView.rebuildDrawParameters();
-    }   //  A appeler uniquement si redimensionnement en temps réel et DotMatrixDisplay déjà affiché
+    public void rebuildStructure() {
+        dotMatrixDisplayView.rebuildStructure();
+    }   //  A appeler uniquement si MAJ en temps réel
 
     public void displayTimeAndLabel(String timeText, String labelText) {
         dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);    //  Pressed=ON TIME  Unpressed=OFF

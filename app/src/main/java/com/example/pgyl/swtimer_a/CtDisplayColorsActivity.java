@@ -236,8 +236,9 @@ public class CtDisplayColorsActivity extends Activity {
         }
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
-        setupDotMatrixDisplayDotFormSquareOn();
+        setupDotMatrixDisplayDotForm();
         setupDotMatrixDisplayDotSpacingCoeffs();
+        rebuildDotMatrixDisplayStructure();
         updateDisplayDotMatrixDisplay();
         updateDisplayStateButtonColors();
         updateDisplayBackScreenColors();
@@ -370,6 +371,8 @@ public class CtDisplayColorsActivity extends Activity {
 
     private void updateDisplayColors() {
         if (colorTableIndex == getColorTableIndex(getDotMatrixDisplayColorsTableName())) {
+            setupDotMatrixDisplayColors();
+            rebuildDotMatrixDisplayStructure();   //  Uniquement à cause de la reconstruction de l'overlay
             updateDisplayDotMatrixDisplay();
         }
         if (colorTableIndex == getColorTableIndex(getStateButtonsColorsTableName())) {
@@ -381,7 +384,6 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayDotMatrixDisplay() {
-        dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayColorsTableName())]);
         dotMatrixDisplayUpdater.displayHalfTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabelInit());   //  Partager l'affichage entre Temps et Label
     }
 
@@ -501,11 +503,14 @@ public class CtDisplayColorsActivity extends Activity {
 
     private void setupDotMatrixDisplayDotSpacingCoeffs() {
         dotMatrixDisplayUpdater.setDotSpacingCoeff(dotMatrixDisplayDotSpacingCoeffs[getOrientationDotMatrixDisplayDotSpacingCoeffIndex(getResources().getConfiguration().orientation)]);
-        dotMatrixDisplayUpdater.rebuildDimensions();
     }
 
-    private void setupDotMatrixDisplayDotFormSquareOn() {
+    private void setupDotMatrixDisplayDotForm() {
         dotMatrixDisplayUpdater.setDotForm(dotForm);
+    }
+
+    private void rebuildDotMatrixDisplayStructure() {
+        dotMatrixDisplayUpdater.rebuildStructure();   //  Reconstruction générale
     }
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {

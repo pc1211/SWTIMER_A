@@ -197,6 +197,7 @@ public class CtDisplayActivity extends Activity {
         setupDotMatrixDisplayColors();
         setupDotMatrixDisplayDotForm();
         setupDotMatrixDisplayDotSpacingCoeffs();
+        rebuildDotMatrixDisplayStructure();
         updateDisplayDotMatrixDisplay();
         updateDisplayStateButtonColors();
         updateDisplayBackScreenColor();
@@ -279,12 +280,14 @@ public class CtDisplayActivity extends Activity {
         if (item.getItemId() == R.id.SET_SQUARE_DOTS) {
             dotForm = DOT_FORM.SQUARE;
             setupDotMatrixDisplayDotForm();
+            rebuildDotMatrixDisplayStructure();  //  Uniquement à cause de la reconstruction nécessaire de l'overlay
             updateDisplayDotMatrixDisplay();
             return true;
         }
         if (item.getItemId() == R.id.SET_ROUND_DOTS) {
             dotForm = DOT_FORM.ROUND;
             setupDotMatrixDisplayDotForm();
+            rebuildDotMatrixDisplayStructure();   //  Uniquement à cause de la reconstruction nécessaire de l'overlay
             updateDisplayDotMatrixDisplay();
             return true;
         }
@@ -522,14 +525,16 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater.setColors(colors[getColorTableIndex(getDotMatrixDisplayColorsTableName())]);
     }
 
-
     private void setupDotMatrixDisplayDotSpacingCoeffs() {
         dotMatrixDisplayUpdater.setDotSpacingCoeff(dotMatrixDisplayDotSpacingCoeffs[getOrientationDotMatrixDisplayDotSpacingCoeffIndex(getResources().getConfiguration().orientation)]);
-        dotMatrixDisplayUpdater.rebuildDimensions();
     }
 
     private void setupDotMatrixDisplayDotForm() {
         dotMatrixDisplayUpdater.setDotForm(dotForm);
+    }
+
+    private void rebuildDotMatrixDisplayStructure() {
+        dotMatrixDisplayUpdater.rebuildStructure();   //  Reconstruction générale
     }
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {

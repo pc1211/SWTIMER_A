@@ -157,6 +157,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
         setupDotMatrixDisplayColors();
         setupDotMatrixDisplayDotForm();
         setupDotMatrixDisplayDotSpacingCoeff();
+        rebuildDotMatrixDisplayStructure();
         updateDisplayDotMatrixDisplay();
         updateDisplayButtonTextNextDotSpacingCoeff();
         updateDisplaySeekBarsProgress();
@@ -223,7 +224,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
         updateDisplayButtonTextDotSpacingCoeffValue();
         if (dotSpacingCoeffIndex == getOrientationDotMatrixDisplayDotSpacingCoeffIndex(orientation)) {
             setupDotMatrixDisplayDotSpacingCoeff();
-            rebuildDotMatrixDisplayDrawParameters();
+            rebuildDotMatrixDisplayStructure();
             updateDisplayDotMatrixDisplay();
         }
     }
@@ -254,7 +255,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
             updateDisplayButtonTextDotSpacingCoeffValue();
             if (dotSpacingCoeffIndex == getOrientationDotMatrixDisplayDotSpacingCoeffIndex(orientation)) {
                 setupDotMatrixDisplayDotSpacingCoeff();
-                rebuildDotMatrixDisplayDrawParameters();
+                rebuildDotMatrixDisplayStructure();
                 updateDisplayDotMatrixDisplay();
             }
         }
@@ -317,15 +318,14 @@ public class CtDisplayDotSpacingActivity extends Activity {
 
     private void setupDotMatrixDisplayDotSpacingCoeff() {
         dotMatrixDisplayUpdater.setDotSpacingCoeff(dotSpacingCoeffs[getOrientationDotMatrixDisplayDotSpacingCoeffIndex(orientation)]);    //  L'apparence va devoir changer
-        dotMatrixDisplayUpdater.rebuildDimensions();
-    }
-
-    private void rebuildDotMatrixDisplayDrawParameters() {
-        dotMatrixDisplayUpdater.rebuildDrawParameters();
     }
 
     private void setupDotMatrixDisplayDotForm() {
         dotMatrixDisplayUpdater.setDotForm(dotForm);
+    }
+
+    private void rebuildDotMatrixDisplayStructure() {
+        dotMatrixDisplayUpdater.rebuildStructure();
     }
 
     private void setupButtons() {
