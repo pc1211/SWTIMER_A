@@ -26,34 +26,32 @@ import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
-import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.DOT_FORM;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentEntryInInputButtonsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentPresetInPresetsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentEntryInInputButtonsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPresetInPresetsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInInputButtonsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValueInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValuesInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrents;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getLabels;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValueInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValuesInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
+import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormValueIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getOrientationDotMatrixDisplayDotSpacingCoeffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDotForm;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getDotMatrixDisplayDotSpacingCoeffsLabels;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayDotSpacingActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayDotSpacingActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentColorsOfMultipleTablesInActivity;
 
 public class CtDisplayDotSpacingActivity extends Activity {
     //region Constantes
@@ -89,7 +87,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
     private String[] colors;
     private String[] dotSpacingCoeffs;
     private String[] dotSpacingCoeffsLabels;
-    private DOT_FORM dotForm;
+    private String dotForm;
     int orientation;
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
@@ -117,7 +115,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         currentCtRecord = null;
-        setCurrentDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity(stringShelfDatabase, dotSpacingCoeffs);
+        setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffs);
         stringShelfDatabase.close();
         stringShelfDatabase = null;
         savePreferences();
@@ -131,25 +129,24 @@ public class CtDisplayDotSpacingActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        colors = getCurrentOrDefaultColorsInCtDisplayActivity(stringShelfDatabase)[getColorTableIndex(getDotMatrixDisplayColorsTableName())];  //  Prendre les couleurs actuelles de CtDisplayActivity
-        dotSpacingCoeffs = getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayDotSpacingActivity(stringShelfDatabase);
-        dotSpacingCoeffsLabels = getDotMatrixDisplayDotSpacingCoeffsLabels(stringShelfDatabase);
-        dotForm = getCurrentOrDefaultDotMatrixDisplayDotForm(stringShelfDatabase);
+        colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())[getColorTableIndex(getDotMatrixDisplayColorsTableName())];  //  Prendre les couleurs actuelles de CtDisplayActivity
+        dotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
+        dotSpacingCoeffsLabels = getLabels(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
+        dotForm = getCurrents(stringShelfDatabase, getDotMatrixDisplayDotFormTableName())[getDotMatrixDisplayDotFormValueIndex()];
         orientation = getResources().getConfiguration().orientation;
 
-        if (isColdStartStatusInCtDisplayDotSpacingActivity(stringShelfDatabase)) {
-            setStartStatusInCtDisplayDotSpacingActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
+        if (isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString())) {
+            setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), ACTIVITY_START_STATUS.HOT);
             dotSpacingCoeffIndex = getOrientationDotMatrixDisplayDotSpacingCoeffIndex(orientation);
         } else {
             dotSpacingCoeffIndex = getSHPDotSpacingCoeffIndex();
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (returnsFromInputButtonsActivity()) {
-                    String dotSpacingCoeffText = getCurrentEntryInInputButtonsActivity(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffIndex);
-                    dotSpacingCoeffs[dotSpacingCoeffIndex] = dotSpacingCoeffText;
+                    dotSpacingCoeffs[dotSpacingCoeffIndex] = getCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffIndex);
                 }
                 if (returnsFromPresetsActivity()) {
-                    dotSpacingCoeffs = getCurrentPresetInPresetsActivity(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
+                    dotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
                 }
             }
         }
@@ -234,12 +231,12 @@ public class CtDisplayDotSpacingActivity extends Activity {
     }
 
     private void onButtonClickDotSpacingCoeffValue() {
-        setCurrentEntryInInputButtonsActivity(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffIndex, getSeekBarsProgressString());
+        setCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffIndex, getSeekBarsProgressString());
         launchInputButtonsActivity();
     }
 
     private void onButtonClickPresets() {
-        setCurrentPresetInPresetsActivity(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffs);
+        setCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffs);
         launchPresetsActivity();
     }
 
@@ -378,7 +375,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
     }
 
     private void launchInputButtonsActivity() {
-        setStartStatusInInputButtonsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
+        setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), dotSpacingCoeffsLabels[dotSpacingCoeffIndex]);
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
@@ -389,7 +386,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
-        setStartStatusInPresetsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
+        setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), "Dot spacing coeffs");
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);

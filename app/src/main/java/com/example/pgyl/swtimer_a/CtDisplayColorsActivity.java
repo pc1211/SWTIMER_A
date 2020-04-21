@@ -35,20 +35,21 @@ import static com.example.pgyl.pekislib_a.Constants.HEX_RADIX;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
-import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.DOT_FORM;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentEntryInInputButtonsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentPresetInPresetsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentEntryInInputButtonsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentPresetInPresetsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInInputButtonsActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInPresetsActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValueInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValuesInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrents;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValueInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValuesInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
+import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsBackIndex;
@@ -57,19 +58,18 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTable
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesLabels;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormValueIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getOrientationDotMatrixDisplayDotSpacingCoeffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOnIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorTablesFieldLabels;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultColorsInCtDisplayColorsActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDotForm;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.isColdStartStatusInCtDisplayColorsActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsInCtDisplayColorsActivity;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setStartStatusInCtDisplayColorsActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getColorTableFieldLabelsOfMultipleTables;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentColorsOfMultipleTablesInActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsOfMultipleTablesInActivity;
 
 public class CtDisplayColorsActivity extends Activity {
     //region Constantes
@@ -160,7 +160,7 @@ public class CtDisplayColorsActivity extends Activity {
     private String[] colorTablesLabels;
     private COLOR_SPACES colorSpace;
     private String[] dotMatrixDisplayDotSpacingCoeffs;  //  Espacement des carrés de DotMatrixDisplay
-    private DOT_FORM dotForm;
+    private String dotForm;
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
@@ -190,7 +190,7 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         currentCtRecord = null;
-        setCurrentColorsInCtDisplayColorsActivity(stringShelfDatabase, colors);
+        setCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
         stringShelfDatabase.close();
         stringShelfDatabase = null;
         savePreferences();
@@ -205,14 +205,14 @@ public class CtDisplayColorsActivity extends Activity {
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         setupHSVColorSpace();
-        colors = getCurrentOrDefaultColorsInCtDisplayColorsActivity(stringShelfDatabase);
-        dotMatrixDisplayDotSpacingCoeffs = getCurrentOrDefaultDotMatrixDisplayDotSpacingCoeffsInCtDisplayActivity(stringShelfDatabase);   //  Prendre les coefficients actuels de CtDisplayActivity
+        colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
+        dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());   //  Prendre les coefficients actuels de CtDisplayActivity
         colorTablesLabels = getColorTablesLabels();
-        colorTablesFieldsLabels = getColorTablesFieldLabels(stringShelfDatabase);
-        dotForm = getCurrentOrDefaultDotMatrixDisplayDotForm(stringShelfDatabase);
+        colorTablesFieldsLabels = getColorTableFieldLabelsOfMultipleTables(stringShelfDatabase);
+        dotForm = getCurrents(stringShelfDatabase, getDotMatrixDisplayDotFormTableName())[getDotMatrixDisplayDotFormValueIndex()];
 
-        if (isColdStartStatusInCtDisplayColorsActivity(stringShelfDatabase)) {
-            setStartStatusInCtDisplayColorsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.HOT);
+        if (isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
+            setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.HOT);
             colorTableIndex = COLOR_TABLE_INDEX_DEFAULT_VALUE;
             colorIndex = COLOR_INDEX_DEFAULT_VALUE;
             colorSpace = COLOR_SPACE_DEFAULT_VALUE;
@@ -223,14 +223,14 @@ public class CtDisplayColorsActivity extends Activity {
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (returnsFromInputButtonsActivity()) {
-                    String colorText = getCurrentEntryInInputButtonsActivity(stringShelfDatabase, getColorTableName(colorTableIndex), colorIndex);
+                    String colorText = getCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getColorTableName(colorTableIndex), colorIndex);
                     if (colorSpace.equals(COLOR_SPACES.HSV)) {
                         colorText = HSVToRGB(colorText);    //  HSV dégradé
                     }
                     colors[colorTableIndex][colorIndex] = colorText;
                 }
                 if (returnsFromPresetsActivity()) {
-                    colors[colorTableIndex] = getCurrentPresetInPresetsActivity(stringShelfDatabase, getColorTableName(colorTableIndex));
+                    colors[colorTableIndex] = getCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getColorTableName(colorTableIndex));
                 }
             }
         }
@@ -339,12 +339,12 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void onButtonClickColorValue() {
-        setCurrentEntryInInputButtonsActivity(stringShelfDatabase, getColorTableName(colorTableIndex), colorIndex, getSeekBarsProgressHexString());
+        setCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getColorTableName(colorTableIndex), colorIndex, getSeekBarsProgressHexString());
         launchInputButtonsActivity();
     }
 
     private void onButtonClickPresets() {
-        setCurrentPresetInPresetsActivity(stringShelfDatabase, getColorTableName(colorTableIndex), colors[colorTableIndex]);
+        setCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getColorTableName(colorTableIndex), colors[colorTableIndex]);
         launchPresetsActivity();
     }
 
@@ -372,7 +372,7 @@ public class CtDisplayColorsActivity extends Activity {
     private void updateDisplayColors() {
         if (colorTableIndex == getColorTableIndex(getDotMatrixDisplayColorsTableName())) {
             setupDotMatrixDisplayColors();
-            rebuildDotMatrixDisplayStructure();   //  Uniquement à cause de la reconstruction de l'overlay
+            rebuildDotMatrixDisplayStructure();   //  Uniquement à cause de la reconstruction du pochoir
             updateDisplayDotMatrixDisplay();
         }
         if (colorTableIndex == getColorTableIndex(getStateButtonsColorsTableName())) {
@@ -601,7 +601,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void launchInputButtonsActivity() {
-        setStartStatusInInputButtonsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
+        setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTablesFieldsLabels[colorTableIndex][colorIndex]);
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getColorTableName(colorTableIndex));
@@ -612,7 +612,7 @@ public class CtDisplayColorsActivity extends Activity {
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
-        setStartStatusInPresetsActivity(stringShelfDatabase, ACTIVITY_START_STATUS.COLD);
+        setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTablesLabels[colorTableIndex] + "(RGB)");
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
