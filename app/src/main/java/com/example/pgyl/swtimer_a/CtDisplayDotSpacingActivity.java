@@ -32,9 +32,9 @@ import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPL
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrent;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValueInActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValuesInActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrents;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getLabels;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusInActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValueInActivity;
@@ -132,7 +132,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
         colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())[getColorTableIndex(getDotMatrixDisplayColorsTableName())];  //  Prendre les couleurs actuelles de CtDisplayActivity
         dotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
         dotSpacingCoeffsLabels = getLabels(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
-        dotForm = getCurrents(stringShelfDatabase, getDotMatrixDisplayDotFormTableName())[getDotMatrixDisplayDotFormValueIndex()];
+        dotForm = getCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex());
         orientation = getResources().getConfiguration().orientation;
 
         if (isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString())) {

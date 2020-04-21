@@ -36,11 +36,11 @@ import static com.example.pgyl.pekislib_a.MiscUtils.capitalize;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrent;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValuesInActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrents;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrent;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValuesInActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrents;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
@@ -116,7 +116,6 @@ public class CtDisplayActivity extends Activity {
     private boolean keepScreen;
     private String[][] colors;   //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
     private String[] dotMatrixDisplayDotSpacingCoeffs;  //  Espacement des points de DotMatrixDisplay en portrait et landscape
-    private String[] dotForms;
     private String dotForm;    //  Forme des points
     private boolean validReturnFromCalledActivity;
     private String calledActivity;
@@ -143,7 +142,7 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         saveChronoTimer(stringShelfDatabase, ctRecordToChronoTimerRow(currentCtRecord));
-        setCurrents(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), dotForms);
+        setCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex(), dotForm);
         currentCtRecord = null;
         setCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colors);
         setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotMatrixDisplayDotSpacingCoeffs);
@@ -167,8 +166,7 @@ public class CtDisplayActivity extends Activity {
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
         dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
-        dotForms = getCurrents(stringShelfDatabase, getDotMatrixDisplayDotFormTableName());
-        dotForm = getCurrents(stringShelfDatabase, getDotMatrixDisplayDotFormTableName())[getDotMatrixDisplayDotFormValueIndex()];
+        dotForm = getCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex());
 
         if (isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString())) {
             setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.HOT);

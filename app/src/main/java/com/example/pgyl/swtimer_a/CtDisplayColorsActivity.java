@@ -41,9 +41,9 @@ import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPL
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrent;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValueInActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValuesInActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrents;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusInActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValueInActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValuesInActivity;
@@ -209,7 +209,7 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());   //  Prendre les coefficients actuels de CtDisplayActivity
         colorTablesLabels = getColorTablesLabels();
         colorTablesFieldsLabels = getColorTableFieldLabelsOfMultipleTables(stringShelfDatabase);
-        dotForm = getCurrents(stringShelfDatabase, getDotMatrixDisplayDotFormTableName())[getDotMatrixDisplayDotFormValueIndex()];
+        dotForm = getCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex());
 
         if (isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
             setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.HOT);
