@@ -24,15 +24,15 @@ public class StringShelfDatabaseTables {
             BACK_SCREEN_COLORS(SwTimerTableDataFields.BackScreenColors.class, "Back screen");
 
             private int dataFieldsCount;
-            private String label;
+            private String valueLabel;
 
-            ColorYes(Class<? extends SwTimerTableDataFields> swTimerTableFields, String label) {
+            ColorYes(Class<? extends SwTimerTableDataFields> swTimerTableFields, String valueLabel) {
                 dataFieldsCount = swTimerTableFields.getEnumConstants().length;
-                this.label = label;
+                this.valueLabel = valueLabel;
             }
 
-            public String getLabel() {
-                return label;
+            public String LABEL() {
+                return valueLabel;
             }
 
             @Override
@@ -426,7 +426,7 @@ public class StringShelfDatabaseTables {
     public static String[] getColorTableLabelsOfMultipleTables() {
         String[] values = new String[getColorTablesCount()];
         for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            values[i] = SwTimerTables.ColorYes.valueOf(getColorTableName(i)).getLabel();
+            values[i] = SwTimerTables.ColorYes.valueOf(getColorTableName(i)).LABEL();
         }
         return values;
     }

@@ -702,7 +702,7 @@ public class MainActivity extends Activity {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setStartStatusInActivity(stringShelfDatabase, Constants.SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
+        setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
         startActivity(callingIntent);
