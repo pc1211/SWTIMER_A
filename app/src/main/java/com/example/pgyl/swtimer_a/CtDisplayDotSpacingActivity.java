@@ -129,7 +129,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())[getColorTableIndex(getDotMatrixDisplayColorsTableName())];  //  Prendre les couleurs actuelles de CtDisplayActivity
+        colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString())[getColorTableIndex(getDotMatrixDisplayColorsTableName())];  //  Prendre les couleurs actuelles de CtDisplayActivity
         dotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
         dotSpacingCoeffsLabels = getLabels(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
         dotForm = getCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex());
