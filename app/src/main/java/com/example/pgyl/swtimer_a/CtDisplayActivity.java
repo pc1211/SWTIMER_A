@@ -37,12 +37,12 @@ import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrent;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValuesInActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValuesFromActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrent;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValuesInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValuesForActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
@@ -70,9 +70,9 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButto
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeLabelToPresetCTRow;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentColorsOfMultipleTablesInActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesFromMultipleColorTablesFromActivity;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimer;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentColorsOfMultipleTablesInActivity;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.setCurrentValuesForMultipleColorTablesForActivity;
 
 
 public class CtDisplayActivity extends Activity {
@@ -144,8 +144,8 @@ public class CtDisplayActivity extends Activity {
         saveChronoTimer(stringShelfDatabase, ctRecordToChronoTimerRow(currentCtRecord));
         setCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex(), dotForm);
         currentCtRecord = null;
-        setCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colors);
-        setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotMatrixDisplayDotSpacingCoeffs);
+        setCurrentValuesForMultipleColorTablesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colors);
+        setCurrentValuesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotMatrixDisplayDotSpacingCoeffs);
         stringShelfDatabase.close();
         stringShelfDatabase = null;
         menuSetDotForm = null;
@@ -165,25 +165,25 @@ public class CtDisplayActivity extends Activity {
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         setDefaults(stringShelfDatabase, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));
-        colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
-        dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
+        colors = getCurrentValuesFromMultipleColorTablesFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+        dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
         dotForm = getCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex());
 
-        if (isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString())) {
-            setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.HOT);
+        if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString())) {
+            setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.HOT);
         } else {
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (calledActivityName.equals(PEKISLIB_ACTIVITIES.PRESETS.toString())) {
-                    if (!copyPresetCTRowToCtRecord(getCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName()), currentCtRecord, nowm)) {
+                    if (!copyPresetCTRowToCtRecord(getCurrentValuesFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName()), currentCtRecord, nowm)) {
                         toastLong("Error updating Timer", this);
                     }
                 }
                 if (calledActivityName.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
-                    colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
+                    colors = getCurrentValuesFromMultipleColorTablesFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
                 }
                 if (calledActivityName.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString())) {
-                    dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
+                    dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
                 }
             }
         }
@@ -264,12 +264,12 @@ public class CtDisplayActivity extends Activity {
             updateDisplayKeepScreenBarMenuItemIcon(keepScreen);
         }
         if (item.getItemId() == R.id.SET_COLORS) {
-            setCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
+            setCurrentValuesForMultipleColorTablesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
             launchCtDisplayColorsActivity();
             return true;
         }
         if (item.getItemId() == R.id.SET_DOT_SPACING) {
-            setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotMatrixDisplayDotSpacingCoeffs);
+            setCurrentValuesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotMatrixDisplayDotSpacingCoeffs);
             launchCtDisplayDotSpacingActivity();
             return true;
         }
@@ -587,8 +587,8 @@ public class CtDisplayActivity extends Activity {
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
-        setCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getLabel()));
-        setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentValuesForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getLabel()));
+        setStartStatusOfActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), capitalize("CT Presets"));
         callingIntent.putExtra(PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
@@ -598,16 +598,16 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void launchCtDisplayColorsActivity() {
-        setCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
-        setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentValuesForMultipleColorTablesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
+        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayColorsActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
         startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);
     }
 
     private void launchCtDisplayDotSpacingActivity() {
-        setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotMatrixDisplayDotSpacingCoeffs);
-        setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentValuesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotMatrixDisplayDotSpacingCoeffs);
+        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayDotSpacingActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
         startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);

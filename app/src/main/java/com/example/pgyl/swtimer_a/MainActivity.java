@@ -36,9 +36,9 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_STA
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosTableName;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createPekislibTableIfNotExists;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValuesInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValuesForActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrents;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusOfActivity;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
@@ -579,28 +579,28 @@ public class MainActivity extends Activity {
             createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayColorsTableName());
             initializeTableDotMatrixDisplayColors(stringShelfDatabase);
             String[] defaults = getDefaults(stringShelfDatabase, getDotMatrixDisplayColorsTableName());
-            setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName(), defaults);
+            setCurrentValuesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName(), defaults);
             createPresetWithDefaultValues(getDotMatrixDisplayColorsTableName(), defaults);   //  => PRESET1 = DEFAULT  dans la table de couleurs de DotMatrixDisplay
         }
         if (!stringShelfDatabase.tableExists(getStateButtonsColorsTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getStateButtonsColorsTableName());
             initializeTableStateButtonsColors(stringShelfDatabase);
             String[] defaults = getDefaults(stringShelfDatabase, getStateButtonsColorsTableName());
-            setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getStateButtonsColorsTableName(), defaults);
+            setCurrentValuesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getStateButtonsColorsTableName(), defaults);
             createPresetWithDefaultValues(getStateButtonsColorsTableName(), defaults);
         }
         if (!stringShelfDatabase.tableExists(getBackScreenColorsTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getBackScreenColorsTableName());
             initializeTableBackScreenColors(stringShelfDatabase);
             String[] defaults = getDefaults(stringShelfDatabase, getBackScreenColorsTableName());
-            setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getBackScreenColorsTableName(), defaults);
+            setCurrentValuesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getBackScreenColorsTableName(), defaults);
             createPresetWithDefaultValues(getBackScreenColorsTableName(), defaults);
         }
         if (!stringShelfDatabase.tableExists(getDotMatrixDisplayDotSpacingCoeffsTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
             initializeTableDotMatrixDisplayDotSpacingCoeffs(stringShelfDatabase);
             String[] defaults = getDefaults(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
-            setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), defaults);
+            setCurrentValuesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), defaults);
             createPresetWithDefaultValues(getDotMatrixDisplayDotSpacingCoeffsTableName(), defaults);
         }
         if (!stringShelfDatabase.tableExists(getDotMatrixDisplayDotFormTableName())) {
@@ -702,7 +702,7 @@ public class MainActivity extends Activity {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
+        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
         startActivity(callingIntent);

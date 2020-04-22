@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusInActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
@@ -298,7 +298,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
+        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(context, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
         context.startActivity(callingIntent);

@@ -54,7 +54,7 @@ public class StringShelfDatabaseUtils {
     //endregion
 
     //region COLORS
-    public static String[][] getCurrentColorsOfMultipleTablesInActivity(StringShelfDatabase stringShelfDatabase, String activityName) {
+    public static String[][] getCurrentValuesFromMultipleColorTablesFromActivity(StringShelfDatabase stringShelfDatabase, String activityName) {
         String values[][] = new String[getColorTablesCount()][];
         for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
             values[i] = stringShelfDatabase.selectRowByIdOrCreate(getColorTableName(i), TABLE_IDS.CURRENT.toString() + activityName);
@@ -62,13 +62,13 @@ public class StringShelfDatabaseUtils {
         return values;
     }
 
-    public static void setCurrentColorsOfMultipleTablesInActivity(StringShelfDatabase stringShelfDatabase, String activityName, String[][] values) {
+    public static void setCurrentValuesForMultipleColorTablesForActivity(StringShelfDatabase stringShelfDatabase, String activityName, String[][] values) {
         for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
             stringShelfDatabase.insertOrReplaceRowById(getColorTableName(i), TABLE_IDS.CURRENT.toString() + activityName, values[i]);
         }
     }
 
-    public static String[][] getColorTableFieldLabelsOfMultipleTables(StringShelfDatabase stringShelfDatabase) {
+    public static String[][] getFieldLabelsFromMultipleColorTables(StringShelfDatabase stringShelfDatabase) {
         String values[][] = new String[getColorTablesCount()][];
         for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
             values[i] = getLabels(stringShelfDatabase, getColorTableName(i));
