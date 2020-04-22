@@ -90,7 +90,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
     private String dotForm;
     int orientation;
     private boolean validReturnFromCalledActivity;
-    private String calledActivity;
+    private String calledActivityName;
     private StringShelfDatabase stringShelfDatabase;
     private String shpFileName;
     //endregion
@@ -142,10 +142,10 @@ public class CtDisplayDotSpacingActivity extends Activity {
             dotSpacingCoeffIndex = getSHPDotSpacingCoeffIndex();
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
-                if (returnsFromInputButtonsActivity()) {
+                if (calledActivityName.equals(PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString())) {
                     dotSpacingCoeffs[dotSpacingCoeffIndex] = getCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffIndex);
                 }
-                if (returnsFromPresetsActivity()) {
+                if (calledActivityName.equals(PEKISLIB_ACTIVITIES.PRESETS.toString())) {
                     dotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
                 }
             }
@@ -165,13 +165,13 @@ public class CtDisplayDotSpacingActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
         validReturnFromCalledActivity = false;
         if (requestCode == PEKISLIB_ACTIVITIES.INPUT_BUTTONS.INDEX()) {
-            calledActivity = PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString();
+            calledActivityName = PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
         if (requestCode == PEKISLIB_ACTIVITIES.PRESETS.INDEX()) {
-            calledActivity = PEKISLIB_ACTIVITIES.PRESETS.toString();
+            calledActivityName = PEKISLIB_ACTIVITIES.PRESETS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
@@ -231,12 +231,10 @@ public class CtDisplayDotSpacingActivity extends Activity {
     }
 
     private void onButtonClickDotSpacingCoeffValue() {
-        setCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffIndex, getSeekBarsProgressString());
         launchInputButtonsActivity();
     }
 
     private void onButtonClickPresets() {
-        setCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffs);
         launchPresetsActivity();
     }
 
@@ -375,6 +373,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
     }
 
     private void launchInputButtonsActivity() {
+        setCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffIndex, getSeekBarsProgressString());
         setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), dotSpacingCoeffsLabels[dotSpacingCoeffIndex]);
@@ -386,6 +385,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
+        setCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffs);
         setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), "Dot spacing coeffs");
@@ -400,14 +400,6 @@ public class CtDisplayDotSpacingActivity extends Activity {
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), HELP_ACTIVITY_TITLE);
         callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpctdisplaydotspacingactivity);
         startActivity(callingIntent);
-    }
-
-    private boolean returnsFromInputButtonsActivity() {
-        return (calledActivity.equals(PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString()));
-    }
-
-    private boolean returnsFromPresetsActivity() {
-        return (calledActivity.equals(PEKISLIB_ACTIVITIES.PRESETS.toString()));
     }
 
 }

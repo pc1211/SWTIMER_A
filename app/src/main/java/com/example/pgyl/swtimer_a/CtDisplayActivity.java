@@ -118,7 +118,7 @@ public class CtDisplayActivity extends Activity {
     private String[] dotMatrixDisplayDotSpacingCoeffs;  //  Espacement des points de DotMatrixDisplay en portrait et landscape
     private String dotForm;    //  Forme des points
     private boolean validReturnFromCalledActivity;
-    private String calledActivity;
+    private String calledActivityName;
     private StringShelfDatabase stringShelfDatabase;
     private String shpFileName;
 
@@ -164,6 +164,7 @@ public class CtDisplayActivity extends Activity {
         setupStringShelfDatabase();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
+        setDefaults(stringShelfDatabase, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));
         colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
         dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
         dotForm = getCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex());
@@ -173,15 +174,15 @@ public class CtDisplayActivity extends Activity {
         } else {
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
-                if (returnsFromPresetsActivity()) {
+                if (calledActivityName.equals(PEKISLIB_ACTIVITIES.PRESETS.toString())) {
                     if (!copyPresetCTRowToCtRecord(getCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName()), currentCtRecord, nowm)) {
                         toastLong("Error updating Timer", this);
                     }
                 }
-                if (returnsFromCtDisplayColorsActivity()) {
+                if (calledActivityName.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
                     colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
                 }
-                if (returnsFromCtDisplayDotSpacingActivity()) {
+                if (calledActivityName.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString())) {
                     dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
                 }
             }
@@ -204,19 +205,19 @@ public class CtDisplayActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
         validReturnFromCalledActivity = false;
         if (requestCode == PEKISLIB_ACTIVITIES.PRESETS.INDEX()) {
-            calledActivity = PEKISLIB_ACTIVITIES.PRESETS.toString();
+            calledActivityName = PEKISLIB_ACTIVITIES.PRESETS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
         if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER) {
-            calledActivity = SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString();
+            calledActivityName = SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
         if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER) {
-            calledActivity = SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString();
+            calledActivityName = SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
@@ -369,8 +370,6 @@ public class CtDisplayActivity extends Activity {
 
 
     private void onDotMatrixDisplayCustomClick() {
-        setCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getLabel()));
-        setDefaults(stringShelfDatabase, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));
         launchPresetsActivity();
     }
 
@@ -588,6 +587,7 @@ public class CtDisplayActivity extends Activity {
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
+        setCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getLabel()));
         setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), capitalize("CT Presets"));
@@ -598,6 +598,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void launchCtDisplayColorsActivity() {
+        setCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
         setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayColorsActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
@@ -605,6 +606,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void launchCtDisplayDotSpacingActivity() {
+        setCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotMatrixDisplayDotSpacingCoeffs);
         setStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayDotSpacingActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
@@ -616,18 +618,6 @@ public class CtDisplayActivity extends Activity {
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), HELP_ACTIVITY_TITLE);
         callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpctdisplayactivity);
         startActivity(callingIntent);
-    }
-
-    private boolean returnsFromPresetsActivity() {
-        return (calledActivity.equals(PEKISLIB_ACTIVITIES.PRESETS.toString()));
-    }
-
-    private boolean returnsFromCtDisplayColorsActivity() {
-        return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString()));
-    }
-
-    private boolean returnsFromCtDisplayDotSpacingActivity() {
-        return (calledActivity.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString()));
     }
 
 }

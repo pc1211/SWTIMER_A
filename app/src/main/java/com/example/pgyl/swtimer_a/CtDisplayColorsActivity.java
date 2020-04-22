@@ -55,8 +55,8 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRo
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableLabelsOfMultipleTables;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesLabels;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormValueIndex;
@@ -163,7 +163,7 @@ public class CtDisplayColorsActivity extends Activity {
     private String dotForm;
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
-    private String calledActivity;
+    private String calledActivityName;
     private StringShelfDatabase stringShelfDatabase;
     private String shpFileName;
     //endregion
@@ -206,9 +206,9 @@ public class CtDisplayColorsActivity extends Activity {
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
         setupHSVColorSpace();
         colors = getCurrentColorsOfMultipleTablesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
-        dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());   //  Prendre les coefficients actuels de CtDisplayActivity
-        colorTablesLabels = getColorTablesLabels();
+        colorTablesLabels = getColorTableLabelsOfMultipleTables();
         colorTablesFieldsLabels = getColorTableFieldLabelsOfMultipleTables(stringShelfDatabase);
+        dotMatrixDisplayDotSpacingCoeffs = getCurrentValuesInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());   //  Prendre les coefficients actuels de CtDisplayActivity
         dotForm = getCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex());
 
         if (isColdStartStatusInActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
@@ -222,14 +222,14 @@ public class CtDisplayColorsActivity extends Activity {
             colorSpace = getSHPcolorSpace();
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
-                if (returnsFromInputButtonsActivity()) {
+                if (calledActivityName.equals(PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString())) {
                     String colorText = getCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getColorTableName(colorTableIndex), colorIndex);
                     if (colorSpace.equals(COLOR_SPACES.HSV)) {
                         colorText = HSVToRGB(colorText);    //  HSV dégradé
                     }
                     colors[colorTableIndex][colorIndex] = colorText;
                 }
-                if (returnsFromPresetsActivity()) {
+                if (calledActivityName.equals(PEKISLIB_ACTIVITIES.PRESETS.toString())) {
                     colors[colorTableIndex] = getCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getColorTableName(colorTableIndex));
                 }
             }
@@ -253,13 +253,13 @@ public class CtDisplayColorsActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
         validReturnFromCalledActivity = false;
         if (requestCode == PEKISLIB_ACTIVITIES.INPUT_BUTTONS.INDEX()) {
-            calledActivity = PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString();
+            calledActivityName = PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
         if (requestCode == PEKISLIB_ACTIVITIES.PRESETS.INDEX()) {
-            calledActivity = PEKISLIB_ACTIVITIES.PRESETS.toString();
+            calledActivityName = PEKISLIB_ACTIVITIES.PRESETS.toString();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
@@ -339,12 +339,10 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void onButtonClickColorValue() {
-        setCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getColorTableName(colorTableIndex), colorIndex, getSeekBarsProgressHexString());
         launchInputButtonsActivity();
     }
 
     private void onButtonClickPresets() {
-        setCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getColorTableName(colorTableIndex), colors[colorTableIndex]);
         launchPresetsActivity();
     }
 
@@ -601,6 +599,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void launchInputButtonsActivity() {
+        setCurrentValueInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getColorTableName(colorTableIndex), colorIndex, getSeekBarsProgressHexString());
         setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTablesFieldsLabels[colorTableIndex][colorIndex]);
@@ -612,6 +611,7 @@ public class CtDisplayColorsActivity extends Activity {
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
+        setCurrentValuesInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getColorTableName(colorTableIndex), colors[colorTableIndex]);
         setStartStatusInActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTablesLabels[colorTableIndex] + "(RGB)");
@@ -626,14 +626,6 @@ public class CtDisplayColorsActivity extends Activity {
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), HELP_ACTIVITY_TITLE);
         callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpctdisplaycolorsactivity);
         startActivity(callingIntent);
-    }
-
-    private boolean returnsFromInputButtonsActivity() {
-        return (calledActivity.equals(PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString()));
-    }
-
-    private boolean returnsFromPresetsActivity() {
-        return (calledActivity.equals(PEKISLIB_ACTIVITIES.PRESETS.toString()));
     }
 
 }

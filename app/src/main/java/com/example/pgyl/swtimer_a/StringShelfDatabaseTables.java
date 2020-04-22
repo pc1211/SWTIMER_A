@@ -423,7 +423,7 @@ public class StringShelfDatabaseTables {
         return SwTimerTables.ColorYes.valueOf(colorTableName).ordinal();
     }
 
-    public static String[] getColorTablesLabels() {
+    public static String[] getColorTableLabelsOfMultipleTables() {
         String[] values = new String[getColorTablesCount()];
         for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
             values[i] = SwTimerTables.ColorYes.valueOf(getColorTableName(i)).getLabel();
