@@ -57,13 +57,12 @@ import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getCoeffTableNames;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableNames;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDescriptionsOfMultipleSwtimerTables;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffValueIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedValueIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getOrientationDotMatrixDisplayDotSpacingCoeffIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOffIndex;
@@ -157,13 +156,10 @@ public class CtDisplayColorsActivity extends Activity {
     private int colorIndex;   //  Au sein de la table pointée par colorTableIndex
     private String[][] colors;  //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
     private String[] colorTableNames;
-    private String[][] colorTableFieldLabels;
+    private String[][] colorTableLabels;
     private String[] colorTableDescriptions;
     private COLOR_SPACES colorSpace;
-    private String[][] coeffs;
-    private String[] coeffTableNames;
-    //private String[] dotMatrixDisplayDotSpacingCoeffs;  //  Espacement des carrés de DotMatrixDisplay
-    //private String[] dotCornerRadiusCoeffs;
+    private String[] coeffs;
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
     private String calledActivityName;
@@ -210,9 +206,8 @@ public class CtDisplayColorsActivity extends Activity {
         colorTableNames = getColorTableNames();
         colors = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
         colorTableDescriptions = getDescriptionsOfMultipleSwtimerTables(colorTableNames);
-        colorTableFieldLabels = getFieldLabelsFromMultipleTables(stringShelfDatabase, colorTableNames);
-        coeffTableNames = getCoeffTableNames();
-        coeffs = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, coeffTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+        colorTableLabels = getFieldLabelsFromMultipleTables(stringShelfDatabase, colorTableNames);
+        coeffs = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());
         setupHSVColorSpace();
 
         if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
@@ -417,7 +412,7 @@ public class CtDisplayColorsActivity extends Activity {
     private void updateDisplayButtonTextNextColor() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
-        buttons[COMMANDS.NEXT_COLOR.INDEX()].setText(colorTableFieldLabels[colorTableIndex][colorIndex] + SYMBOL_NEXT);
+        buttons[COMMANDS.NEXT_COLOR.INDEX()].setText(colorTableLabels[colorTableIndex][colorIndex] + SYMBOL_NEXT);
     }
 
     private void updateDisplayButtonTextColorValue() {
@@ -503,8 +498,9 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayCoeffs() {
-        dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getTableIndex(coeffTableNames, getDotMatrixDisplayDotSpacingCoeffsTableName())][getOrientationDotMatrixDisplayDotSpacingCoeffIndex(getResources().getConfiguration().orientation)]);    //  L'apparence va devoir changer
-        dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getTableIndex(coeffTableNames, getDotMatrixDisplayDotCornerRadiusCoeffTableName())][getDotMatrixDisplayDotCornerRadiusCoeffValueIndex()]);
+        dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getOrientationDotMatrixDisplayDotSpacingCoeffIndex(getResources().getConfiguration().orientation)]);    //  L'apparence va devoir changer
+        dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getDotMatrixDisplayDotCornerRadiusCoeffValueIndex()]);
+        dotMatrixDisplayUpdater.setScrollSpeed(coeffs[getDotMatrixDisplayScrollSpeedValueIndex()]);
     }
 
     private void rebuildDotMatrixDisplayStructure() {
@@ -602,7 +598,7 @@ public class CtDisplayColorsActivity extends Activity {
         setCurrentForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), colorTableNames[colorTableIndex], colorIndex, getSeekBarsProgressHexString());
         setStartStatusOfActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTableFieldLabels[colorTableIndex][colorIndex]);
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTableLabels[colorTableIndex][colorIndex]);
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), colorTableNames[colorTableIndex]);
         callingIntent.putExtra(TABLE_EXTRA_KEYS.INDEX.toString(), colorIndex);
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.INDEX());

@@ -43,18 +43,14 @@ import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createSwtimerTableIfNotExists;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableBackScreenColors;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayColors;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayDotCornerRadiusCoeff;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayDotSpacingCoeffs;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayScrollSpeed;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableStateButtonsColors;
 
@@ -597,26 +593,12 @@ public class MainActivity extends Activity {
             setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getBackScreenColorsTableName(), defaults);
             createPresetWithDefaultValues(getBackScreenColorsTableName(), defaults);
         }
-        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayDotSpacingCoeffsTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
+        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayCoeffsTableName())) {
+            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayCoeffsTableName());
             initializeTableDotMatrixDisplayDotSpacingCoeffs(stringShelfDatabase);
-            String[] defaults = getDefaults(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
-            setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), defaults);
-            createPresetWithDefaultValues(getDotMatrixDisplayDotSpacingCoeffsTableName(), defaults);
-        }
-        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayDotCornerRadiusCoeffTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayDotCornerRadiusCoeffTableName());
-            initializeTableDotMatrixDisplayDotCornerRadiusCoeff(stringShelfDatabase);
-            String[] defaults = getDefaults(stringShelfDatabase, getDotMatrixDisplayDotCornerRadiusCoeffTableName());
-            setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayDotCornerRadiusCoeffTableName(), defaults);
-            createPresetWithDefaultValues(getDotMatrixDisplayDotCornerRadiusCoeffTableName(), defaults);
-        }
-        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayScrollSpeedTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayScrollSpeedTableName());
-            initializeTableDotMatrixDisplayScrollSpeed(stringShelfDatabase);
-            String[] defaults = getDefaults(stringShelfDatabase, getDotMatrixDisplayScrollSpeedTableName());
-            setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayScrollSpeedTableName(), defaults);
-            createPresetWithDefaultValues(getDotMatrixDisplayScrollSpeedTableName(), defaults);
+            String[] defaults = getDefaults(stringShelfDatabase, getDotMatrixDisplayCoeffsTableName());
+            setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), defaults);
+            createPresetWithDefaultValues(getDotMatrixDisplayCoeffsTableName(), defaults);
         }
         if (!stringShelfDatabase.tableExists(getPresetsCTTableName())) {
             createSwtimerTableIfNotExists(stringShelfDatabase, getPresetsCTTableName());

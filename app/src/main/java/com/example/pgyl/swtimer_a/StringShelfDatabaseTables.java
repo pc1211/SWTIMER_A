@@ -17,19 +17,13 @@ public class StringShelfDatabaseTables {
         return new String[]{SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString(), SWTIMER_TABLES.STATE_BUTTONS_COLORS.toString(), SWTIMER_TABLES.BACK_SCREEN_COLORS.toString()};
     }
 
-    public static String[] getCoeffTableNames() {
-        return new String[]{SWTIMER_TABLES.DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS.toString(), SWTIMER_TABLES.DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_COEFF.toString(), SWTIMER_TABLES.DOT_MATRIX_DISPLAY_SCROLL_SPEED.toString()};
-    }
-
     enum SWTIMER_TABLES {   // Les tables, rattachées à leurs champs de data
-        DOT_MATRIX_DISPLAY_COLORS(SwTimerTableDataFields.DotMatrixDisplayColors.class, "Dot matrix Display"),
+        DOT_MATRIX_DISPLAY_COLORS(SwTimerTableDataFields.DotMatrixDisplayColors.class, "Dot matrix display"),
         STATE_BUTTONS_COLORS(SwTimerTableDataFields.StateButtonsColors.class, "CT Control buttons"),
         BACK_SCREEN_COLORS(SwTimerTableDataFields.BackScreenColors.class, "Back screen"),
         CHRONO_TIMERS(SwTimerTableDataFields.ChronoTimers.class, ""),   //  Table des Chronos et Timers
         PRESETS_CT(SwTimerTableDataFields.PresetsCT.class, ""),
-        DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS(SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.class, "Dot spacing coeffs"),
-        DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_COEFF(SwTimerTableDataFields.DotMatrixDisplayDotCornerRadiusCoeff.class, "Dot form"),
-        DOT_MATRIX_DISPLAY_SCROLL_SPEED(SwTimerTableDataFields.DotMatrixDisplayScrollSpeed.class, "Scroll speed");
+        DOT_MATRIX_DISPLAY_COEFFS(SwTimerTableDataFields.DotMatrixDisplayCoeffs.class, "Dot matrix display coeffs");
 
         private int dataFieldsCount;
         private String description;
@@ -53,85 +47,6 @@ public class StringShelfDatabaseTables {
     }
 
     private interface SwTimerTableDataFields {  //  Les champs de data, par table
-        enum ChronoTimers implements SwTimerTableDataFields {   //  Les champs de data de la table CHRONO_TIMERS
-            MODE, SELECTED, RUNNING, SPLITTED, CLOCK_APP_ALARM, LABEL, LABEL_INIT, TIME_START, TIME_ACC, TIME_ACC_UNTIL_SPLIT, TIME_DEF, TIME_DEF_INIT, TIME_EXP;
-
-            public int INDEX() {
-                return ordinal() + 1;
-            }   //  INDEX 0 pour identifiant utilisateur
-        }
-
-        enum PresetsCT implements SwTimerTableDataFields {
-            TIME("Time"), LABEL("Label");
-
-            private String valueLabel;
-
-            PresetsCT(String valueLabel) {
-                this.valueLabel = valueLabel;
-            }
-
-            public int INDEX() {
-                return ordinal() + 1;
-            }   //  INDEX 0 pour identifiant utilisateur
-
-            public String LABEL() {
-                return valueLabel;
-            }
-        }
-
-        enum DotMatrixDisplayDotSpacingCoeffs implements SwTimerTableDataFields {
-            PORTRAIT("Portrait"), LANDSCAPE("Landscape");
-
-            private String valueLabel;
-
-            DotMatrixDisplayDotSpacingCoeffs(String valueLabel) {
-                this.valueLabel = valueLabel;
-            }
-
-            public int INDEX() {
-                return ordinal() + 1;
-            }   //  INDEX 0 pour identifiant utilisateur
-
-            public String LABEL() {
-                return valueLabel;
-            }
-        }
-
-        enum DotMatrixDisplayDotCornerRadiusCoeff implements SwTimerTableDataFields {
-            VALUE("Value");
-
-            private String valueLabel;
-
-            DotMatrixDisplayDotCornerRadiusCoeff(String valueLabel) {
-                this.valueLabel = valueLabel;
-            }
-
-            public int INDEX() {
-                return ordinal() + 1;
-            }   //  INDEX 0 pour identifiant utilisateur
-
-            public String LABEL() {
-                return valueLabel;
-            }
-        }
-
-        enum DotMatrixDisplayScrollSpeed implements SwTimerTableDataFields {
-            VALUE("Value");
-
-            private String valueLabel;
-
-            DotMatrixDisplayScrollSpeed(String valueLabel) {
-                this.valueLabel = valueLabel;
-            }
-
-            public int INDEX() {
-                return ordinal() + 1;
-            }   //  INDEX 0 pour identifiant utilisateur
-
-            public String LABEL() {
-                return valueLabel;
-            }
-        }
 
         enum DotMatrixDisplayColors implements SwTimerTableDataFields {
             ON_TIME("ON Time"), ON_LABEL("ON Label"), OFF("OFF"), BACK("Background");
@@ -186,6 +101,50 @@ public class StringShelfDatabaseTables {
                 return valueLabel;
             }
         }
+
+        enum ChronoTimers implements SwTimerTableDataFields {   //  Les champs de data de la table CHRONO_TIMERS
+            MODE, SELECTED, RUNNING, SPLITTED, CLOCK_APP_ALARM, LABEL, LABEL_INIT, TIME_START, TIME_ACC, TIME_ACC_UNTIL_SPLIT, TIME_DEF, TIME_DEF_INIT, TIME_EXP;
+
+            public int INDEX() {
+                return ordinal() + 1;
+            }   //  INDEX 0 pour identifiant utilisateur
+        }
+
+        enum PresetsCT implements SwTimerTableDataFields {
+            TIME("Time"), LABEL("Label");
+
+            private String valueLabel;
+
+            PresetsCT(String valueLabel) {
+                this.valueLabel = valueLabel;
+            }
+
+            public int INDEX() {
+                return ordinal() + 1;
+            }   //  INDEX 0 pour identifiant utilisateur
+
+            public String LABEL() {
+                return valueLabel;
+            }
+        }
+
+        enum DotMatrixDisplayCoeffs implements SwTimerTableDataFields {
+            DOT_SPACING_PORTRAIT("Spacing Portrait"), DOT_SPACING_LANDSCAPE("Spacing Landscape"), DOT_CORNER_RADIUS("Dot corner radius"), SCROLL_SPEED("Scroll speed");
+
+            private String valueLabel;
+
+            DotMatrixDisplayCoeffs(String valueLabel) {
+                this.valueLabel = valueLabel;
+            }
+
+            public int INDEX() {
+                return ordinal() + 1;
+            }   //  INDEX 0 pour identifiant utilisateur
+
+            public String LABEL() {
+                return valueLabel;
+            }
+        }
     }
 
     private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
@@ -210,6 +169,86 @@ public class StringShelfDatabaseTables {
         }
         return values;
     }
+
+    //region DOT_MATRIX_DISPLAY_COLORS
+    public static String getDotMatrixDisplayColorsTableName() {
+        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString();
+    }
+
+    public static String[][] getDotMatrixDisplayColorsInits() {
+        final String[][] TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_TIME.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_LABEL.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.OFF.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.BACK.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}
+        };
+        return TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS;
+    }
+
+    public static int getDotMatrixDisplayColorsOnTimeIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayColors.ON_TIME.INDEX();
+    }
+
+    public static int getDotMatrixDisplayColorsOnLabelIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayColors.ON_LABEL.INDEX();
+    }
+
+    public static int getDotMatrixDisplayColorsOffIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayColors.OFF.INDEX();
+    }
+
+    public static int getDotMatrixDisplayColorsBackIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayColors.BACK.INDEX();
+    }
+    //endregion
+
+    //region STATE_BUTTONS_COLORS
+    public static String getStateButtonsColorsTableName() {
+        return SWTIMER_TABLES.STATE_BUTTONS_COLORS.toString();
+    }
+
+    public static String[][] getStateButtonsColorsInits() {
+        final String[][] TABLE_COLOR_STATE_BUTTONS_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.StateButtonsColors.ON.LABEL(), SwTimerTableDataFields.StateButtonsColors.OFF.LABEL(), SwTimerTableDataFields.StateButtonsColors.BACK.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString(), "0061F3", "404040", "000000"}
+        };
+        return TABLE_COLOR_STATE_BUTTONS_INITS;
+    }
+
+    public static int getStateButtonsColorsOnIndex() {
+        return SwTimerTableDataFields.StateButtonsColors.ON.INDEX();
+    }
+
+    public static int getStateButtonsColorsOffIndex() {
+        return SwTimerTableDataFields.StateButtonsColors.OFF.INDEX();
+    }
+
+    public static int getStateButtonsColorsBackIndex() {
+        return SwTimerTableDataFields.StateButtonsColors.BACK.INDEX();
+    }
+    //endregion
+
+    //region BACKSCREEN_COLORS
+    public static String getBackScreenColorsTableName() {
+        return SWTIMER_TABLES.BACK_SCREEN_COLORS.toString();
+    }
+
+    public static String[][] getBackScreenColorsInits() {
+        final String[][] TABLE_COLORS_BACK_SCREEN_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.BackScreenColors.BACK.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString(), "000000"}
+        };
+        return TABLE_COLORS_BACK_SCREEN_INITS;
+    }
+
+    public static int getBackScreenColorsBackIndex() {
+        return SwTimerTableDataFields.BackScreenColors.BACK.INDEX();
+    }
+    //endregion
 
     //region CHRONO_TIMERS
     public static String getChronoTimersTableName() {
@@ -309,152 +348,40 @@ public class StringShelfDatabaseTables {
     }
     //endregion
 
-    //region DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS
-    public static String getDotMatrixDisplayDotSpacingCoeffsTableName() {
-        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS.toString();
+    //region DOT_MATRIX_DISPLAY_COEFFS
+    public static String getDotMatrixDisplayCoeffsTableName() {
+        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COEFFS.toString();
     }
 
-    public static String[][] getDotMatrixDisplayDotSpacingCoeffsInits() {
-        final String[][] TABLE_DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.PORTRAIT.LABEL(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.LANDSCAPE.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "20", "20"},
-                {TABLE_IDS.MAX.toString(), "100", "100"}
+    public static String[][] getDotMatrixDisplayCoeffsInits() {
+        final String[][] TABLE_DOT_MATRIX_DISPLAY_COEFFS_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING_PORTRAIT.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING_LANDSCAPE.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT, null},
+                {TABLE_IDS.DEFAULT.toString(), "20", "20", "0", "25"},    //  Points carrés par défaut ; 25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
+                {TABLE_IDS.MAX.toString(), "100", "100", "100", "100"}
         };
-        return TABLE_DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS_INITS;
+        return TABLE_DOT_MATRIX_DISPLAY_COEFFS_INITS;
     }
 
     public static int getDotMatrixDisplayDotSpacingCoeffLandscapeIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.LANDSCAPE.INDEX();
+        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING_LANDSCAPE.INDEX();
     }
 
     public static int getDotMatrixDisplayDotSpacingCoeffPortraitIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.PORTRAIT.INDEX();
+        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING_PORTRAIT.INDEX();
     }
 
     public static int getOrientationDotMatrixDisplayDotSpacingCoeffIndex(int orientation) {
         return (orientation == Configuration.ORIENTATION_PORTRAIT) ? getDotMatrixDisplayDotSpacingCoeffPortraitIndex() : getDotMatrixDisplayDotSpacingCoeffLandscapeIndex();
     }
 
-    //region DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_COEFF
-    public static String getDotMatrixDisplayDotCornerRadiusCoeffTableName() {
-        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_COEFF.toString();
-    }
-
-    public static String[][] getDotMatrixDisplayDotCornerRadiusCoeffInits() {
-        final String[][] TABLE_DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayDotCornerRadiusCoeff.VALUE.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "0"},
-                {TABLE_IDS.MAX.toString(), "100"},
-        };  //  Points carrés par défaut
-        return TABLE_DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_INITS;
-    }
-
     public static int getDotMatrixDisplayDotCornerRadiusCoeffValueIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayDotCornerRadiusCoeff.VALUE.INDEX();
-    }
-    //endregion
-
-    //region DOT_MATRIX_DISPLAY_SCROLL_SPEED
-    public static String getDotMatrixDisplayScrollSpeedTableName() {
-        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_SCROLL_SPEED.toString();
-    }
-
-    public static String[][] getDotMatrixDisplayScrollSpeedInits() {
-        final String[][] TABLE_DOT_MATRIX_DISPLAY_SCROLL_SPEED_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayScrollSpeed.VALUE.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
-                {TABLE_IDS.DEFAULT.toString(), "25"},   //  25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
-                {TABLE_IDS.MAX.toString(), "100"}
-        };
-        return TABLE_DOT_MATRIX_DISPLAY_SCROLL_SPEED_INITS;
+        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.INDEX();
     }
 
     public static int getDotMatrixDisplayScrollSpeedValueIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayScrollSpeed.VALUE.INDEX();
-    }
-    //endregion
-
-    //region DOT_MATRIX_DISPLAY_COLORS
-    public static String getDotMatrixDisplayColorsTableName() {
-        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString();
-    }
-
-    public static String[][] getDotMatrixDisplayColorsInits() {
-        final String[][] TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_TIME.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_LABEL.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.OFF.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.BACK.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}
-        };
-        return TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS;
-    }
-
-    public static int getDotMatrixDisplayColorsOnTimeIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayColors.ON_TIME.INDEX();
-    }
-
-    public static int getDotMatrixDisplayColorsOnLabelIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayColors.ON_LABEL.INDEX();
-    }
-
-    public static int getDotMatrixDisplayColorsOffIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayColors.OFF.INDEX();
-    }
-
-    public static int getDotMatrixDisplayColorsBackIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayColors.BACK.INDEX();
-    }
-    //endregion
-
-    //region STATE_BUTTONS_COLORS
-    public static String getStateButtonsColorsTableName() {
-        return SWTIMER_TABLES.STATE_BUTTONS_COLORS.toString();
-    }
-
-    public static String[][] getStateButtonsColorsInits() {
-        final String[][] TABLE_COLOR_STATE_BUTTONS_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.StateButtonsColors.ON.LABEL(), SwTimerTableDataFields.StateButtonsColors.OFF.LABEL(), SwTimerTableDataFields.StateButtonsColors.BACK.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "0061F3", "404040", "000000"}
-        };
-        return TABLE_COLOR_STATE_BUTTONS_INITS;
-    }
-
-    public static int getStateButtonsColorsOnIndex() {
-        return SwTimerTableDataFields.StateButtonsColors.ON.INDEX();
-    }
-
-    public static int getStateButtonsColorsOffIndex() {
-        return SwTimerTableDataFields.StateButtonsColors.OFF.INDEX();
-    }
-
-    public static int getStateButtonsColorsBackIndex() {
-        return SwTimerTableDataFields.StateButtonsColors.BACK.INDEX();
-    }
-    //endregion
-
-    //region BACKSCREEN_COLORS
-    public static String getBackScreenColorsTableName() {
-        return SWTIMER_TABLES.BACK_SCREEN_COLORS.toString();
-    }
-
-    public static String[][] getBackScreenColorsInits() {
-        final String[][] TABLE_COLORS_BACK_SCREEN_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.BackScreenColors.BACK.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "000000"}
-        };
-        return TABLE_COLORS_BACK_SCREEN_INITS;
-    }
-
-    public static int getBackScreenColorsBackIndex() {
-        return SwTimerTableDataFields.BackScreenColors.BACK.INDEX();
+        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.INDEX();
     }
     //endregion
 

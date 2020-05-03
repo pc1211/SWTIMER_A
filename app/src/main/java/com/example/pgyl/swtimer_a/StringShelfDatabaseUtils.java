@@ -5,14 +5,10 @@ import com.example.pgyl.pekislib_a.StringShelfDatabase;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsInits;
@@ -35,15 +31,7 @@ public class StringShelfDatabaseUtils {
     }
 
     public static void initializeTableDotMatrixDisplayDotSpacingCoeffs(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayDotSpacingCoeffsTableName(), getDotMatrixDisplayDotSpacingCoeffsInits());
-    }
-
-    public static void initializeTableDotMatrixDisplayDotCornerRadiusCoeff(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayDotCornerRadiusCoeffTableName(), getDotMatrixDisplayDotCornerRadiusCoeffInits());
-    }
-
-    public static void initializeTableDotMatrixDisplayScrollSpeed(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayScrollSpeedTableName(), getDotMatrixDisplayScrollSpeedInits());
+        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayCoeffsTableName(), getDotMatrixDisplayCoeffsInits());
     }
 
     public static void initializeTableStateButtonsColors(StringShelfDatabase stringShelfDatabase) {
