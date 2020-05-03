@@ -28,17 +28,16 @@ import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
-import static com.example.pgyl.pekislib_a.Constants.UNDEFINED;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.capitalize;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
+import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_DATA_INDEX;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromMultipleTablesFromActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getMax;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getTableIndex;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentsForActivity;
@@ -185,9 +184,9 @@ public class CtDisplayActivity extends Activity {
                 if (calledActivityName.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
                     colors = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
                 }
-                if (calledActivityName.substring(0, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString().length()).equals(SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString())) {
-                    String tableName = calledActivityName.substring(SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString().length());
-                    coeffs[getTableIndex(coeffTableNames, tableName)] = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString(), tableName);
+                if (calledActivityName.substring(0, SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString().length()).equals(SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString())) {
+                    String tableName = calledActivityName.substring(SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString().length());
+                    coeffs[getTableIndex(coeffTableNames, tableName)] = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString(), tableName);
                 }
             }
         }
@@ -221,22 +220,22 @@ public class CtDisplayActivity extends Activity {
                 validReturnFromCalledActivity = true;
             }
         }
-        if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER + getSwTimerTableIndex(getDotMatrixDisplayDotSpacingCoeffsTableName())) {
-            calledActivityName = SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString() + getDotMatrixDisplayDotSpacingCoeffsTableName();
+        if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER + getSwTimerTableIndex(getDotMatrixDisplayDotSpacingCoeffsTableName())) {
+            calledActivityName = SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString() + getDotMatrixDisplayDotSpacingCoeffsTableName();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
 
-        if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER + getSwTimerTableIndex(getDotMatrixDisplayDotCornerRadiusCoeffTableName())) {
-            calledActivityName = SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString() + getDotMatrixDisplayDotCornerRadiusCoeffTableName();
+        if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER + getSwTimerTableIndex(getDotMatrixDisplayDotCornerRadiusCoeffTableName())) {
+            calledActivityName = SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString() + getDotMatrixDisplayDotCornerRadiusCoeffTableName();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
         }
 
-        if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER + getSwTimerTableIndex(getDotMatrixDisplayScrollSpeedTableName())) {
-            calledActivityName = SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString() + getDotMatrixDisplayScrollSpeedTableName();
+        if (requestCode == (SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER + getSwTimerTableIndex(getDotMatrixDisplayScrollSpeedTableName())) {
+            calledActivityName = SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString() + getDotMatrixDisplayScrollSpeedTableName();
             if (resultCode == RESULT_OK) {
                 validReturnFromCalledActivity = true;
             }
@@ -280,15 +279,15 @@ public class CtDisplayActivity extends Activity {
             return true;
         }
         if (item.getItemId() == R.id.SET_DOT_SPACING) {
-            launchCtDisplaySliderActivity(getDotMatrixDisplayDotSpacingCoeffsTableName());
+            launchCtDisplayCoeffsActivity(getDotMatrixDisplayDotSpacingCoeffsTableName());
             return true;
         }
         if (item.getItemId() == R.id.SET_DOT_FORM) {
-            launchCtDisplaySliderActivity(getDotMatrixDisplayDotCornerRadiusCoeffTableName());
+            launchCtDisplayCoeffsActivity(getDotMatrixDisplayDotCornerRadiusCoeffTableName());
             return true;
         }
         if (item.getItemId() == R.id.SET_SCROLL_SPEED) {
-            launchCtDisplaySliderActivity(getDotMatrixDisplayScrollSpeedTableName());
+            launchCtDisplayCoeffsActivity(getDotMatrixDisplayScrollSpeedTableName());
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -590,36 +589,23 @@ public class CtDisplayActivity extends Activity {
         startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);
     }
 
-    private void launchCtDisplaySliderActivity(String tableName) {
-        int firstPortraitValueIndex = UNDEFINED;
-        int firstLandscapeValueIndex;
-        int maxValueIndex = UNDEFINED;
-
-        if (tableName.equals(getDotMatrixDisplayDotCornerRadiusCoeffTableName())) {
-            firstPortraitValueIndex = getDotMatrixDisplayDotCornerRadiusCoeffValueIndex();
-            maxValueIndex = getDotMatrixDisplayDotCornerRadiusCoeffValueIndex();
-        }
-        if (tableName.equals(getDotMatrixDisplayScrollSpeedTableName())) {
-            firstPortraitValueIndex = getDotMatrixDisplayScrollSpeedValueIndex();
-            maxValueIndex = getDotMatrixDisplayScrollSpeedValueIndex();
-        }
-        firstLandscapeValueIndex = firstPortraitValueIndex;   //  La valeur est valable pour Portrait et Landscape
-        if (tableName.equals(getDotMatrixDisplayDotSpacingCoeffsTableName())) {   //   Différencier Portrait et Landscape
+    private void launchCtDisplayCoeffsActivity(String tableName) {
+        int firstPortraitValueIndex = TABLE_DATA_INDEX;   //  La 1e valeur à présenter en Portrait correspond au 1er champ de data dans les tables
+        int firstLandscapeValueIndex = firstPortraitValueIndex;    //  La 1e valeur à présenter ne dépend pas de l'orientation
+        if (tableName.equals(getDotMatrixDisplayDotSpacingCoeffsTableName())) {    //  La 1e valeur à présenter dépend de l'orientation
             firstPortraitValueIndex = getDotMatrixDisplayDotSpacingCoeffPortraitIndex();
             firstLandscapeValueIndex = getDotMatrixDisplayDotSpacingCoeffLandscapeIndex();
-            maxValueIndex = getDotMatrixDisplayDotSpacingCoeffPortraitIndex();  //  Max sera donc identique pour Portrait et Landscape
         }
-        setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString(), tableName, coeffs[getTableIndex(coeffTableNames, tableName)]);
-        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString(), ACTIVITY_START_STATUS.COLD);
-        Intent callingIntent = new Intent(this, CtDisplaySliderActivity.class);
+        setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString(), tableName, coeffs[getTableIndex(coeffTableNames, tableName)]);
+        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString(), ACTIVITY_START_STATUS.COLD);
+        Intent callingIntent = new Intent(this, CtDisplayCoeffsActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.FIRST_PORTRAIT_VALUE_INDEX.toString(), firstPortraitValueIndex);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.FIRST_LANDSCAPE_VALUE_INDEX.toString(), firstLandscapeValueIndex);
-        callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.SEEKBAR_MAX_VALUE.toString(), Integer.parseInt(getMax(stringShelfDatabase, tableName, maxValueIndex)));
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), tableName);
         callingIntent.putExtra(TABLE_EXTRA_KEYS.DESCRIPTION.toString(), getSwTimerTableDescription(tableName));
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), "Set " + getSwTimerTableDescription(tableName));
-        startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER + getSwTimerTableIndex(tableName));
+        startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER + getSwTimerTableIndex(tableName));
     }
 
     private void launchHelpActivity() {

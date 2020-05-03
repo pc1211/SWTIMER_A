@@ -212,7 +212,7 @@ public class CtDisplayColorsActivity extends Activity {
         colorTableDescriptions = getDescriptionsOfMultipleSwtimerTables(colorTableNames);
         colorTableFieldLabels = getFieldLabelsFromMultipleTables(stringShelfDatabase, colorTableNames);
         coeffTableNames = getCoeffTableNames();
-        coeffs = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+        coeffs = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, coeffTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
         setupHSVColorSpace();
 
         if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
@@ -240,8 +240,7 @@ public class CtDisplayColorsActivity extends Activity {
         }
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
-        setupDotMatrixDisplayDotCornerRadiusCoeff();
-        setupDotMatrixDisplayDotSpacingCoeff();
+        setupDotMatrixDisplayCoeffs();
         rebuildDotMatrixDisplayStructure();
         updateDisplayDotMatrixDisplay();
         updateDisplayStateButtonColors();
@@ -503,11 +502,8 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.setColors(colors[getTableIndex(colorTableNames, getDotMatrixDisplayColorsTableName())]);
     }
 
-    private void setupDotMatrixDisplayDotSpacingCoeff() {
-        dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getTableIndex(coeffTableNames, getDotMatrixDisplayDotSpacingCoeffsTableName())][getOrientationDotMatrixDisplayDotSpacingCoeffIndex(getResources().getConfiguration().orientation)]);
-    }
-
-    private void setupDotMatrixDisplayDotCornerRadiusCoeff() {
+    private void setupDotMatrixDisplayCoeffs() {
+        dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getTableIndex(coeffTableNames, getDotMatrixDisplayDotSpacingCoeffsTableName())][getOrientationDotMatrixDisplayDotSpacingCoeffIndex(getResources().getConfiguration().orientation)]);    //  L'apparence va devoir changer
         dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getTableIndex(coeffTableNames, getDotMatrixDisplayDotCornerRadiusCoeffTableName())][getDotMatrixDisplayDotCornerRadiusCoeffValueIndex()]);
     }
 

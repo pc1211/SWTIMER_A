@@ -36,6 +36,7 @@ import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentFro
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromMultipleTablesFromActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getLabels;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getMaxs;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getTableIndex;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentForActivity;
@@ -53,7 +54,7 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixD
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
 
-public class CtDisplaySliderActivity extends Activity {
+public class CtDisplayCoeffsActivity extends Activity {
     //region Constantes
     private enum COMMANDS {
         NEXT_VALUE(""), CANCEL("Cancel"), VALUE(""), PRESETS("Presets"), OK("OK");
@@ -82,7 +83,6 @@ public class CtDisplaySliderActivity extends Activity {
     private CtDisplayDotMatrixDisplayUpdater dotMatrixDisplayUpdater;
     private Button[] buttons;
     private SeekBar seekBarForValue;
-    private int maxSeekBarForValue;
     private CtRecord currentCtRecord;
     private int firstPortraitValueIndex;
     private int firstLanscapeValueIndex;
@@ -92,6 +92,7 @@ public class CtDisplaySliderActivity extends Activity {
     private int coeffTableIndex;
     private String[][] coeffs;
     private String[] labels;
+    private String[] maxs;
     private String tableName;
     private String tableDescription;
     private int orientation;
@@ -121,7 +122,7 @@ public class CtDisplaySliderActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         currentCtRecord = null;
-        setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString(), tableName, coeffs[coeffTableIndex]);
+        setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString(), tableName, coeffs[coeffTableIndex]);
         stringShelfDatabase.close();
         stringShelfDatabase = null;
         savePreferences();
@@ -135,7 +136,6 @@ public class CtDisplaySliderActivity extends Activity {
         tableName = getIntent().getStringExtra(TABLE_EXTRA_KEYS.TABLE.toString());
         firstPortraitValueIndex = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.FIRST_PORTRAIT_VALUE_INDEX.toString(), NOT_FOUND);
         firstLanscapeValueIndex = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.FIRST_LANDSCAPE_VALUE_INDEX.toString(), NOT_FOUND);
-        maxSeekBarForValue = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.SEEKBAR_MAX_VALUE.toString(), NOT_FOUND);
         tableDescription = getIntent().getStringExtra(TABLE_EXTRA_KEYS.DESCRIPTION.toString());
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         setupStringShelfDatabase();
@@ -143,13 +143,14 @@ public class CtDisplaySliderActivity extends Activity {
         coeffTableNames = getCoeffTableNames();
         coeffs = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, coeffTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
         coeffTableIndex = getTableIndex(coeffTableNames, tableName);
-        coeffs[coeffTableIndex] = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString(), tableName);
+        coeffs[coeffTableIndex] = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString(), tableName);
         labels = getLabels(stringShelfDatabase, tableName);
+        maxs = getMaxs(stringShelfDatabase, tableName);
         colors = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName());  //  Prendre les couleurs actuelles de CtDisplayActivity
         orientation = getResources().getConfiguration().orientation;
 
-        if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString())) {
-            setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString(), ACTIVITY_START_STATUS.HOT);
+        if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString())) {
+            setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COEFFS.toString(), ACTIVITY_START_STATUS.HOT);
             coeffIndex = getOrientationValueIndex(orientation);
         } else {
             coeffIndex = getSHPValueIndex();
@@ -230,6 +231,7 @@ public class CtDisplaySliderActivity extends Activity {
             coeffIndex = 1;
         }
         updateDisplayButtonTextNextValue();
+        setupMaxSeekBarForValue();
         updateDisplaySeekBarForValueProgress();
         updateDisplayButtonTextValue();
         updateSetupDotMatrixDisplay();
@@ -312,9 +314,9 @@ public class CtDisplaySliderActivity extends Activity {
 
     private void setupOrientationLayout() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            setContentView(R.layout.ctdisplayslider_p);
+            setContentView(R.layout.ctdisplaycoeffs_p);
         } else {
-            setContentView(R.layout.ctdisplayslider_l);
+            setContentView(R.layout.ctdisplaycoeffs_l);
         }
     }
 
@@ -391,7 +393,7 @@ public class CtDisplaySliderActivity extends Activity {
     }
 
     private void setupMaxSeekBarForValue() {
-        seekBarForValue.setMax(maxSeekBarForValue);
+        seekBarForValue.setMax(Integer.parseInt(maxs[coeffIndex]));
     }
 
     private void setupStringShelfDatabase() {
