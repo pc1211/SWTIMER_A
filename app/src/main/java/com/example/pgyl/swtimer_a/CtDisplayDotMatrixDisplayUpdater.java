@@ -106,6 +106,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
         this.dotsPersecond = Integer.parseInt(dotsPerSecond);
     }
 
+    public void resetScrollOffset() {
+        dotMatrixDisplayView.resetScrollOffset();
+    }
+
     public void rebuildStructure() {
         dotMatrixDisplayView.rebuildStructure();
     }   //  A appeler uniquement si MAJ en temps réel

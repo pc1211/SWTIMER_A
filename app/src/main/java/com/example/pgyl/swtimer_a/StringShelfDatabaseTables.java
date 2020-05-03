@@ -129,7 +129,7 @@ public class StringShelfDatabaseTables {
         }
 
         enum DotMatrixDisplayCoeffs implements SwTimerTableDataFields {
-            DOT_SPACING_PORTRAIT("Spacing Portrait"), DOT_SPACING_LANDSCAPE("Spacing Landscape"), DOT_CORNER_RADIUS("Dot corner radius"), SCROLL_SPEED("Scroll speed");
+            DOT_SPACING_PORTRAIT("Dot spacing (Portrait)"), DOT_SPACING_LANDSCAPE("Dot spacing (Landscape)"), DOT_CORNER_RADIUS("Dot corner radius"), SCROLL_SPEED("Scroll speed");
 
             private String valueLabel;
 
