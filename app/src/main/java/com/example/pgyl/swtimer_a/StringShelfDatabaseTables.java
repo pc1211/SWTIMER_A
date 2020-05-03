@@ -5,8 +5,6 @@ import android.content.res.Configuration;
 
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
 
-import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
-import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.DOT_FORM;
 import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
@@ -15,48 +13,42 @@ import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 
 public class StringShelfDatabaseTables {
 
-    private interface SwTimerTables {  // Les tables, par type (Couleur ou non), rattachées à leurs champs de data
-        int getDataFieldsCount();
+    public static String[] getColorTableNames() {
+        return new String[]{SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString(), SWTIMER_TABLES.STATE_BUTTONS_COLORS.toString(), SWTIMER_TABLES.BACK_SCREEN_COLORS.toString()};
+    }
 
-        enum ColorYes implements SwTimerTables {   //  Les tables Couleur  (utilisées dans CtDisplayActivity et CtDisplayColorsActivity)
-            DOT_MATRIX_DISPLAY_COLORS(SwTimerTableDataFields.DotMatrixDisplayColors.class, "Dot matrix Display"),   //  Table avec les couleurs du Dot Matrix Display
-            STATE_BUTTONS_COLORS(SwTimerTableDataFields.StateButtonsColors.class, "CT Control buttons"),
-            BACK_SCREEN_COLORS(SwTimerTableDataFields.BackScreenColors.class, "Back screen");
+    public static String[] getCoeffTableNames() {
+        return new String[]{SWTIMER_TABLES.DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS.toString(), SWTIMER_TABLES.DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_COEFF.toString(), SWTIMER_TABLES.DOT_MATRIX_DISPLAY_SCROLL_SPEED.toString()};
+    }
 
-            private int dataFieldsCount;
-            private String valueLabel;
+    enum SWTIMER_TABLES {   // Les tables, rattachées à leurs champs de data
+        DOT_MATRIX_DISPLAY_COLORS(SwTimerTableDataFields.DotMatrixDisplayColors.class, "Dot matrix Display"),
+        STATE_BUTTONS_COLORS(SwTimerTableDataFields.StateButtonsColors.class, "CT Control buttons"),
+        BACK_SCREEN_COLORS(SwTimerTableDataFields.BackScreenColors.class, "Back screen"),
+        CHRONO_TIMERS(SwTimerTableDataFields.ChronoTimers.class, ""),   //  Table des Chronos et Timers
+        PRESETS_CT(SwTimerTableDataFields.PresetsCT.class, ""),
+        DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS(SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.class, "Dot spacing coeffs"),
+        DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_COEFF(SwTimerTableDataFields.DotMatrixDisplayDotCornerRadiusCoeff.class, "Dot form"),
+        DOT_MATRIX_DISPLAY_SCROLL_SPEED(SwTimerTableDataFields.DotMatrixDisplayScrollSpeed.class, "Scroll speed");
 
-            ColorYes(Class<? extends SwTimerTableDataFields> swTimerTableFields, String valueLabel) {
-                dataFieldsCount = swTimerTableFields.getEnumConstants().length;
-                this.valueLabel = valueLabel;
-            }
+        private int dataFieldsCount;
+        private String description;
 
-            public String LABEL() {
-                return valueLabel;
-            }
-
-            @Override
-            public int getDataFieldsCount() {
-                return dataFieldsCount;
-            }
+        SWTIMER_TABLES(Class<? extends SwTimerTableDataFields> swTimerTableFields, String description) {
+            dataFieldsCount = swTimerTableFields.getEnumConstants().length;
+            this.description = description;
         }
 
-        enum ColorNo implements SwTimerTables {  //  Les tables Non Couleur
-            CHRONO_TIMERS(SwTimerTableDataFields.ChronoTimers.class),   //  Table des Chronos et Timers
-            PRESETS_CT(SwTimerTableDataFields.PresetsCT.class),
-            DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS(SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.class),
-            DOT_MATRIX_DISPLAY_DOT_FORM(SwTimerTableDataFields.DotMatrixDisplayDotForm.class);
+        public String DESCRIPTION() {
+            return description;
+        }
 
-            private int dataFieldsCount;
+        public int INDEX() {
+            return ordinal();
+        }
 
-            ColorNo(Class<? extends SwTimerTableDataFields> swTimerTableFields) {
-                dataFieldsCount = swTimerTableFields.getEnumConstants().length;
-            }
-
-            @Override
-            public int getDataFieldsCount() {
-                return dataFieldsCount;
-            }
+        public int getDataFieldsCount() {
+            return dataFieldsCount;
         }
     }
 
@@ -105,14 +97,41 @@ public class StringShelfDatabaseTables {
             }
         }
 
-        enum DotMatrixDisplayDotForm implements SwTimerTableDataFields {
-            VALUE;
+        enum DotMatrixDisplayDotCornerRadiusCoeff implements SwTimerTableDataFields {
+            VALUE("Value");
+
+            private String valueLabel;
+
+            DotMatrixDisplayDotCornerRadiusCoeff(String valueLabel) {
+                this.valueLabel = valueLabel;
+            }
 
             public int INDEX() {
                 return ordinal() + 1;
             }   //  INDEX 0 pour identifiant utilisateur
+
+            public String LABEL() {
+                return valueLabel;
+            }
         }
 
+        enum DotMatrixDisplayScrollSpeed implements SwTimerTableDataFields {
+            VALUE("Value");
+
+            private String valueLabel;
+
+            DotMatrixDisplayScrollSpeed(String valueLabel) {
+                this.valueLabel = valueLabel;
+            }
+
+            public int INDEX() {
+                return ordinal() + 1;
+            }   //  INDEX 0 pour identifiant utilisateur
+
+            public String LABEL() {
+                return valueLabel;
+            }
+        }
 
         enum DotMatrixDisplayColors implements SwTimerTableDataFields {
             ON_TIME("ON Time"), ON_LABEL("ON Label"), OFF("OFF"), BACK("Background");
@@ -172,26 +191,29 @@ public class StringShelfDatabaseTables {
     private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
     private static final String TABLE_PERCENT_REGEXP_DEFAULT = "^(100|[1-9]?[0-9])$";  //  Nombre entier de 0 à 100, sans décimales
 
-    public static int getSwTimerTableDataFieldsCount(String tableName) {   //  Rechercher nombre de champs de data de tableName (existant dans l'enum SwTimerTables.ColorYes ou SwTimerTables.ColorNo)
-        int ret = NOT_FOUND;  //  Ne pas utiliser valueOf(tableName) avec ColorYes puis avec ColorNo à cause du risque d'exception générée si tableName absent de l'enum
-        mainLoop:
-        for (Class cl : SwTimerTables.class.getClasses()) {  //  Chaque classe de SwTimerTables
-            if (cl.isEnum()) {   //  Filtrer sur les enum
-                Class<? extends SwTimerTables> clEnum = (Class<? extends SwTimerTables>) cl;  //  Classe -> Classe de SwTimerTables (ColorYes ou ColorNo)
-                for (SwTimerTables table : clEnum.getEnumConstants()) {   //  Chaque table de l'enum
-                    if (table.toString().equals(tableName)) {   //  Table trouvée
-                        ret = table.getDataFieldsCount();
-                        break mainLoop;  // Go, Go, Go !!
-                    }
-                }
-            }
+    public static int getSwTimerTableDataFieldsCount(String tableName) {
+        return SWTIMER_TABLES.valueOf(tableName).getDataFieldsCount();
+    }
+
+    public static int getSwTimerTableIndex(String tableName) {
+        return SWTIMER_TABLES.valueOf(tableName).INDEX();
+    }
+
+    public static String getSwTimerTableDescription(String tableName) {
+        return SWTIMER_TABLES.valueOf(tableName).DESCRIPTION();
+    }
+
+    public static String[] getDescriptionsOfMultipleSwtimerTables(String[] tableNames) {
+        String[] values = new String[tableNames.length];
+        for (int i = 0; i <= (tableNames.length - 1); i = i + 1) {
+            values[i] = getSwTimerTableDescription(tableNames[i]);
         }
-        return ret;
+        return values;
     }
 
     //region CHRONO_TIMERS
     public static String getChronoTimersTableName() {
-        return SwTimerTables.ColorNo.CHRONO_TIMERS.toString();
+        return SWTIMER_TABLES.CHRONO_TIMERS.toString();
     }
 
     public static CtRecord chronoTimerRowToCtRecord(String[] chronoTimerRow, Context context) {
@@ -236,7 +258,7 @@ public class StringShelfDatabaseTables {
 
     //region PRESETS_CT
     public static String getPresetsCTTableName() {
-        return SwTimerTables.ColorNo.PRESETS_CT.toString();
+        return SWTIMER_TABLES.PRESETS_CT.toString();
     }
 
     public static String[][] getPresetsCTInits() {
@@ -289,7 +311,7 @@ public class StringShelfDatabaseTables {
 
     //region DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS
     public static String getDotMatrixDisplayDotSpacingCoeffsTableName() {
-        return SwTimerTables.ColorNo.DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS.toString();
+        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS.toString();
     }
 
     public static String[][] getDotMatrixDisplayDotSpacingCoeffsInits() {
@@ -297,7 +319,8 @@ public class StringShelfDatabaseTables {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.PORTRAIT.LABEL(), SwTimerTableDataFields.DotMatrixDisplayDotSpacingCoeffs.LANDSCAPE.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT},
-                {TABLE_IDS.DEFAULT.toString(), "20", "20"}
+                {TABLE_IDS.DEFAULT.toString(), "20", "20"},
+                {TABLE_IDS.MAX.toString(), "100", "100"}
         };
         return TABLE_DOT_MATRIX_DISPLAY_DOT_SPACING_COEFFS_INITS;
     }
@@ -314,25 +337,50 @@ public class StringShelfDatabaseTables {
         return (orientation == Configuration.ORIENTATION_PORTRAIT) ? getDotMatrixDisplayDotSpacingCoeffPortraitIndex() : getDotMatrixDisplayDotSpacingCoeffLandscapeIndex();
     }
 
-    //region DOT_MATRIX_DISPLAY_DOT_FORM
-    public static String getDotMatrixDisplayDotFormTableName() {
-        return SwTimerTables.ColorNo.DOT_MATRIX_DISPLAY_DOT_FORM.toString();
+    //region DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_COEFF
+    public static String getDotMatrixDisplayDotCornerRadiusCoeffTableName() {
+        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_COEFF.toString();
     }
 
-    public static String[][] getDotMatrixDisplayDotFormInits() {
-        final String[][] TABLE_DOT_MATRIX_DISPLAY_DOT_FORM_INITS = {
-                {TABLE_IDS.DEFAULT.toString(), DOT_FORM.SQUARE.toString()}};
-        return TABLE_DOT_MATRIX_DISPLAY_DOT_FORM_INITS;
+    public static String[][] getDotMatrixDisplayDotCornerRadiusCoeffInits() {
+        final String[][] TABLE_DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayDotCornerRadiusCoeff.VALUE.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT},
+                {TABLE_IDS.DEFAULT.toString(), "0"},
+                {TABLE_IDS.MAX.toString(), "100"},
+        };  //  Points carrés par défaut
+        return TABLE_DOT_MATRIX_DISPLAY_DOT_CORNER_RADIUS_INITS;
     }
 
-    public static int getDotMatrixDisplayDotFormValueIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayDotForm.VALUE.INDEX();
+    public static int getDotMatrixDisplayDotCornerRadiusCoeffValueIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayDotCornerRadiusCoeff.VALUE.INDEX();
+    }
+    //endregion
+
+    //region DOT_MATRIX_DISPLAY_SCROLL_SPEED
+    public static String getDotMatrixDisplayScrollSpeedTableName() {
+        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_SCROLL_SPEED.toString();
+    }
+
+    public static String[][] getDotMatrixDisplayScrollSpeedInits() {
+        final String[][] TABLE_DOT_MATRIX_DISPLAY_SCROLL_SPEED_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayScrollSpeed.VALUE.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
+                {TABLE_IDS.DEFAULT.toString(), "25"},   //  25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
+                {TABLE_IDS.MAX.toString(), "100"}
+        };
+        return TABLE_DOT_MATRIX_DISPLAY_SCROLL_SPEED_INITS;
+    }
+
+    public static int getDotMatrixDisplayScrollSpeedValueIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayScrollSpeed.VALUE.INDEX();
     }
     //endregion
 
     //region DOT_MATRIX_DISPLAY_COLORS
     public static String getDotMatrixDisplayColorsTableName() {
-        return SwTimerTables.ColorYes.DOT_MATRIX_DISPLAY_COLORS.toString();
+        return SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString();
     }
 
     public static String[][] getDotMatrixDisplayColorsInits() {
@@ -364,7 +412,7 @@ public class StringShelfDatabaseTables {
 
     //region STATE_BUTTONS_COLORS
     public static String getStateButtonsColorsTableName() {
-        return SwTimerTables.ColorYes.STATE_BUTTONS_COLORS.toString();
+        return SWTIMER_TABLES.STATE_BUTTONS_COLORS.toString();
     }
 
     public static String[][] getStateButtonsColorsInits() {
@@ -392,7 +440,7 @@ public class StringShelfDatabaseTables {
 
     //region BACKSCREEN_COLORS
     public static String getBackScreenColorsTableName() {
-        return SwTimerTables.ColorYes.BACK_SCREEN_COLORS.toString();
+        return SWTIMER_TABLES.BACK_SCREEN_COLORS.toString();
     }
 
     public static String[][] getBackScreenColorsInits() {
@@ -407,28 +455,6 @@ public class StringShelfDatabaseTables {
 
     public static int getBackScreenColorsBackIndex() {
         return SwTimerTableDataFields.BackScreenColors.BACK.INDEX();
-    }
-    //endregion
-
-    //region TABLES COLOR_YES
-    public static int getColorTablesCount() {
-        return SwTimerTables.ColorYes.values().length;
-    }
-
-    public static String getColorTableName(int colorTableIndex) {
-        return SwTimerTables.ColorYes.values()[colorTableIndex].toString();
-    }
-
-    public static int getColorTableIndex(String colorTableName) {
-        return SwTimerTables.ColorYes.valueOf(colorTableName).ordinal();
-    }
-
-    public static String[] getDescriptionsOfMultipleColorTables() {
-        String[] values = new String[getColorTablesCount()];
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            values[i] = SwTimerTables.ColorYes.valueOf(getColorTableName(i)).LABEL();
-        }
-        return values;
     }
     //endregion
 

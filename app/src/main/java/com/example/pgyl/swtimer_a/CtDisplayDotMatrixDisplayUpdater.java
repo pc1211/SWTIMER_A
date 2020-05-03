@@ -11,6 +11,7 @@ import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.SCROLL_DIRECTIONS;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.MILLISECONDS_PER_SECOND;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsBackIndex;
@@ -45,6 +46,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private int backColorIndex;
     private CtRecord currentCtRecord;
     private long updateInterval;
+    private long dotsPersecond;
     private SCROLL_DIRECTIONS scrollDirection;
     private int scrollCount;
     private boolean automaticScrollOn;
@@ -62,12 +64,15 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void init() {
+        final long DOTS_PER_SECOND_DEFAULT = 25;       //   25 points par seconde => +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
+
         setupRunnableTime();
         setupDefaultFont();
         setupExtraFont();
         setupColorIndexes();
         setupMargins();
         setupDimensions();
+        dotsPersecond = DOTS_PER_SECOND_DEFAULT;
         inAutomatic = false;
         mOnExpiredTimerListener = null;
     }
@@ -93,8 +98,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setDotSpacingCoeff(interDotSizeCoeff);
     }
 
-    public void setDotForm(String dotForm) {
-        dotMatrixDisplayView.setDotForm(dotForm);
+    public void setDotCornerRadiusCoeff(String dotCornerRadiusCoeff) {
+        dotMatrixDisplayView.setDotCornerRadiusCoeff(dotCornerRadiusCoeff);
+    }
+
+    public void setScrollSpeed(String dotsPerSecond) {
+        this.dotsPersecond = Integer.parseInt(dotsPerSecond);
     }
 
     public void rebuildStructure() {
@@ -129,20 +138,20 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void startAutomatic() {
-        final long UPDATE_INTERVAL_RESET_MS = 40;       //   40 ms => 25 scrolls par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite nécessite 6 scrolls)
-
         if (currentCtRecord.isReset()) {
             automaticScrollOn = true;
             scrollCount = 0;
             scrollDirection = SCROLL_DIRECTIONS.LEFT;
-            updateInterval = UPDATE_INTERVAL_RESET_MS;
+            updateInterval = (dotsPersecond != 0) ? MILLISECONDS_PER_SECOND / dotsPersecond : 0;  //  0 => Pas de scroll
         } else {
             automaticScrollOn = false;
             updateInterval = TIME_UNIT_PRECISION.DURATION_MS();
         }
         dotMatrixDisplayView.resetScrollOffset();
         handlerTime.removeCallbacks(runnableTime);   //  On efface tout et on recommence
-        handlerTime.postDelayed(runnableTime, updateInterval);
+        if (updateInterval != 0) {
+            handlerTime.postDelayed(runnableTime, updateInterval);
+        }
     }
 
     public void stopAutomatic() {

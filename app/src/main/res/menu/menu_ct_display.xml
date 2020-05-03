@@ -12,18 +12,11 @@
     <item
         android:id="@+id/SET_DOT_FORM"
         android:showAsAction="never"
-        android:title="Dot form">
-        <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/SET_SQUARE_DOTS"
-                    android:title="Square dots" />
-                <item
-                    android:id="@+id/SET_ROUND_DOTS"
-                    android:title="Round dots" />
-            </group>
-        </menu>
-    </item>
+        android:title="Dot form..." />
+    <item
+        android:id="@+id/SET_SCROLL_SPEED"
+        android:showAsAction="never"
+        android:title="Scroll speed..." />
     <item
         android:id="@+id/BAR_MENU_ITEM_SET_CLOCK_APP_ALARM_ON_START_TIMER"
         android:showAsAction="always"

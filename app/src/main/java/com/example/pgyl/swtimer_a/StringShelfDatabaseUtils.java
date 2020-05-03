@@ -2,19 +2,17 @@ package com.example.pgyl.swtimer_a;
 
 import com.example.pgyl.pekislib_a.StringShelfDatabase;
 
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getLabels;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTablesCount;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormInits;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedInits;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTInits;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsInits;
@@ -40,8 +38,12 @@ public class StringShelfDatabaseUtils {
         stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayDotSpacingCoeffsTableName(), getDotMatrixDisplayDotSpacingCoeffsInits());
     }
 
-    public static void initializeTableDotMatrixDisplayDotForm(StringShelfDatabase stringShelfDatabase) {
-        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormInits());
+    public static void initializeTableDotMatrixDisplayDotCornerRadiusCoeff(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayDotCornerRadiusCoeffTableName(), getDotMatrixDisplayDotCornerRadiusCoeffInits());
+    }
+
+    public static void initializeTableDotMatrixDisplayScrollSpeed(StringShelfDatabase stringShelfDatabase) {
+        stringShelfDatabase.insertOrReplaceRows(getDotMatrixDisplayScrollSpeedTableName(), getDotMatrixDisplayScrollSpeedInits());
     }
 
     public static void initializeTableStateButtonsColors(StringShelfDatabase stringShelfDatabase) {
@@ -50,30 +52,6 @@ public class StringShelfDatabaseUtils {
 
     public static void initializeTableBackScreenColors(StringShelfDatabase stringShelfDatabase) {
         stringShelfDatabase.insertOrReplaceRows(getBackScreenColorsTableName(), getBackScreenColorsInits());
-    }
-    //endregion
-
-    //region COLORS
-    public static String[][] getCurrentValuesFromMultipleColorTablesFromActivity(StringShelfDatabase stringShelfDatabase, String activityName) {
-        String values[][] = new String[getColorTablesCount()][];
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            values[i] = stringShelfDatabase.selectRowByIdOrCreate(getColorTableName(i), TABLE_IDS.CURRENT.toString() + activityName);
-        }
-        return values;
-    }
-
-    public static void setCurrentValuesForMultipleColorTablesForActivity(StringShelfDatabase stringShelfDatabase, String activityName, String[][] values) {
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            stringShelfDatabase.insertOrReplaceRowById(getColorTableName(i), TABLE_IDS.CURRENT.toString() + activityName, values[i]);
-        }
-    }
-
-    public static String[][] getFieldLabelsFromMultipleColorTables(StringShelfDatabase stringShelfDatabase) {
-        String values[][] = new String[getColorTablesCount()][];
-        for (int i = 0; i <= (getColorTablesCount() - 1); i = i + 1) {
-            values[i] = getLabels(stringShelfDatabase, getColorTableName(i));
-        }
-        return values;
     }
     //endregion
 

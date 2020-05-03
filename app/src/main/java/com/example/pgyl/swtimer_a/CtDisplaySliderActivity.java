@@ -32,31 +32,31 @@ import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPL
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrent;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValueFromActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentValuesFromActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentFromActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromMultipleTablesFromActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getLabels;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getTableIndex;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusOfActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValueForActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentValuesForActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentForActivity;
+import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentsForActivity;
 import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
+import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getCoeffTableNames;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotFormValueIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getOrientationDotMatrixDisplayDotSpacingCoeffIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getCurrentValuesFromMultipleColorTablesFromActivity;
 
-public class CtDisplayDotSpacingActivity extends Activity {
+public class CtDisplaySliderActivity extends Activity {
     //region Constantes
     private enum COMMANDS {
-        NEXT_DOT_SPACING_COEFF(""), CANCEL("Cancel"), DOT_SPACING_COEFF_VALUE(""), PRESETS("Presets"), OK("OK");
+        NEXT_VALUE(""), CANCEL("Cancel"), VALUE(""), PRESETS("Presets"), OK("OK");
 
         private String valueText;
 
@@ -73,22 +73,28 @@ public class CtDisplayDotSpacingActivity extends Activity {
         }
     }
 
-    private enum SHP_KEY_NAMES {DOT_SPACING_COEFF_INDEX}
+    private enum SHP_KEY_NAMES {VALUE_INDEX}
 
-    private final int DOT_SPACING_COEFF_INDEX_DEFAULT_VALUE = 1;  //  les records d'espacement dans les tables de la DB stockent leur identifiant comme 1er élément (offset 0) => les espacements commencent à l'offset 1
+    private final int VALUE_INDEX_DEFAULT = 1;  //  les records dans les tables de la DB stockent leur identifiant comme 1er élément (offset 0) => les data commencent à l'offset 1
     //endregion
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
     private CtDisplayDotMatrixDisplayUpdater dotMatrixDisplayUpdater;
     private Button[] buttons;
-    private SeekBar dotSpacingCoeffSeekBar;
+    private SeekBar seekBarForValue;
+    private int maxSeekBarForValue;
     private CtRecord currentCtRecord;
-    private int dotSpacingCoeffIndex;
+    private int firstPortraitValueIndex;
+    private int firstLanscapeValueIndex;
+    private int coeffIndex;
     private String[] colors;
-    private String[] dotSpacingCoeffs;
-    private String[] dotSpacingCoeffLabels;
-    private String dotForm;
-    int orientation;
+    private String[] coeffTableNames;
+    private int coeffTableIndex;
+    private String[][] coeffs;
+    private String[] labels;
+    private String tableName;
+    private String tableDescription;
+    private int orientation;
     private boolean validReturnFromCalledActivity;
     private String calledActivityName;
     private StringShelfDatabase stringShelfDatabase;
@@ -100,10 +106,10 @@ public class CtDisplayDotSpacingActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        getActionBar().setTitle("Set Dot Spacing");
+        getActionBar().setTitle(getIntent().getStringExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString()));
         setupOrientationLayout();
         setupButtons();
-        setupSeekBars();
+        setupSeekBarForValue();
         setupDotMatrixDisplay();
         validReturnFromCalledActivity = false;
     }
@@ -115,7 +121,7 @@ public class CtDisplayDotSpacingActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         currentCtRecord = null;
-        setCurrentValuesForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffs);
+        setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString(), tableName, coeffs[coeffTableIndex]);
         stringShelfDatabase.close();
         stringShelfDatabase = null;
         savePreferences();
@@ -126,39 +132,46 @@ public class CtDisplayDotSpacingActivity extends Activity {
         super.onResume();
 
         shpFileName = getPackageName() + "." + getClass().getSimpleName() + SHP_FILE_NAME_SUFFIX;
-        setupStringShelfDatabase();
+        tableName = getIntent().getStringExtra(TABLE_EXTRA_KEYS.TABLE.toString());
+        firstPortraitValueIndex = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.FIRST_PORTRAIT_VALUE_INDEX.toString(), NOT_FOUND);
+        firstLanscapeValueIndex = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.FIRST_LANDSCAPE_VALUE_INDEX.toString(), NOT_FOUND);
+        maxSeekBarForValue = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.SEEKBAR_MAX_VALUE.toString(), NOT_FOUND);
+        tableDescription = getIntent().getStringExtra(TABLE_EXTRA_KEYS.DESCRIPTION.toString());
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
+        setupStringShelfDatabase();
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        colors = getCurrentValuesFromMultipleColorTablesFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString())[getColorTableIndex(getDotMatrixDisplayColorsTableName())];  //  Prendre les couleurs actuelles de CtDisplayActivity
-        dotSpacingCoeffs = getCurrentValuesFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
-        dotSpacingCoeffLabels = getLabels(stringShelfDatabase, getDotMatrixDisplayDotSpacingCoeffsTableName());
-        dotForm = getCurrent(stringShelfDatabase, getDotMatrixDisplayDotFormTableName(), getDotMatrixDisplayDotFormValueIndex());
+        coeffTableNames = getCoeffTableNames();
+        coeffs = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, coeffTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+        coeffTableIndex = getTableIndex(coeffTableNames, tableName);
+        coeffs[coeffTableIndex] = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString(), tableName);
+        labels = getLabels(stringShelfDatabase, tableName);
+        colors = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName());  //  Prendre les couleurs actuelles de CtDisplayActivity
         orientation = getResources().getConfiguration().orientation;
 
-        if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString())) {
-            setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_SPACING.toString(), ACTIVITY_START_STATUS.HOT);
-            dotSpacingCoeffIndex = getOrientationDotMatrixDisplayDotSpacingCoeffIndex(orientation);
+        if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString())) {
+            setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_SLIDER.toString(), ACTIVITY_START_STATUS.HOT);
+            coeffIndex = getOrientationValueIndex(orientation);
         } else {
-            dotSpacingCoeffIndex = getSHPDotSpacingCoeffIndex();
+            coeffIndex = getSHPValueIndex();
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (calledActivityName.equals(PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString())) {
-                    dotSpacingCoeffs[dotSpacingCoeffIndex] = getCurrentValueFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffIndex);
+                    coeffs[coeffTableIndex][coeffIndex] = getCurrentFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), tableName, coeffIndex);
                 }
                 if (calledActivityName.equals(PEKISLIB_ACTIVITIES.PRESETS.toString())) {
-                    dotSpacingCoeffs = getCurrentValuesFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
+                    coeffs[coeffTableIndex] = getCurrentsFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), tableName);
                 }
             }
         }
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
-        setupDotMatrixDisplayDotForm();
-        setupDotMatrixDisplayDotSpacingCoeff();
+        setupDotMatrixDisplayCoeffs();
+        setupMaxSeekBarForValue();
         rebuildDotMatrixDisplayStructure();
         updateDisplayDotMatrixDisplay();
-        updateDisplayButtonTextNextDotSpacingCoeff();
-        updateDisplaySeekBarsProgress();
-        updateDisplayButtonTextDotSpacingCoeffValue();
+        updateDisplayButtonTextNextValue();
+        updateDisplaySeekBarForValueProgress();
+        updateDisplayButtonTextValue();
     }
 
     @Override
@@ -194,14 +207,14 @@ public class CtDisplayDotSpacingActivity extends Activity {
     }
 
     private void onButtonClick(COMMANDS command) {
-        if (command.equals(COMMANDS.NEXT_DOT_SPACING_COEFF)) {
-            onButtonClickNextDotSpacingCoeff();
+        if (command.equals(COMMANDS.NEXT_VALUE)) {
+            onButtonClickNextValue();
         }
         if (command.equals(COMMANDS.CANCEL)) {
             onButtonClickCancel();
         }
-        if (command.equals(COMMANDS.DOT_SPACING_COEFF_VALUE)) {
-            onButtonClickDotSpacingCoeffValue();
+        if (command.equals(COMMANDS.VALUE)) {
+            onButtonClickValue();
         }
         if (command.equals(COMMANDS.PRESETS)) {
             onButtonClickPresets();
@@ -211,26 +224,24 @@ public class CtDisplayDotSpacingActivity extends Activity {
         }
     }
 
-    private void onButtonClickNextDotSpacingCoeff() {
-        dotSpacingCoeffIndex = dotSpacingCoeffIndex + 1;
-        if (dotSpacingCoeffIndex >= dotSpacingCoeffs.length) {
-            dotSpacingCoeffIndex = 1;
+    private void onButtonClickNextValue() {
+        coeffIndex = coeffIndex + 1;
+        if (coeffIndex >= coeffs[coeffTableIndex].length) {
+            coeffIndex = 1;
         }
-        updateDisplayButtonTextNextDotSpacingCoeff();
-        updateDisplaySeekBarsProgress();
-        updateDisplayButtonTextDotSpacingCoeffValue();
-        if (dotSpacingCoeffIndex == getOrientationDotMatrixDisplayDotSpacingCoeffIndex(orientation)) {
-            setupDotMatrixDisplayDotSpacingCoeff();
-            rebuildDotMatrixDisplayStructure();
-            updateDisplayDotMatrixDisplay();
-        }
+        updateDisplayButtonTextNextValue();
+        updateDisplaySeekBarForValueProgress();
+        updateDisplayButtonTextValue();
+        updateSetupDotMatrixDisplay();
+        rebuildDotMatrixDisplayStructure();
+        updateDisplayDotMatrixDisplay();
     }
 
     private void onButtonClickCancel() {
         finish();
     }
 
-    private void onButtonClickDotSpacingCoeffValue() {
+    private void onButtonClickValue() {
         launchInputButtonsActivity();
     }
 
@@ -244,58 +255,66 @@ public class CtDisplayDotSpacingActivity extends Activity {
         finish();
     }
 
-    private void onSeekBarProgressChanged(boolean fromUser) {
+    private void onSeekBarForValueProgressChanged(boolean fromUser) {
         if (fromUser) {
-            dotSpacingCoeffs[dotSpacingCoeffIndex] = getSeekBarsProgressString();
-            updateDisplayButtonTextDotSpacingCoeffValue();
-            if (dotSpacingCoeffIndex == getOrientationDotMatrixDisplayDotSpacingCoeffIndex(orientation)) {
-                setupDotMatrixDisplayDotSpacingCoeff();
-                rebuildDotMatrixDisplayStructure();
-                updateDisplayDotMatrixDisplay();
-            }
+            coeffs[coeffTableIndex][coeffIndex] = getSeekBarsForValueProgressString();
+            updateDisplayButtonTextValue();
+            updateSetupDotMatrixDisplay();
+            rebuildDotMatrixDisplayStructure();
+            updateDisplayDotMatrixDisplay();
         }
     }
 
     private void updateDisplayDotMatrixDisplay() {
-        dotMatrixDisplayUpdater.displayTime(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION));
+        dotMatrixDisplayUpdater.displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
     }
 
-    private void updateDisplayButtonTextNextDotSpacingCoeff() {
+    private void updateSetupDotMatrixDisplay() {
+        if (coeffIndex == getOrientationValueIndex(orientation)) {
+            setupDotMatrixDisplayCoeffs();
+        }
+    }
+
+    private void updateDisplayButtonTextNextValue() {
         final String SYMBOL_NEXT = " >";               //  Pour signifier qu'on peut passer au suivant en poussant sur le bouton
 
-        buttons[COMMANDS.NEXT_DOT_SPACING_COEFF.INDEX()].setText(dotSpacingCoeffLabels[dotSpacingCoeffIndex] + SYMBOL_NEXT);
+        buttons[COMMANDS.NEXT_VALUE.INDEX()].setText(labels[coeffIndex] + SYMBOL_NEXT);
     }
 
-    private void updateDisplayButtonTextDotSpacingCoeffValue() {
-        buttons[COMMANDS.DOT_SPACING_COEFF_VALUE.INDEX()].setText(getSeekBarsProgressString());
+    private void updateDisplayButtonTextValue() {
+        buttons[COMMANDS.VALUE.INDEX()].setText(getSeekBarsForValueProgressString());
     }
 
-    private void updateDisplaySeekBarsProgress() {
-        int percent = Integer.parseInt(dotSpacingCoeffs[dotSpacingCoeffIndex]);  //  0..100
-        dotSpacingCoeffSeekBar.setProgress(percent);
+    private void updateDisplaySeekBarForValueProgress() {
+        int percent = Integer.parseInt(coeffs[coeffTableIndex][coeffIndex]);  //  0..100
+        seekBarForValue.setProgress(percent);
     }
 
-    private String getSeekBarsProgressString() {
-        return String.valueOf(dotSpacingCoeffSeekBar.getProgress());
+    private String getSeekBarsForValueProgressString() {
+        return String.valueOf(seekBarForValue.getProgress());
     }
 
     private void savePreferences() {
         SharedPreferences shp = getSharedPreferences(shpFileName, MODE_PRIVATE);
         SharedPreferences.Editor shpEditor = shp.edit();
-        shpEditor.putInt(SHP_KEY_NAMES.DOT_SPACING_COEFF_INDEX.toString(), dotSpacingCoeffIndex);
+        shpEditor.putInt(SHP_KEY_NAMES.VALUE_INDEX.toString(), coeffIndex);
         shpEditor.commit();
     }
 
-    private int getSHPDotSpacingCoeffIndex() {
+    private int getSHPValueIndex() {
         SharedPreferences shp = getSharedPreferences(shpFileName, MODE_PRIVATE);
-        return shp.getInt(SHP_KEY_NAMES.DOT_SPACING_COEFF_INDEX.toString(), DOT_SPACING_COEFF_INDEX_DEFAULT_VALUE);
+        return shp.getInt(SHP_KEY_NAMES.VALUE_INDEX.toString(), VALUE_INDEX_DEFAULT);
+    }
+
+    public int getOrientationValueIndex(int orientation) {
+        return (orientation == Configuration.ORIENTATION_PORTRAIT) ? firstPortraitValueIndex : firstLanscapeValueIndex;
     }
 
     private void setupOrientationLayout() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            setContentView(R.layout.ctdisplaydotspacing_p);
+            setContentView(R.layout.ctdisplayslider_p);
         } else {
-            setContentView(R.layout.ctdisplaydotspacing_l);
+            setContentView(R.layout.ctdisplayslider_l);
         }
     }
 
@@ -311,12 +330,16 @@ public class CtDisplayDotSpacingActivity extends Activity {
         dotMatrixDisplayUpdater.setColors(colors);
     }
 
-    private void setupDotMatrixDisplayDotSpacingCoeff() {
-        dotMatrixDisplayUpdater.setDotSpacingCoeff(dotSpacingCoeffs[getOrientationDotMatrixDisplayDotSpacingCoeffIndex(orientation)]);    //  L'apparence va devoir changer
-    }
 
-    private void setupDotMatrixDisplayDotForm() {
-        dotMatrixDisplayUpdater.setDotForm(dotForm);
+    private void setupDotMatrixDisplayCoeffs() {
+        dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getTableIndex(coeffTableNames, getDotMatrixDisplayDotSpacingCoeffsTableName())][getOrientationValueIndex(orientation)]);    //  L'apparence va devoir changer
+        dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getTableIndex(coeffTableNames, getDotMatrixDisplayDotCornerRadiusCoeffTableName())][getOrientationValueIndex(orientation)]);
+        dotMatrixDisplayUpdater.setScrollSpeed(coeffs[getTableIndex(coeffTableNames, getDotMatrixDisplayScrollSpeedTableName())][getOrientationValueIndex(orientation)]);
+        if (tableName.equals(getDotMatrixDisplayScrollSpeedTableName())) {
+            dotMatrixDisplayUpdater.startAutomatic();
+        } else {
+            dotMatrixDisplayUpdater.stopAutomatic();
+        }
     }
 
     private void rebuildDotMatrixDisplayStructure() {
@@ -345,13 +368,13 @@ public class CtDisplayDotSpacingActivity extends Activity {
         }
     }
 
-    private void setupSeekBars() {
+    private void setupSeekBarForValue() {
         try {
-            dotSpacingCoeffSeekBar = findViewById(R.id.SEEKB_DOT_SPACING_COEFF);
-            dotSpacingCoeffSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            seekBarForValue = findViewById(R.id.SEEKB_VALUE);
+            seekBarForValue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    onSeekBarProgressChanged(fromUser);
+                    onSeekBarForValueProgressChanged(fromUser);
                 }
 
                 @Override
@@ -367,38 +390,42 @@ public class CtDisplayDotSpacingActivity extends Activity {
         }
     }
 
+    private void setupMaxSeekBarForValue() {
+        seekBarForValue.setMax(maxSeekBarForValue);
+    }
+
     private void setupStringShelfDatabase() {
         stringShelfDatabase = new StringShelfDatabase(this);
         stringShelfDatabase.open();
     }
 
     private void launchInputButtonsActivity() {
-        setCurrentValueForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffIndex, getSeekBarsProgressString());
+        setCurrentForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), tableName, coeffIndex, getSeekBarsForValueProgressString());
         setStartStatusOfActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), dotSpacingCoeffLabels[dotSpacingCoeffIndex]);
-        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
-        callingIntent.putExtra(TABLE_EXTRA_KEYS.INDEX.toString(), dotSpacingCoeffIndex);
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), labels[coeffIndex]);
+        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), tableName);
+        callingIntent.putExtra(TABLE_EXTRA_KEYS.INDEX.toString(), coeffIndex);
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.INDEX());
     }
 
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
-        setCurrentValuesForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName(), dotSpacingCoeffs);
+        setCurrentsForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), tableName, coeffs[coeffTableIndex]);
         setStartStatusOfActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
-        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), "Dot spacing coeffs");
+        callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), tableDescription);
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.DISPLAY_TYPE.toString(), PRESETS_ACTIVITY_DISPLAY_TYPE.NO_COLORS.toString());
-        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getDotMatrixDisplayDotSpacingCoeffsTableName());
+        callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), tableName);
         startActivityForResult(callingIntent, PEKISLIB_ACTIVITIES.PRESETS.INDEX());
     }
 
     private void launchHelpActivity() {
         Intent callingIntent = new Intent(this, HelpActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), HELP_ACTIVITY_TITLE);
-        callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpctdisplaydotspacingactivity);
+        callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpctdisplayslideractivity);
         startActivity(callingIntent);
     }
 
