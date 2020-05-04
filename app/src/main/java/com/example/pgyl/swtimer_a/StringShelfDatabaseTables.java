@@ -12,6 +12,9 @@ import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 
 public class StringShelfDatabaseTables {
 
+    private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
+    private static final String TABLE_PERCENT_REGEXP_DEFAULT = "^(100|[1-9]?[0-9])$";  //  Nombre entier de 0 à 100, sans décimales
+
     public static String[] getColorTableNames() {
         return new String[]{SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString(), SWTIMER_TABLES.STATE_BUTTONS_COLORS.toString(), SWTIMER_TABLES.BACK_SCREEN_COLORS.toString()};
     }
@@ -22,7 +25,7 @@ public class StringShelfDatabaseTables {
         BACK_SCREEN_COLORS(SwTimerTableDataFields.BackScreenColors.class, "Back screen"),
         CHRONO_TIMERS(SwTimerTableDataFields.ChronoTimers.class, ""),   //  Table des Chronos et Timers
         PRESETS_CT(SwTimerTableDataFields.PresetsCT.class, ""),
-        DOT_MATRIX_DISPLAY_COEFFS(SwTimerTableDataFields.DotMatrixDisplayCoeffs.class, "Dot matrix display coeffs");
+        DOT_MATRIX_DISPLAY_COEFFS(SwTimerTableDataFields.DotMatrixDisplayCoeffs.class, "");
 
         private int dataFieldsCount;
         private String description;
@@ -128,7 +131,7 @@ public class StringShelfDatabaseTables {
         }
 
         enum DotMatrixDisplayCoeffs implements SwTimerTableDataFields {
-            DOT_SPACING("Dot spacing"), DOT_CORNER("Dot corner"), SCROLL_SPEED("Scroll speed");
+            DOT_SPACING("Dot spacing"), DOT_CORNER_RADIUS("Dot corner"), SCROLL_SPEED("Scroll speed");
 
             private String valueLabel;
 
@@ -145,9 +148,6 @@ public class StringShelfDatabaseTables {
             }
         }
     }
-
-    private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
-    private static final String TABLE_PERCENT_REGEXP_DEFAULT = "^(100|[1-9]?[0-9])$";  //  Nombre entier de 0 à 100, sans décimales
 
     public static int getSwTimerTableDataFieldsCount(String tableName) {
         return SWTIMER_TABLES.valueOf(tableName).getDataFieldsCount();
@@ -354,7 +354,7 @@ public class StringShelfDatabaseTables {
 
     public static String[][] getDotMatrixDisplayCoeffsInits() {
         final String[][] TABLE_DOT_MATRIX_DISPLAY_COEFFS_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.LABEL()},
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
                 {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT, null},
                 {TABLE_IDS.DEFAULT.toString(), "20", "0", "25"},    //  Points carrés par défaut ; 25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
@@ -368,7 +368,7 @@ public class StringShelfDatabaseTables {
     }
 
     public static int getDotMatrixDisplayDotCornerRadiusCoeffValueIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER.INDEX();
+        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.INDEX();
     }
 
     public static int getDotMatrixDisplayScrollSpeedValueIndex() {

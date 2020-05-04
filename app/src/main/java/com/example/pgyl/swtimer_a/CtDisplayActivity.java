@@ -251,7 +251,7 @@ public class CtDisplayActivity extends Activity {
             launchCtDisplayColorsActivity();
             return true;
         }
-        if (item.getItemId() == R.id.SET_MISC) {
+        if (item.getItemId() == R.id.SET_DOT_MATRIX_DISPLAY_COEFFS) {
             launchCtDisplayDotMatrixDisplayCoeffsActivity();
             return true;
         }
