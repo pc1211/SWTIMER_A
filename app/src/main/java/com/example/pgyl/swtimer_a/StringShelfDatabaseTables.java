@@ -1,7 +1,6 @@
 package com.example.pgyl.swtimer_a;
 
 import android.content.Context;
-import android.content.res.Configuration;
 
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
 
@@ -129,7 +128,7 @@ public class StringShelfDatabaseTables {
         }
 
         enum DotMatrixDisplayCoeffs implements SwTimerTableDataFields {
-            DOT_SPACING_PORTRAIT("Dot spacing (Portrait)"), DOT_SPACING_LANDSCAPE("Dot spacing (Landscape)"), DOT_CORNER_RADIUS("Dot corner radius"), SCROLL_SPEED("Scroll speed");
+            DOT_SPACING("Dot spacing"), DOT_CORNER("Dot corner"), SCROLL_SPEED("Scroll speed");
 
             private String valueLabel;
 
@@ -355,29 +354,21 @@ public class StringShelfDatabaseTables {
 
     public static String[][] getDotMatrixDisplayCoeffsInits() {
         final String[][] TABLE_DOT_MATRIX_DISPLAY_COEFFS_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING_PORTRAIT.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING_LANDSCAPE.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT, null},
-                {TABLE_IDS.DEFAULT.toString(), "20", "20", "0", "25"},    //  Points carrés par défaut ; 25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
-                {TABLE_IDS.MAX.toString(), "100", "100", "100", "100"}
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.LABEL()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
+                {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT, null},
+                {TABLE_IDS.DEFAULT.toString(), "20", "0", "25"},    //  Points carrés par défaut ; 25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
+                {TABLE_IDS.MAX.toString(), "100", "100", "100"}
         };
         return TABLE_DOT_MATRIX_DISPLAY_COEFFS_INITS;
     }
 
-    public static int getDotMatrixDisplayDotSpacingCoeffLandscapeIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING_LANDSCAPE.INDEX();
-    }
-
-    public static int getDotMatrixDisplayDotSpacingCoeffPortraitIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING_PORTRAIT.INDEX();
-    }
-
-    public static int getOrientationDotMatrixDisplayDotSpacingCoeffIndex(int orientation) {
-        return (orientation == Configuration.ORIENTATION_PORTRAIT) ? getDotMatrixDisplayDotSpacingCoeffPortraitIndex() : getDotMatrixDisplayDotSpacingCoeffLandscapeIndex();
+    public static int getDotMatrixDisplayDotSpacingCoeffIndex() {
+        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING.INDEX();
     }
 
     public static int getDotMatrixDisplayDotCornerRadiusCoeffValueIndex() {
-        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.INDEX();
+        return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER.INDEX();
     }
 
     public static int getDotMatrixDisplayScrollSpeedValueIndex() {
