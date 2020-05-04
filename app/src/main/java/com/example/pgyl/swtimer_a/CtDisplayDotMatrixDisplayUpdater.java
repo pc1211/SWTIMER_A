@@ -141,13 +141,13 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.updateDisplay();
     }
 
-    public void startAutomatic() {
-        if (currentCtRecord.isReset()) {
+    public void startAutomatic(boolean resetOn) {
+        if (resetOn) {   //  Etat de Reset, cad avec scroll
             automaticScrollOn = true;
             scrollCount = 0;
             scrollDirection = SCROLL_DIRECTIONS.LEFT;
             updateInterval = (dotsPersecond != 0) ? MILLISECONDS_PER_SECOND / dotsPersecond : 0;  //  0 => Pas de scroll
-        } else {
+        } else {   //  Pas Reset => Pas de scroll, mais mise à jour à la fréquence correspondant à la précision du chrono/timer
             automaticScrollOn = false;
             updateInterval = TIME_UNIT_PRECISION.DURATION_MS();
         }

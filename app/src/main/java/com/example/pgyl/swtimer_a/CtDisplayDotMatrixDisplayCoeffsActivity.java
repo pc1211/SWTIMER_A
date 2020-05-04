@@ -44,11 +44,11 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
 
 public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
@@ -308,11 +308,13 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
 
 
     private void setupDotMatrixDisplayCoeffs() {
+        final boolean RESET_ON = true;
+
         dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getDotMatrixDisplayCoeffsDotSpacingIndex()]);
         dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getDotMatrixDisplayCoeffsDotCornerRadiusIndex()]);
         dotMatrixDisplayUpdater.setScrollSpeed(coeffs[getDotMatrixDisplayCoeffsScrollSpeedIndex()]);
         if (coeffIndex == getDotMatrixDisplayCoeffsScrollSpeedIndex()) {
-            dotMatrixDisplayUpdater.startAutomatic();
+            dotMatrixDisplayUpdater.startAutomatic(RESET_ON);   //  Comme en état de reset, cad avec scroll
         } else {
             dotMatrixDisplayUpdater.stopAutomatic();
         }
