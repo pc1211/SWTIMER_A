@@ -46,9 +46,9 @@ import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffValueIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedValueIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
 
 public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
@@ -308,10 +308,10 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
 
 
     private void setupDotMatrixDisplayCoeffs() {
-        dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getDotMatrixDisplayDotSpacingCoeffIndex()]);
-        dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getDotMatrixDisplayDotCornerRadiusCoeffValueIndex()]);
-        dotMatrixDisplayUpdater.setScrollSpeed(coeffs[getDotMatrixDisplayScrollSpeedValueIndex()]);
-        if (coeffIndex == getDotMatrixDisplayScrollSpeedValueIndex()) {
+        dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getDotMatrixDisplayCoeffsDotSpacingIndex()]);
+        dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getDotMatrixDisplayCoeffsDotCornerRadiusIndex()]);
+        dotMatrixDisplayUpdater.setScrollSpeed(coeffs[getDotMatrixDisplayCoeffsScrollSpeedIndex()]);
+        if (coeffIndex == getDotMatrixDisplayCoeffsScrollSpeedIndex()) {
             dotMatrixDisplayUpdater.startAutomatic();
         } else {
             dotMatrixDisplayUpdater.stopAutomatic();

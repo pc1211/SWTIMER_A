@@ -60,9 +60,9 @@ import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreen
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableNames;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotCornerRadiusCoeffValueIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayDotSpacingCoeffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayScrollSpeedValueIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
+import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOffIndex;
@@ -480,9 +480,9 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayCoeffs() {
-        dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getDotMatrixDisplayDotSpacingCoeffIndex()]);
-        dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getDotMatrixDisplayDotCornerRadiusCoeffValueIndex()]);
-        dotMatrixDisplayUpdater.setScrollSpeed(coeffs[getDotMatrixDisplayScrollSpeedValueIndex()]);
+        dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getDotMatrixDisplayCoeffsDotSpacingIndex()]);
+        dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getDotMatrixDisplayCoeffsDotCornerRadiusIndex()]);
+        dotMatrixDisplayUpdater.setScrollSpeed(coeffs[getDotMatrixDisplayCoeffsScrollSpeedIndex()]);
     }
 
     private void rebuildDotMatrixDisplayStructure() {

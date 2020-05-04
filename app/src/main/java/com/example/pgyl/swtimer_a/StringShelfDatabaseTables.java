@@ -363,15 +363,15 @@ public class StringShelfDatabaseTables {
         return TABLE_DOT_MATRIX_DISPLAY_COEFFS_INITS;
     }
 
-    public static int getDotMatrixDisplayDotSpacingCoeffIndex() {
+    public static int getDotMatrixDisplayCoeffsDotSpacingIndex() {
         return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING.INDEX();
     }
 
-    public static int getDotMatrixDisplayDotCornerRadiusCoeffValueIndex() {
+    public static int getDotMatrixDisplayCoeffsDotCornerRadiusIndex() {
         return SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.INDEX();
     }
 
-    public static int getDotMatrixDisplayScrollSpeedValueIndex() {
+    public static int getDotMatrixDisplayCoeffsScrollSpeedIndex() {
         return SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.INDEX();
     }
     //endregion
