@@ -30,7 +30,7 @@ public class StringDBUtils {
         stringDB.insertOrReplaceRows(getDotMatrixDisplayColorsTableName(), getDotMatrixDisplayColorsInits());
     }
 
-    public static void initializeTableDotMatrixDisplayDotSpacingCoeffs(StringDB stringDB) {
+    public static void initializeTableDotMatrixDisplayCoeffs(StringDB stringDB) {
         stringDB.insertOrReplaceRows(getDotMatrixDisplayCoeffsTableName(), getDotMatrixDisplayCoeffsInits());
     }
 

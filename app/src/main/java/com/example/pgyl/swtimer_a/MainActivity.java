@@ -49,8 +49,8 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBUtils.createSwtimerTableIfNotExists;
 import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableBackScreenColors;
+import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableDotMatrixDisplayCoeffs;
 import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableDotMatrixDisplayColors;
-import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableDotMatrixDisplayDotSpacingCoeffs;
 import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTablePresetsCT;
 import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableStateButtonsColors;
 
@@ -595,7 +595,7 @@ public class MainActivity extends Activity {
         }
         if (!stringDB.tableExists(getDotMatrixDisplayCoeffsTableName())) {
             createSwtimerTableIfNotExists(stringDB, getDotMatrixDisplayCoeffsTableName());
-            initializeTableDotMatrixDisplayDotSpacingCoeffs(stringDB);
+            initializeTableDotMatrixDisplayCoeffs(stringDB);
             String[] defaults = getDefaults(stringDB, getDotMatrixDisplayCoeffsTableName());
             setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), defaults);
             createPresetWithDefaultValues(getDotMatrixDisplayCoeffsTableName(), defaults);
