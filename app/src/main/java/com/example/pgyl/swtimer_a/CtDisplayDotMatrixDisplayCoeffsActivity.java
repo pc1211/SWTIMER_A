@@ -247,12 +247,21 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
             updateDisplayButtonTextValue();
             setupDotMatrixDisplayCoeffs();
             rebuildDotMatrixDisplayStructure();
-            updateDisplayDotMatrixDisplay();
+            if (coeffIndex != getDotMatrixDisplayCoeffsScrollSpeedIndex()) {   //  Pour ScrollSpeed, il y a déjà un scroll automatique en cours via onButtonClickNextValue()
+                updateDisplayDotMatrixDisplay();
+            }
         }
     }
 
     private void updateDisplayDotMatrixDisplay() {
+        final boolean RESET_ON = true;
+
         dotMatrixDisplayUpdater.displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
+        if (coeffIndex == getDotMatrixDisplayCoeffsScrollSpeedIndex()) {
+            dotMatrixDisplayUpdater.startAutomatic(RESET_ON);   //  Comme en état de reset, cad avec scroll
+        } else {
+            dotMatrixDisplayUpdater.stopAutomatic();
+        }
     }
 
     private void updateDisplayButtonTextNextValue() {
@@ -308,16 +317,9 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
 
 
     private void setupDotMatrixDisplayCoeffs() {
-        final boolean RESET_ON = true;
-
         dotMatrixDisplayUpdater.setDotSpacingCoeff(coeffs[getDotMatrixDisplayCoeffsDotSpacingIndex()]);
         dotMatrixDisplayUpdater.setDotCornerRadiusCoeff(coeffs[getDotMatrixDisplayCoeffsDotCornerRadiusIndex()]);
         dotMatrixDisplayUpdater.setScrollSpeed(coeffs[getDotMatrixDisplayCoeffsScrollSpeedIndex()]);
-        if (coeffIndex == getDotMatrixDisplayCoeffsScrollSpeedIndex()) {
-            dotMatrixDisplayUpdater.startAutomatic(RESET_ON);   //  Comme en état de reset, cad avec scroll
-        } else {
-            dotMatrixDisplayUpdater.stopAutomatic();
-        }
     }
 
     private void rebuildDotMatrixDisplayStructure() {
