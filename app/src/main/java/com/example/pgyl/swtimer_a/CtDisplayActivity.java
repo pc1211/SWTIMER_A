@@ -15,8 +15,8 @@ import android.widget.LinearLayout;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.PresetsActivity;
-import com.example.pgyl.pekislib_a.StringShelfDatabase;
-import com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
+import com.example.pgyl.pekislib_a.StringDB;
+import com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
 import com.example.pgyl.pekislib_a.SymbolButtonView;
 
 import java.util.logging.Level;
@@ -34,15 +34,15 @@ import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.capitalize;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromMultipleTablesFromActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getTableIndex;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusOfActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentsForActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentsForMultipleTablesForActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setDefaults;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_EXTRA_KEYS;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentsFromActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentsFromMultipleTablesFromActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getTableIndex;
+import static com.example.pgyl.pekislib_a.StringDBUtils.isColdStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForMultipleTablesForActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setDefaults;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
@@ -52,25 +52,25 @@ import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.copyPresetCTRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.ctRecordToChronoTimerRow;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableNames;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOnIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.timeLabelToPresetCTRow;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimer;
+import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringDBTables.copyPresetCTRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringDBTables.ctRecordToChronoTimerRow;
+import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getColorTableNames;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOffIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOnIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.timeLabelToPresetCTRow;
+import static com.example.pgyl.swtimer_a.StringDBUtils.getChronoTimerById;
+import static com.example.pgyl.swtimer_a.StringDBUtils.saveChronoTimer;
 
 public class CtDisplayActivity extends Activity {
     //region Constantes
@@ -113,7 +113,7 @@ public class CtDisplayActivity extends Activity {
     private String[] coeffs;   //  Espacement des points de DotMatrixDisplay, forme des points et vitesse de défilement
     private boolean validReturnFromCalledActivity;
     private String calledActivityName;
-    private StringShelfDatabase stringShelfDatabase;
+    private StringDB stringDB;
     private String shpFileName;
 
     @Override
@@ -135,12 +135,12 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater.stopAutomatic();
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
-        saveChronoTimer(stringShelfDatabase, ctRecordToChronoTimerRow(currentCtRecord));
+        saveChronoTimer(stringDB, ctRecordToChronoTimerRow(currentCtRecord));
         currentCtRecord = null;
-        setCurrentsForMultipleTablesForActivity(stringShelfDatabase, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colors);
-        setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
-        stringShelfDatabase.close();
-        stringShelfDatabase = null;
+        setCurrentsForMultipleTablesForActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colors);
+        setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
+        stringDB.close();
+        stringDB = null;
         menu = null;
         savePreferences();
     }
@@ -154,28 +154,28 @@ public class CtDisplayActivity extends Activity {
         setClockAppAlarmOnStartTimer = getSHPSetClockAppAlarmOnStartTimer();
         keepScreen = getSHPKeepScreen();
         int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
-        setupStringShelfDatabase();
-        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        setDefaults(stringShelfDatabase, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));
+        setupStringDB();
+        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringDB, idct), this);
+        setDefaults(stringDB, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));
         colorTableNames = getColorTableNames();
-        colors = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
-        coeffs = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());
+        colors = getCurrentsFromMultipleTablesFromActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+        coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());
 
-        if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString())) {
-            setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.HOT);
+        if (isColdStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString())) {
+            setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.HOT);
         } else {
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (calledActivityName.equals(PEKISLIB_ACTIVITIES.PRESETS.toString())) {
-                    if (!copyPresetCTRowToCtRecord(getCurrentsFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName()), currentCtRecord, nowm)) {
+                    if (!copyPresetCTRowToCtRecord(getCurrentsFromActivity(stringDB, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName()), currentCtRecord, nowm)) {
                         toastLong("Error updating Timer", this);
                     }
                 }
                 if (calledActivityName.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
-                    colors = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
+                    colors = getCurrentsFromMultipleTablesFromActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
                 }
                 if (calledActivityName.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString())) {
-                    coeffs = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName());
+                    coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName());
                 }
             }
         }
@@ -516,9 +516,9 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void setupStringShelfDatabase() {
-        stringShelfDatabase = new StringShelfDatabase(this);
-        stringShelfDatabase.open();
+    private void setupStringDB() {
+        stringDB = new StringDB(this);
+        stringDB.open();
     }
 
     private void updateCurrentRecord(long nowm) {
@@ -530,8 +530,8 @@ public class CtDisplayActivity extends Activity {
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
-        setCurrentsForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getLabel()));
-        setStartStatusOfActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentsForActivity(stringDB, PEKISLIB_ACTIVITIES.PRESETS.toString(), getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDef(), currentCtRecord.getLabel()));
+        setStartStatusOfActivity(stringDB, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), capitalize("CT Presets"));
         callingIntent.putExtra(PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);
@@ -541,16 +541,16 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void launchCtDisplayColorsActivity() {
-        setCurrentsForMultipleTablesForActivity(stringShelfDatabase, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
-        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentsForMultipleTablesForActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
+        setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayColorsActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
         startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);
     }
 
     private void launchCtDisplayDotMatrixDisplayCoeffsActivity() {
-        setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
-        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
+        setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayDotMatrixDisplayCoeffsActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
         startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);

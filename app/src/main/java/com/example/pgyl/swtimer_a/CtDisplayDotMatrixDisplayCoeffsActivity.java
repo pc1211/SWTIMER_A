@@ -17,7 +17,7 @@ import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
 import com.example.pgyl.pekislib_a.MainActivity;
 import com.example.pgyl.pekislib_a.PresetsActivity;
-import com.example.pgyl.pekislib_a.StringShelfDatabase;
+import com.example.pgyl.pekislib_a.StringDB;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,26 +30,26 @@ import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentFromActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getLabels;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getMaxs;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusOfActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentForActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentsForActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
+import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_EXTRA_KEYS;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentFromActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentsFromActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getLabels;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getMaxs;
+import static com.example.pgyl.pekislib_a.StringDBUtils.isColdStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentForActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
+import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBUtils.getChronoTimerById;
 
 public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
     //region Constantes
@@ -89,7 +89,7 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
     private String tableDescription;
     private boolean validReturnFromCalledActivity;
     private String calledActivityName;
-    private StringShelfDatabase stringShelfDatabase;
+    private StringDB stringDB;
     private String shpFileName;
     //endregion
 
@@ -113,9 +113,9 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         currentCtRecord = null;
-        setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
-        stringShelfDatabase.close();
-        stringShelfDatabase = null;
+        setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
+        stringDB.close();
+        stringDB = null;
         savePreferences();
     }
 
@@ -126,25 +126,25 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
         shpFileName = getPackageName() + "." + getClass().getSimpleName() + SHP_FILE_NAME_SUFFIX;
         tableDescription = getIntent().getStringExtra(TABLE_EXTRA_KEYS.DESCRIPTION.toString());
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
-        setupStringShelfDatabase();
-        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
-        coeffs = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName());
-        labels = getLabels(stringShelfDatabase, getDotMatrixDisplayCoeffsTableName());
-        maxs = getMaxs(stringShelfDatabase, getDotMatrixDisplayCoeffsTableName());
-        colors = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName());  //  Prendre les couleurs actuelles de CtDisplayActivity
+        setupStringDB();
+        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringDB, idct), this);
+        coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName());
+        labels = getLabels(stringDB, getDotMatrixDisplayCoeffsTableName());
+        maxs = getMaxs(stringDB, getDotMatrixDisplayCoeffsTableName());
+        colors = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName());  //  Prendre les couleurs actuelles de CtDisplayActivity
 
-        if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString())) {
-            setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), ACTIVITY_START_STATUS.HOT);
+        if (isColdStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString())) {
+            setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), ACTIVITY_START_STATUS.HOT);
             coeffIndex = COEFF_INDEX_DEFAULT_VALUE;
         } else {
             coeffIndex = getSHPCoeffIndex();
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (calledActivityName.equals(PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString())) {
-                    coeffs[coeffIndex] = getCurrentFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffIndex);
+                    coeffs[coeffIndex] = getCurrentFromActivity(stringDB, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffIndex);
                 }
                 if (calledActivityName.equals(PEKISLIB_ACTIVITIES.PRESETS.toString())) {
-                    coeffs = getCurrentsFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayCoeffsTableName());
+                    coeffs = getCurrentsFromActivity(stringDB, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayCoeffsTableName());
                 }
             }
         }
@@ -372,14 +372,14 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
         seekBarForValue.setMax(Integer.parseInt(maxs[coeffIndex]));
     }
 
-    private void setupStringShelfDatabase() {
-        stringShelfDatabase = new StringShelfDatabase(this);
-        stringShelfDatabase.open();
+    private void setupStringDB() {
+        stringDB = new StringDB(this);
+        stringDB.open();
     }
 
     private void launchInputButtonsActivity() {
-        setCurrentForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffIndex, getSeekBarsForValueProgressString());
-        setStartStatusOfActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentForActivity(stringDB, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffIndex, getSeekBarsForValueProgressString());
+        setStartStatusOfActivity(stringDB, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), labels[coeffIndex]);
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), getDotMatrixDisplayCoeffsTableName());
@@ -390,8 +390,8 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
-        setCurrentsForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
-        setStartStatusOfActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentsForActivity(stringDB, PEKISLIB_ACTIVITIES.PRESETS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
+        setStartStatusOfActivity(stringDB, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), tableDescription);
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);

@@ -21,7 +21,7 @@ import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
 import com.example.pgyl.pekislib_a.MainActivity;
 import com.example.pgyl.pekislib_a.PresetsActivity;
-import com.example.pgyl.pekislib_a.StringShelfDatabase;
+import com.example.pgyl.pekislib_a.StringDB;
 import com.example.pgyl.pekislib_a.SymbolButtonView;
 
 import java.util.logging.Level;
@@ -39,36 +39,36 @@ import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentFromActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getCurrentsFromMultipleTablesFromActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getFieldLabelsFromMultipleTables;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getTableIndex;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.isColdStartStatusOfActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentForActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentsForActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentsForMultipleTablesForActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
+import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_EXTRA_KEYS;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentFromActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentsFromActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentsFromMultipleTablesFromActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getFieldLabelsFromMultipleTables;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getTableIndex;
+import static com.example.pgyl.pekislib_a.StringDBUtils.isColdStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentForActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForMultipleTablesForActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getColorTableNames;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDescriptionsOfMultipleSwtimerTables;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsOnIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.getChronoTimerById;
+import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getColorTableNames;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDescriptionsOfMultipleSwtimerTables;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOffIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOnIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBUtils.getChronoTimerById;
 
 public class CtDisplayColorsActivity extends Activity {
     //region Constantes
@@ -163,7 +163,7 @@ public class CtDisplayColorsActivity extends Activity {
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
     private String calledActivityName;
-    private StringShelfDatabase stringShelfDatabase;
+    private StringDB stringDB;
     private String shpFileName;
     //endregion
 
@@ -189,9 +189,9 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         currentCtRecord = null;
-        setCurrentsForMultipleTablesForActivity(stringShelfDatabase, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
-        stringShelfDatabase.close();
-        stringShelfDatabase = null;
+        setCurrentsForMultipleTablesForActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
+        stringDB.close();
+        stringDB = null;
         savePreferences();
     }
 
@@ -201,17 +201,17 @@ public class CtDisplayColorsActivity extends Activity {
 
         shpFileName = getPackageName() + "." + getClass().getSimpleName() + SHP_FILE_NAME_SUFFIX;
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
-        setupStringShelfDatabase();
-        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringShelfDatabase, idct), this);
+        setupStringDB();
+        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringDB, idct), this);
         colorTableNames = getColorTableNames();
-        colors = getCurrentsFromMultipleTablesFromActivity(stringShelfDatabase, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
+        colors = getCurrentsFromMultipleTablesFromActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
         colorTableDescriptions = getDescriptionsOfMultipleSwtimerTables(colorTableNames);
-        colorTableLabels = getFieldLabelsFromMultipleTables(stringShelfDatabase, colorTableNames);
-        coeffs = getCurrentsFromActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());
+        colorTableLabels = getFieldLabelsFromMultipleTables(stringDB, colorTableNames);
+        coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());
         setupHSVColorSpace();
 
-        if (isColdStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
-            setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.HOT);
+        if (isColdStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
+            setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.HOT);
             colorTableIndex = COLOR_TABLE_INDEX_DEFAULT_VALUE;
             colorIndex = COLOR_INDEX_DEFAULT_VALUE;
             colorSpace = COLOR_SPACE_DEFAULT_VALUE;
@@ -222,14 +222,14 @@ public class CtDisplayColorsActivity extends Activity {
             if (validReturnFromCalledActivity) {
                 validReturnFromCalledActivity = false;
                 if (calledActivityName.equals(PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString())) {
-                    String colorText = getCurrentFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), colorTableNames[colorTableIndex], colorIndex);
+                    String colorText = getCurrentFromActivity(stringDB, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), colorTableNames[colorTableIndex], colorIndex);
                     if (colorSpace.equals(COLOR_SPACES.HSV)) {
                         colorText = HSVToRGB(colorText);    //  HSV dégradé
                     }
                     colors[colorTableIndex][colorIndex] = colorText;
                 }
                 if (calledActivityName.equals(PEKISLIB_ACTIVITIES.PRESETS.toString())) {
-                    colors[colorTableIndex] = getCurrentsFromActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), colorTableNames[colorTableIndex]);
+                    colors[colorTableIndex] = getCurrentsFromActivity(stringDB, PEKISLIB_ACTIVITIES.PRESETS.toString(), colorTableNames[colorTableIndex]);
                 }
             }
         }
@@ -589,14 +589,14 @@ public class CtDisplayColorsActivity extends Activity {
         backLayoutPart2 = findViewById(R.id.BACK_LAYOUT_PART2);
     }
 
-    private void setupStringShelfDatabase() {
-        stringShelfDatabase = new StringShelfDatabase(this);
-        stringShelfDatabase.open();
+    private void setupStringDB() {
+        stringDB = new StringDB(this);
+        stringDB.open();
     }
 
     private void launchInputButtonsActivity() {
-        setCurrentForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), colorTableNames[colorTableIndex], colorIndex, getSeekBarsProgressHexString());
-        setStartStatusOfActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentForActivity(stringDB, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), colorTableNames[colorTableIndex], colorIndex, getSeekBarsProgressHexString());
+        setStartStatusOfActivity(stringDB, PEKISLIB_ACTIVITIES.INPUT_BUTTONS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, InputButtonsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTableLabels[colorTableIndex][colorIndex]);
         callingIntent.putExtra(TABLE_EXTRA_KEYS.TABLE.toString(), colorTableNames[colorTableIndex]);
@@ -607,8 +607,8 @@ public class CtDisplayColorsActivity extends Activity {
     private void launchPresetsActivity() {
         final String SEPARATOR = " - ";
 
-        setCurrentsForActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), colorTableNames[colorTableIndex], colors[colorTableIndex]);
-        setStartStatusOfActivity(stringShelfDatabase, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
+        setCurrentsForActivity(stringDB, PEKISLIB_ACTIVITIES.PRESETS.toString(), colorTableNames[colorTableIndex], colors[colorTableIndex]);
+        setStartStatusOfActivity(stringDB, PEKISLIB_ACTIVITIES.PRESETS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, PresetsActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), colorTableDescriptions[colorTableIndex] + "(RGB)");
         callingIntent.putExtra(PRESETS_ACTIVITY_EXTRA_KEYS.SEPARATOR.toString(), SEPARATOR);

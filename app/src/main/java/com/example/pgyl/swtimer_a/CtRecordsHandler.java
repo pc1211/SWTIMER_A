@@ -3,7 +3,7 @@ package com.example.pgyl.swtimer_a;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.pgyl.pekislib_a.StringShelfDatabase;
+import com.example.pgyl.pekislib_a.StringDB;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,9 +21,9 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTim
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.ctRecordToChronoTimerRow;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.saveChronoTimers;
+import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
+import static com.example.pgyl.swtimer_a.StringDBTables.ctRecordToChronoTimerRow;
+import static com.example.pgyl.swtimer_a.StringDBUtils.saveChronoTimers;
 
 public class CtRecordsHandler {
     //region Constantes
@@ -41,16 +41,16 @@ public class CtRecordsHandler {
     //region Variables
     private Context context;
     private ArrayList<CtRecord> ctRecords;
-    private StringShelfDatabase stringShelfDatabase;
+    private StringDB stringDB;
     private String shpFileName;
     private String requestedClockAppAlarmDismisses;
     private long nowm;
     private boolean setClockAppAlarmOnStartTimer;
     //endregion
 
-    public CtRecordsHandler(Context context, StringShelfDatabase stringShelfDatabase) {
+    public CtRecordsHandler(Context context, StringDB stringDB) {
         this.context = context;
-        this.stringShelfDatabase = stringShelfDatabase;
+        this.stringDB = stringDB;
         shpFileName = context.getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car partagé avec CtDisplayActivity & MainActivity
         init();
     }
@@ -58,13 +58,13 @@ public class CtRecordsHandler {
     private void init() {
         requestedClockAppAlarmDismisses = getSHPRequestedClockAppAlarmsDismisses();
         processNextRequestedClockAppAlarmDismiss();
-        ctRecords = chronoTimerRowsToCtRecords(StringShelfDatabaseUtils.getChronoTimers(stringShelfDatabase));
+        ctRecords = chronoTimerRowsToCtRecords(StringDBUtils.getChronoTimers(stringDB));
     }
 
     public void saveAndclose() {
-        saveChronoTimers(stringShelfDatabase, ctRecordsToChronoTimerRows(ctRecords));
+        saveChronoTimers(stringDB, ctRecordsToChronoTimerRows(ctRecords));
         savePreferences();
-        stringShelfDatabase = null;
+        stringDB = null;
         closeChronoTimers();
         context = null;
     }

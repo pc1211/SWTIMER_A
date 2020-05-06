@@ -9,14 +9,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 
-import com.example.pgyl.pekislib_a.StringShelfDatabase;
-import com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
+import com.example.pgyl.pekislib_a.StringDB;
+import com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
 
 import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
@@ -54,16 +54,16 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private Context context;
     private int orientation;
     private ArrayList<CtRecord> ctRecords;
-    private StringShelfDatabase stringShelfDatabase;
+    private StringDB stringDB;
     private boolean showExpirationTime;
     private boolean setClockAppAlarmOnStartTimer;
     //endregion
 
-    public MainCtListItemAdapter(Context context, StringShelfDatabase stringShelfDatabase) {
+    public MainCtListItemAdapter(Context context, StringDB stringDB) {
         super();
 
         this.context = context;
-        this.stringShelfDatabase = stringShelfDatabase;
+        this.stringDB = stringDB;
         init();
     }
 
@@ -74,7 +74,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     public void close() {
-        stringShelfDatabase = null;
+        stringDB = null;
         context = null;
     }
 
@@ -298,7 +298,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
+        setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(context, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
         context.startActivity(callingIntent);

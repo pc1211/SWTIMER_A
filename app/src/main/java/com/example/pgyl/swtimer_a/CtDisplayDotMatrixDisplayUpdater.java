@@ -14,10 +14,10 @@ import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.MILLISECONDS_PER_SECOND;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsBackIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsOffIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsOnLabelIndex;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsOnTimeIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsOffIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsOnLabelIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsOnTimeIndex;
 
 public class CtDisplayDotMatrixDisplayUpdater {
     public interface onExpiredTimerListener {
@@ -96,8 +96,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
     }
 
-    public void setDotSpacingCoeff(String interDotSizeCoeff) {
-        dotMatrixDisplayView.setDotSpacingCoeff(interDotSizeCoeff);
+    public void setDotSpacingCoeff(String dotSpacingCoeff) {
+        dotMatrixDisplayView.setDotSpacingCoeff(dotSpacingCoeff);
     }
 
     public void setDotCornerRadiusCoeff(String dotCornerRadiusCoeff) {

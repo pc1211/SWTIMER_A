@@ -19,7 +19,7 @@ import com.example.pgyl.pekislib_a.CustomImageButton;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.PresetsHandler;
-import com.example.pgyl.pekislib_a.StringShelfDatabase;
+import com.example.pgyl.pekislib_a.StringDB;
 import com.example.pgyl.pekislib_a.SymbolButtonView;
 
 import java.util.logging.Level;
@@ -32,27 +32,27 @@ import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.ACTIVITY_START_STATUS;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.getActivityInfosTableName;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.createPekislibTableIfNotExists;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.getDefaults;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setCurrentsForActivity;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseUtils.setStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
+import static com.example.pgyl.pekislib_a.StringDBTables.getActivityInfosTableName;
+import static com.example.pgyl.pekislib_a.StringDBUtils.createPekislibTableIfNotExists;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getDefaults;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getBackScreenColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getChronoTimersTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayCoeffsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseTables.getStateButtonsColorsTableName;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.createSwtimerTableIfNotExists;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableBackScreenColors;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayColors;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableDotMatrixDisplayDotSpacingCoeffs;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTablePresetsCT;
-import static com.example.pgyl.swtimer_a.StringShelfDatabaseUtils.initializeTableStateButtonsColors;
+import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getChronoTimersTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBUtils.createSwtimerTableIfNotExists;
+import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableBackScreenColors;
+import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableDotMatrixDisplayColors;
+import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableDotMatrixDisplayDotSpacingCoeffs;
+import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTablePresetsCT;
+import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableStateButtonsColors;
 
 public class MainActivity extends Activity {
     //region Constantes
@@ -126,7 +126,7 @@ public class MainActivity extends Activity {
     private boolean keepScreen;
     private ListView mainCtListView;
     private MainCtListItemAdapter mainCtListItemAdapter;
-    private StringShelfDatabase stringShelfDatabase;
+    private StringDB stringDB;
     private String shpFileName;
 
     @Override
@@ -156,8 +156,8 @@ public class MainActivity extends Activity {
         ctRecordsHandler = null;
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
-        stringShelfDatabase.close();
-        stringShelfDatabase = null;
+        stringDB.close();
+        stringDB = null;
         menu = null;
         savePreferences();
     }
@@ -169,7 +169,7 @@ public class MainActivity extends Activity {
 
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car sera partagé avec CtDisplayActivity
         keepScreen = getSHPKeepScreen();
-        setupStringShelfDatabase();
+        setupStringDB();
         setupCtRecordsHandler();
         setupMainCtList();
         setupMainCtListUpdater();
@@ -562,55 +562,55 @@ public class MainActivity extends Activity {
     }
 
     private void setupCtRecordsHandler() {
-        ctRecordsHandler = new CtRecordsHandler(this, stringShelfDatabase);
+        ctRecordsHandler = new CtRecordsHandler(this, stringDB);
     }
 
-    private void setupStringShelfDatabase() {
-        stringShelfDatabase = new StringShelfDatabase(this);
-        stringShelfDatabase.open();
+    private void setupStringDB() {
+        stringDB = new StringDB(this);
+        stringDB.open();
 
-        if (!stringShelfDatabase.tableExists(getActivityInfosTableName())) {
-            createPekislibTableIfNotExists(stringShelfDatabase, getActivityInfosTableName());
+        if (!stringDB.tableExists(getActivityInfosTableName())) {
+            createPekislibTableIfNotExists(stringDB, getActivityInfosTableName());
         }
-        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayColorsTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayColorsTableName());
-            initializeTableDotMatrixDisplayColors(stringShelfDatabase);
-            String[] defaults = getDefaults(stringShelfDatabase, getDotMatrixDisplayColorsTableName());
-            setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName(), defaults);
+        if (!stringDB.tableExists(getDotMatrixDisplayColorsTableName())) {
+            createSwtimerTableIfNotExists(stringDB, getDotMatrixDisplayColorsTableName());
+            initializeTableDotMatrixDisplayColors(stringDB);
+            String[] defaults = getDefaults(stringDB, getDotMatrixDisplayColorsTableName());
+            setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName(), defaults);
             createPresetWithDefaultValues(getDotMatrixDisplayColorsTableName(), defaults);   //  => PRESET1 = DEFAULT  dans la table de couleurs de DotMatrixDisplay
         }
-        if (!stringShelfDatabase.tableExists(getStateButtonsColorsTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getStateButtonsColorsTableName());
-            initializeTableStateButtonsColors(stringShelfDatabase);
-            String[] defaults = getDefaults(stringShelfDatabase, getStateButtonsColorsTableName());
-            setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getStateButtonsColorsTableName(), defaults);
+        if (!stringDB.tableExists(getStateButtonsColorsTableName())) {
+            createSwtimerTableIfNotExists(stringDB, getStateButtonsColorsTableName());
+            initializeTableStateButtonsColors(stringDB);
+            String[] defaults = getDefaults(stringDB, getStateButtonsColorsTableName());
+            setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getStateButtonsColorsTableName(), defaults);
             createPresetWithDefaultValues(getStateButtonsColorsTableName(), defaults);
         }
-        if (!stringShelfDatabase.tableExists(getBackScreenColorsTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getBackScreenColorsTableName());
-            initializeTableBackScreenColors(stringShelfDatabase);
-            String[] defaults = getDefaults(stringShelfDatabase, getBackScreenColorsTableName());
-            setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getBackScreenColorsTableName(), defaults);
+        if (!stringDB.tableExists(getBackScreenColorsTableName())) {
+            createSwtimerTableIfNotExists(stringDB, getBackScreenColorsTableName());
+            initializeTableBackScreenColors(stringDB);
+            String[] defaults = getDefaults(stringDB, getBackScreenColorsTableName());
+            setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getBackScreenColorsTableName(), defaults);
             createPresetWithDefaultValues(getBackScreenColorsTableName(), defaults);
         }
-        if (!stringShelfDatabase.tableExists(getDotMatrixDisplayCoeffsTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getDotMatrixDisplayCoeffsTableName());
-            initializeTableDotMatrixDisplayDotSpacingCoeffs(stringShelfDatabase);
-            String[] defaults = getDefaults(stringShelfDatabase, getDotMatrixDisplayCoeffsTableName());
-            setCurrentsForActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), defaults);
+        if (!stringDB.tableExists(getDotMatrixDisplayCoeffsTableName())) {
+            createSwtimerTableIfNotExists(stringDB, getDotMatrixDisplayCoeffsTableName());
+            initializeTableDotMatrixDisplayDotSpacingCoeffs(stringDB);
+            String[] defaults = getDefaults(stringDB, getDotMatrixDisplayCoeffsTableName());
+            setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), defaults);
             createPresetWithDefaultValues(getDotMatrixDisplayCoeffsTableName(), defaults);
         }
-        if (!stringShelfDatabase.tableExists(getPresetsCTTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getPresetsCTTableName());
-            initializeTablePresetsCT(stringShelfDatabase);
+        if (!stringDB.tableExists(getPresetsCTTableName())) {
+            createSwtimerTableIfNotExists(stringDB, getPresetsCTTableName());
+            initializeTablePresetsCT(stringDB);
         }
-        if (!stringShelfDatabase.tableExists(getChronoTimersTableName())) {
-            createSwtimerTableIfNotExists(stringShelfDatabase, getChronoTimersTableName());
+        if (!stringDB.tableExists(getChronoTimersTableName())) {
+            createSwtimerTableIfNotExists(stringDB, getChronoTimersTableName());
         }
     }
 
     private void createPresetWithDefaultValues(String tableName, String[] defaults) {
-        PresetsHandler presetsHandler = new PresetsHandler(stringShelfDatabase);
+        PresetsHandler presetsHandler = new PresetsHandler(stringDB);
         presetsHandler.setTableName(tableName);
         presetsHandler.createNewPreset(defaults);
         presetsHandler.saveAndClose();
@@ -618,7 +618,7 @@ public class MainActivity extends Activity {
     }
 
     private void setupMainCtList() {
-        mainCtListItemAdapter = new MainCtListItemAdapter(this, stringShelfDatabase);
+        mainCtListItemAdapter = new MainCtListItemAdapter(this, stringDB);
         mainCtListItemAdapter.setOnItemButtonClick(new MainCtListItemAdapter.onButtonClickListener() {
             @Override
             public void onButtonClick(boolean needSortAndReload) {
@@ -693,7 +693,7 @@ public class MainActivity extends Activity {
     }
 
     private void launchCtDisplayActivity(int idct) {
-        setStartStatusOfActivity(stringShelfDatabase, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
+        setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), idct);
         startActivity(callingIntent);

@@ -4,13 +4,13 @@ import android.content.Context;
 
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
 
-import static com.example.pgyl.pekislib_a.StringShelfDatabase.TABLE_ID_INDEX;
-import static com.example.pgyl.pekislib_a.StringShelfDatabaseTables.TABLE_IDS;
+import static com.example.pgyl.pekislib_a.StringDB.TABLE_ID_INDEX;
+import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFirstTimeUnit;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 
-public class StringShelfDatabaseTables {
+public class StringDBTables {
 
     private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
     private static final String TABLE_PERCENT_REGEXP_DEFAULT = "^(100|[1-9]?[0-9])$";  //  Nombre entier de 0 à 100, sans décimales
