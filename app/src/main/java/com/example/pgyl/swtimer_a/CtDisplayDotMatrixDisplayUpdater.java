@@ -46,6 +46,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private int offColorIndex;
     private int backColorIndex;
     private CtRecord currentCtRecord;
+    private int dotsPerSecond;
     private long updateInterval;
     private SCROLL_DIRECTIONS scrollDirection;
     private int scrollCount;
@@ -103,9 +104,9 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setDotCornerRadiusCoeff(dotCornerRadiusCoeff);
     }
 
-    public void setScrollSpeed(String dotsPerSecond) {
-        int dps = Integer.parseInt(dotsPerSecond);
-        updateInterval = (dps != 0) ? MILLISECONDS_PER_SECOND / dps : 0;  //  0 => Pas de scroll
+    public void setScrollSpeed(String scrollSpeed) {
+        dotsPerSecond = Integer.parseInt(scrollSpeed);
+        updateInterval = (dotsPerSecond != 0) ? MILLISECONDS_PER_SECOND / dotsPerSecond : 0;  //  0 => Pas de scroll
     }
 
     public void resetScrollOffset() {
@@ -148,6 +149,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
             automaticScrollOn = true;
             scrollCount = 0;
             scrollDirection = SCROLL_DIRECTIONS.LEFT;
+            updateInterval = (dotsPerSecond != 0) ? MILLISECONDS_PER_SECOND / dotsPerSecond : 0;  //  0 => Pas de scroll
         } else {   //  Pas Reset => Pas de scroll, mais mise à jour à la fréquence correspondant à la précision du chrono/timer
             automaticScrollOn = false;
             updateInterval = TIME_UNIT_PRECISION.DURATION_MS();
