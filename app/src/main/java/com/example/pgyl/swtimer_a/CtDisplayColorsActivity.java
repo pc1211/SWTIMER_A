@@ -59,11 +59,11 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsBackI
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getColorTableNames;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDescriptionsOfMultipleSwtimerTables;
-import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
-import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOffIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOnIndex;
@@ -189,7 +189,7 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         currentCtRecord = null;
-        setCurrentsForMultipleTablesForActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
+        setCurrentsForMultipleTablesForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colorTableNames, colors);
         stringDB.close();
         stringDB = null;
         savePreferences();
@@ -204,7 +204,7 @@ public class CtDisplayColorsActivity extends Activity {
         setupStringDB();
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringDB, idct), this);
         colorTableNames = getColorTableNames();
-        colors = getCurrentsFromMultipleTablesFromActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
+        colors = getCurrentsFromMultipleTablesFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colorTableNames);
         colorTableDescriptions = getDescriptionsOfMultipleSwtimerTables(colorTableNames);
         colorTableLabels = getFieldLabelsFromMultipleTables(stringDB, colorTableNames);
         coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());

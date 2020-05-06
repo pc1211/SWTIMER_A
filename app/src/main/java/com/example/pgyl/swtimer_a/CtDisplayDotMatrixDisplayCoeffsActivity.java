@@ -275,8 +275,7 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
     }
 
     private void updateDisplaySeekBarForValueProgress() {
-        int percent = Integer.parseInt(coeffs[coeffIndex]);  //  0..100
-        seekBarForValue.setProgress(percent);
+        seekBarForValue.setProgress(Integer.parseInt(coeffs[coeffIndex]));
     }
 
     private String getSeekBarsForValueProgressString() {

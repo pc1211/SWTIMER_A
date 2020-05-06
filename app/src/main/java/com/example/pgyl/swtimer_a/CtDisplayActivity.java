@@ -137,7 +137,7 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater = null;
         saveChronoTimer(stringDB, ctRecordToChronoTimerRow(currentCtRecord));
         currentCtRecord = null;
-        setCurrentsForMultipleTablesForActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colors);
+        setCurrentsForMultipleTablesForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colorTableNames, colors);
         setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
         stringDB.close();
         stringDB = null;
@@ -158,7 +158,7 @@ public class CtDisplayActivity extends Activity {
         currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringDB, idct), this);
         setDefaults(stringDB, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));
         colorTableNames = getColorTableNames();
-        colors = getCurrentsFromMultipleTablesFromActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY.toString());
+        colors = getCurrentsFromMultipleTablesFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colorTableNames);
         coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());
 
         if (isColdStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString())) {
@@ -172,7 +172,7 @@ public class CtDisplayActivity extends Activity {
                     }
                 }
                 if (calledActivityName.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString())) {
-                    colors = getCurrentsFromMultipleTablesFromActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString());
+                    colors = getCurrentsFromMultipleTablesFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colorTableNames);
                 }
                 if (calledActivityName.equals(SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString())) {
                     coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName());
@@ -541,7 +541,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void launchCtDisplayColorsActivity() {
-        setCurrentsForMultipleTablesForActivity(stringDB, colorTableNames, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colors);
+        setCurrentsForMultipleTablesForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colorTableNames, colors);
         setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayColorsActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());
