@@ -106,7 +106,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     public void setScrollSpeed(String scrollSpeed) {
         dotsPerSecond = Integer.parseInt(scrollSpeed);
-        updateInterval = (dotsPerSecond != 0) ? MILLISECONDS_PER_SECOND / dotsPerSecond : 0;  //  0 => Pas de scroll
+        updateInterval = getUpdateInterval(dotsPerSecond);
     }
 
     public void resetScrollOffset() {
@@ -145,21 +145,18 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void startAutomatic(boolean resetOn) {
+        stopAutomatic();   //  On efface tout et on recommence
         if (resetOn) {   //  Etat de Reset, cad avec scroll
             automaticScrollOn = true;
             scrollCount = 0;
             scrollDirection = SCROLL_DIRECTIONS.LEFT;
-            updateInterval = (dotsPerSecond != 0) ? MILLISECONDS_PER_SECOND / dotsPerSecond : 0;  //  0 => Pas de scroll
+            updateInterval = getUpdateInterval(dotsPerSecond);
         } else {   //  Pas Reset => Pas de scroll, mais mise à jour à la fréquence correspondant à la précision du chrono/timer
             automaticScrollOn = false;
             updateInterval = TIME_UNIT_PRECISION.DURATION_MS();
         }
-        dotMatrixDisplayView.resetScrollOffset();
-        handlerTime.removeCallbacks(runnableTime);   //  On efface tout et on recommence
-        if (updateInterval != 0) {
-            timeStart = System.currentTimeMillis();
-            handlerTime.postDelayed(runnableTime, updateInterval);   //  Go !
-        }
+        timeStart = System.currentTimeMillis();
+        handlerTime.postDelayed(runnableTime, updateInterval);   //  Go !
     }
 
     public void stopAutomatic() {
@@ -168,7 +165,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     private void automatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
-        if ((!inAutomatic) && (!dotMatrixDisplayView.isDrawing())) {
+        if ((!inAutomatic) && (!dotMatrixDisplayView.isDrawing())) {   //  OK pour rafraîchir l'affichage
             inAutomatic = true;
             long nowm = System.currentTimeMillis();
             if (!currentCtRecord.updateTime(nowm)) {    //  Mise à jour du temps et signaler si le timer a expiré (ce qui génèrera un nouveau startAutomatic())
@@ -177,6 +174,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
                 }
             }
             automaticDisplay(nowm);
+            timeStart = nowm;   //  Mettre à jour le moment du dernier rafraichissement d'affichage
             inAutomatic = false;
         }
     }
@@ -184,23 +182,29 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private void automaticDisplay(long nowm) {
         final int MAX_SCROLL_COUNT = 2 * gridRect.width();   //  Scroll de 2 grilles complètes
 
-        if (automaticScrollOn) {
-            int dotsElapsed = (int) (((nowm - timeStart) + (updateInterval / 2)) / updateInterval);   //  Arrondir le nombre de points écoulés depuis timeStart
-            timeStart = nowm;
-            int scrollDiff = dotsElapsed % MAX_SCROLL_COUNT;
-            scrollCount = scrollCount + scrollDiff;
-            if (scrollCount > MAX_SCROLL_COUNT) {
-                scrollCount = scrollCount - MAX_SCROLL_COUNT;
-                dotMatrixDisplayView.scroll(scrollDirection, scrollDiff - scrollCount);   //  Poursuivre au max dans le même sens (scrollDiff - scrollCount)
-                scrollDirection = (scrollDirection.equals(SCROLL_DIRECTIONS.LEFT)) ? SCROLL_DIRECTIONS.RIGHT : SCROLL_DIRECTIONS.LEFT;   //  Changer le sens du scroll
-                dotMatrixDisplayView.scroll(scrollDirection, scrollCount);   //  Effectuer le reste (scrollCount) dans l'autre sens
+        if (dotsPerSecond != 0) {    // automatic() contiue d'être appelé même si dotsPerSecond = 0 mais ne doit rien faire
+            if (automaticScrollOn) {
+                int dotsElapsed = (int) ((nowm - timeStart + (updateInterval / 2)) / updateInterval);   //  Arrondir le nombre de points écoulés depuis timeStart
+                int scrollDiff = dotsElapsed % MAX_SCROLL_COUNT;
+                scrollCount = scrollCount + scrollDiff;
+                if (scrollCount > MAX_SCROLL_COUNT) {
+                    scrollCount = scrollCount - MAX_SCROLL_COUNT;
+                    scrollDirection = (scrollDirection.equals(SCROLL_DIRECTIONS.LEFT)) ? SCROLL_DIRECTIONS.RIGHT : SCROLL_DIRECTIONS.LEFT;   //  Changer le sens du scroll
+                    dotMatrixDisplayView.scroll(scrollDirection, 2 * scrollCount - scrollDiff);   //  Poursuivre au max dans le même sens (scrollDiff - scrollCount) et le reste dans l'autre sens (scrollCount)
+                } else {
+                    dotMatrixDisplayView.scroll(scrollDirection, scrollDiff);
+                }
+                dotMatrixDisplayView.updateDisplay();
             } else {
-                dotMatrixDisplayView.scroll(scrollDirection, scrollDiff);
+                displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION));
             }
-            dotMatrixDisplayView.updateDisplay();
-        } else {
-            displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION));
         }
+    }
+
+    private long getUpdateInterval(int dotsPerSecond) {
+        final long UPDATE_INTERVAL_ONGOING = MILLISECONDS_PER_SECOND;   //  Pour que automatic() contiue d'être appelé même si dotsPerSecond = 0
+
+        return (dotsPerSecond != 0) ? MILLISECONDS_PER_SECOND / dotsPerSecond : UPDATE_INTERVAL_ONGOING;
     }
 
     private void setupColorIndexes() {

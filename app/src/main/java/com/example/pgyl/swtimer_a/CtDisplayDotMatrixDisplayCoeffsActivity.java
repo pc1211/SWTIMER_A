@@ -247,7 +247,7 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
             updateDisplayButtonTextValue();
             setupDotMatrixDisplayCoeffs();
             rebuildDotMatrixDisplayStructure();
-            if (coeffIndex != getDotMatrixDisplayCoeffsScrollSpeedIndex()) {   //  Pour ScrollSpeed, il y a déjà un scroll automatique en cours via onButtonClickNextValue()
+            if (coeffIndex != getDotMatrixDisplayCoeffsScrollSpeedIndex()) {
                 updateDisplayDotMatrixDisplay();
             }
         }

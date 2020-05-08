@@ -344,6 +344,7 @@ public class CtDisplayActivity extends Activity {
     private void updateDisplayDotMatrixDisplay() {
         dotMatrixDisplayUpdater.displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
         if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
+            dotMatrixDisplayUpdater.resetScrollOffset();
             dotMatrixDisplayUpdater.startAutomatic(currentCtRecord.isReset());
         } else {  //  Pas besoin de rafraichissement continu
             dotMatrixDisplayUpdater.stopAutomatic();
