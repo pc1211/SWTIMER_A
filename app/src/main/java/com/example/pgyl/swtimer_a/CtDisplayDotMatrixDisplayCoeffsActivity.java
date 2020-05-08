@@ -254,11 +254,11 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
     }
 
     private void updateDisplayDotMatrixDisplay() {
-        final boolean RESET_ON = true;
+        final boolean AUTOMATIC_SCROLL_ON = true;
 
         dotMatrixDisplayUpdater.displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
         if (coeffIndex == getDotMatrixDisplayCoeffsScrollSpeedIndex()) {
-            dotMatrixDisplayUpdater.startAutomatic(RESET_ON);   //  Comme en état de reset, cad avec scroll
+            dotMatrixDisplayUpdater.startAutomatic(AUTOMATIC_SCROLL_ON);
         } else {
             dotMatrixDisplayUpdater.stopAutomatic();
         }

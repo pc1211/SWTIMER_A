@@ -74,6 +74,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         setupColorIndexes();
         setupMargins();
         setupDimensions();
+        resetScroll();
         setScrollSpeed(String.valueOf(DOTS_PER_SECOND_DEFAULT));
         inAutomatic = false;
         mOnExpiredTimerListener = null;
@@ -109,7 +110,9 @@ public class CtDisplayDotMatrixDisplayUpdater {
         updateInterval = getUpdateInterval(dotsPerSecond);
     }
 
-    public void resetScrollOffset() {
+    public void resetScroll() {
+        scrollCount = 0;
+        scrollDirection = SCROLL_DIRECTIONS.LEFT;
         dotMatrixDisplayView.resetScrollOffset();
     }
 
@@ -144,17 +147,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.updateDisplay();
     }
 
-    public void startAutomatic(boolean resetOn) {
+    public void startAutomatic(boolean automaticScrollOn) {
         stopAutomatic();   //  On efface tout et on recommence
-        if (resetOn) {   //  Etat de Reset, cad avec scroll
-            automaticScrollOn = true;
-            scrollCount = 0;
-            scrollDirection = SCROLL_DIRECTIONS.LEFT;
-            updateInterval = getUpdateInterval(dotsPerSecond);
-        } else {   //  Pas Reset => Pas de scroll, mais mise à jour à la fréquence correspondant à la précision du chrono/timer
-            automaticScrollOn = false;
-            updateInterval = TIME_UNIT_PRECISION.DURATION_MS();
-        }
+        this.automaticScrollOn = automaticScrollOn;
+        updateInterval = automaticScrollOn ? getUpdateInterval(dotsPerSecond) : TIME_UNIT_PRECISION.DURATION_MS();   //  Si pas de scroll => Rafraichissement à la fréquence correspondant à la précision du chrono/timer
         timeStart = System.currentTimeMillis();
         handlerTime.postDelayed(runnableTime, updateInterval);   //  Go !
     }
