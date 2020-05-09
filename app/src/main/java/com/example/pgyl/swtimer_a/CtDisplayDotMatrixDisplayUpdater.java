@@ -81,7 +81,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void close() {
-        handlerTime.removeCallbacks(runnableTime);
+        stopAutomatic();
         runnableTime = null;
         handlerTime = null;
         dotMatrixDisplayView = null;
@@ -161,16 +161,16 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     private void automatic() {   // automatic() continue d'être appelé même si dotsPerSecond = 0 (cf getUpdateInterval()) mais ne doit pas scroller
         handlerTime.postDelayed(runnableTime, updateInterval);
+        long nowm = System.currentTimeMillis();
         if ((!inAutomatic) && (!dotMatrixDisplayView.isDrawing())) {   //  OK pour rafraîchir l'affichage
             inAutomatic = true;
-            long nowm = System.currentTimeMillis();
             if (!currentCtRecord.updateTime(nowm)) {    //  Mise à jour du temps et signaler si le timer a expiré (ce qui génèrera un nouveau startAutomatic())
                 if (mOnExpiredTimerListener != null) {
                     mOnExpiredTimerListener.onExpiredTimer();
                 }
             }
             automaticDisplay(nowm);
-            timeStart = System.currentTimeMillis();   //  Mettre à jour le moment du dernier rafraichissement d'affichage
+            timeStart = nowm;   //  Mettre à jour le moment du dernier rafraichissement d'affichage
             inAutomatic = false;
         }
     }
@@ -179,7 +179,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         final int MAX_SCROLL_COUNT = 2 * gridRect.width();   //  Scroll de 2 grilles complètes avant changement de sens
 
         if (automaticScrollOn) {
-            if (dotsPerSecond != 0) {
+            if (dotsPerSecond != 0) {   //  Scroll à effectuer
                 int dotsElapsed = (int) ((nowm - timeStart + (updateInterval / 2)) / updateInterval);   //  Arrondir le nombre de points écoulés depuis timeStart
                 int scrollDiff = dotsElapsed % MAX_SCROLL_COUNT;
                 scrollCount = scrollCount + scrollDiff;
@@ -197,7 +197,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private long getUpdateInterval(int dotsPerSecond) {
-        final long UPDATE_INTERVAL_ONGOING = MILLISECONDS_PER_SECOND;   //  Pour que automatic() continue d'être appelé même si dotsPerSecond = 0
+        final long UPDATE_INTERVAL_ONGOING = MILLISECONDS_PER_SECOND;   //  Pour que automatic() continue d'être appelé même si dotsPerSecond = 0, mais sans scroll
 
         return (dotsPerSecond != 0) ? MILLISECONDS_PER_SECOND / dotsPerSecond : UPDATE_INTERVAL_ONGOING;
     }
