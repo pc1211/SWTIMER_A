@@ -159,7 +159,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         handlerTime.removeCallbacks(runnableTime);
     }
 
-    private void automatic() {
+    private void automatic() {   // automatic() continue d'être appelé même si dotsPerSecond = 0 (cf getUpdateInterval()) mais ne doit pas scroller
         handlerTime.postDelayed(runnableTime, updateInterval);
         if ((!inAutomatic) && (!dotMatrixDisplayView.isDrawing())) {   //  OK pour rafraîchir l'affichage
             inAutomatic = true;
@@ -178,8 +178,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private void automaticDisplay(long nowm) {
         final int MAX_SCROLL_COUNT = 2 * gridRect.width();   //  Scroll de 2 grilles complètes avant changement de sens
 
-        if (dotsPerSecond != 0) {    // automatic() continue d'être appelé même si dotsPerSecond = 0 mais ne doit rien faire
-            if (automaticScrollOn) {
+        if (automaticScrollOn) {
+            if (dotsPerSecond != 0) {
                 int dotsElapsed = (int) ((nowm - timeStart + (updateInterval / 2)) / updateInterval);   //  Arrondir le nombre de points écoulés depuis timeStart
                 int scrollDiff = dotsElapsed % MAX_SCROLL_COUNT;
                 scrollCount = scrollCount + scrollDiff;
@@ -190,9 +190,9 @@ public class CtDisplayDotMatrixDisplayUpdater {
                 }
                 dotMatrixDisplayView.scroll(scrollDirection, scrollDiff);
                 dotMatrixDisplayView.updateDisplay();
-            } else {
-                displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION));
             }
+        } else {
+            displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION));
         }
     }
 
