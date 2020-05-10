@@ -51,9 +51,7 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForMultipleTablesForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
-import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
@@ -380,7 +378,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayDotMatrixDisplay() {
-        dotMatrixDisplayUpdater.displayHalfTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabelInit());   //  Partager l'affichage entre Temps et Label
+        dotMatrixDisplayUpdater.displayHalfInitTimeAndInitLabel();   //  Partager l'affichage entre Temps et Label
     }
 
     private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   ON/BACK ou OFF/BACK

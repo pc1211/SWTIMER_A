@@ -40,9 +40,7 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.isColdStartStatusOfActiv
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
-import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotSpacingIndex;
@@ -256,7 +254,7 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
     private void updateDisplayDotMatrixDisplay() {
         final boolean AUTOMATIC_SCROLL_ON = true;
 
-        dotMatrixDisplayUpdater.displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
+        dotMatrixDisplayUpdater.displayInitTimeAndLabel();
         if (coeffIndex == getDotMatrixDisplayCoeffsScrollSpeedIndex()) {
             dotMatrixDisplayUpdater.startAutomatic(AUTOMATIC_SCROLL_ON);
         } else {

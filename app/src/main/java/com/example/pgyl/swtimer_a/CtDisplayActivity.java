@@ -45,10 +45,8 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER;
-import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.CtRecord.MODE;
 import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
@@ -132,7 +130,6 @@ public class CtDisplayActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
-        dotMatrixDisplayUpdater.stopAutomatic();
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         saveChronoTimer(stringDB, ctRecordToChronoTimerRow(currentCtRecord));
@@ -342,7 +339,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayDotMatrixDisplay() {
-        dotMatrixDisplayUpdater.displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
+        dotMatrixDisplayUpdater.displayCurrentTimeAndLabel();
         if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
             dotMatrixDisplayUpdater.resetScroll();
             dotMatrixDisplayUpdater.startAutomatic(currentCtRecord.isReset());

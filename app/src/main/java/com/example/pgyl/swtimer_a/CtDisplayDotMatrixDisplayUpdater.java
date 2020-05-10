@@ -120,31 +120,16 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.rebuildStructure();
     }   //  A appeler uniquement si MAJ en temps réel
 
-    public void displayTimeAndLabel(String timeText, String labelText) {
-        dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);    //  Pressed=ON TIME  Unpressed=OFF
-        dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        dotMatrixDisplayView.fillRect(labelRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Pressed=ON LABEL  Unpressed=OFF
-        dotMatrixDisplayView.setSymbolPos(labelRect.left, labelRect.top + margins.top);
-        dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
-        dotMatrixDisplayView.updateDisplay();
+    public void displayCurrentTimeAndLabel() {
+        displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
     }
 
-    public void displayTime(String timeText) {
-        dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);   //  Pressed=ON TIME  Unpressed=OFF
-        dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        dotMatrixDisplayView.updateDisplay();
+    public void displayInitTimeAndLabel() {
+        displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
     }
 
-    public void displayHalfTimeAndLabel(String timeText, String labelText) {   //  Partager l'affichage entre Temps et Label (utilisé pour le réglage des couleurs dans CtDisplayColorsActivity)
-        dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);   //  Pressed=ON TIME  Unpressed=OFF
-        dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        dotMatrixDisplayView.fillRect(halfDisplayRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Effacer la 2e moitié du temps    Pressed=ON LABEL  Unpressed=OFF
-        dotMatrixDisplayView.setSymbolPos(halfDisplayRect.left, halfDisplayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
-        dotMatrixDisplayView.updateDisplay();
+    public void displayHalfInitTimeAndInitLabel() {
+        displayHalfTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabelInit());
     }
 
     public void startAutomatic(boolean automaticScrollOn) {
@@ -200,6 +185,33 @@ public class CtDisplayDotMatrixDisplayUpdater {
         final long UPDATE_INTERVAL_ONGOING = MILLISECONDS_PER_SECOND;   //  Pour que automatic() continue d'être appelé même si dotsPerSecond = 0, mais sans scroll
 
         return (dotsPerSecond != 0) ? MILLISECONDS_PER_SECOND / dotsPerSecond : UPDATE_INTERVAL_ONGOING;
+    }
+
+    private void displayTimeAndLabel(String timeText, String labelText) {
+        dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);    //  Pressed=ON TIME  Unpressed=OFF
+        dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
+        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        dotMatrixDisplayView.fillRect(labelRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Pressed=ON LABEL  Unpressed=OFF
+        dotMatrixDisplayView.setSymbolPos(labelRect.left, labelRect.top + margins.top);
+        dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
+        dotMatrixDisplayView.updateDisplay();
+    }
+
+    private void displayTime(String timeText) {
+        dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);   //  Pressed=ON TIME  Unpressed=OFF
+        dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
+        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        dotMatrixDisplayView.updateDisplay();
+    }
+
+    private void displayHalfTimeAndLabel(String timeText, String labelText) {   //  Partager l'affichage entre Temps et Label (utilisé pour le réglage des couleurs dans CtDisplayColorsActivity)
+        dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);   //  Pressed=ON TIME  Unpressed=OFF
+        dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
+        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        dotMatrixDisplayView.fillRect(halfDisplayRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Effacer la 2e moitié du temps    Pressed=ON LABEL  Unpressed=OFF
+        dotMatrixDisplayView.setSymbolPos(halfDisplayRect.left, halfDisplayRect.top + margins.top);
+        dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
+        dotMatrixDisplayView.updateDisplay();
     }
 
     private void setupColorIndexes() {

@@ -12,6 +12,20 @@ import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_HEIGHT;
 
 public class MainDotMatrixDisplayUpdater {
+
+    private enum MESSAGES {
+        EMPTY_LIST("List empty"), EMPTY_SELECTION("Select for batch");
+        private String text;
+
+        MESSAGES(String text) {
+            this.text = text;
+        }
+
+        public String TEXT() {
+            return text;
+        }
+    }
+
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
     private String maxText;
@@ -21,7 +35,7 @@ public class MainDotMatrixDisplayUpdater {
     private Rect displayRect;
     //endregion
 
-    public MainDotMatrixDisplayUpdater(DotMatrixDisplayView dotMatrixDisplayView, String maxText) {
+    public MainDotMatrixDisplayUpdater(DotMatrixDisplayView dotMatrixDisplayView) {
         super();
 
         this.dotMatrixDisplayView = dotMatrixDisplayView;
@@ -33,7 +47,7 @@ public class MainDotMatrixDisplayUpdater {
         setupDefaultFont();
         setupBackColor();
         setupMargins();
-        setupDimensions(maxText);
+        setupDimensions();
     }
 
     public void close() {
@@ -42,7 +56,15 @@ public class MainDotMatrixDisplayUpdater {
         defaultFont = null;
     }
 
-    public void displayText(String text) {
+    public void displayEmptySelection() {
+        displayText(MESSAGES.EMPTY_SELECTION.TEXT());
+    }
+
+    public void displayEmptyList() {
+        displayText(MESSAGES.EMPTY_LIST.TEXT());
+    }
+
+    private void displayText(String text) {
         final String ON_COLOR = "FF9A22";
         final String OFF_COLOR = "404040";
 
@@ -66,9 +88,15 @@ public class MainDotMatrixDisplayUpdater {
         margins = new Rect(1, 1, 1, 1);
     }
 
-    private void setupDimensions(String maxText) {
+    private void setupDimensions() {
         final RectF INTERNAL_MARGIN_SIZE_COEFFS = new RectF(0.02f, 0, 0.02f, 0);   //  Marge autour de l'affichage proprement dit (% de largeur)
 
+        String maxText = "";
+        for (MESSAGES dotMatrixDisplayMessage : MESSAGES.values()) {
+            if (dotMatrixDisplayMessage.TEXT().length() > maxText.length()) {
+                maxText = dotMatrixDisplayMessage.TEXT();
+            }
+        }
         BiDimensions textDimensions = getFontTextDimensions(maxText, defaultFont);
 
         int displayRectWidth = margins.left + textDimensions.width - defaultFont.getRightMargin() + margins.right;   //   margins.right remplace la dernière marge droite

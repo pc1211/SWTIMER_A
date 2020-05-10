@@ -92,19 +92,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private enum DOT_MATRIX_DISPLAY_MESSAGES {
-        EMPTY_LIST("List empty"), EMPTY_SELECTION("Select for batch");
-        private String text;
-
-        DOT_MATRIX_DISPLAY_MESSAGES(String text) {
-            this.text = text;
-        }
-
-        public String TEXT() {
-            return text;
-        }
-    }
-
     public enum SWTIMER_SHP_KEY_NAMES {SHOW_EXPIRATION_TIME, ADD_NEW_CHRONOTIMER_TO_LIST, SET_CLOCK_APP_ALARM_ON_START_TIMER, KEEP_SCREEN, REQUESTED_CLOCK_APP_ALARM_DISMISSES}
     //endregion
 
@@ -349,7 +336,7 @@ public class MainActivity extends Activity {
             if (ctRecordsHandler.getCountSelection() >= 1) {  //  Au moins un chrono/timer est sélectionné
                 setSecondRowLayoutVisible(layoutButtonsOnSelection);  //  Pour voir les boutons pouvant agir sur les chrono/timers sélectionnés et cacher le panneau d'affichage
             } else {   //  Aucun chrono/timer n'est sélectionné
-                dotMatrixDisplayUpdater.displayText(DOT_MATRIX_DISPLAY_MESSAGES.EMPTY_SELECTION.TEXT());
+                dotMatrixDisplayUpdater.displayEmptySelection();
                 setSecondRowLayoutVisible(layoutDotMatrixDisplay);  //  Pour voir le panneau d'affichage et cacher les boutons pouvant agir sur les chrono/timers sélectionnés
             }
             buttons[COMMANDS.INVERT_SELECTION_ALL_CT.INDEX()].setVisibility(View.VISIBLE);   //  Pour voir les boutons pouvant agir sur la sélection des chrono/timers de la liste
@@ -360,7 +347,7 @@ public class MainActivity extends Activity {
                 stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setVisibility(View.INVISIBLE);
             }
         } else {  //  La liste est vide
-            dotMatrixDisplayUpdater.displayText(DOT_MATRIX_DISPLAY_MESSAGES.EMPTY_LIST.TEXT());
+            dotMatrixDisplayUpdater.displayEmptyList();
             setSecondRowLayoutVisible(layoutDotMatrixDisplay);   //  Pour voir le panneau d'affichage et cacher les boutons pouvant agir sur les chrono/timers sélectionnés
             buttons[COMMANDS.INVERT_SELECTION_ALL_CT.INDEX()].setVisibility(View.INVISIBLE);   //  Cacher les boutons non pertinents en cas de liste vide
             buttons[COMMANDS.SELECT_ALL_CT.INDEX()].setVisibility(View.INVISIBLE);
@@ -552,13 +539,7 @@ public class MainActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayUpdater() {
-        String maxText = "";
-        for (DOT_MATRIX_DISPLAY_MESSAGES dotMatrixDisplayMessage : DOT_MATRIX_DISPLAY_MESSAGES.values()) {
-            if (dotMatrixDisplayMessage.TEXT().length() > maxText.length()) {
-                maxText = dotMatrixDisplayMessage.TEXT();
-            }
-        }
-        dotMatrixDisplayUpdater = new MainDotMatrixDisplayUpdater(dotMatrixDisplayView, maxText);
+        dotMatrixDisplayUpdater = new MainDotMatrixDisplayUpdater(dotMatrixDisplayView);
     }
 
     private void setupCtRecordsHandler() {
