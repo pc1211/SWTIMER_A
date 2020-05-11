@@ -95,50 +95,50 @@ public class CtRecordsHandler {
                 public int compare(CtRecord ctRecord1, CtRecord ctRecord2) {
                     boolean running1 = ctRecord1.isRunning();
                     boolean running2 = ctRecord2.isRunning();
-                    int ret = (running1 == running2) ? 0 : (running1 ? -1 : 1);    //  ORDER BY running DESC
-                    if (ret == 0) {    //  running1 = running2
+                    int sortResult = (running1 == running2) ? 0 : (running1 ? -1 : 1);    //  ORDER BY running DESC
+                    if (sortResult == 0) {    //  running1 = running2
                         String mode1 = ctRecord1.getMode().toString();
                         String mode2 = ctRecord2.getMode().toString();
-                        ret = mode2.compareTo(mode1);                              //  ORDER BY mode DESC  (Timers puis Chronos )
-                        if (ret == 0) {     //  mode1 = mode2
+                        sortResult = mode2.compareTo(mode1);                              //  ORDER BY mode DESC  (Timers puis Chronos )
+                        if (sortResult == 0) {     //  mode1 = mode2
                             long time1 = ctRecord1.getTimeDisplayWithoutSplit();   //  OK si updateTime() appelé pour tous les ctRecords avant le tri
                             long time2 = ctRecord2.getTimeDisplayWithoutSplit();
-                            ret = ((time1 == time2) ? 0 : ((time1 > time2) ? 1 : -1));   //  Si Timer  => ORDER BY time ASC   (d'abord les plus petits temps)
+                            sortResult = ((time1 == time2) ? 0 : ((time1 > time2) ? 1 : -1));   //  Si Timer  => ORDER BY time ASC   (d'abord les plus petits temps)
                             if (mode1.equals(MODE.CHRONO.toString())) {                  //  Si Chrono => ORDER BY time DESC  (d'abord les plus grands temps)
-                                ret = -ret;
+                                sortResult = -sortResult;
                             }
-                            if (ret == 0) {     //  time1 = time2
+                            if (sortResult == 0) {     //  time1 = time2
                                 String label1 = ctRecord1.getLabel();
                                 String label2 = ctRecord2.getLabel();
-                                ret = label1.compareTo(label2);           //  ORDER BY label ASC
+                                sortResult = label1.compareTo(label2);           //  ORDER BY label ASC
                             }
                         }
                     }
-                    return ret;
+                    return sortResult;
                 }
             });
         }
     }
 
     public ArrayList<CtRecord> chronoTimerRowsToCtRecords(String[][] chronoTimerRows) {
-        ArrayList<CtRecord> ret = new ArrayList<CtRecord>();
+        ArrayList<CtRecord> ctRecords = new ArrayList<CtRecord>();
         if (chronoTimerRows != null) {
             for (int i = 0; i <= (chronoTimerRows.length - 1); i = i + 1) {
-                ret.add(chronoTimerRowToCtRecord(chronoTimerRows[i], context));
+                ctRecords.add(chronoTimerRowToCtRecord(chronoTimerRows[i], context));
             }
         }
-        return ret;
+        return ctRecords;
     }
 
     public String[][] ctRecordsToChronoTimerRows(ArrayList<CtRecord> ctRecords) {
-        String[][] ret = null;
+        String[][] chronoTimerRows = null;
         if (!ctRecords.isEmpty()) {
-            ret = new String[ctRecords.size()][];
+            chronoTimerRows = new String[ctRecords.size()][];
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
-                ret[i] = ctRecordToChronoTimerRow(ctRecords.get(i));
+                chronoTimerRows[i] = ctRecordToChronoTimerRow(ctRecords.get(i));
             }
         }
-        return ret;
+        return chronoTimerRows;
     }
 
     public int updateTimeAll(long nowm) {
@@ -195,13 +195,13 @@ public class CtRecordsHandler {
     }
 
     private int actionOnAll(ACTIONS_ON_ALL action) {
-        int ret = 0;
+        int count = 0;
         if (!ctRecords.isEmpty()) {
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
                 if (action.equals(ACTIONS_ON_ALL.UPDATE_TIME)) {
                     if (!ctRecords.get(i).updateTime(nowm)) {   //  Timer expiré
                         toastLong("Timer " + ctRecords.get(i).getLabel() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(ctRecords.get(i).getTimeExp(), HHmmss), context);
-                        ret = ret + 1;
+                        count = count + 1;
                     }
                 }
                 if (action.equals(ACTIONS_ON_ALL.INVERT_SELECTION)) {
@@ -212,29 +212,29 @@ public class CtRecordsHandler {
                 }
                 if (action.equals(ACTIONS_ON_ALL.COUNT_CHRONOS)) {
                     if (ctRecords.get(i).getMode().equals(MODE.CHRONO)) {
-                        ret = ret + 1;
+                        count = count + 1;
                     }
                 }
                 if (action.equals(ACTIONS_ON_ALL.COUNT_TIMERS)) {
                     if (ctRecords.get(i).getMode().equals(MODE.TIMER)) {
-                        ret = ret + 1;
+                        count = count + 1;
                     }
                 }
                 if (action.equals(ACTIONS_ON_ALL.COUNT)) {
-                    ret = ret + 1;
+                    count = count + 1;
                 }
             }
         }
-        return ret;
+        return count;
     }
 
     private int actionOnSelection(ACTIONS_ON_SELECTION action) {
-        int ret = 0;
+        int count = 0;
         if (!ctRecords.isEmpty()) {
             int i = 0;
             do {
                 if (ctRecords.get(i).isSelected()) {
-                    ret = ret + 1;   //  Compter
+                    count = count + 1;   //  Compter
                     if (action.equals(ACTIONS_ON_SELECTION.START)) {
                         if (!ctRecords.get(i).start(nowm)) {
                             if (setClockAppAlarmOnStartTimer) {
@@ -274,7 +274,7 @@ public class CtRecordsHandler {
             while (i < ctRecords.size());
         }
         processNextRequestedClockAppAlarmDismiss();
-        return ret;
+        return count;
     }
 
     private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
@@ -299,15 +299,15 @@ public class CtRecordsHandler {
     }
 
     private int getMaxId() {
-        int ret = 0;
+        int maxId = 0;
         if (!ctRecords.isEmpty()) {
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
-                if (ctRecords.get(i).getIdct() > ret) {
-                    ret = ctRecords.get(i).getIdct();
+                if (ctRecords.get(i).getIdct() > maxId) {
+                    maxId = ctRecords.get(i).getIdct();
                 }
             }
         }
-        return ret;
+        return maxId;
     }
 
     private void savePreferences() {

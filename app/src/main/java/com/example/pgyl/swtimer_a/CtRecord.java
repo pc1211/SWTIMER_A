@@ -106,20 +106,20 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public boolean setLabel(String newLabel) {
-        boolean ret = true;
+        boolean setOK = true;
         if (label != newLabel) {
             if (mode.equals(MODE.TIMER)) {
                 if (running) {
                     if (hasClockAppAlarm()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)
-                        ret = false;
+                        setOK = false;
                     }
                 }
             }
-            if (ret) {
+            if (setOK) {
                 label = newLabel;
             }
         }
-        return ret;
+        return setOK;
     }
 
     public String getLabelInit() {
@@ -148,29 +148,29 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public boolean setTimeDef(long newTimeDef, long nowm) {
-        boolean ret = true;
+        boolean setOK = true;
         if (timeDef != newTimeDef) {
             if (mode.equals(MODE.TIMER)) {
                 if (running) {
                     if (hasClockAppAlarm()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)
-                        ret = false;
+                        setOK = false;
                     } else {
                         long newTimeExp = timeStart + newTimeDef - timeAcc;
                         if (newTimeExp > nowm) {   //  Il est encore temps
                             timeExp = newTimeExp;
                         } else {
-                            ret = false;
+                            setOK = false;
                         }
                     }
                 } else {
                     reset();
                 }
             }
-            if (ret) {
+            if (setOK) {
                 timeDef = newTimeDef;
             }
         }
-        return ret;
+        return setOK;
     }
 
 
@@ -222,7 +222,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public boolean start(long nowm) {
-        boolean ret = true;
+        boolean clockAppOK = true;
         if (!running) {
             if ((mode.equals(MODE.CHRONO)) || (timeDef > 0)) {
                 running = true;
@@ -230,26 +230,26 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                 if (mode.equals(MODE.TIMER)) {
                     timeExp = nowm + timeDef - timeAcc;
                     if (!clockAppAlarm) {
-                        ret = false;   //  Signaler la nécessité éventuelle d'activer l'alarme
+                        clockAppOK = false;   //  Signaler la nécessité éventuelle d'activer l'alarme
                     }
                 }
             }
         }
-        return ret;
+        return clockAppOK;
     }
 
     public boolean stop(long nowm) {
-        boolean ret = true;
+        boolean clockAppOK = true;
         if (running) {
             running = false;
             timeAcc = timeAcc + nowm - timeStart;
             if (mode.equals(MODE.TIMER)) {
                 if (clockAppAlarm) {
-                    ret = false;   //  Signaler la nécessité de désactiver l'alarme
+                    clockAppOK = false;   //  Signaler la nécessité de désactiver l'alarme
                 }
             }
         }
-        return ret;
+        return clockAppOK;
     }
 
     public boolean split(long nowm) {
@@ -265,18 +265,18 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public boolean reset() {
-        boolean ret = true;
+        boolean clockAppOK = true;
         timeAcc = 0;
         splitted = false;
         if (running) {
             if (mode.equals(MODE.TIMER)) {
                 if (clockAppAlarm) {
-                    ret = false;   //  Signaler la nécessité de désactiver l'alarme
+                    clockAppOK = false;   //  Signaler la nécessité de désactiver l'alarme
                 }
             }
             running = false;
         }
-        return ret;
+        return clockAppOK;
     }
 
     public String getClockAppAlarmDescription() {

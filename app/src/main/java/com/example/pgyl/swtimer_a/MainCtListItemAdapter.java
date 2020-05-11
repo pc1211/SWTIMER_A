@@ -92,11 +92,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        int ret = 0;
-        if (ctRecords != null) {
-            ret = ctRecords.size();
-        }
-        return ret;
+        return (ctRecords != null) ? ctRecords.size() : 0;
     }
 
     @Override

@@ -255,7 +255,7 @@ public class StringDBTables {
     }
 
     public static CtRecord chronoTimerRowToCtRecord(String[] chronoTimerRow, Context context) {
-        CtRecord ret = new CtRecord(
+        return new CtRecord(
                 context,
                 Integer.parseInt(chronoTimerRow[TABLE_ID_INDEX]),
                 CtRecord.MODE.valueOf(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.MODE.INDEX()]),
@@ -271,26 +271,25 @@ public class StringDBTables {
                 Long.parseLong(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_DEF.INDEX()]),
                 Long.parseLong(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_DEF_INIT.INDEX()]),
                 Long.parseLong(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_EXP.INDEX()]));
-        return ret;
     }
 
     public static String[] ctRecordToChronoTimerRow(CtRecord ctRecord) {
-        String[] ret = new String[1 + SwTimerTableDataFields.ChronoTimers.values().length];  //  Champ ID + Données
-        ret[TABLE_ID_INDEX] = String.valueOf(ctRecord.getIdct());
-        ret[SwTimerTableDataFields.ChronoTimers.MODE.INDEX()] = ctRecord.getMode().toString();
-        ret[SwTimerTableDataFields.ChronoTimers.SELECTED.INDEX()] = String.valueOf(ctRecord.isSelected() ? 1 : 0);
-        ret[SwTimerTableDataFields.ChronoTimers.RUNNING.INDEX()] = String.valueOf(ctRecord.isRunning() ? 1 : 0);
-        ret[SwTimerTableDataFields.ChronoTimers.SPLITTED.INDEX()] = String.valueOf(ctRecord.isSplitted() ? 1 : 0);
-        ret[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM.INDEX()] = String.valueOf(ctRecord.hasClockAppAlarm() ? 1 : 0);
-        ret[SwTimerTableDataFields.ChronoTimers.LABEL.INDEX()] = ctRecord.getLabel();
-        ret[SwTimerTableDataFields.ChronoTimers.LABEL_INIT.INDEX()] = ctRecord.getLabelInit();
-        ret[SwTimerTableDataFields.ChronoTimers.TIME_START.INDEX()] = String.valueOf(ctRecord.getTimeStart());
-        ret[SwTimerTableDataFields.ChronoTimers.TIME_ACC.INDEX()] = String.valueOf(ctRecord.getTimeAcc());
-        ret[SwTimerTableDataFields.ChronoTimers.TIME_ACC_UNTIL_SPLIT.INDEX()] = String.valueOf(ctRecord.getTimeAccUntilSplit());
-        ret[SwTimerTableDataFields.ChronoTimers.TIME_DEF.INDEX()] = String.valueOf(ctRecord.getTimeDef());
-        ret[SwTimerTableDataFields.ChronoTimers.TIME_DEF_INIT.INDEX()] = String.valueOf(ctRecord.getTimeDefInit());
-        ret[SwTimerTableDataFields.ChronoTimers.TIME_EXP.INDEX()] = String.valueOf(ctRecord.getTimeExp());
-        return ret;
+        String[] chronoTimerRow = new String[1 + SwTimerTableDataFields.ChronoTimers.values().length];  //  Champ ID + Données
+        chronoTimerRow[TABLE_ID_INDEX] = String.valueOf(ctRecord.getIdct());
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.MODE.INDEX()] = ctRecord.getMode().toString();
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SELECTED.INDEX()] = String.valueOf(ctRecord.isSelected() ? 1 : 0);
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.RUNNING.INDEX()] = String.valueOf(ctRecord.isRunning() ? 1 : 0);
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SPLITTED.INDEX()] = String.valueOf(ctRecord.isSplitted() ? 1 : 0);
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM.INDEX()] = String.valueOf(ctRecord.hasClockAppAlarm() ? 1 : 0);
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL.INDEX()] = ctRecord.getLabel();
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL_INIT.INDEX()] = ctRecord.getLabelInit();
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_START.INDEX()] = String.valueOf(ctRecord.getTimeStart());
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_ACC.INDEX()] = String.valueOf(ctRecord.getTimeAcc());
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_ACC_UNTIL_SPLIT.INDEX()] = String.valueOf(ctRecord.getTimeAccUntilSplit());
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_DEF.INDEX()] = String.valueOf(ctRecord.getTimeDef());
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_DEF_INIT.INDEX()] = String.valueOf(ctRecord.getTimeDefInit());
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_EXP.INDEX()] = String.valueOf(ctRecord.getTimeExp());
+        return chronoTimerRow;
     }
     //endregion
 
@@ -328,22 +327,22 @@ public class StringDBTables {
     }
 
     public static boolean copyPresetCTRowToCtRecord(String[] presetCTRow, CtRecord ctRecord, long nowm) {
-        boolean ret = true;
+        boolean copyOK = true;
         if (!ctRecord.setTimeDef(Long.parseLong(presetCTRow[SwTimerTableDataFields.PresetsCT.TIME.INDEX()]), nowm)) {
-            ret = false;
+            copyOK = false;
         }
         if (!ctRecord.setLabel(presetCTRow[SwTimerTableDataFields.PresetsCT.LABEL.INDEX()])) {
-            ret = false;
+            copyOK = false;
         }
-        return ret;
+        return copyOK;
     }
 
     public static String[] timeLabelToPresetCTRow(long time, String label) {
-        String[] ret = new String[1 + SwTimerTableDataFields.PresetsCT.values().length];  //  Champ ID + Données
-        ret[TABLE_ID_INDEX] = null;
-        ret[SwTimerTableDataFields.PresetsCT.TIME.INDEX()] = String.valueOf(time);
-        ret[SwTimerTableDataFields.PresetsCT.LABEL.INDEX()] = label;
-        return ret;
+        String[] presetCTRow = new String[1 + SwTimerTableDataFields.PresetsCT.values().length];  //  Champ ID + Données
+        presetCTRow[TABLE_ID_INDEX] = null;
+        presetCTRow[SwTimerTableDataFields.PresetsCT.TIME.INDEX()] = String.valueOf(time);
+        presetCTRow[SwTimerTableDataFields.PresetsCT.LABEL.INDEX()] = label;
+        return presetCTRow;
     }
     //endregion
 
