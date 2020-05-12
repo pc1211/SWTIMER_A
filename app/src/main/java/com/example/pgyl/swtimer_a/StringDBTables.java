@@ -105,7 +105,7 @@ public class StringDBTables {
         }
 
         enum ChronoTimers implements SwTimerTableDataFields {   //  Les champs de data de la table CHRONO_TIMERS
-            MODE, SELECTED, RUNNING, SPLITTED, CLOCK_APP_ALARM, LABEL, LABEL_INIT, TIME_START, TIME_ACC, TIME_ACC_UNTIL_SPLIT, TIME_DEF, TIME_DEF_INIT, TIME_EXP;
+            MODE, SELECTED, RUNNING, SPLITTED, CLOCK_APP_ALARM_REQUESTED, CLOCK_APP_ALARM_OUTDATED, LABEL, LABEL_INIT, TIME_START, TIME_ACC, TIME_ACC_UNTIL_SPLIT, TIME_DEF, TIME_DEF_INIT, TIME_EXP;
 
             public int INDEX() {
                 return ordinal() + 1;
@@ -262,7 +262,8 @@ public class StringDBTables {
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SELECTED.INDEX()]) == 1),
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.RUNNING.INDEX()]) == 1),
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SPLITTED.INDEX()]) == 1),
-                (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM.INDEX()]) == 1),
+                (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM_REQUESTED.INDEX()]) == 1),
+                (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM_OUTDATED.INDEX()]) == 1),
                 chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL.INDEX()],
                 chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL_INIT.INDEX()],
                 Long.parseLong(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_START.INDEX()]),
@@ -280,7 +281,8 @@ public class StringDBTables {
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SELECTED.INDEX()] = String.valueOf(ctRecord.isSelected() ? 1 : 0);
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.RUNNING.INDEX()] = String.valueOf(ctRecord.isRunning() ? 1 : 0);
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SPLITTED.INDEX()] = String.valueOf(ctRecord.isSplitted() ? 1 : 0);
-        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM.INDEX()] = String.valueOf(ctRecord.hasClockAppAlarm() ? 1 : 0);
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM_REQUESTED.INDEX()] = String.valueOf(ctRecord.isClockAlarmRequested() ? 1 : 0);
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM_OUTDATED.INDEX()] = String.valueOf(ctRecord.isClockAppAlarmOutdated() ? 1 : 0);
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL.INDEX()] = ctRecord.getLabel();
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL_INIT.INDEX()] = ctRecord.getLabelInit();
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_START.INDEX()] = String.valueOf(ctRecord.getTimeStart());

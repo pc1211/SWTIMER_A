@@ -236,14 +236,16 @@ public class CtRecordsHandler {
                 if (ctRecords.get(i).isSelected()) {
                     count = count + 1;   //  Compter
                     if (action.equals(ACTIONS_ON_SELECTION.START)) {
-                        if (!ctRecords.get(i).start(nowm)) {
+                        ctRecords.get(i).start(nowm);
+                        if (ctRecords.get(i).isClockAppAlarmOutdated()) {
                             if (setClockAppAlarmOnStartTimer) {
                                 ctRecords.get(i).setClockAppAlarmOn(VIA_CLOCK_APP);
                             }
                         }
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.STOP)) {
-                        if (!ctRecords.get(i).stop(nowm)) {
+                        ctRecords.get(i).stop(nowm);
+                        if (ctRecords.get(i).isClockAppAlarmOutdated()) {
                             RequestAdditionalClockAppAlarmDismiss(ctRecords.get(i));
                         }
                     }
@@ -251,12 +253,14 @@ public class CtRecordsHandler {
                         ctRecords.get(i).split(nowm);
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.RESET)) {
-                        if (!ctRecords.get(i).reset()) {
+                        ctRecords.get(i).reset();
+                        if (ctRecords.get(i).isClockAppAlarmOutdated()) {
                             RequestAdditionalClockAppAlarmDismiss(ctRecords.get(i));
                         }
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.REMOVE)) {
-                        if (!ctRecords.get(i).reset()) {
+                        ctRecords.get(i).reset();
+                        if (ctRecords.get(i).isClockAppAlarmOutdated()) {
                             RequestAdditionalClockAppAlarmDismiss(ctRecords.get(i));
                         }
                         ctRecords.remove(i);

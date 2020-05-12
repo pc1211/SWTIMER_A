@@ -283,13 +283,15 @@ public class CtDisplayActivity extends Activity {
 
     private void onStateButtonClickRun(long nowm) {
         if (!currentCtRecord.isRunning()) {
-            if (!currentCtRecord.start(nowm)) {
+            currentCtRecord.start(nowm);
+            if (currentCtRecord.isClockAppAlarmOutdated()) {
                 if (setClockAppAlarmOnStartTimer) {
                     currentCtRecord.setClockAppAlarmOn(VIA_CLOCK_APP);
                 }
             }
         } else {
-            if (!currentCtRecord.stop(nowm)) {
+            currentCtRecord.stop(nowm);
+            if (currentCtRecord.isClockAppAlarmOutdated()) {
                 currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
             }
         }
@@ -302,7 +304,7 @@ public class CtDisplayActivity extends Activity {
     private void onStateButtonClickClockAppAlarm() {
         if (currentCtRecord.getMode().equals(MODE.TIMER)) {
             if (currentCtRecord.isRunning()) {
-                if (!currentCtRecord.hasClockAppAlarm()) {
+                if (!currentCtRecord.isClockAlarmRequested()) {
                     currentCtRecord.setClockAppAlarmOn(VIA_CLOCK_APP);
                 } else {
                     currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
@@ -312,7 +314,8 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void onStateButtonClickReset() {
-        if (!currentCtRecord.reset()) {
+        currentCtRecord.reset();
+        if (currentCtRecord.isClockAppAlarmOutdated()) {
             currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
         }
     }
@@ -399,7 +402,7 @@ public class CtDisplayActivity extends Activity {
             return false;
         }
         if (command.equals(STATE_COMMANDS.CLOCK_APP_ALARM)) {
-            return currentCtRecord.hasClockAppAlarm();
+            return currentCtRecord.isClockAlarmRequested();
         }
         return false;
     }

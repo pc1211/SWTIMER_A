@@ -125,13 +125,15 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private void onButtonModeRunClick(int pos) {
         long nowm = System.currentTimeMillis();
         if (!ctRecords.get(pos).isRunning()) {
-            if (!ctRecords.get(pos).start(nowm)) {
+            ctRecords.get(pos).start(nowm);
+            if (ctRecords.get(pos).isClockAppAlarmOutdated()) {
                 if (setClockAppAlarmOnStartTimer) {
                     ctRecords.get(pos).setClockAppAlarmOn(VIA_CLOCK_APP);
                 }
             }
         } else {
-            if (!ctRecords.get(pos).stop(nowm)) {
+            ctRecords.get(pos).stop(nowm);
+            if (ctRecords.get(pos).isClockAppAlarmOutdated()) {
                 ctRecords.get(pos).setClockAppAlarmOff(VIA_CLOCK_APP);
             }
         }
@@ -148,7 +150,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
             ctRecords.get(pos).split(nowm);
             b = !NEED_SORT_AND_RELOAD;
         } else {
-            if (!ctRecords.get(pos).reset()) {
+            ctRecords.get(pos).reset();
+            if (ctRecords.get(pos).isClockAppAlarmOutdated()) {
                 ctRecords.get(pos).setClockAppAlarmOff(VIA_CLOCK_APP);
             }
             b = NEED_SORT_AND_RELOAD;
@@ -161,7 +164,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private void onButtonClockAppAlarmClick(int pos) {
         if (ctRecords.get(pos).getMode().equals(MODE.TIMER)) {
             if (ctRecords.get(pos).isRunning()) {
-                if (!ctRecords.get(pos).hasClockAppAlarm()) {
+                if (!ctRecords.get(pos).isClockAlarmRequested()) {
                     ctRecords.get(pos).setClockAppAlarmOn(VIA_CLOCK_APP);
                 } else {
                     ctRecords.get(pos).setClockAppAlarmOff(VIA_CLOCK_APP);
@@ -223,8 +226,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
         unpressedColor = (ctRecords.get(k).isSplitted() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonSplitReset.setColors(pressedColor, unpressedColor);
 
-        pressedColor = (ctRecords.get(k).hasClockAppAlarm() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        unpressedColor = (ctRecords.get(k).hasClockAppAlarm() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        pressedColor = (ctRecords.get(k).isClockAlarmRequested() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        unpressedColor = (ctRecords.get(k).isClockAlarmRequested() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonClockAppAlarm.setColors(pressedColor, unpressedColor);
 
         boolean needTimeUnitPrecision = ((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted()));
