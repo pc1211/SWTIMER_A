@@ -167,7 +167,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                             setOK = false;
                         }
                     }
-                } else {
+                } else {   //  Pas Running
                     reset();
                 }
             }
@@ -205,10 +205,10 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         if (mode.equals(MODE.TIMER)) {
             if (running) {
                 if (timeExp < nowm) {    //  Timer expiré => Reset
-                    reset();
-                    clockAppAlarmRequested = false;   //  L'alarme dans a dû sonner dans clockApp
+                    clockAppAlarmRequested = false;   //  L'alarme dans a dû sonner dans clockApp et être désactivée par l'utilisateur
                     timeDisplayWithoutSplit = timeDef;
                     timeDisplay = timeDisplayWithoutSplit;
+                    reset();
                     updateOK = false;
                     return updateOK;    //  Signaler l'expiration du Timer
                 }
@@ -253,11 +253,9 @@ class CtRecord {   //  Données d'un Chrono ou Timer
 
     public void split(long nowm) {
         if (running || splitted) {
-            if (!splitted) {  //  => Running
-                splitted = true;
+            splitted = !splitted;
+            if (splitted) {  //  => Running
                 timeAccUntilSplit = timeAcc + nowm - timeStart;
-            } else {
-                splitted = false;
             }
         }
     }
