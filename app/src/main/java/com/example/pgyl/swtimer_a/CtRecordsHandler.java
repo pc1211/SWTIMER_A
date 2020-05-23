@@ -11,21 +11,28 @@ import java.util.Comparator;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.pgyl.pekislib_a.ClockAppAlarmUtils.dismissClockAppAlarm;
-import static com.example.pgyl.pekislib_a.Constants.CRLF;
+import static com.example.pgyl.pekislib_a.ClockAppAlarmUtils.setClockAppAlarm;
 import static com.example.pgyl.pekislib_a.Constants.DUMMY_VALUE;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
-import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
-import static com.example.pgyl.swtimer_a.CtRecord.MODE;
-import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
+import static com.example.pgyl.swtimer_a.CtRecord.CLOCK_APP_ALARM_SWITCHES;
+import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
-import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
-import static com.example.pgyl.swtimer_a.StringDBTables.ctRecordToChronoTimerRow;
-import static com.example.pgyl.swtimer_a.StringDBUtils.saveChronoTimers;
+import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowsToCtRecords;
+import static com.example.pgyl.swtimer_a.StringDBTables.ctRecordsToChronoTimerRows;
+import static com.example.pgyl.swtimer_a.StringDBUtils.saveDBChronoTimers;
 
 public class CtRecordsHandler {
+    public interface onExpiredTimerListener {
+        void onExpiredTimer(CtRecord ctRecord);
+    }
+
+    public void setOnExpiredTimerListener(onExpiredTimerListener listener) {
+        mOnExpiredTimerListener = listener;
+    }
+
+    private onExpiredTimerListener mOnExpiredTimerListener;
+
     //region Constantes
     private enum ACTIONS_ON_ALL {
         UPDATE_TIME, INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT
@@ -46,11 +53,14 @@ public class CtRecordsHandler {
     private String requestedClockAppAlarmDismisses;
     private long nowm;
     private boolean setClockAppAlarmOnStartTimer;
+    private int selectedRunningTimersWithClockAppAlarm;
+    private int clockAppAlarmSwitchRequests;
     //endregion
 
     public CtRecordsHandler(Context context, StringDB stringDB) {
         this.context = context;
         this.stringDB = stringDB;
+        setupCtRecords();
         shpFileName = context.getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car partagé avec CtDisplayActivity & MainActivity
         init();
     }
@@ -58,14 +68,16 @@ public class CtRecordsHandler {
     private void init() {
         requestedClockAppAlarmDismisses = getSHPRequestedClockAppAlarmsDismisses();
         processNextRequestedClockAppAlarmDismiss();
-        ctRecords = chronoTimerRowsToCtRecords(StringDBUtils.getChronoTimers(stringDB));
+        selectedRunningTimersWithClockAppAlarm = 0;
+        clockAppAlarmSwitchRequests = 0;
     }
 
     public void saveAndclose() {
-        saveChronoTimers(stringDB, ctRecordsToChronoTimerRows(ctRecords));
+        saveDBChronoTimers(stringDB, ctRecordsToChronoTimerRows(ctRecords));
         savePreferences();
         stringDB = null;
-        closeChronoTimers();
+        ctRecords.clear();
+        ctRecords = null;
         context = null;
     }
 
@@ -73,11 +85,11 @@ public class CtRecordsHandler {
         return ctRecords;
     }
 
-    public int createChronoTimer(MODE mode) {
+    public int createChronoTimer(MODES mode) {
         final String LABEL_INIT_DEFAULT_VALUE = "Label";
         final long TIMEDEFINIT_DEFAULT_VALUE = 0;
 
-        CtRecord ctRecord = new CtRecord(context);
+        CtRecord ctRecord = new CtRecord();
         int idct = getMaxId() + 1;
         ctRecord.setIdct(idct);
         ctRecord.setMode(mode);
@@ -85,6 +97,7 @@ public class CtRecordsHandler {
         ctRecord.setTimeDef(TIMEDEFINIT_DEFAULT_VALUE, DUMMY_VALUE);
         ctRecord.setLabelInit(LABEL_INIT_DEFAULT_VALUE + idct);
         ctRecord.setLabel(LABEL_INIT_DEFAULT_VALUE + idct);
+        setupCtRecordListener(ctRecord);
         ctRecords.add(ctRecord);
         return ctRecord.getIdct();
     }
@@ -104,7 +117,7 @@ public class CtRecordsHandler {
                             long time1 = ctRecord1.getTimeDisplayWithoutSplit();   //  OK si updateTime() appelé pour tous les ctRecords avant le tri
                             long time2 = ctRecord2.getTimeDisplayWithoutSplit();
                             sortResult = ((time1 == time2) ? 0 : ((time1 > time2) ? 1 : -1));   //  Si Timer  => ORDER BY time ASC   (d'abord les plus petits temps)
-                            if (mode1.equals(MODE.CHRONO.toString())) {                  //  Si Chrono => ORDER BY time DESC  (d'abord les plus grands temps)
+                            if (mode1.equals(MODES.CHRONO.toString())) {                  //  Si Chrono => ORDER BY time DESC  (d'abord les plus grands temps)
                                 sortResult = -sortResult;
                             }
                             if (sortResult == 0) {     //  time1 = time2
@@ -118,27 +131,6 @@ public class CtRecordsHandler {
                 }
             });
         }
-    }
-
-    public ArrayList<CtRecord> chronoTimerRowsToCtRecords(String[][] chronoTimerRows) {
-        ArrayList<CtRecord> ctRecords = new ArrayList<CtRecord>();
-        if (chronoTimerRows != null) {
-            for (int i = 0; i <= (chronoTimerRows.length - 1); i = i + 1) {
-                ctRecords.add(chronoTimerRowToCtRecord(chronoTimerRows[i], context));
-            }
-        }
-        return ctRecords;
-    }
-
-    public String[][] ctRecordsToChronoTimerRows(ArrayList<CtRecord> ctRecords) {
-        String[][] chronoTimerRows = null;
-        if (!ctRecords.isEmpty()) {
-            chronoTimerRows = new String[ctRecords.size()][];
-            for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
-                chronoTimerRows[i] = ctRecordToChronoTimerRow(ctRecords.get(i));
-            }
-        }
-        return chronoTimerRows;
     }
 
     public int updateTimeAll(long nowm) {
@@ -194,15 +186,41 @@ public class CtRecordsHandler {
         return actionOnSelection(ACTIONS_ON_SELECTION.COUNT);
     }
 
+    private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
+        clockAppAlarmSwitchRequests = clockAppAlarmSwitchRequests + 1;
+        boolean switchOK = false;
+        if (clockAppAlarmSwitch.equals(CLOCK_APP_ALARM_SWITCHES.ON)) {
+            setClockAppAlarm(context, ctRecord.getTimeExp(), ctRecord.getLabel(), "Setting " + ctRecord.getClockAppAlarmDescription());
+        } else {   //  OFF  ;  A chaque timer actif avec Clock App alarme correspondra une demande de suppression d'alarme Clock App si (stop, reset ou remove) sélection ou via bouton individuel
+            RequestAdditionalClockAppAlarmDismiss(ctRecord);
+            if (selectedRunningTimersWithClockAppAlarm == 0) {   //  Via bouton individuel
+                switchOK = true;
+            } else {   //  Via sélection
+                if (clockAppAlarmSwitchRequests >= selectedRunningTimersWithClockAppAlarm) {   // On attend de réceptionner dans RequestAdditionalClockAppAlarmDismiss toutes les demandes de suppression d'alarme pour la sélection
+                    switchOK = true;
+                    selectedRunningTimersWithClockAppAlarm = 0;
+                    clockAppAlarmSwitchRequests = 0;
+                }
+            }
+            if (switchOK) {
+                processNextRequestedClockAppAlarmDismiss();   //  => Fermeture MainActivity => Lancement Clock App (et quitter) => Réouverture de MainActivity => Init CtRecordsHandler => processNextRequestedClockAppAlarmDismiss() => ... le carrousel continue jusqu'à avoir traité toutes les demandes de suppression d'alarme
+            }
+        }
+    }
+
+    private void onExpiredTimer(CtRecord ctRecord) {
+        if (mOnExpiredTimerListener != null) {   //  Faites passer: Timer expiré => La liste doit être retriée + message avertissement
+            mOnExpiredTimerListener.onExpiredTimer(ctRecord);
+        }
+    }
+
     private int actionOnAll(ACTIONS_ON_ALL action) {
         int count = 0;
         if (!ctRecords.isEmpty()) {
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
                 if (action.equals(ACTIONS_ON_ALL.UPDATE_TIME)) {
-                    if (!ctRecords.get(i).updateTime(nowm)) {   //  Timer expiré
-                        toastLong("Timer " + ctRecords.get(i).getLabel() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(ctRecords.get(i).getTimeExp(), HHmmss), context);
-                        count = count + 1;
-                    }
+                    ctRecords.get(i).updateTime(nowm);
+                    count = count + 1;
                 }
                 if (action.equals(ACTIONS_ON_ALL.INVERT_SELECTION)) {
                     ctRecords.get(i).setSelectedOn(!ctRecords.get(i).isSelected());
@@ -211,12 +229,12 @@ public class CtRecordsHandler {
                     ctRecords.get(i).setSelectedOn(true);
                 }
                 if (action.equals(ACTIONS_ON_ALL.COUNT_CHRONOS)) {
-                    if (ctRecords.get(i).getMode().equals(MODE.CHRONO)) {
+                    if (ctRecords.get(i).getMode().equals(MODES.CHRONO)) {
                         count = count + 1;
                     }
                 }
                 if (action.equals(ACTIONS_ON_ALL.COUNT_TIMERS)) {
-                    if (ctRecords.get(i).getMode().equals(MODE.TIMER)) {
+                    if (ctRecords.get(i).getMode().equals(MODES.TIMER)) {
                         count = count + 1;
                     }
                 }
@@ -236,40 +254,29 @@ public class CtRecordsHandler {
                 if (ctRecords.get(i).isSelected()) {
                     count = count + 1;   //  Compter
                     if (action.equals(ACTIONS_ON_SELECTION.START)) {
-                        ctRecords.get(i).start(nowm);
-                        if (ctRecords.get(i).isClockAppAlarmOutdated()) {
-                            if (setClockAppAlarmOnStartTimer) {
-                                ctRecords.get(i).setClockAppAlarmOn(VIA_CLOCK_APP);
-                            }
-                        }
+                        ctRecords.get(i).start(nowm, setClockAppAlarmOnStartTimer);
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.STOP)) {
+                        selectedRunningTimersWithClockAppAlarm = getSelectedRunningTimersWithClockAppAlarm();   //  Ces  timers feront une demande de supression de Clock App alarme via onRequestClockAppAlarmSwitch()
                         ctRecords.get(i).stop(nowm);
-                        if (ctRecords.get(i).isClockAppAlarmOutdated()) {
-                            RequestAdditionalClockAppAlarmDismiss(ctRecords.get(i));
-                        }
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.SPLIT)) {
                         ctRecords.get(i).split(nowm);
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.RESET)) {
+                        selectedRunningTimersWithClockAppAlarm = getSelectedRunningTimersWithClockAppAlarm();
                         ctRecords.get(i).reset();
-                        if (ctRecords.get(i).isClockAppAlarmOutdated()) {
-                            RequestAdditionalClockAppAlarmDismiss(ctRecords.get(i));
-                        }
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.REMOVE)) {
+                        selectedRunningTimersWithClockAppAlarm = getSelectedRunningTimersWithClockAppAlarm();
                         ctRecords.get(i).reset();
-                        if (ctRecords.get(i).isClockAppAlarmOutdated()) {
-                            RequestAdditionalClockAppAlarmDismiss(ctRecords.get(i));
-                        }
-                        ctRecords.remove(i);
+                        ctRecords.remove(i);  //  Les instances de chaque CtRecord concerné restent cependant intactes et pourront appeler onRequestClockAppAlarmSwitch()
                         if (ctRecords.isEmpty()) {
                             break;   //  Evacuation générale
                         }
                         i = i - 1;   //  Compenser le remove
                     }
-                    if (action.equals(ACTIONS_ON_SELECTION.COUNT)) {     //  cf ret
+                    if (action.equals(ACTIONS_ON_SELECTION.COUNT)) {     //  cf count
                         //  NOP
                     }
                 }
@@ -277,28 +284,42 @@ public class CtRecordsHandler {
             }
             while (i < ctRecords.size());
         }
-        processNextRequestedClockAppAlarmDismiss();
         return count;
     }
 
-    private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {
+    private int getSelectedRunningTimersWithClockAppAlarm() {
+        int count = 0;
+        if (!ctRecords.isEmpty()) {
+            for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
+                if (ctRecords.get(i).getMode().equals(MODES.TIMER)) {
+                    if (ctRecords.get(i).isSelected()) {
+                        if (ctRecords.get(i).isRunning()) {
+                            if (ctRecords.get(i).isClockAppAlarmOn()) {
+                                count = count + 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    private void RequestAdditionalClockAppAlarmDismiss(CtRecord ctRecord) {   //  Pas d'appel à dismissClockAppAlarm() (mais processNextRequestedClockAppAlarmDismiss() le fera)
         requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses + ALARM_SEPARATOR + ctRecord.getLabel() + ALARM_FIELD_SEPARATOR + "Dismissing " + ctRecord.getClockAppAlarmDescription();
-        ctRecord.setClockAppAlarmOff(!VIA_CLOCK_APP);   //  => setClockAppAlarmOff() ne fera pas appel à dismissClockAppAlarm() (processNextRequestedClockAppAlarmDismiss() le fera)
     }
 
     private void processNextRequestedClockAppAlarmDismiss() {   //  Une alarme à la fois, la prochaine est traitée au prochain init() de CtRecordsHandler
-        String content;
-
         if (!requestedClockAppAlarmDismisses.equals("")) {
             requestedClockAppAlarmDismisses = requestedClockAppAlarmDismisses.substring(ALARM_SEPARATOR.length());
             int nextAlarmIndex = requestedClockAppAlarmDismisses.indexOf(ALARM_SEPARATOR);
             boolean nextAlarmFound = (nextAlarmIndex != NOT_FOUND);
-            content = (nextAlarmFound ? requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex) : requestedClockAppAlarmDismisses);
+            String content = (nextAlarmFound ? requestedClockAppAlarmDismisses.substring(0, nextAlarmIndex) : requestedClockAppAlarmDismisses);
             requestedClockAppAlarmDismisses = (nextAlarmFound ? requestedClockAppAlarmDismisses.substring(nextAlarmIndex) : "");
             int nextFieldIndex = content.indexOf(ALARM_FIELD_SEPARATOR);   //  ALARM_FIELD_SEPARATOR toujours présent
             String alarmLabel = content.substring(0, nextFieldIndex);
-            String toastMessage = content.substring(nextFieldIndex + ALARM_FIELD_SEPARATOR.length());
-            dismissClockAppAlarm(context, alarmLabel, toastMessage);
+            String alarmDescription = content.substring(nextFieldIndex + ALARM_FIELD_SEPARATOR.length());
+            dismissClockAppAlarm(context, alarmLabel, alarmDescription);   //  Lancement obligatoire de Clock App pour désactiver l'alarme, que l'utilisateur doit quitter pour revenir dans SwTimer App
         }
     }
 
@@ -326,12 +347,28 @@ public class CtRecordsHandler {
         return shp.getString(SWTIMER_SHP_KEY_NAMES.REQUESTED_CLOCK_APP_ALARM_DISMISSES.toString(), "");
     }
 
-    private void closeChronoTimers() {
-        for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
-            ctRecords.get(i).close();
+    private void setupCtRecords() {
+        ctRecords = chronoTimerRowsToCtRecords(StringDBUtils.getDBChronoTimers(stringDB));
+        if (!ctRecords.isEmpty()) {
+            for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
+                setupCtRecordListener(ctRecords.get(i));
+            }
         }
-        ctRecords.clear();
-        ctRecords = null;
+    }
+
+    private void setupCtRecordListener(CtRecord ctRecord) {
+        ctRecord.setOnRequestClockAppAlarmSwitchListener(new CtRecord.onRequestClockAppAlarmSwitchListener() {
+            @Override
+            public void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CtRecord.CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch) {
+                CtRecordsHandler.this.onRequestClockAppAlarmSwitch(ctRecord, clockAppAlarmSwitch);
+            }
+        });
+        ctRecord.setOnExpiredTimerListener(new CtRecord.onExpiredTimerListener() {
+            @Override
+            public void onExpiredTimer(CtRecord ctRecord) {
+                CtRecordsHandler.this.onExpiredTimer(ctRecord);
+            }
+        });
     }
 
 }

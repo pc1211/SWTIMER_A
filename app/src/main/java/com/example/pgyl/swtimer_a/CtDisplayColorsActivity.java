@@ -66,7 +66,7 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsBac
 import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOffIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOnIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsTableName;
-import static com.example.pgyl.swtimer_a.StringDBUtils.getChronoTimerById;
+import static com.example.pgyl.swtimer_a.StringDBUtils.getDBChronoTimerById;
 
 public class CtDisplayColorsActivity extends Activity {
     //region Constantes
@@ -200,7 +200,7 @@ public class CtDisplayColorsActivity extends Activity {
         shpFileName = getPackageName() + "." + getClass().getSimpleName() + SHP_FILE_NAME_SUFFIX;
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         setupStringDB();
-        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringDB, idct), this);
+        currentCtRecord = chronoTimerRowToCtRecord(getDBChronoTimerById(stringDB, idct));
         colorTableNames = getColorTableNames();
         colors = getCurrentsFromMultipleTablesFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colorTableNames);
         colorTableDescriptions = getDescriptionsOfMultipleSwtimerTables(colorTableNames);

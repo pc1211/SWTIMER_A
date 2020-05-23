@@ -47,7 +47,7 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeff
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringDBUtils.getChronoTimerById;
+import static com.example.pgyl.swtimer_a.StringDBUtils.getDBChronoTimerById;
 
 public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
     //region Constantes
@@ -125,7 +125,7 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
         tableDescription = getIntent().getStringExtra(TABLE_EXTRA_KEYS.DESCRIPTION.toString());
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         setupStringDB();
-        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringDB, idct), this);
+        currentCtRecord = chronoTimerRowToCtRecord(getDBChronoTimerById(stringDB, idct));
         coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName());
         labels = getLabels(stringDB, getDotMatrixDisplayCoeffsTableName());
         maxs = getMaxs(stringDB, getDotMatrixDisplayCoeffsTableName());

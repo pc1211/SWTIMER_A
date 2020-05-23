@@ -20,16 +20,6 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColor
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsOnTimeIndex;
 
 public class CtDisplayDotMatrixDisplayUpdater {
-    public interface onExpiredTimerListener {
-        void onExpiredTimer();
-    }
-
-    public void setOnExpiredTimerListener(onExpiredTimerListener listener) {
-        mOnExpiredTimerListener = listener;
-    }
-
-    private onExpiredTimerListener mOnExpiredTimerListener;
-
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
     private DotMatrixFont defaultFont;
@@ -77,7 +67,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
         resetScroll();
         setScrollSpeed(String.valueOf(DOTS_PER_SECOND_DEFAULT));
         inAutomatic = false;
-        mOnExpiredTimerListener = null;
     }
 
     public void close() {
@@ -149,11 +138,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         long nowm = System.currentTimeMillis();
         if ((!inAutomatic) && (!dotMatrixDisplayView.isDrawing())) {   //  OK pour rafraîchir l'affichage
             inAutomatic = true;
-            if (!currentCtRecord.updateTime(nowm)) {    //  Mise à jour du temps et signaler si le timer a expiré (ce qui génèrera un nouveau startAutomatic())
-                if (mOnExpiredTimerListener != null) {
-                    mOnExpiredTimerListener.onExpiredTimer();
-                }
-            }
+            currentCtRecord.updateTime(nowm);     //  Mise à jour du temps
             automaticDisplay(nowm);
             timeStart = nowm;   //  Mettre à jour le moment du dernier rafraichissement d'affichage
             inAutomatic = false;

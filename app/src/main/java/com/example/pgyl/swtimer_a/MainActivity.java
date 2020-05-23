@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
+import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
@@ -38,9 +39,11 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.createPekislibTableIfNot
 import static com.example.pgyl.pekislib_a.StringDBUtils.getDefaults;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
-import static com.example.pgyl.swtimer_a.CtRecord.MODE;
+import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getChronoTimersTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
@@ -54,6 +57,11 @@ import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableDotMatrixD
 import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTablePresetsCT;
 import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableStateButtonsColors;
 
+//  MainActivity fait appel à CtRecordShandler pour la gestion des CtRecord (création, suppression, tri, écoute des événements, ...) grâce aux boutons agissant sur la sélection des items de la liste, ...
+//  MainCtListUpdater maintient la liste de MainActivity (rafraîchissement, scrollbar, ...), fait appel à MainCtListAdapter (pour gérer chaque item) et également à CtRecordShandler (pour leur mise à jour)
+//  MainCtListItemAdapter reçoit ses items (CtRecord) de la part de MainCtListUpdater et gère chaque item de la liste (avec ses boutons de contrôle, clics relayés à MainActivity pour nouveau tri éventuel)
+//  CtRecordsHandler reçoit les événements onExpiredTimer() des CtRecord (et les relaie à MainActivity), et aussi leurs onRequestClockAppAlarmSwitch() pour la création/suppression d'alarmes dans Clock App
+//  Si un item de liste génère un onExpiredTimer(), il sera réceptionné par CtRecordsHandler, qui le relaie à MainActivity, qui le signalera à l'utilisateur
 public class MainActivity extends Activity {
     //region Constantes
     private enum COMMANDS {
@@ -284,11 +292,11 @@ public class MainActivity extends Activity {
     }
 
     private void onButtonClickAddNewChrono() {
-        createChronoTimer(MODE.CHRONO);
+        createChronoTimer(MODES.CHRONO);
     }
 
     private void onButtonClickAddNewTimer() {
-        createChronoTimer(MODE.TIMER);
+        createChronoTimer(MODES.TIMER);
     }
 
     private void onStateButtonClickShowExpirationTime() {
@@ -303,14 +311,15 @@ public class MainActivity extends Activity {
         updateDisplayStateButtonColor(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST);
     }
 
-    private void onCtListExpiredTimers() {
+    private void onCtListExpiredTimer(CtRecord ctRecord) {
         mainCtListUpdater.stopAutomatic();
         sortAndReloadMainCtList();
         mainCtListUpdater.startAutomatic();
+        toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), this);
         beep(this);
     }
 
-    private void onCtListItemButtonClick(boolean needSortAndReload) {
+    private void onCtListItemButtonClick(boolean needSortAndReload) {   //  Bouton individuel
         if (needSortAndReload) {
             mainCtListUpdater.stopAutomatic();
             sortAndReloadMainCtList();
@@ -410,7 +419,7 @@ public class MainActivity extends Activity {
         dialog.show();
     }
 
-    private void createChronoTimer(MODE mode) {
+    private void createChronoTimer(MODES mode) {
         mainCtListUpdater.stopAutomatic();
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
@@ -544,6 +553,12 @@ public class MainActivity extends Activity {
 
     private void setupCtRecordsHandler() {
         ctRecordsHandler = new CtRecordsHandler(this, stringDB);
+        ctRecordsHandler.setOnExpiredTimerListener(new CtRecordsHandler.onExpiredTimerListener() {
+            @Override
+            public void onExpiredTimer(CtRecord ctRecord) {
+                onCtListExpiredTimer(ctRecord);
+            }
+        });
     }
 
     private void setupStringDB() {
@@ -618,12 +633,6 @@ public class MainActivity extends Activity {
 
     private void setupMainCtListUpdater() {
         mainCtListUpdater = new MainCtListUpdater(mainCtListView, ctRecordsHandler);
-        mainCtListUpdater.setOnExpiredTimersListener(new MainCtListUpdater.onExpiredTimersListener() {
-            @Override
-            public void onExpiredTimers() {
-                onCtListExpiredTimers();
-            }
-        });
     }
 
     private void setupShowExpirationTime() {

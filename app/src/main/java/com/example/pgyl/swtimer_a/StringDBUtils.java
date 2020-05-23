@@ -44,19 +44,19 @@ public class StringDBUtils {
     //endregion
 
     //region CHRONO_TIMERS
-    public static String[] getChronoTimerById(StringDB stringDB, int idct) {
+    public static String[] getDBChronoTimerById(StringDB stringDB, int idct) {
         return stringDB.selectRowByIdOrCreate(getChronoTimersTableName(), String.valueOf(idct));
     }
 
-    public static String[][] getChronoTimers(StringDB stringDB) {
+    public static String[][] getDBChronoTimers(StringDB stringDB) {
         return stringDB.selectRows(getChronoTimersTableName(), null);
     }
 
-    public static void saveChronoTimer(StringDB stringDB, String[] values) {
+    public static void saveDBChronoTimer(StringDB stringDB, String[] values) {
         stringDB.insertOrReplaceRow(getChronoTimersTableName(), values);
     }
 
-    public static void saveChronoTimers(StringDB stringDB, String[][] values) {
+    public static void saveDBChronoTimers(StringDB stringDB, String[][] values) {
         stringDB.deleteRows(getChronoTimersTableName(), null);
         stringDB.insertOrReplaceRows(getChronoTimersTableName(), values);
     }

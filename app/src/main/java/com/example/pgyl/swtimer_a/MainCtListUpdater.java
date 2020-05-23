@@ -6,16 +6,6 @@ import android.widget.ListView;
 import com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 
 public class MainCtListUpdater {
-    public interface onExpiredTimersListener {
-        void onExpiredTimers();
-    }
-
-    public void setOnExpiredTimersListener(onExpiredTimersListener listener) {
-        mOnExpiredTimersListener = listener;
-    }
-
-    private onExpiredTimersListener mOnExpiredTimersListener;
-
     //region Variables
     private MainCtListItemAdapter mainCtListItemAdapter;
     private ListView mainCtListView;
@@ -38,7 +28,6 @@ public class MainCtListUpdater {
     private void init() {
         setupRunnables();
         updateInterval = TIME_UNITS.SEC.DURATION_MS();
-        mOnExpiredTimersListener = null;
         needScrollBar = false;
         setScrollBar(needScrollBar);
         mainCtListItemAdapter = (MainCtListItemAdapter) mainCtListView.getAdapter();
@@ -76,19 +65,13 @@ public class MainCtListUpdater {
 
     public void update() {
         long nowm = System.currentTimeMillis();
-        if (ctRecordsHandler.updateTimeAll(nowm) == 0) {
-            mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
-            if (mainCtListView.getChildCount() > 0) {
-                int firstVisiblePos = mainCtListView.getFirstVisiblePosition();
-                int lastVisiblePos = mainCtListView.getLastVisiblePosition();
-                for (int i = firstVisiblePos; i <= lastVisiblePos; i = i + 1) {
-                    mainCtListItemAdapter.paintView(mainCtListView.getChildAt(i - firstVisiblePos), i);
-                }
-            }
-        } else {    // Au moins 1 timer a expiré - Evacuation générale
-            handlerTime.removeCallbacks(runnableTime);
-            if (mOnExpiredTimersListener != null) {
-                mOnExpiredTimersListener.onExpiredTimers();
+        ctRecordsHandler.updateTimeAll(nowm);
+        mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
+        if (mainCtListView.getChildCount() > 0) {
+            int firstVisiblePos = mainCtListView.getFirstVisiblePosition();
+            int lastVisiblePos = mainCtListView.getLastVisiblePosition();
+            for (int i = firstVisiblePos; i <= lastVisiblePos; i = i + 1) {
+                mainCtListItemAdapter.paintView(mainCtListView.getChildAt(i - firstVisiblePos), i);
             }
         }
     }

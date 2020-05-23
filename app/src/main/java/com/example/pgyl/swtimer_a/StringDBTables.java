@@ -1,8 +1,8 @@
 package com.example.pgyl.swtimer_a;
 
-import android.content.Context;
-
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
+
+import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.StringDB.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_IDS;
@@ -254,16 +254,14 @@ public class StringDBTables {
         return SWTIMER_TABLES.CHRONO_TIMERS.toString();
     }
 
-    public static CtRecord chronoTimerRowToCtRecord(String[] chronoTimerRow, Context context) {
+    public static CtRecord chronoTimerRowToCtRecord(String[] chronoTimerRow) {
         return new CtRecord(
-                context,
                 Integer.parseInt(chronoTimerRow[TABLE_ID_INDEX]),
-                CtRecord.MODE.valueOf(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.MODE.INDEX()]),
+                CtRecord.MODES.valueOf(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.MODE.INDEX()]),
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SELECTED.INDEX()]) == 1),
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.RUNNING.INDEX()]) == 1),
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SPLITTED.INDEX()]) == 1),
                 (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM_REQUESTED.INDEX()]) == 1),
-                (Integer.parseInt(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM_OUTDATED.INDEX()]) == 1),
                 chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL.INDEX()],
                 chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL_INIT.INDEX()],
                 Long.parseLong(chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_START.INDEX()]),
@@ -281,8 +279,7 @@ public class StringDBTables {
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SELECTED.INDEX()] = String.valueOf(ctRecord.isSelected() ? 1 : 0);
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.RUNNING.INDEX()] = String.valueOf(ctRecord.isRunning() ? 1 : 0);
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.SPLITTED.INDEX()] = String.valueOf(ctRecord.isSplitted() ? 1 : 0);
-        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM_REQUESTED.INDEX()] = String.valueOf(ctRecord.isClockAlarmRequested() ? 1 : 0);
-        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM_OUTDATED.INDEX()] = String.valueOf(ctRecord.isClockAppAlarmOutdated() ? 1 : 0);
+        chronoTimerRow[SwTimerTableDataFields.ChronoTimers.CLOCK_APP_ALARM_REQUESTED.INDEX()] = String.valueOf(ctRecord.isClockAppAlarmOn() ? 1 : 0);
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL.INDEX()] = ctRecord.getLabel();
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.LABEL_INIT.INDEX()] = ctRecord.getLabelInit();
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_START.INDEX()] = String.valueOf(ctRecord.getTimeStart());
@@ -292,6 +289,27 @@ public class StringDBTables {
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_DEF_INIT.INDEX()] = String.valueOf(ctRecord.getTimeDefInit());
         chronoTimerRow[SwTimerTableDataFields.ChronoTimers.TIME_EXP.INDEX()] = String.valueOf(ctRecord.getTimeExp());
         return chronoTimerRow;
+    }
+
+    public static ArrayList<CtRecord> chronoTimerRowsToCtRecords(String[][] chronoTimerRows) {
+        ArrayList<CtRecord> ctRecords = new ArrayList<CtRecord>();
+        if (chronoTimerRows != null) {
+            for (int i = 0; i <= (chronoTimerRows.length - 1); i = i + 1) {
+                ctRecords.add(chronoTimerRowToCtRecord(chronoTimerRows[i]));
+            }
+        }
+        return ctRecords;
+    }
+
+    public static String[][] ctRecordsToChronoTimerRows(ArrayList<CtRecord> ctRecords) {
+        String[][] chronoTimerRows = null;
+        if (!ctRecords.isEmpty()) {
+            chronoTimerRows = new String[ctRecords.size()][];
+            for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
+                chronoTimerRows[i] = ctRecordToChronoTimerRow(ctRecords.get(i));
+            }
+        }
+        return chronoTimerRows;
     }
     //endregion
 

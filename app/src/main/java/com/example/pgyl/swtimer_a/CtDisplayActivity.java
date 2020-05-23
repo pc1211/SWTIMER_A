@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.example.pgyl.pekislib_a.ClockAppAlarmUtils;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.PresetsActivity;
@@ -44,11 +45,11 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForMultipleTa
 import static com.example.pgyl.pekislib_a.StringDBUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER;
-import static com.example.pgyl.swtimer_a.CtRecord.MODE;
-import static com.example.pgyl.swtimer_a.CtRecord.VIA_CLOCK_APP;
+import static com.example.pgyl.swtimer_a.CtRecord.CLOCK_APP_ALARM_SWITCHES;
+import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringDBTables.copyPresetCTRowToCtRecord;
@@ -67,8 +68,8 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOff
 import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOnIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.timeLabelToPresetCTRow;
-import static com.example.pgyl.swtimer_a.StringDBUtils.getChronoTimerById;
-import static com.example.pgyl.swtimer_a.StringDBUtils.saveChronoTimer;
+import static com.example.pgyl.swtimer_a.StringDBUtils.getDBChronoTimerById;
+import static com.example.pgyl.swtimer_a.StringDBUtils.saveDBChronoTimer;
 
 public class CtDisplayActivity extends Activity {
     //region Constantes
@@ -91,7 +92,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     public enum CTDISPLAY_EXTRA_KEYS {
-        CURRENT_CHRONO_TIMER_ID, FIRST_PORTRAIT_VALUE_INDEX, FIRST_LANDSCAPE_VALUE_INDEX, SEEKBAR_MAX_VALUE
+        CURRENT_CHRONO_TIMER_ID
     }
 
     //endregion
@@ -132,7 +133,7 @@ public class CtDisplayActivity extends Activity {
 
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
-        saveChronoTimer(stringDB, ctRecordToChronoTimerRow(currentCtRecord));
+        saveDBChronoTimer(stringDB, ctRecordToChronoTimerRow(currentCtRecord));
         currentCtRecord = null;
         setCurrentsForMultipleTablesForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colorTableNames, colors);
         setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
@@ -150,9 +151,8 @@ public class CtDisplayActivity extends Activity {
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car partagé avec MainActivity
         setClockAppAlarmOnStartTimer = getSHPSetClockAppAlarmOnStartTimer();
         keepScreen = getSHPKeepScreen();
-        int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         setupStringDB();
-        currentCtRecord = chronoTimerRowToCtRecord(getChronoTimerById(stringDB, idct), this);
+        setupCurrentCtRecord();
         setDefaults(stringDB, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));
         colorTableNames = getColorTableNames();
         colors = getCurrentsFromMultipleTablesFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colorTableNames);
@@ -271,10 +271,10 @@ public class CtDisplayActivity extends Activity {
             onStateButtonClickReset();
         }
         if (command.equals(STATE_COMMANDS.CHRONO_MODE)) {
-            onStateButtonClickMode(MODE.CHRONO);
+            onStateButtonClickMode(MODES.CHRONO);
         }
         if (command.equals(STATE_COMMANDS.TIMER_MODE)) {
-            onStateButtonClickMode(MODE.TIMER);
+            onStateButtonClickMode(MODES.TIMER);
         }
         updateCurrentRecord(nowm);
         updateDisplayStateButtonColors();
@@ -283,17 +283,9 @@ public class CtDisplayActivity extends Activity {
 
     private void onStateButtonClickRun(long nowm) {
         if (!currentCtRecord.isRunning()) {
-            currentCtRecord.start(nowm);
-            if (currentCtRecord.isClockAppAlarmOutdated()) {
-                if (setClockAppAlarmOnStartTimer) {
-                    currentCtRecord.setClockAppAlarmOn(VIA_CLOCK_APP);
-                }
-            }
+            currentCtRecord.start(nowm, setClockAppAlarmOnStartTimer);
         } else {
             currentCtRecord.stop(nowm);
-            if (currentCtRecord.isClockAppAlarmOutdated()) {
-                currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
-            }
         }
     }
 
@@ -302,26 +294,15 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void onStateButtonClickClockAppAlarm() {
-        if (currentCtRecord.getMode().equals(MODE.TIMER)) {
-            if (currentCtRecord.isRunning()) {
-                if (!currentCtRecord.isClockAlarmRequested()) {
-                    currentCtRecord.setClockAppAlarmOn(VIA_CLOCK_APP);
-                } else {
-                    currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
-                }
-            }
-        }
+        currentCtRecord.setClockAppAlarmOn(!currentCtRecord.isClockAppAlarmOn());
     }
 
     private void onStateButtonClickReset() {
         currentCtRecord.reset();
-        if (currentCtRecord.isClockAppAlarmOutdated()) {
-            currentCtRecord.setClockAppAlarmOff(VIA_CLOCK_APP);
-        }
     }
 
-    private void onStateButtonClickMode(MODE newMode) {
-        MODE oldMode = currentCtRecord.getMode();
+    private void onStateButtonClickMode(MODES newMode) {
+        MODES oldMode = currentCtRecord.getMode();
         if (!currentCtRecord.setMode(newMode)) {
             if (!newMode.equals(oldMode)) {
                 toastLong("First stop " + capitalize(oldMode.toString()), this);
@@ -329,13 +310,20 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void onExpiredTimerCurrentChronoTimer() {
-        toastLong("Timer " + currentCtRecord.getLabel() + CRLF + "expired @ " + formattedTimeZoneLongTimeDate(currentCtRecord.getTimeExp(), HHmmss), this);
+    private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
+        if (clockAppAlarmSwitch.equals(CLOCK_APP_ALARM_SWITCHES.ON)) {
+            ClockAppAlarmUtils.setClockAppAlarm(this, ctRecord.getTimeExp(), ctRecord.getLabel(), "Setting " + ctRecord.getClockAppAlarmDescription());
+        } else {   //  OFF
+            ClockAppAlarmUtils.dismissClockAppAlarm(this, ctRecord.getLabel(), "Dismissing " + ctRecord.getClockAppAlarmDescription());
+        }
+    }
+
+    private void onExpiredTimer(CtRecord ctRecord) {
+        toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), this);
         updateDisplayDotMatrixDisplay();
         updateDisplayStateButtonColors();
         beep(this);
     }
-
 
     private void onDotMatrixDisplayCustomClick() {
         launchPresetsActivity();
@@ -387,10 +375,10 @@ public class CtDisplayActivity extends Activity {
 
     private boolean getStateButtonState(STATE_COMMANDS command) {
         if (command.equals(STATE_COMMANDS.CHRONO_MODE)) {
-            return currentCtRecord.getMode().equals(MODE.CHRONO);
+            return currentCtRecord.getMode().equals(MODES.CHRONO);
         }
         if (command.equals(STATE_COMMANDS.TIMER_MODE)) {
-            return currentCtRecord.getMode().equals(MODE.TIMER);
+            return currentCtRecord.getMode().equals(MODES.TIMER);
         }
         if (command.equals(STATE_COMMANDS.RUN)) {
             return currentCtRecord.isRunning();
@@ -402,7 +390,7 @@ public class CtDisplayActivity extends Activity {
             return false;
         }
         if (command.equals(STATE_COMMANDS.CLOCK_APP_ALARM)) {
-            return currentCtRecord.isClockAlarmRequested();
+            return currentCtRecord.isClockAppAlarmOn();
         }
         return false;
     }
@@ -492,12 +480,6 @@ public class CtDisplayActivity extends Activity {
 
     private void setupDotMatrixDisplayUpdater(CtRecord currentCtRecord) {
         dotMatrixDisplayUpdater = new CtDisplayDotMatrixDisplayUpdater(dotMatrixDisplayView, currentCtRecord);
-        dotMatrixDisplayUpdater.setOnExpiredTimerListener(new CtDisplayDotMatrixDisplayUpdater.onExpiredTimerListener() {
-            @Override
-            public void onExpiredTimer() {
-                onExpiredTimerCurrentChronoTimer();
-            }
-        });
     }
 
     private void setupBackLayout() {
@@ -522,10 +504,25 @@ public class CtDisplayActivity extends Activity {
         stringDB.open();
     }
 
+    private void setupCurrentCtRecord() {
+        int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
+        currentCtRecord = chronoTimerRowToCtRecord(getDBChronoTimerById(stringDB, idct));
+        currentCtRecord.setOnRequestClockAppAlarmSwitchListener(new CtRecord.onRequestClockAppAlarmSwitchListener() {
+            @Override
+            public void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CtRecord.CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch) {
+                CtDisplayActivity.this.onRequestClockAppAlarmSwitch(ctRecord, clockAppAlarmSwitch);
+            }
+        });
+        currentCtRecord.setOnExpiredTimerListener(new CtRecord.onExpiredTimerListener() {
+            @Override
+            public void onExpiredTimer(CtRecord ctRecord) {
+                CtDisplayActivity.this.onExpiredTimer(ctRecord);
+            }
+        });
+    }
+
     private void updateCurrentRecord(long nowm) {
-        if (!currentCtRecord.updateTime(nowm)) {    //  Le timer a expiré
-            onExpiredTimerCurrentChronoTimer();
-        }
+        currentCtRecord.updateTime(nowm);
     }
 
     private void launchPresetsActivity() {

@@ -1,33 +1,50 @@
 package com.example.pgyl.swtimer_a;
 
-import android.content.Context;
-
-import com.example.pgyl.pekislib_a.ClockAppAlarmUtils;
-
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.formattedTimeZoneLongTimeDate;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.midnightTimeMillis;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.getMidnightTimeMillis;
 
 class CtRecord {   //  Données d'un Chrono ou Timer
+    public interface onExpiredTimerListener {
+        void onExpiredTimer(CtRecord ctRecord);
+    }
+
+    public void setOnExpiredTimerListener(onExpiredTimerListener listener) {
+        mOnExpiredTimerListener = listener;
+    }
+
+    private onExpiredTimerListener mOnExpiredTimerListener;
+
+    public interface onRequestClockAppAlarmSwitchListener {
+        void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch);
+    }
+
+    public void setOnRequestClockAppAlarmSwitchListener(onRequestClockAppAlarmSwitchListener listener) {
+        mOnRequestClockAppAlarmSwitchListener = listener;
+    }
+
+    private onRequestClockAppAlarmSwitchListener mOnRequestClockAppAlarmSwitchListener;
+
     // region Constantes
-    public enum MODE {
+    public enum MODES {
         CHRONO, TIMER
     }
 
-    public static final boolean VIA_CLOCK_APP = true;
+    public enum CLOCK_APP_ALARM_SWITCHES {
+        ON, OFF
+    }
+
     private final long TIME_DEFAULT_VALUE = 0;
     //endregion
     //region Variables
-    private Context context;
     private int idct;                     //  Identifiant du Chrono ou Timer (1, 2, 3, ...)
-    private MODE mode;                    //  CHRONO ou TIMER
+    private MODES mode;                    //  CHRONO ou TIMER
     private boolean selected;             //  True si sélectionné
     private boolean running;              //  True si en cours (Actif)
     private boolean splitted;             //  True si Split
-    private boolean clockAppAlarmRequested;   //  True si alarme a été sollicitée dans Clock app pour l'expiration (si Timer)
-    private boolean clockAppAlarmOutdated;    //  True si alarme Clock app doit être créée ou supprimée
+    private boolean clockAppAlarmOn;      //  True si alarme a été sollicitée dans Clock App pour l'expiration (si Timer)
     private String label;                 //  Label associé
     private String labelInit;             //  Label associé initial (non éditable)
     private long timeStart;               //  Temps mesuré lors du dernier Start (en ms)
@@ -40,18 +57,12 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     private long timeDisplayWithoutSplit; //  Idem timeDisplay mais sans tenir compte du Split (pour Tri de liste dans MainActivity) (en ms)
     //endregion
 
-    public CtRecord(Context context) {
-        this.context = context;
-        fill(0, MODE.CHRONO, false, false, false, false, false, null, null, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, midnightTimeMillis(), TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
+    public CtRecord() {
+        fill(0, MODES.CHRONO, false, false, false, false, null, null, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, getMidnightTimeMillis(), TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
     }
 
-    public CtRecord(Context context, int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarmRequested, boolean clockAppAlarmOutdated, String label, String labelInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp) {  //  pas timeDisplay ni timeDisplayWithoutSplit, toujours mis à TIME_DEFAULT_VALUE à l'initialisation
-        this.context = context;
-        fill(idct, mode, selected, running, splitted, clockAppAlarmRequested, clockAppAlarmOutdated, label, labelInit, timeStart, timeAcc, timeAccUntilSplit, timeDef, timeDefInit, timeExp, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
-    }
-
-    public void close() {
-        context = null;
+    public CtRecord(int idct, MODES mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarmOn, String label, String labelInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp) {  //  pas timeDisplay ni timeDisplayWithoutSplit, toujours mis à TIME_DEFAULT_VALUE à l'initialisation
+        fill(idct, mode, selected, running, splitted, clockAppAlarmOn, label, labelInit, timeStart, timeAcc, timeAccUntilSplit, timeDef, timeDefInit, timeExp, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
     }
 
     public int getIdct() {
@@ -62,11 +73,11 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         idct = newIdct;
     }
 
-    public MODE getMode() {
+    public MODES getMode() {
         return mode;
     }
 
-    public boolean setMode(MODE newMode) {
+    public boolean setMode(MODES newMode) {
         if (!mode.equals(newMode)) {
             if (!running) {
                 mode = newMode;
@@ -98,12 +109,21 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return ((timeAcc == 0) && (!running));
     }
 
-    public boolean isClockAlarmRequested() {
-        return clockAppAlarmRequested;
+    public boolean isClockAppAlarmOn() {
+        return clockAppAlarmOn;
     }
 
-    public boolean isClockAppAlarmOutdated() {
-        return clockAppAlarmOutdated;
+    public void setClockAppAlarmOn(boolean clockAppAlarmOn) {
+        if (this.clockAppAlarmOn != clockAppAlarmOn) {
+            this.clockAppAlarmOn = clockAppAlarmOn;
+            if (mode.equals(MODES.TIMER)) {
+                if (running) {
+                    if (mOnRequestClockAppAlarmSwitchListener != null) {
+                        mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, clockAppAlarmOn ? CLOCK_APP_ALARM_SWITCHES.ON : CLOCK_APP_ALARM_SWITCHES.OFF);    //   Signaler la nécessité d'activer ou non l'alarme dans l'application Clock (si nécessaire)
+                    }
+                }
+            }
+        }
     }
 
     public String getLabel() {
@@ -113,9 +133,9 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     public boolean setLabel(String newLabel) {
         boolean setOK = true;
         if (label != newLabel) {
-            if (mode.equals(MODE.TIMER)) {
+            if (mode.equals(MODES.TIMER)) {
                 if (running) {
-                    if (isClockAlarmRequested()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)
+                    if (isClockAppAlarmOn()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)
                         setOK = false;
                     }
                 }
@@ -131,9 +151,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return labelInit;
     }
 
-    public boolean setLabelInit(String newLabelInit) {
-        labelInit = newLabelInit;
-        return true;
+    public void setLabelInit(String labelInit) {
+        this.labelInit = labelInit;
     }
 
     public long getTimeStart() {   //  Pas de set
@@ -155,9 +174,9 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     public boolean setTimeDef(long newTimeDef, long nowm) {
         boolean setOK = true;
         if (timeDef != newTimeDef) {
-            if (mode.equals(MODE.TIMER)) {
+            if (mode.equals(MODES.TIMER)) {
                 if (running) {
-                    if (isClockAlarmRequested()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)
+                    if (isClockAppAlarmOn()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)
                         setOK = false;
                     } else {
                         long newTimeExp = timeStart + newTimeDef - timeAcc;
@@ -183,9 +202,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return timeDefInit;
     }
 
-    public boolean setTimeDefInit(long newTimeDefInit) {
-        timeDefInit = newTimeDefInit;
-        return true;
+    public void setTimeDefInit(long timeDefInit) {
+        this.timeDefInit = timeDefInit;
     }
 
     public long getTimeExp() {   //  Pas de set
@@ -200,42 +218,54 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return timeDisplayWithoutSplit;
     }
 
-    public boolean updateTime(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
-        boolean updateOK = true;
-        if (mode.equals(MODE.TIMER)) {
+    public void updateTime(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
+        boolean expired = false;
+        if (mode.equals(MODES.TIMER)) {
             if (running) {
-                if (timeExp < nowm) {    //  Timer expiré => Reset
-                    clockAppAlarmRequested = false;   //  L'alarme dans a dû sonner dans clockApp et être désactivée par l'utilisateur
+                if (timeExp < nowm) {    //  Timer expiré => Comme un Reset, mais sans la demande de désactivation éventuelle de l'alarme dans Clock App car elle a déjà dû sonner et être désactivée par l'utilisateur
+                    running = false;
+                    splitted = false;
+                    timeAcc = 0;
                     timeDisplayWithoutSplit = timeDef;
                     timeDisplay = timeDisplayWithoutSplit;
-                    reset();
-                    updateOK = false;
-                    return updateOK;    //  Signaler l'expiration du Timer
+                    clockAppAlarmOn = false;
+                    if (mOnExpiredTimerListener != null) {
+                        mOnExpiredTimerListener.onExpiredTimer(this);
+                    }
+                    expired = true;
                 }
             }
         }
-        long tacc = timeAcc;
-        if (running) {
-            tacc = tacc + nowm - timeStart;
+        if (!expired) {
+            long tacc = timeAcc;
+            if (running) {
+                tacc = tacc + nowm - timeStart;
+            }
+            long taus = timeAccUntilSplit;
+            if (mode.equals(MODES.TIMER)) {
+                tacc = -tacc;
+                taus = -taus;
+            }
+            timeDisplayWithoutSplit = (timeDef + tacc) % TIME_UNITS.DAY.DURATION_MS();      //  => Retour à 00:00:00.00 après 23:59:59.99
+            timeDisplay = ((splitted) ? (timeDef + taus) % TIME_UNITS.DAY.DURATION_MS() : timeDisplayWithoutSplit);
         }
-        long taus = timeAccUntilSplit;
-        if (mode.equals(MODE.TIMER)) {
-            tacc = -tacc;
-            taus = -taus;
-        }
-        timeDisplayWithoutSplit = (timeDef + tacc) % TIME_UNITS.DAY.DURATION_MS();      //  => Back to 00:00:00.00 after 23:59:59.99
-        timeDisplay = ((splitted) ? (timeDef + taus) % TIME_UNITS.DAY.DURATION_MS() : timeDisplayWithoutSplit);
-        return updateOK;
     }
 
-    public void start(long nowm) {
+    public void start(long nowm, boolean setClockAppAlarmOnStartTimer) {
         if (!running) {
-            if ((mode.equals(MODE.CHRONO)) || (timeDef > 0)) {
+            if ((mode.equals(MODES.CHRONO)) || (timeDef > 0)) {
                 running = true;
                 timeStart = nowm;
-                if (mode.equals(MODE.TIMER)) {
+                if (mode.equals(MODES.TIMER)) {
                     timeExp = nowm + timeDef - timeAcc;
-                    clockAppAlarmOutdated = !clockAppAlarmRequested;   //  Signaler la nécessité éventuelle d'activer l'alarme
+                    if (setClockAppAlarmOnStartTimer) {
+                        if (!clockAppAlarmOn) {
+                            clockAppAlarmOn = true;
+                            if (mOnRequestClockAppAlarmSwitchListener != null) {
+                                mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, CLOCK_APP_ALARM_SWITCHES.ON);    //   Signaler la nécessité de désactiver l'alarme dans l'application Clock (si nécessaire)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -245,8 +275,13 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         if (running) {
             running = false;
             timeAcc = timeAcc + nowm - timeStart;
-            if (mode.equals(MODE.TIMER)) {
-                clockAppAlarmOutdated = clockAppAlarmRequested;   //  Signaler la nécessité de désactiver l'alarme
+            if (mode.equals(MODES.TIMER)) {
+                if (clockAppAlarmOn) {
+                    clockAppAlarmOn = false;
+                    if (mOnRequestClockAppAlarmSwitchListener != null) {
+                        mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, CLOCK_APP_ALARM_SWITCHES.OFF);    //   Signaler la nécessité de désactiver l'alarme dans l'application Clock (si nécessaire)
+                    }
+                }
             }
         }
     }
@@ -264,47 +299,29 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         timeAcc = 0;
         splitted = false;
         if (running) {
-            if (mode.equals(MODE.TIMER)) {
-                clockAppAlarmOutdated = clockAppAlarmRequested;   //  Signaler la nécessité de désactiver l'alarme
-            }
             running = false;
+            if (mode.equals(MODES.TIMER)) {
+                if (clockAppAlarmOn) {
+                    clockAppAlarmOn = false;
+                    if (mOnRequestClockAppAlarmSwitchListener != null) {
+                        mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, CLOCK_APP_ALARM_SWITCHES.OFF);    //   Signaler la nécessité de désactiver l'alarme dans l'application Clock (si nécessaire)
+                    }
+                }
+            }
         }
     }
 
     public String getClockAppAlarmDescription() {
-        return "Clock App alarm" + CRLF + label + " @ " + formattedTimeZoneLongTimeDate(timeExp, HHmm);
+        return "Clock App alarm" + CRLF + label + " @ " + getFormattedTimeZoneLongTimeDate(timeExp, HHmm);
     }
 
-    public void setClockAppAlarmOn(boolean viaClockApp) {
-        boolean error = false;
-        if (viaClockApp) {
-            if (!ClockAppAlarmUtils.setClockAppAlarm(context, timeExp, label, "Setting " + getClockAppAlarmDescription())) {
-                error = true;
-            }
-        }
-        clockAppAlarmRequested = !error;
-        clockAppAlarmOutdated = error;
-    }
-
-    public void setClockAppAlarmOff(boolean viaClockApp) {
-        boolean error = false;
-        if (viaClockApp) {
-            if (!ClockAppAlarmUtils.dismissClockAppAlarm(context, label, "Dismissing " + getClockAppAlarmDescription())) {
-                error = true;
-            }
-        }
-        clockAppAlarmRequested = error;
-        clockAppAlarmOutdated = error;
-    }
-
-    private void fill(int idct, MODE mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarmRequested, boolean clockAppAlarmOutdated, String label, String labelInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
+    private void fill(int idct, MODES mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarmOn, String label, String labelInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
         this.idct = idct;
         this.mode = mode;
         this.selected = selected;
         this.running = running;
         this.splitted = splitted;
-        this.clockAppAlarmRequested = clockAppAlarmRequested;
-        this.clockAppAlarmOutdated = clockAppAlarmOutdated;
+        this.clockAppAlarmOn = clockAppAlarmOn;
         this.label = label;
         this.labelInit = labelInit;
         this.timeStart = timeStart;
