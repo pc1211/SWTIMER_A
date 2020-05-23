@@ -115,9 +115,9 @@ class CtRecord {   //  Données d'un Chrono ou Timer
 
     public void setClockAppAlarmOn(boolean clockAppAlarmOn) {
         if (this.clockAppAlarmOn != clockAppAlarmOn) {
-            this.clockAppAlarmOn = clockAppAlarmOn;
             if (mode.equals(MODES.TIMER)) {
                 if (running) {
+                    this.clockAppAlarmOn = clockAppAlarmOn;
                     if (mOnRequestClockAppAlarmSwitchListener != null) {
                         mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, clockAppAlarmOn ? CLOCK_APP_ALARM_SWITCHES.ON : CLOCK_APP_ALARM_SWITCHES.OFF);    //   Signaler la nécessité d'activer ou non l'alarme dans l'application Clock (si nécessaire)
                     }
