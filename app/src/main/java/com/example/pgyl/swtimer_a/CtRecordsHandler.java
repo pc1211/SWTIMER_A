@@ -54,7 +54,7 @@ public class CtRecordsHandler {
     private long nowm;
     private boolean setClockAppAlarmOnStartTimer;
     private int selectedRunningTimersWithClockAppAlarm;
-    private int clockAppAlarmSwitchRequests;
+    private int clockAppAlarmSwitchOffRequestsForSelection;
     //endregion
 
     public CtRecordsHandler(Context context, StringDB stringDB) {
@@ -69,7 +69,7 @@ public class CtRecordsHandler {
         requestedClockAppAlarmDismisses = getSHPRequestedClockAppAlarmsDismisses();
         processNextRequestedClockAppAlarmDismiss();
         selectedRunningTimersWithClockAppAlarm = 0;
-        clockAppAlarmSwitchRequests = 0;
+        clockAppAlarmSwitchOffRequestsForSelection = 0;
     }
 
     public void saveAndclose() {
@@ -166,6 +166,7 @@ public class CtRecordsHandler {
 
     public void stopSelection(long nowm) {
         this.nowm = nowm;
+        selectedRunningTimersWithClockAppAlarm = getSelectedRunningTimersWithClockAppAlarm();   //  Ces  timers feront une demande de supression de Clock App alarme via onRequestClockAppAlarmSwitch()
         actionOnSelection(ACTIONS_ON_SELECTION.STOP);
     }
 
@@ -175,10 +176,12 @@ public class CtRecordsHandler {
     }
 
     public void resetSelection() {
+        selectedRunningTimersWithClockAppAlarm = getSelectedRunningTimersWithClockAppAlarm();
         actionOnSelection(ACTIONS_ON_SELECTION.RESET);
     }
 
     public void removeSelection() {
+        selectedRunningTimersWithClockAppAlarm = getSelectedRunningTimersWithClockAppAlarm();
         actionOnSelection(ACTIONS_ON_SELECTION.REMOVE);
     }
 
@@ -187,23 +190,22 @@ public class CtRecordsHandler {
     }
 
     private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
-        clockAppAlarmSwitchRequests = clockAppAlarmSwitchRequests + 1;
-        boolean switchOK = false;
-        if (clockAppAlarmSwitch.equals(CLOCK_APP_ALARM_SWITCHES.ON)) {
+        if (clockAppAlarmSwitch.equals(CLOCK_APP_ALARM_SWITCHES.ON)) {   //  On peut immédiatement demander à Clock App de créer l'alarme, sans devoir quitter SwTimer App
             setClockAppAlarm(context, ctRecord.getTimeExp(), ctRecord.getLabel(), "Setting " + ctRecord.getClockAppAlarmDescription());
-        } else {   //  OFF  ;  A chaque timer actif avec Clock App alarme correspondra une demande de suppression d'alarme Clock App si (stop, reset ou remove) sélection ou via bouton individuel
+        } else {   //  OFF  ;  A chaque timer actif avec Clock App alarme correspondra une demande de suppression d'alarme Clock App si (stop, reset ou remove) via sélection ou via bouton individuel
             RequestAdditionalClockAppAlarmDismiss(ctRecord);
-            if (selectedRunningTimersWithClockAppAlarm == 0) {   //  Via bouton individuel
-                switchOK = true;
-            } else {   //  Via sélection
-                if (clockAppAlarmSwitchRequests >= selectedRunningTimersWithClockAppAlarm) {   // On attend de réceptionner dans RequestAdditionalClockAppAlarmDismiss toutes les demandes de suppression d'alarme pour la sélection
-                    switchOK = true;
+            boolean processOK = true;
+            if (selectedRunningTimersWithClockAppAlarm > 0) {   //  => Via sélection
+                clockAppAlarmSwitchOffRequestsForSelection = clockAppAlarmSwitchOffRequestsForSelection + 1;
+                if (clockAppAlarmSwitchOffRequestsForSelection >= selectedRunningTimersWithClockAppAlarm) {   // On attend de réceptionner dans onRequestAdditionalClockAppAlarmDismiss() toutes les demandes de suppression d'alarme pour la sélection
                     selectedRunningTimersWithClockAppAlarm = 0;
-                    clockAppAlarmSwitchRequests = 0;
+                    clockAppAlarmSwitchOffRequestsForSelection = 0;
+                } else {   //  Des demandes de suppression d'alarme pour la sélection sont encore attendues
+                    processOK = false;
                 }
             }
-            if (switchOK) {
-                processNextRequestedClockAppAlarmDismiss();   //  => Fermeture MainActivity => Lancement Clock App (et quitter) => Réouverture de MainActivity => Init CtRecordsHandler => processNextRequestedClockAppAlarmDismiss() => ... le carrousel continue jusqu'à avoir traité toutes les demandes de suppression d'alarme
+            if (processOK) {
+                processNextRequestedClockAppAlarmDismiss();   //  => Fermeture MainActivity => Lancement Clock App (sans pouvoir éviter de quitter SwTimer App) => Revenir à SwTimer App => Réouverture de MainActivity => Init CtRecordsHandler => processNextRequestedClockAppAlarmDismiss() => ... le carrousel continue jusqu'à avoir traité toutes les demandes de suppression d'alarme
             }
         }
     }
@@ -257,18 +259,15 @@ public class CtRecordsHandler {
                         ctRecords.get(i).start(nowm, setClockAppAlarmOnStartTimer);
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.STOP)) {
-                        selectedRunningTimersWithClockAppAlarm = getSelectedRunningTimersWithClockAppAlarm();   //  Ces  timers feront une demande de supression de Clock App alarme via onRequestClockAppAlarmSwitch()
                         ctRecords.get(i).stop(nowm);
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.SPLIT)) {
                         ctRecords.get(i).split(nowm);
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.RESET)) {
-                        selectedRunningTimersWithClockAppAlarm = getSelectedRunningTimersWithClockAppAlarm();
                         ctRecords.get(i).reset();
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.REMOVE)) {
-                        selectedRunningTimersWithClockAppAlarm = getSelectedRunningTimersWithClockAppAlarm();
                         ctRecords.get(i).reset();
                         ctRecords.remove(i);  //  Les instances de chaque CtRecord concerné restent cependant intactes et pourront appeler onRequestClockAppAlarmSwitch()
                         if (ctRecords.isEmpty()) {
@@ -319,7 +318,7 @@ public class CtRecordsHandler {
             int nextFieldIndex = content.indexOf(ALARM_FIELD_SEPARATOR);   //  ALARM_FIELD_SEPARATOR toujours présent
             String alarmLabel = content.substring(0, nextFieldIndex);
             String alarmDescription = content.substring(nextFieldIndex + ALARM_FIELD_SEPARATOR.length());
-            dismissClockAppAlarm(context, alarmLabel, alarmDescription);   //  Lancement obligatoire de Clock App pour désactiver l'alarme, que l'utilisateur doit quitter pour revenir dans SwTimer App
+            dismissClockAppAlarm(context, alarmLabel, alarmDescription);   //  Lancement obligatoire de Clock App qui désactive l'alarme et que l'utilisateur doit quitter pour revenir dans SwTimer App
         }
     }
 

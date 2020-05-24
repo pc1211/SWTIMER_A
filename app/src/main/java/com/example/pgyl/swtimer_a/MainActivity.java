@@ -57,7 +57,7 @@ import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableDotMatrixD
 import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTablePresetsCT;
 import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableStateButtonsColors;
 
-//  MainActivity fait appel à CtRecordShandler pour la gestion des CtRecord (création, suppression, tri, écoute des événements, ...) grâce aux boutons agissant sur la sélection des items de la liste, ...
+//  MainActivity fait appel à CtRecordShandler pour la gestion des CtRecord (création, suppression, tri, écoute des événements, ...) grâce aux boutons de contrôle agissant sur la sélection des items de la liste, ...
 //  MainCtListUpdater maintient la liste de MainActivity (rafraîchissement, scrollbar, ...), fait appel à MainCtListAdapter (pour gérer chaque item) et également à CtRecordShandler (pour leur mise à jour)
 //  MainCtListItemAdapter reçoit ses items (CtRecord) de la part de MainCtListUpdater et gère chaque item de la liste (avec ses boutons de contrôle, clics relayés à MainActivity pour nouveau tri éventuel)
 //  CtRecordsHandler reçoit les événements onExpiredTimer() des CtRecord (et les relaie à MainActivity), et aussi leurs onRequestClockAppAlarmSwitch() pour la création/suppression d'alarmes dans Clock App
