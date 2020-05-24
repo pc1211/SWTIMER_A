@@ -29,6 +29,7 @@ import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
+import static com.example.pgyl.pekislib_a.Constants.SWITCHES;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
@@ -48,7 +49,6 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER;
-import static com.example.pgyl.swtimer_a.CtRecord.CLOCK_APP_ALARM_SWITCHES;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
@@ -310,8 +310,8 @@ public class CtDisplayActivity extends Activity {
         }
     }
 
-    private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
-        if (clockAppAlarmSwitch.equals(CLOCK_APP_ALARM_SWITCHES.ON)) {
+    private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
+        if (clockAppAlarmSwitch.equals(SWITCHES.ON)) {
             ClockAppAlarmUtils.setClockAppAlarm(this, ctRecord.getTimeExp(), ctRecord.getLabel(), "Setting " + ctRecord.getClockAppAlarmDescription());
         } else {   //  OFF
             ClockAppAlarmUtils.dismissClockAppAlarm(this, ctRecord.getLabel(), "Dismissing " + ctRecord.getClockAppAlarmDescription());
@@ -509,7 +509,7 @@ public class CtDisplayActivity extends Activity {
         currentCtRecord = chronoTimerRowToCtRecord(getDBChronoTimerById(stringDB, idct));
         currentCtRecord.setOnRequestClockAppAlarmSwitchListener(new CtRecord.onRequestClockAppAlarmSwitchListener() {
             @Override
-            public void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CtRecord.CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch) {
+            public void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {
                 CtDisplayActivity.this.onRequestClockAppAlarmSwitch(ctRecord, clockAppAlarmSwitch);
             }
         });

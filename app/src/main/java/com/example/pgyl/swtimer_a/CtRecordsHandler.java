@@ -15,7 +15,7 @@ import static com.example.pgyl.pekislib_a.ClockAppAlarmUtils.setClockAppAlarm;
 import static com.example.pgyl.pekislib_a.Constants.DUMMY_VALUE;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
-import static com.example.pgyl.swtimer_a.CtRecord.CLOCK_APP_ALARM_SWITCHES;
+import static com.example.pgyl.pekislib_a.Constants.SWITCHES;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowsToCtRecords;
@@ -189,8 +189,8 @@ public class CtRecordsHandler {
         return actionOnSelection(ACTIONS_ON_SELECTION.COUNT);
     }
 
-    private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
-        if (clockAppAlarmSwitch.equals(CLOCK_APP_ALARM_SWITCHES.ON)) {   //  On peut immédiatement demander à Clock App de créer l'alarme, sans devoir quitter SwTimer App
+    private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
+        if (clockAppAlarmSwitch.equals(SWITCHES.ON)) {   //  On peut immédiatement demander à Clock App de créer l'alarme, sans devoir quitter SwTimer App
             setClockAppAlarm(context, ctRecord.getTimeExp(), ctRecord.getLabel(), "Setting " + ctRecord.getClockAppAlarmDescription());
         } else {   //  OFF  ;  A chaque timer actif avec Clock App alarme correspondra une demande de suppression d'alarme Clock App si (stop, reset ou remove) via sélection ou via bouton individuel
             RequestAdditionalClockAppAlarmDismiss(ctRecord);
@@ -358,7 +358,7 @@ public class CtRecordsHandler {
     private void setupCtRecordListener(CtRecord ctRecord) {
         ctRecord.setOnRequestClockAppAlarmSwitchListener(new CtRecord.onRequestClockAppAlarmSwitchListener() {
             @Override
-            public void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CtRecord.CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch) {
+            public void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {
                 CtRecordsHandler.this.onRequestClockAppAlarmSwitch(ctRecord, clockAppAlarmSwitch);
             }
         });

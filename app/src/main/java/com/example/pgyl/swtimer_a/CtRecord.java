@@ -1,6 +1,7 @@
 package com.example.pgyl.swtimer_a;
 
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
+import static com.example.pgyl.pekislib_a.Constants.SWITCHES;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
@@ -18,7 +19,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     private onExpiredTimerListener mOnExpiredTimerListener;
 
     public interface onRequestClockAppAlarmSwitchListener {
-        void onRequestClockAppAlarmSwitch(CtRecord ctRecord, CLOCK_APP_ALARM_SWITCHES clockAppAlarmSwitch);
+        void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch);
     }
 
     public void setOnRequestClockAppAlarmSwitchListener(onRequestClockAppAlarmSwitchListener listener) {
@@ -30,10 +31,6 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     // region Constantes
     public enum MODES {
         CHRONO, TIMER
-    }
-
-    public enum CLOCK_APP_ALARM_SWITCHES {
-        ON, OFF
     }
 
     private final long TIME_DEFAULT_VALUE = 0;
@@ -119,7 +116,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                 if (running) {
                     this.clockAppAlarmOn = clockAppAlarmOn;
                     if (mOnRequestClockAppAlarmSwitchListener != null) {
-                        mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, clockAppAlarmOn ? CLOCK_APP_ALARM_SWITCHES.ON : CLOCK_APP_ALARM_SWITCHES.OFF);    //   Signaler la nécessité d'activer ou non l'alarme dans l'application Clock (si nécessaire)
+                        mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, clockAppAlarmOn ? SWITCHES.ON : SWITCHES.OFF);    //   Signaler la nécessité d'activer ou non l'alarme dans l'application Clock (si nécessaire)
                     }
                 }
             }
@@ -262,7 +259,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                         if (!clockAppAlarmOn) {
                             clockAppAlarmOn = true;
                             if (mOnRequestClockAppAlarmSwitchListener != null) {
-                                mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, CLOCK_APP_ALARM_SWITCHES.ON);    //   Signaler la nécessité de désactiver l'alarme dans l'application Clock (si nécessaire)
+                                mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, SWITCHES.ON);    //   Signaler la nécessité de désactiver l'alarme dans l'application Clock (si nécessaire)
                             }
                         }
                     }
@@ -279,7 +276,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                 if (clockAppAlarmOn) {
                     clockAppAlarmOn = false;
                     if (mOnRequestClockAppAlarmSwitchListener != null) {
-                        mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, CLOCK_APP_ALARM_SWITCHES.OFF);    //   Signaler la nécessité de désactiver l'alarme dans l'application Clock (si nécessaire)
+                        mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, SWITCHES.OFF);    //   Signaler la nécessité de désactiver l'alarme dans l'application Clock (si nécessaire)
                     }
                 }
             }
@@ -304,7 +301,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                 if (clockAppAlarmOn) {
                     clockAppAlarmOn = false;
                     if (mOnRequestClockAppAlarmSwitchListener != null) {
-                        mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, CLOCK_APP_ALARM_SWITCHES.OFF);    //   Signaler la nécessité de désactiver l'alarme dans l'application Clock (si nécessaire)
+                        mOnRequestClockAppAlarmSwitchListener.onRequestClockAppAlarmSwitch(this, SWITCHES.OFF);    //   Signaler la nécessité de désactiver l'alarme dans l'application Clock (si nécessaire)
                     }
                 }
             }
