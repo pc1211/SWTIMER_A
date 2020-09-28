@@ -49,7 +49,7 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeff
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBUtils.getDBChronoTimerById;
 
-public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
+public class CtDisplayDotMatrixDisplayActivity extends Activity {
     //region Constantes
     private enum COMMANDS {
         NEXT_VALUE(""), CANCEL("Cancel"), VALUE(""), PRESETS("Presets"), OK("OK");
@@ -96,7 +96,7 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        getActionBar().setTitle("Set Dot matrix display coeffs");
+        getActionBar().setTitle("Set Dot matrix display");
         setupOrientationLayout();
         setupButtons();
         setupSeekBarForValue();
@@ -111,7 +111,7 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
         dotMatrixDisplayUpdater.close();
         dotMatrixDisplayUpdater = null;
         currentCtRecord = null;
-        setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
+        setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
         stringDB.close();
         stringDB = null;
         savePreferences();
@@ -126,13 +126,13 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
         setupStringDB();
         currentCtRecord = chronoTimerRowToCtRecord(getDBChronoTimerById(stringDB, idct));
-        coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), getDotMatrixDisplayCoeffsTableName());
+        coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());
         labels = getLabels(stringDB, getDotMatrixDisplayCoeffsTableName());
         maxs = getMaxs(stringDB, getDotMatrixDisplayCoeffsTableName());
         colors = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName());  //  Prendre les couleurs actuelles de CtDisplayActivity
 
-        if (isColdStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString())) {
-            setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY_COEFFS.toString(), ACTIVITY_START_STATUS.HOT);
+        if (isColdStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString())) {
+            setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString(), ACTIVITY_START_STATUS.HOT);
             coeffIndex = COEFF_INDEX_DEFAULT_VALUE;
         } else {
             coeffIndex = getSHPCoeffIndex();
@@ -294,9 +294,9 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
 
     private void setupOrientationLayout() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            setContentView(R.layout.ctdisplaydotmatrixdisplaycoeffs_p);
+            setContentView(R.layout.ctdisplaydotmatrixdisplay_p);
         } else {
-            setContentView(R.layout.ctdisplaydotmatrixdisplaycoeffs_l);
+            setContentView(R.layout.ctdisplaydotmatrixdisplay_l);
         }
     }
 
@@ -402,7 +402,7 @@ public class CtDisplayDotMatrixDisplayCoeffsActivity extends Activity {
     private void launchHelpActivity() {
         Intent callingIntent = new Intent(this, HelpActivity.class);
         callingIntent.putExtra(ACTIVITY_EXTRA_KEYS.TITLE.toString(), HELP_ACTIVITY_TITLE);
-        callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpctdisplaydotmatrixdisplaycoeffsactivity);
+        callingIntent.putExtra(HELP_ACTIVITY_EXTRA_KEYS.HTML_ID.toString(), R.raw.helpctdisplaydotmatrixdisplayactivity);
         startActivity(callingIntent);
     }
 

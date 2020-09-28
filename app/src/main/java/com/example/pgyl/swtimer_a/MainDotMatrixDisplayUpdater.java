@@ -65,7 +65,7 @@ public class MainDotMatrixDisplayUpdater {
     }
 
     private void displayText(String text) {
-        final String ON_COLOR = "FF9A22";
+        final String ON_COLOR = "707070";
         final String OFF_COLOR = "404040";
 
         dotMatrixDisplayView.fillRect(displayRect, ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
