@@ -12,6 +12,7 @@ public class MainCtListUpdater {
     private CtRecordsHandler ctRecordsHandler;
     private long updateInterval;
     private boolean needScrollBar;
+    private boolean automaticOn;
     private Handler handlerTime;
     private Runnable runnableTime;
     private Runnable runnableCheckNeedScrollBar;
@@ -29,6 +30,7 @@ public class MainCtListUpdater {
         setupRunnables();
         updateInterval = TIME_UNITS.SEC.DURATION_MS();
         needScrollBar = false;
+        automaticOn = false;
         setScrollBar(needScrollBar);
         mainCtListItemAdapter = (MainCtListItemAdapter) mainCtListView.getAdapter();
     }
@@ -45,16 +47,22 @@ public class MainCtListUpdater {
     }
 
     public void startAutomatic() {
+        automaticOn = true;
         handlerTime.postDelayed(runnableTime, updateInterval);
     }
 
     public void stopAutomatic() {
+        automaticOn = false;
         handlerTime.removeCallbacks(runnableTime);
     }
 
     private void automatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
         update();
+    }
+
+    public boolean isAutomaticOn() {
+        return automaticOn;
     }
 
     public void reload() {

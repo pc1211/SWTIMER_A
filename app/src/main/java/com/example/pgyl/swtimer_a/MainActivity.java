@@ -312,11 +312,20 @@ public class MainActivity extends Activity {
     }
 
     private void onCtListExpiredTimer(CtRecord ctRecord) {
-        mainCtListUpdater.stopAutomatic();
+        boolean needBeep;
+
+        if (mainCtListUpdater.isAutomaticOn()) {
+            mainCtListUpdater.stopAutomatic();
+            needBeep = true;
+        } else {  //  Pas en mode automatique (=> C'est dû à un timer mis à jour suite au sortAndReloadMainCtList() du onResume)
+            needBeep = false;
+        }
         sortAndReloadMainCtList();
         mainCtListUpdater.startAutomatic();
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), this);
-        beep(this);
+        if (needBeep) {
+            beep(this);
+        }
     }
 
     private void onCtListItemButtonClick(boolean needSortAndReload) {   //  Bouton individuel
