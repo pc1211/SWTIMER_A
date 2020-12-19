@@ -8,7 +8,6 @@ import static com.example.pgyl.pekislib_a.StringDB.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFirstTimeUnit;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatDL;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 
 public class StringDBTables {
@@ -341,8 +340,8 @@ public class StringDBTables {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.PresetsCT.TIME.LABEL(), SwTimerTableDataFields.PresetsCT.LABEL.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_FORMAT_DL.toString(), InputButtonsActivity.KEYBOARDS.ASCII.toString()},
                 {TABLE_IDS.REGEXP.toString(), timeFormatDLRegExp, null},
-                {TABLE_IDS.DEFAULT_BASE.toString(), "0h0m0s0t", "Label"},    //  A la base des DEFAULT calculés par CtRecordsHandler et injectés dans PRESETS_CT par CtDisplayActivity en vue de PresetsActivity
-                {TABLE_IDS.MAX.toString(), msToTimeFormatDL(TIME_UNITS.DAY.DURATION_MS() - TIME_UNIT_PRECISION.DURATION_MS(), TIME_UNIT_PRECISION), null},       //  Si TS => Max 23:59:59.9
+                {TABLE_IDS.DEFAULT_BASE.toString(), "0", "Label"},    //  A la base des DEFAULT calculés par CtRecordsHandler et injectés dans PRESETS_CT par CtDisplayActivity en vue de PresetsActivity
+                {TABLE_IDS.MAX.toString(), String.valueOf(TIME_UNITS.DAY.DURATION_MS() - TIME_UNIT_PRECISION.DURATION_MS()), null},       //  Si TS => Max 23:59:59.9
                 {TABLE_IDS.TIMEUNIT.toString(), TIME_UNIT_PRECISION.toString(), null}
         };
         return TABLE_PRESETS_CT_INITS;

@@ -23,7 +23,6 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatDL;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.timeFormatDLToMs;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.timeFormatDToMs;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
@@ -103,7 +102,7 @@ public class CtRecordsHandler {
         ctRecord.setIdct(idct);
         ctRecord.setMode(mode);
         String[] defaultsBase = getDefaultsBase(stringDB, getPresetsCTTableName());   //  En particulier "Label"
-        long defaultTime = timeFormatDLToMs(defaultsBase[getPresetsCTTimeIndex()]);
+        long defaultTime = Long.parseLong(defaultsBase[getPresetsCTTimeIndex()]);
         ctRecord.setTimeDefInit(defaultTime);
         ctRecord.setTimeDef(defaultTime, DUMMY_VALUE);
         String defaultLabel = defaultsBase[getPresetsCTLabelIndex()];
