@@ -17,16 +17,21 @@ import static com.example.pgyl.pekislib_a.Constants.DUMMY_VALUE;
 import static com.example.pgyl.pekislib_a.Constants.NOT_FOUND;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.Constants.SWITCHES;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getDefaultsBase;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatDL;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.timeFormatDLToMs;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.timeFormatDToMs;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 import static com.example.pgyl.swtimer_a.MainActivity.SWTIMER_SHP_KEY_NAMES;
 import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowsToCtRecords;
 import static com.example.pgyl.swtimer_a.StringDBTables.ctRecordsToChronoTimerRows;
+import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTLabelIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTTimeIndex;
 import static com.example.pgyl.swtimer_a.StringDBUtils.saveDBChronoTimers;
 
 public class CtRecordsHandler {
@@ -93,17 +98,17 @@ public class CtRecordsHandler {
     }
 
     public int createChronoTimer(MODES mode) {
-        final String LABEL_INIT_DEFAULT_VALUE = "Label";
-        final long TIMEDEFINIT_DEFAULT_VALUE = 0;
-
         CtRecord ctRecord = new CtRecord();
         int idct = getMaxId() + 1;
         ctRecord.setIdct(idct);
         ctRecord.setMode(mode);
-        ctRecord.setTimeDefInit(TIMEDEFINIT_DEFAULT_VALUE);
-        ctRecord.setTimeDef(TIMEDEFINIT_DEFAULT_VALUE, DUMMY_VALUE);
-        ctRecord.setLabelInit(LABEL_INIT_DEFAULT_VALUE + idct);
-        ctRecord.setLabel(LABEL_INIT_DEFAULT_VALUE + idct);
+        String[] defaultsBase = getDefaultsBase(stringDB, getPresetsCTTableName());   //  En particulier "Label"
+        long defaultTime = timeFormatDLToMs(defaultsBase[getPresetsCTTimeIndex()]);
+        ctRecord.setTimeDefInit(defaultTime);
+        ctRecord.setTimeDef(defaultTime, DUMMY_VALUE);
+        String defaultLabel = defaultsBase[getPresetsCTLabelIndex()];
+        ctRecord.setLabelInit(defaultLabel + idct);   //  "Label<idct>"
+        ctRecord.setLabel(defaultLabel + idct);
         setupCtRecordListener(ctRecord);
         ctRecords.add(ctRecord);
         return ctRecord.getIdct();

@@ -8,6 +8,7 @@ import static com.example.pgyl.pekislib_a.StringDB.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFirstTimeUnit;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatDL;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 
 public class StringDBTables {
@@ -319,7 +320,7 @@ public class StringDBTables {
     }
 
     public static String[][] getPresetsCTInits() {
-        final String TF_REG_EXP_BEGIN = "^";
+        final String TF_REG_EXP_BEGIN = "^(?=.+)";   //  Lookahead: S'assurer qu'il y a au moins un caractère
         final String TF_REG_EXP_MID = "?";
         final String TF_REG_EXP_END = "$";
         final String TU_REG_EXP_BEGIN = "([0-9]+(";
@@ -334,16 +335,25 @@ public class StringDBTables {
             }
             tu = tu.getNextTimeUnit();
         } while (tu != null);
-        timeFormatDLRegExp = timeFormatDLRegExp + TF_REG_EXP_END;    //  Si TIME_UNIT_PRECISION = TS => "^([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(t|$))?$"  cad [...h][...m][...s][...t]
+        timeFormatDLRegExp = timeFormatDLRegExp + TF_REG_EXP_END;    //  Si TIME_UNIT_PRECISION = TS => "^(?=.+)([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(t|$))?$"  cad [...h][...m][...s][...t] et au moins 1 caractère
 
         final String[][] TABLE_PRESETS_CT_INITS = {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.PresetsCT.TIME.LABEL(), SwTimerTableDataFields.PresetsCT.LABEL.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_FORMAT_DL.toString(), InputButtonsActivity.KEYBOARDS.ASCII.toString()},
                 {TABLE_IDS.REGEXP.toString(), timeFormatDLRegExp, null},
-                {TABLE_IDS.MAX.toString(), String.valueOf(TIME_UNITS.DAY.DURATION_MS() - TIME_UNIT_PRECISION.DURATION_MS()), null},       //  Si TS => Max 23:59:59.9
+                {TABLE_IDS.DEFAULT_BASE.toString(), "0h0m0s0t", "Label"},    //  A la base des DEFAULT calculés par CtRecordsHandler et injectés dans PRESETS_CT par CtDisplayActivity en vue de PresetsActivity
+                {TABLE_IDS.MAX.toString(), msToTimeFormatDL(TIME_UNITS.DAY.DURATION_MS() - TIME_UNIT_PRECISION.DURATION_MS(), TIME_UNIT_PRECISION), null},       //  Si TS => Max 23:59:59.9
                 {TABLE_IDS.TIMEUNIT.toString(), TIME_UNIT_PRECISION.toString(), null}
         };
         return TABLE_PRESETS_CT_INITS;
+    }
+
+    public static int getPresetsCTTimeIndex() {
+        return SwTimerTableDataFields.PresetsCT.TIME.INDEX();
+    }
+
+    public static int getPresetsCTLabelIndex() {
+        return SwTimerTableDataFields.PresetsCT.LABEL.INDEX();
     }
 
     public static boolean copyPresetCTRowToCtRecord(String[] presetCTRow, CtRecord ctRecord, long nowm) {

@@ -153,7 +153,7 @@ public class CtDisplayActivity extends Activity {
         keepScreen = getSHPKeepScreen();
         setupStringDB();
         setupCurrentCtRecord();
-        setDefaults(stringDB, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));
+        setDefaults(stringDB, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));   //  "Label" -> "Label<idct>"
         colorTableNames = getColorTableNames();
         colors = getCurrentsFromMultipleTablesFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), colorTableNames);
         coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());
