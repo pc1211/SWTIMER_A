@@ -19,6 +19,7 @@ import com.example.pgyl.pekislib_a.PresetsActivity;
 import com.example.pgyl.pekislib_a.StringDB;
 import com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
 import com.example.pgyl.pekislib_a.SymbolButtonView;
+import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,8 +46,11 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForMultipleTablesForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatDL;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.timeFormatDToMs;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
@@ -312,7 +316,9 @@ public class CtDisplayActivity extends Activity {
 
     private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
         if (clockAppAlarmSwitch.equals(SWITCHES.ON)) {
-            ClockAppAlarmUtils.setClockAppAlarm(this, ctRecord.getTimeExp(), ctRecord.getLabel(), "Setting " + ctRecord.getClockAppAlarmDescription());
+            String gap = msToTimeFormatDL(timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss)) - timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm)), TimeDateUtils.TIME_UNITS.SEC);
+            String message = "Setting " + ctRecord.getClockAppAlarmDescription() + CRLF + "(" + gap + " before exact end)";
+            ClockAppAlarmUtils.setClockAppAlarm(this, ctRecord.getTimeExp(), ctRecord.getLabel(), message);
         } else {   //  OFF
             ClockAppAlarmUtils.dismissClockAppAlarm(this, ctRecord.getLabel(), "Dismissing " + ctRecord.getClockAppAlarmDescription());
         }
