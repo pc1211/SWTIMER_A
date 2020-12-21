@@ -4,6 +4,9 @@ import com.example.pgyl.pekislib_a.InputButtonsActivity;
 
 import java.util.ArrayList;
 
+import static com.example.pgyl.pekislib_a.Constants.REGEXP_MIN_ONE_CHAR;
+import static com.example.pgyl.pekislib_a.Constants.REGEXP_PERCENT;
+import static com.example.pgyl.pekislib_a.Constants.REGEXP_SIX_CHARS;
 import static com.example.pgyl.pekislib_a.StringDB.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
@@ -11,9 +14,6 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.getFirstTimeUnit;
 import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 
 public class StringDBTables {
-
-    private static final String TABLE_COLORS_REGEXP_HEX_DEFAULT = ".{6}";  //  Pour valider 6 caractères HEX dans INPUT_BUTTONS pour les tables decouleur (RRGGBB ou HHSSVV (dégradé))
-    private static final String TABLE_PERCENT_REGEXP_DEFAULT = "^(100|[1-9]?[0-9])$";  //  Nombre entier de 0 à 100, sans décimales
 
     public static String[] getColorTableNames() {
         return new String[]{SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString(), SWTIMER_TABLES.STATE_BUTTONS_COLORS.toString(), SWTIMER_TABLES.BACK_SCREEN_COLORS.toString()};
@@ -178,7 +178,7 @@ public class StringDBTables {
         final String[][] TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS = {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_TIME.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_LABEL.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.OFF.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.REGEXP.toString(), REGEXP_SIX_CHARS, REGEXP_SIX_CHARS, REGEXP_SIX_CHARS, REGEXP_SIX_CHARS},
                 {TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}
         };
         return TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS;
@@ -210,7 +210,7 @@ public class StringDBTables {
         final String[][] TABLE_COLOR_STATE_BUTTONS_INITS = {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.StateButtonsColors.ON.LABEL(), SwTimerTableDataFields.StateButtonsColors.OFF.LABEL(), SwTimerTableDataFields.StateButtonsColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT, TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.REGEXP.toString(), REGEXP_SIX_CHARS, REGEXP_SIX_CHARS, REGEXP_SIX_CHARS},
                 {TABLE_IDS.DEFAULT.toString(), "0061F3", "404040", "000000"}
         };
         return TABLE_COLOR_STATE_BUTTONS_INITS;
@@ -238,7 +238,7 @@ public class StringDBTables {
         final String[][] TABLE_COLORS_BACK_SCREEN_INITS = {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.BackScreenColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_COLORS_REGEXP_HEX_DEFAULT},
+                {TABLE_IDS.REGEXP.toString(), REGEXP_SIX_CHARS},
                 {TABLE_IDS.DEFAULT.toString(), "000000"}
         };
         return TABLE_COLORS_BACK_SCREEN_INITS;
@@ -384,7 +384,7 @@ public class StringDBTables {
         final String[][] TABLE_DOT_MATRIX_DISPLAY_COEFFS_INITS = {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
-                {TABLE_IDS.REGEXP.toString(), TABLE_PERCENT_REGEXP_DEFAULT, TABLE_PERCENT_REGEXP_DEFAULT, null},
+                {TABLE_IDS.REGEXP.toString(), REGEXP_PERCENT, REGEXP_PERCENT, REGEXP_MIN_ONE_CHAR},
                 {TABLE_IDS.DEFAULT.toString(), "20", "0", "25"},    //  Points carrés par défaut ; 25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
                 {TABLE_IDS.MAX.toString(), "100", "100", "100"}
         };

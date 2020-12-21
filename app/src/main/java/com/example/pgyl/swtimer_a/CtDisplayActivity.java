@@ -156,6 +156,8 @@ public class CtDisplayActivity extends Activity {
         setClockAppAlarmOnStartTimer = getSHPSetClockAppAlarmOnStartTimer();
         keepScreen = getSHPKeepScreen();
         setupStringDB();
+        int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
+        currentCtRecord = chronoTimerRowToCtRecord(getDBChronoTimerById(stringDB, idct));
         setupCurrentCtRecord();
         setDefaults(stringDB, getPresetsCTTableName(), timeLabelToPresetCTRow(currentCtRecord.getTimeDefInit(), currentCtRecord.getLabelInit()));   //  "Label" -> "Label<idct>"
         colorTableNames = getColorTableNames();
@@ -511,8 +513,6 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupCurrentCtRecord() {
-        int idct = getIntent().getIntExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
-        currentCtRecord = chronoTimerRowToCtRecord(getDBChronoTimerById(stringDB, idct));
         currentCtRecord.setOnRequestClockAppAlarmSwitchListener(new CtRecord.onRequestClockAppAlarmSwitchListener() {
             @Override
             public void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {
