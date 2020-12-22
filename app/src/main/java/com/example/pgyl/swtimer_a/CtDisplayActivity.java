@@ -49,7 +49,7 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatDL;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeUnit;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.timeFormatDToMs;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER;
@@ -318,8 +318,8 @@ public class CtDisplayActivity extends Activity {
 
     private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
         if (clockAppAlarmSwitch.equals(SWITCHES.ON)) {
-            String gap = msToTimeFormatDL(timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss)) - timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm)), TimeDateUtils.TIME_UNITS.SEC);
-            String message = "Setting " + ctRecord.getClockAppAlarmDescription() + CRLF + "(" + gap + " before exact end)";
+            long gap = msToTimeUnit(timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss)) - timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm)), TimeDateUtils.TIME_UNITS.SEC);
+            String message = "Setting " + ctRecord.getClockAppAlarmDescription() + CRLF + "(" + gap + "s before exact end)";
             ClockAppAlarmUtils.setClockAppAlarm(this, ctRecord.getTimeExp(), ctRecord.getLabel(), message);
         } else {   //  OFF
             ClockAppAlarmUtils.dismissClockAppAlarm(this, ctRecord.getLabel(), "Dismissing " + ctRecord.getClockAppAlarmDescription());
