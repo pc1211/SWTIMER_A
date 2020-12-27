@@ -319,7 +319,7 @@ public class StringDBTables {
     }
 
     public static String[][] getPresetsCTInits() {
-        final String TF_REG_EXP_BEGIN = "^(?=.+)";   //  Lookahead: S'assurer qu'il y a au moins un caractère
+        final String TF_REG_EXP_BEGIN = "^(?=" + REGEXP_MIN_ONE_CHAR + ")";   //  Lookahead: S'assurer qu'il y a au moins un caractère
         final String TF_REG_EXP_MID = "?";
         final String TF_REG_EXP_END = "$";
         final String TU_REG_EXP_BEGIN = "([0-9]+(";
@@ -342,7 +342,7 @@ public class StringDBTables {
                 {TABLE_IDS.REGEXP.toString(), timeFormatDLRegExp, null},
                 {TABLE_IDS.DEFAULT_BASE.toString(), "0", "Label"},    //  A la base des DEFAULT calculés par CtRecordsHandler et injectés dans PRESETS_CT par CtDisplayActivity en vue de PresetsActivity
                 {TABLE_IDS.MAX.toString(), String.valueOf(TIME_UNITS.DAY.DURATION_MS() - TIME_UNIT_PRECISION.DURATION_MS()), null},       //  Si TS => Max 23:59:59.9
-                {TABLE_IDS.TIMEUNIT.toString(), TIME_UNIT_PRECISION.toString(), null}
+                {TABLE_IDS.TIMEUNIT_PRECISION.toString(), TIME_UNIT_PRECISION.toString(), null}
         };
         return TABLE_PRESETS_CT_INITS;
     }

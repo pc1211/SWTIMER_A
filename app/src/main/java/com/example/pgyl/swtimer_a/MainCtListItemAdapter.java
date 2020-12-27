@@ -210,10 +210,10 @@ public class MainCtListItemAdapter extends BaseAdapter {
         unpressedColor = (ctRecords.get(k).isClockAppAlarmOn() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonClockAppAlarm.setColors(pressedColor, unpressedColor);
 
-        boolean needTimeUnitPrecision = ((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted()));
-        TIME_UNITS tu = (needTimeUnitPrecision ? TIME_UNIT_PRECISION : TIME_UNITS.SEC);
+        boolean needPreciseTimeUnit = ((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted()));
+        TIME_UNITS timeUnitPrecision = (needPreciseTimeUnit ? TIME_UNIT_PRECISION : TIME_UNITS.SEC);
         boolean needSpecialTimeDisplay = ((ctRecords.get(k).getMode().equals(MODES.TIMER)) && showExpirationTime);
-        String timeText = (needSpecialTimeDisplay ? getFormattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(k).getTimeDisplay(), tu));
+        String timeText = (needSpecialTimeDisplay ? getFormattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(k).getTimeDisplay(), timeUnitPrecision));
         String text = timeText + ((orientation == Configuration.ORIENTATION_PORTRAIT) ? CRLF : SEPARATOR) + ctRecords.get(k).getLabel();
         viewHolder.buttonTimeLabel.setText(text);
     }
