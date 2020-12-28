@@ -21,8 +21,8 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
+import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
-import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 
@@ -210,10 +210,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
         unpressedColor = (ctRecords.get(k).isClockAppAlarmOn() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonClockAppAlarm.setColors(pressedColor, unpressedColor);
 
-        boolean needPreciseTimeUnit = ((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted()));
-        TIME_UNITS timeUnitPrecision = (needPreciseTimeUnit ? TIME_UNIT_PRECISION : TIME_UNITS.SEC);
-        boolean needSpecialTimeDisplay = ((ctRecords.get(k).getMode().equals(MODES.TIMER)) && showExpirationTime);
-        String timeText = (needSpecialTimeDisplay ? getFormattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(k).getTimeDisplay(), timeUnitPrecision));
+        TIME_UNITS timeUnitPrecision = (((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted())) ? APP_TIME_UNIT_PRECISION : TIME_UNITS.SEC);
+        String timeText = (((ctRecords.get(k).getMode().equals(MODES.TIMER)) && showExpirationTime) ? getFormattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(k).getTimeDisplay(), timeUnitPrecision));
         String text = timeText + ((orientation == Configuration.ORIENTATION_PORTRAIT) ? CRLF : SEPARATOR) + ctRecords.get(k).getLabel();
         viewHolder.buttonTimeLabel.setText(text);
     }

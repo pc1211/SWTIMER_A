@@ -11,7 +11,7 @@ import static com.example.pgyl.pekislib_a.StringDB.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFirstTimeUnit;
-import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
+import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
 
 public class StringDBTables {
 
@@ -329,7 +329,7 @@ public class StringDBTables {
         TIME_UNITS tu = getFirstTimeUnit();   //  1e unité à décoder
         do {   //  Construire une regexp adaptée à TIME_UNIT_PRECISION
             timeFormatDLRegExp = timeFormatDLRegExp + TU_REG_EXP_BEGIN + tu.FORMAT_DL_SEPARATOR() + TU_REG_EXP_END + TF_REG_EXP_MID;
-            if (tu.equals(TIME_UNIT_PRECISION)) {
+            if (tu.equals(APP_TIME_UNIT_PRECISION)) {
                 break;
             }
             tu = tu.getNextTimeUnit();
@@ -341,8 +341,8 @@ public class StringDBTables {
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_FORMAT_DL.toString(), InputButtonsActivity.KEYBOARDS.ASCII.toString()},
                 {TABLE_IDS.REGEXP.toString(), timeFormatDLRegExp, null},
                 {TABLE_IDS.DEFAULT_BASE.toString(), "0", "Label"},    //  A la base des DEFAULT calculés par CtRecordsHandler et injectés dans PRESETS_CT par CtDisplayActivity en vue de PresetsActivity
-                {TABLE_IDS.MAX.toString(), String.valueOf(TIME_UNITS.DAY.DURATION_MS() - TIME_UNIT_PRECISION.DURATION_MS()), null},       //  Si TS => Max 23:59:59.9
-                {TABLE_IDS.TIMEUNIT_PRECISION.toString(), TIME_UNIT_PRECISION.toString(), null}
+                {TABLE_IDS.MAX.toString(), String.valueOf(TIME_UNITS.DAY.DURATION_MS() - APP_TIME_UNIT_PRECISION.DURATION_MS()), null},       //  Si TS => Max 23:59:59.9
+                {TABLE_IDS.TIME_UNIT_PRECISION.toString(), APP_TIME_UNIT_PRECISION.toString(), null}
         };
         return TABLE_PRESETS_CT_INITS;
     }

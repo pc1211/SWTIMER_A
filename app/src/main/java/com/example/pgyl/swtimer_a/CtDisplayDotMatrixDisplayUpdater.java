@@ -13,7 +13,7 @@ import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensio
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.MILLISECONDS_PER_SECOND;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
-import static com.example.pgyl.swtimer_a.Constants.TIME_UNIT_PRECISION;
+import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsOffIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsOnLabelIndex;
@@ -110,21 +110,21 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }   //  A appeler uniquement si MAJ en temps réel
 
     public void displayCurrentTimeAndLabel() {
-        displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
+        displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(), APP_TIME_UNIT_PRECISION), currentCtRecord.getLabel());
     }
 
     public void displayInitTimeAndLabel() {
-        displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabel());
+        displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), APP_TIME_UNIT_PRECISION), currentCtRecord.getLabel());
     }
 
     public void displayHalfInitTimeAndInitLabel() {
-        displayHalfTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), TIME_UNIT_PRECISION), currentCtRecord.getLabelInit());
+        displayHalfTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), APP_TIME_UNIT_PRECISION), currentCtRecord.getLabelInit());
     }
 
     public void startAutomatic(boolean automaticScrollOn) {
         stopAutomatic();   //  On efface tout et on recommence
         this.automaticScrollOn = automaticScrollOn;
-        updateInterval = automaticScrollOn ? getUpdateInterval(dotsPerSecond) : TIME_UNIT_PRECISION.DURATION_MS();   //  Si pas de scroll => Rafraichissement à la fréquence correspondant à la précision du chrono/timer
+        updateInterval = automaticScrollOn ? getUpdateInterval(dotsPerSecond) : APP_TIME_UNIT_PRECISION.DURATION_MS();   //  Si pas de scroll => Rafraichissement à la fréquence correspondant à la précision du chrono/timer
         timeStart = System.currentTimeMillis();
         handlerTime.postDelayed(runnableTime, updateInterval);   //  Go !
     }
@@ -162,7 +162,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
                 dotMatrixDisplayView.updateDisplay();
             }
         } else {
-            displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION));
+            displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), APP_TIME_UNIT_PRECISION));
         }
     }
 
@@ -239,7 +239,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void setupDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (gridDisplayRect, glissant en cas de scroll)
-        BiDimensions timeTextDimensions = getFontTextDimensions(msToTimeFormatD(currentCtRecord.getTimeDisplay(), TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
+        BiDimensions timeTextDimensions = getFontTextDimensions(msToTimeFormatD(currentCtRecord.getTimeDisplay(), APP_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
         BiDimensions labelTextDimensions = getFontTextDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         int displayRectWidth = margins.left + timeTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du temps, avec margins.right remplaçant la dernière marge droite)
