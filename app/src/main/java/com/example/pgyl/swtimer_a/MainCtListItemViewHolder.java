@@ -2,8 +2,8 @@ package com.example.pgyl.swtimer_a;
 
 import android.widget.CheckBox;
 
-import com.example.pgyl.pekislib_a.CustomButton;
 import com.example.pgyl.pekislib_a.CustomImageButton;
+import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 
 public class MainCtListItemViewHolder {
     //region Variables
@@ -11,6 +11,6 @@ public class MainCtListItemViewHolder {
     CustomImageButton buttonModeRun;
     CustomImageButton buttonSplitReset;
     CustomImageButton buttonClockAppAlarm;
-    CustomButton buttonTimeLabel;
+    DotMatrixDisplayView buttonDotMatrixDisplayTimeLabel;
     //endregion
 }

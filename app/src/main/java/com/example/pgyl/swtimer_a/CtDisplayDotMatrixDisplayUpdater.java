@@ -3,10 +3,9 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.os.Handler;
 
+import com.example.pgyl.pekislib_a.DefaultDotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
-import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
-import com.example.pgyl.pekislib_a.DotMatrixSymbol;
 
 import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.SCROLL_DIRECTIONS;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
@@ -22,6 +21,7 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColor
 public class CtDisplayDotMatrixDisplayUpdater {
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
+    private CtRecord currentCtRecord;
     private DotMatrixFont defaultFont;
     private DotMatrixFont extraFont;
     private Rect margins;
@@ -35,7 +35,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private int onLabelColorIndex;
     private int offColorIndex;
     private int backColorIndex;
-    private CtRecord currentCtRecord;
     private int dotsPerSecond;
     private long updateInterval;
     private SCROLL_DIRECTIONS scrollDirection;
@@ -207,26 +206,11 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void setupDefaultFont() {
-        defaultFont = DotMatrixFontUtils.getDefaultFont();
+        defaultFont = new DefaultDotMatrixFont();
     }
 
     private void setupExtraFont() {
-        //  Caractères redéfinis pour l'affichage du temps ("." et ":") (plus fins que la fonte par défaut de DotMatrixDisplayView)
-        final DotMatrixSymbol[] EXTRA_FONT_SYMBOLS = {
-                new DotMatrixSymbol('.', new int[][]{{1}}),
-                new DotMatrixSymbol(':', new int[][]{{0}, {0}, {1}, {0}, {1}, {0}, {0}})
-        };
-
-        final int EXTRA_FONT_RIGHT_MARGIN = 1;
-        DotMatrixSymbol symbol;
-
-        extraFont = new DotMatrixFont();
-        extraFont.setSymbols(EXTRA_FONT_SYMBOLS);
-        extraFont.setRightMargin(EXTRA_FONT_RIGHT_MARGIN);
-        symbol = extraFont.getSymbol('.');
-        symbol.setOverwrite(true);   //  Le "." surcharge le symbole précédent (en-dessous dans sa marge droite)
-        symbol.setPosOffset(-symbol.getDimensions().width, defaultFont.getDimensions().height);
-        symbol = null;
+        extraFont = new TimeExtraDotMatrixFont(defaultFont);
     }
 
     private void setupMargins() {    // Marges autour de l'affichage proprement dit

@@ -2,20 +2,19 @@ package com.example.pgyl.swtimer_a;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 
+import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.StringDB;
 import com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
 
 import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
-import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
@@ -51,25 +50,25 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private final boolean NEED_SORT_AND_RELOAD = true;
     //region Variables
     private Context context;
-    private int orientation;
     private ArrayList<CtRecord> ctRecords;
     private StringDB stringDB;
     private boolean showExpirationTime;
     private boolean setClockAppAlarmOnStartTimer;
+    private MainCtListItemDotMatrixDisplayUpdater mainCtListItemDotMatrixDisplayUpdater;
     //endregion
 
-    public MainCtListItemAdapter(Context context, StringDB stringDB) {
+    public MainCtListItemAdapter(Context context, StringDB stringDB, MainCtListItemDotMatrixDisplayUpdater mainCtListItemDotMatrixDisplayUpdater) {
         super();
 
         this.context = context;
         this.stringDB = stringDB;
+        this.mainCtListItemDotMatrixDisplayUpdater = mainCtListItemDotMatrixDisplayUpdater;
         init();
     }
 
     private void init() {
         mOnButtonClickListener = null;
         mOnCheckBoxClickListener = null;
-        orientation = context.getResources().getConfiguration().orientation;
     }
 
     public void close() {
@@ -212,8 +211,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
         TIME_UNITS timeUnitPrecision = (((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted())) ? APP_TIME_UNIT_PRECISION : TIME_UNITS.SEC);
         String timeText = (((ctRecords.get(k).getMode().equals(MODES.TIMER)) && showExpirationTime) ? getFormattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(k).getTimeDisplay(), timeUnitPrecision));
-        String text = timeText + ((orientation == Configuration.ORIENTATION_PORTRAIT) ? CRLF : SEPARATOR) + ctRecords.get(k).getLabel();
-        viewHolder.buttonTimeLabel.setText(text);
+        mainCtListItemDotMatrixDisplayUpdater.displayText(viewHolder.buttonDotMatrixDisplayTimeLabel, timeText, ctRecords.get(k).getLabel());
     }
 
     private MainCtListItemViewHolder buildViewHolder(View convertView) {
@@ -222,7 +220,9 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonModeRun = convertView.findViewById(R.id.BTN_MODE_RUN);
         viewHolder.buttonSplitReset = convertView.findViewById(R.id.BTN_SPLIT_RESET);
         viewHolder.buttonClockAppAlarm = convertView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
-        viewHolder.buttonTimeLabel = convertView.findViewById(R.id.BTN_TIME_LABEL);
+        viewHolder.buttonDotMatrixDisplayTimeLabel = convertView.findViewById(R.id.BTN_DOT_MATRIX_DISPLAY_TIME_LABEL);
+        mainCtListItemDotMatrixDisplayUpdater.setupDimensions(viewHolder.buttonDotMatrixDisplayTimeLabel);
+        mainCtListItemDotMatrixDisplayUpdater.setupBackColor(viewHolder.buttonDotMatrixDisplayTimeLabel);
         return viewHolder;
     }
 
@@ -265,10 +265,10 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonClockAppAlarmClick(pos);
             }
         });
-        viewHolder.buttonTimeLabel.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonTimeLabel.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonDotMatrixDisplayTimeLabel.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
+        viewHolder.buttonDotMatrixDisplayTimeLabel.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onCustomClick() {
                 onTimeLabelClick(pos);
             }
         });

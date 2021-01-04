@@ -3,9 +3,9 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import com.example.pgyl.pekislib_a.DefaultDotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
-import com.example.pgyl.pekislib_a.DotMatrixFontUtils;
 
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
@@ -28,7 +28,6 @@ public class MainDotMatrixDisplayUpdater {
 
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
-    private String maxText;
     private DotMatrixFont defaultFont;
     private Rect margins;
     private Rect gridRect;
@@ -39,7 +38,6 @@ public class MainDotMatrixDisplayUpdater {
         super();
 
         this.dotMatrixDisplayView = dotMatrixDisplayView;
-        this.maxText = maxText;
         init();
     }
 
@@ -81,7 +79,7 @@ public class MainDotMatrixDisplayUpdater {
     }
 
     private void setupDefaultFont() {
-        defaultFont = DotMatrixFontUtils.getDefaultFont();
+        defaultFont = new DefaultDotMatrixFont();
     }
 
     private void setupMargins() {    // Marges (en nombre de carrés autour de l'affichage proprement dit)
