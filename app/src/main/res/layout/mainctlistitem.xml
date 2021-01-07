@@ -46,8 +46,8 @@
     <com.example.pgyl.pekislib_a.DotMatrixDisplayView
         android:id="@+id/BTN_DOT_MATRIX_DISPLAY_TIME_LABEL"
         android:layout_width="0dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="4dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="2dp"
         android:layout_weight="16" />
 
 </LinearLayout>

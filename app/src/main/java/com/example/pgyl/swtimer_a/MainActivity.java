@@ -627,7 +627,7 @@ public class MainActivity extends Activity {
     }
 
     private void setupMainCtListItemDotMatrixDisplayUpdater() {
-        mainCtListItemDotMatrixDisplayUpdater = new MainCtListItemDotMatrixDisplayUpdater(this);
+        mainCtListItemDotMatrixDisplayUpdater = new MainCtListItemDotMatrixDisplayUpdater();
     }
 
     private void setupMainCtList() {
@@ -650,7 +650,6 @@ public class MainActivity extends Activity {
 
     private void setupMainCtListUpdater() {
         mainCtListUpdater = new MainCtListUpdater(mainCtListView, ctRecordsHandler);
-        mainCtListItemDotMatrixDisplayUpdater = new MainCtListItemDotMatrixDisplayUpdater(this);
     }
 
     private void setupShowExpirationTime() {

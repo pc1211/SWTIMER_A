@@ -1,7 +1,5 @@
 package com.example.pgyl.swtimer_a;
 
-import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
@@ -24,8 +22,6 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     private Rect displayRect;
     private Rect timeDisplayRect;
     private Rect labelDisplayRect;
-    private Context context;
-    private int orientation;
     //endregion
 
     //region Constantes
@@ -35,15 +31,13 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     final long FILLER_TIME_MS = 0;   //  correspondant à 00:00:00.0 si TS
     //endregion
 
-    public MainCtListItemDotMatrixDisplayUpdater(Context context) {
+    public MainCtListItemDotMatrixDisplayUpdater() {
         super();
 
-        this.context = context;
         init();
     }
 
     private void init() {
-        orientation = context.getResources().getConfiguration().orientation;
         setupDefaultFont();
         setupExtraFont();
         setupMargins();
@@ -65,9 +59,6 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setSymbolPos(timeDisplayRect.left + margins.left, timeDisplayRect.top + margins.top);
         dotMatrixDisplayView.writeText(timeText, TIME_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
         dotMatrixDisplayView.setSymbolPos(labelDisplayRect.left + margins.left, labelDisplayRect.top + margins.top);
-        if (orientation != Configuration.ORIENTATION_PORTRAIT) {   //  Paysage
-            dotMatrixDisplayView.writeText(SEPARATOR, LABEL_ON_COLOR, defaultFont);   //  séparateur avec police par défaut
-        }
         String label = ((labelText.length() > FILLER_LABEL.length()) ? labelText.substring(0, FILLER_LABEL.length()) : labelText);   //  Label (limité)
         dotMatrixDisplayView.writeText(label, LABEL_ON_COLOR, defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
@@ -80,28 +71,16 @@ public class MainCtListItemDotMatrixDisplayUpdater {
 
         BiDimensions fillerTimeTextDimensions = getFontTextDimensions(msToTimeFormatD(FILLER_TIME_MS, APP_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
         BiDimensions fillerLabelTextDimensions = getFontTextDimensions(FILLER_LABEL, defaultFont);   //  labelText est uniquement affiché en defaultFont
-        BiDimensions separatorTextDimensions = getFontTextDimensions(SEPARATOR, defaultFont);
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {   //  (2 lignes)
-            displayRectWidth = margins.left + fillerLabelTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du label maximum; margins.right remplace la dernière marge droite
-            displayRectHeight = margins.top + fillerTimeTextDimensions.height + extraFont.getSymbol('.').getDimensions().height + LABEL_MARGIN_TOP + fillerLabelTextDimensions.height + margins.bottom;
-        } else {  //  Paysage  (1 seule ligne)
-            displayRectWidth = margins.left + fillerTimeTextDimensions.width + separatorTextDimensions.width + fillerLabelTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du label maximum; margins.right remplace la dernière marge droite
-            displayRectHeight = margins.top + fillerTimeTextDimensions.height + extraFont.getSymbol('.').getDimensions().height + margins.bottom;
-        }
+        displayRectWidth = margins.left + fillerLabelTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du label maximum; margins.right remplace la dernière marge droite
+        displayRectHeight = margins.top + fillerTimeTextDimensions.height + extraFont.getSymbol('.').getDimensions().height + LABEL_MARGIN_TOP + fillerLabelTextDimensions.height + margins.bottom;
         int gridRectWidth = displayRectWidth;
         int gridRectHeight = displayRectHeight;
 
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
         displayRect = new Rect(gridRect.left, gridRect.top, displayRectWidth, displayRectHeight);  //  Affichage au début de la grille
-
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {   //  (2 lignes)
-            timeDisplayRect = new Rect(displayRect.left, displayRect.top, displayRect.right, margins.top + fillerTimeTextDimensions.height + extraFont.getSymbol('.').getDimensions().height);  //  Affichage sur la 1e ligne
-            labelDisplayRect = new Rect(displayRect.left, timeDisplayRect.bottom + LABEL_MARGIN_TOP - margins.top, timeDisplayRect.right, displayRect.bottom);  //  Affichage sur la 2e ligne
-        } else {   //  Paysage  (1 seule ligne)
-            timeDisplayRect = new Rect(displayRect.left, displayRect.top, margins.left + fillerTimeTextDimensions.width, displayRect.bottom);  //  Affichage sur la 1e ligne
-            labelDisplayRect = new Rect(timeDisplayRect.right, displayRect.top, displayRect.right, displayRect.bottom);  //  Affichage sur la 2e ligne
-        }
+        timeDisplayRect = new Rect(displayRect.left, displayRect.top, displayRect.right, margins.top + fillerTimeTextDimensions.height + extraFont.getSymbol('.').getDimensions().height);  //  Affichage sur la 1e ligne
+        labelDisplayRect = new Rect(displayRect.left, timeDisplayRect.bottom + LABEL_MARGIN_TOP - margins.top, timeDisplayRect.right, displayRect.bottom);  //  Affichage sur la 2e ligne
 
         dotMatrixDisplayView.setInternalMarginCoeffs(INTERNAL_MARGIN_SIZE_COEFFS);
         dotMatrixDisplayView.setExternalMarginCoeffs(ALIGN_LEFT_HEIGHT);

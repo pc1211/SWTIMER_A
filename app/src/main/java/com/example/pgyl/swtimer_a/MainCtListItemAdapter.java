@@ -165,7 +165,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.mainlistitem, null);
+            convertView = inflater.inflate(R.layout.mainctlistitem, null);
             viewHolder = buildViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
@@ -180,7 +180,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
         final String LIGHT_ON_UNPRESSED_COLOR = "FF9A22";
         final String LIGHT_ON_PRESSED_COLOR = "995400";
         final String LIGHT_OFF_PRESSED_COLOR = "666666";
-        final String SEPARATOR = " - ";
         int id;
 
         id = 0;
@@ -221,8 +220,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonSplitReset = convertView.findViewById(R.id.BTN_SPLIT_RESET);
         viewHolder.buttonClockAppAlarm = convertView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
         viewHolder.buttonDotMatrixDisplayTimeLabel = convertView.findViewById(R.id.BTN_DOT_MATRIX_DISPLAY_TIME_LABEL);
-        mainCtListItemDotMatrixDisplayUpdater.setupDimensions(viewHolder.buttonDotMatrixDisplayTimeLabel);
-        mainCtListItemDotMatrixDisplayUpdater.setupBackColor(viewHolder.buttonDotMatrixDisplayTimeLabel);
         return viewHolder;
     }
 
@@ -272,6 +269,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onTimeLabelClick(pos);
             }
         });
+        mainCtListItemDotMatrixDisplayUpdater.setupDimensions(viewHolder.buttonDotMatrixDisplayTimeLabel);
+        mainCtListItemDotMatrixDisplayUpdater.setupBackColor(viewHolder.buttonDotMatrixDisplayTimeLabel);
     }
 
     private void launchCtDisplayActivity(int idct) {
