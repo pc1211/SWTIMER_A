@@ -71,11 +71,6 @@ public class MainCtListUpdater {
         updateTime();
     }
 
-    public boolean isAutomaticOn() {
-        return automaticOn;
-    }
-
-
     private void onCtListItemButtonClick() {    //  Reprogrammer le timer automatique
         stopAutomatic();
         startAutomatic();
@@ -84,7 +79,7 @@ public class MainCtListUpdater {
     private void onCtListExpiredTimer(CtRecord ctRecord) {
         updateTime();
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), context);
-        if (isAutomaticOn()) {   //  => Pas de Beep au Resume suite à reload de MainCtList()
+        if (automaticOn) {   //  => Pas de Beep au Resume suite à reload de MainCtList()
             beep(context);
         }
     }
@@ -92,7 +87,7 @@ public class MainCtListUpdater {
     public void reload() {
         ctRecordsHandler.sortCtRecords();
         mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
-        updateTime();
+        mainCtListItemAdapter.notifyDataSetChanged();
         mainCtListView.post(runnableCheckNeedScrollBar);
     }
 

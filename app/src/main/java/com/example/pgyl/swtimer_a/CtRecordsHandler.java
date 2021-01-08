@@ -211,7 +211,7 @@ public class CtRecordsHandler {
     }
 
     private void onExpiredTimer(CtRecord ctRecord) {
-        if (mOnExpiredTimerListener != null) {   //  Faites passer: Timer expiré => La liste doit être retriée + message avertissement
+        if (mOnExpiredTimerListener != null) {   //  Faites passer: Timer expiré => Message avertissement
             mOnExpiredTimerListener.onExpiredTimer(ctRecord);
         }
     }

@@ -112,7 +112,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
             ctRecords.get(i).setSelectedOn(i == pos);
         }
-        notifyDataSetChanged();   //  Seule utilisation car c'est un casseur d'événements
+        notifyDataSetChanged();
         if (mOnCheckBoxClickListener != null) {
             mOnCheckBoxClickListener.onCheckBoxClick();
         }
