@@ -27,7 +27,7 @@ import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 
 public class MainCtListItemAdapter extends BaseAdapter {
     public interface onButtonClickListener {
-        void onButtonClick(boolean needSortAndReload);
+        void onButtonClick();
     }
 
     public void setOnItemButtonClick(onButtonClickListener listener) {
@@ -46,8 +46,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     private onCheckBoxClickListener mOnCheckBoxClickListener;
 
-
-    private final boolean NEED_SORT_AND_RELOAD = true;
     //region Variables
     private Context context;
     private ArrayList<CtRecord> ctRecords;
@@ -103,147 +101,144 @@ public class MainCtListItemAdapter extends BaseAdapter {
         return i;
     }
 
-    private void onCbSelectionClick(int pos, boolean isChecked) {
+    private void onCbSelectionClick(View rowv, int pos, boolean isChecked) {
         ctRecords.get(pos).setSelectedOn(isChecked);
         if (mOnCheckBoxClickListener != null) {
             mOnCheckBoxClickListener.onCheckBoxClick();
         }
     }
 
-    private void onCbSelectionLongClick(int pos) {
+    private void onCbSelectionLongClick(View rowv, int pos) {
         for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
             ctRecords.get(i).setSelectedOn(i == pos);
         }
-        notifyDataSetChanged();   //  Pas besoin d'un Rebuild List
+        notifyDataSetChanged();   //  Seule utilisation car c'est un casseur d'événements
         if (mOnCheckBoxClickListener != null) {
             mOnCheckBoxClickListener.onCheckBoxClick();
         }
     }
 
-    private void onButtonModeRunClick(int pos) {
+    private void onButtonModeRunClick(View rowv, int pos) {
         long nowm = System.currentTimeMillis();
+        if (mOnButtonClickListener != null) {
+            mOnButtonClickListener.onButtonClick();
+        }
         if (!ctRecords.get(pos).isRunning()) {
             ctRecords.get(pos).start(nowm, setClockAppAlarmOnStartTimer);
         } else {
             ctRecords.get(pos).stop(nowm);
         }
-        if (mOnButtonClickListener != null) {
-            mOnButtonClickListener.onButtonClick(NEED_SORT_AND_RELOAD);
-        }
+        ctRecords.get(pos).updateTime(nowm);
+        paintView(rowv, pos);
     }
 
-    private void onButtonSplitResetClick(int pos) {
-        boolean b;
-
+    private void onButtonSplitResetClick(View rowv, int pos) {
         long nowm = System.currentTimeMillis();
+        if (mOnButtonClickListener != null) {
+            mOnButtonClickListener.onButtonClick();
+        }
         if ((ctRecords.get(pos).isRunning()) || (ctRecords.get(pos).isSplitted())) {
             ctRecords.get(pos).split(nowm);
-            b = !NEED_SORT_AND_RELOAD;
         } else {
             ctRecords.get(pos).reset();
-            b = NEED_SORT_AND_RELOAD;
         }
-        if (mOnButtonClickListener != null) {
-            mOnButtonClickListener.onButtonClick(b);
-        }
+        ctRecords.get(pos).updateTime(nowm);
+        paintView(rowv, pos);
     }
 
-    private void onButtonClockAppAlarmClick(int pos) {
+    private void onButtonClockAppAlarmClick(View rowv, int pos) {
+        if (mOnButtonClickListener != null) {
+            mOnButtonClickListener.onButtonClick();
+        }
         ctRecords.get(pos).setClockAppAlarmOn(!ctRecords.get(pos).isClockAppAlarmOn());
-        if (mOnButtonClickListener != null) {
-            mOnButtonClickListener.onButtonClick(!NEED_SORT_AND_RELOAD);
-        }
+        paintView(rowv, pos);
     }
 
-    private void onTimeLabelClick(int pos) {
+    private void onTimeLabelClick(View rowv, int pos) {
         launchCtDisplayActivity(ctRecords.get(pos).getIdct());
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        MainCtListItemViewHolder viewHolder;
+    public View getView(final int position, View rowView, ViewGroup parent) {   //  Viewholder pattern non utilisé à cause de la custom view DotMatrixDisplayView (ses variables globales ne sont pas récupérées par un getTag())
+        LayoutInflater inflater = LayoutInflater.from(context);
+        rowView = inflater.inflate(R.layout.mainctlistitem, null);
+        MainCtListItemViewHolder viewHolder = buildViewHolder(rowView);
+        rowView.setTag(viewHolder);
 
-        if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.mainctlistitem, null);
-            viewHolder = buildViewHolder(convertView);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (MainCtListItemViewHolder) convertView.getTag();
-        }
-        setupViewHolder(viewHolder, position);
-        paintView(convertView, position);
-        return convertView;
+        setupViewHolder(viewHolder, rowView, position);
+        paintView(rowView, position);
+        return rowView;
     }
 
-    public void paintView(View view, int index) {    //  Décoration proprement dite du getView
+    public void paintView(View rowView, int position) {    //  Décoration proprement dite du getView
         final String LIGHT_ON_UNPRESSED_COLOR = "FF9A22";
         final String LIGHT_ON_PRESSED_COLOR = "995400";
         final String LIGHT_OFF_PRESSED_COLOR = "666666";
-        int id;
 
-        id = 0;
-        int k = index;
-        MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) view.getTag();
+        int pos = position;
+        MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) rowView.getTag();
 
-        viewHolder.cbSelection.setChecked(ctRecords.get(k).isSelected());
+        viewHolder.cbSelection.setChecked(ctRecords.get(pos).isSelected());
 
-        if (ctRecords.get(k).getMode().equals(MODES.CHRONO)) {
+        int id = 0;
+        if (ctRecords.get(pos).getMode().equals(MODES.CHRONO)) {
             id = R.drawable.main_chrono;
         }
-        if (ctRecords.get(k).getMode().equals(MODES.TIMER)) {
+        if (ctRecords.get(pos).getMode().equals(MODES.TIMER)) {
             id = R.drawable.main_timer;
         }
         viewHolder.buttonModeRun.setImageResource(id);
 
-        String pressedColor = (ctRecords.get(k).isRunning() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        String unpressedColor = (ctRecords.get(k).isRunning() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        String pressedColor = (ctRecords.get(pos).isRunning() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        String unpressedColor = (ctRecords.get(pos).isRunning() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonModeRun.setColors(pressedColor, unpressedColor);
 
-        pressedColor = (ctRecords.get(k).isSplitted() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        unpressedColor = (ctRecords.get(k).isSplitted() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        pressedColor = (ctRecords.get(pos).isSplitted() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        unpressedColor = (ctRecords.get(pos).isSplitted() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonSplitReset.setColors(pressedColor, unpressedColor);
 
-        pressedColor = (ctRecords.get(k).isClockAppAlarmOn() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
-        unpressedColor = (ctRecords.get(k).isClockAppAlarmOn() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
+        pressedColor = (ctRecords.get(pos).isClockAppAlarmOn() ? LIGHT_ON_PRESSED_COLOR : LIGHT_OFF_PRESSED_COLOR);
+        unpressedColor = (ctRecords.get(pos).isClockAppAlarmOn() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonClockAppAlarm.setColors(pressedColor, unpressedColor);
 
-        TIME_UNITS timeUnitPrecision = (((!ctRecords.get(k).isRunning()) || (ctRecords.get(k).isSplitted())) ? APP_TIME_UNIT_PRECISION : TIME_UNITS.SEC);
-        String timeText = (((ctRecords.get(k).getMode().equals(MODES.TIMER)) && showExpirationTime) ? getFormattedTimeZoneLongTimeDate(ctRecords.get(k).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(k).getTimeDisplay(), timeUnitPrecision));
-        mainCtListItemDotMatrixDisplayUpdater.displayText(viewHolder.buttonDotMatrixDisplayTimeLabel, timeText, ctRecords.get(k).getLabel());
+        TIME_UNITS timeUnitPrecision = (((!ctRecords.get(pos).isRunning()) || (ctRecords.get(pos).isSplitted())) ? APP_TIME_UNIT_PRECISION : TIME_UNITS.SEC);
+        String timeText = (((ctRecords.get(pos).getMode().equals(MODES.TIMER)) && showExpirationTime) ? getFormattedTimeZoneLongTimeDate(ctRecords.get(pos).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(pos).getTimeDisplay(), timeUnitPrecision));
+
+        mainCtListItemDotMatrixDisplayUpdater.displayText(viewHolder.buttonDotMatrixDisplayTimeLabel, timeText, ctRecords.get(pos).getLabel());
     }
 
-    private MainCtListItemViewHolder buildViewHolder(View convertView) {
+    private MainCtListItemViewHolder buildViewHolder(View rowView) {
         MainCtListItemViewHolder viewHolder = new MainCtListItemViewHolder();
-        viewHolder.cbSelection = convertView.findViewById(R.id.CB_SELECTION);
-        viewHolder.buttonModeRun = convertView.findViewById(R.id.BTN_MODE_RUN);
-        viewHolder.buttonSplitReset = convertView.findViewById(R.id.BTN_SPLIT_RESET);
-        viewHolder.buttonClockAppAlarm = convertView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
-        viewHolder.buttonDotMatrixDisplayTimeLabel = convertView.findViewById(R.id.BTN_DOT_MATRIX_DISPLAY_TIME_LABEL);
+        viewHolder.cbSelection = rowView.findViewById(R.id.CB_SELECTION);
+        viewHolder.buttonModeRun = rowView.findViewById(R.id.BTN_MODE_RUN);
+        viewHolder.buttonSplitReset = rowView.findViewById(R.id.BTN_SPLIT_RESET);
+        viewHolder.buttonClockAppAlarm = rowView.findViewById(R.id.BTN_CLOCK_APP_ALARM);
+        viewHolder.buttonDotMatrixDisplayTimeLabel = rowView.findViewById(R.id.BTN_DOT_MATRIX_DISPLAY_TIME_LABEL);
         return viewHolder;
     }
 
-    private void setupViewHolder(MainCtListItemViewHolder viewHolder, int position) {
+    private void setupViewHolder(MainCtListItemViewHolder viewHolder, View rowView, int position) {
         final long BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
+        final View rowv = rowView;
         final int pos = position;
         viewHolder.cbSelection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                onCbSelectionClick(pos, isChecked);
+                onCbSelectionClick(rowv, pos, isChecked);
             }
         });
         viewHolder.cbSelection.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onCbSelectionLongClick(pos);
+                onCbSelectionLongClick(rowv, pos);
                 return false;
             }
         });
         viewHolder.buttonModeRun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onButtonModeRunClick(pos);
+                onButtonModeRunClick(rowv, pos);
             }
         });
         viewHolder.buttonSplitReset.setImageResource(R.drawable.main_split);
@@ -251,7 +246,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonSplitReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onButtonSplitResetClick(pos);
+                onButtonSplitResetClick(rowv, pos);
             }
         });
         viewHolder.buttonClockAppAlarm.setImageResource(R.drawable.main_bell);
@@ -259,14 +254,14 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonClockAppAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onButtonClockAppAlarmClick(pos);
+                onButtonClockAppAlarmClick(rowv, pos);
             }
         });
         viewHolder.buttonDotMatrixDisplayTimeLabel.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonDotMatrixDisplayTimeLabel.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
-                onTimeLabelClick(pos);
+                onTimeLabelClick(rowv, pos);
             }
         });
         mainCtListItemDotMatrixDisplayUpdater.setupDimensions(viewHolder.buttonDotMatrixDisplayTimeLabel);

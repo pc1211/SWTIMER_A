@@ -1,15 +1,23 @@
 package com.example.pgyl.swtimer_a;
 
+import android.content.Context;
 import android.os.Handler;
 import android.widget.ListView;
 
 import com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
+
+import static com.example.pgyl.pekislib_a.Constants.CRLF;
+import static com.example.pgyl.pekislib_a.MiscUtils.beep;
+import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 
 public class MainCtListUpdater {
     //region Variables
     private MainCtListItemAdapter mainCtListItemAdapter;
     private ListView mainCtListView;
     private CtRecordsHandler ctRecordsHandler;
+    private Context context;
     private long updateInterval;
     private boolean needScrollBar;
     private boolean automaticOn;
@@ -18,11 +26,12 @@ public class MainCtListUpdater {
     private Runnable runnableCheckNeedScrollBar;
     //endregion
 
-    public MainCtListUpdater(ListView mainCtListView, CtRecordsHandler ctRecordsHandler) {
+    public MainCtListUpdater(ListView mainCtListView, CtRecordsHandler ctRecordsHandler, Context context) {
         super();
 
         this.mainCtListView = mainCtListView;
         this.ctRecordsHandler = ctRecordsHandler;
+        this.context = context;
         init();
     }
 
@@ -32,7 +41,8 @@ public class MainCtListUpdater {
         needScrollBar = false;
         automaticOn = false;
         setScrollBar(needScrollBar);
-        mainCtListItemAdapter = (MainCtListItemAdapter) mainCtListView.getAdapter();
+        setupCtRecordsHandler();
+        setupMainCtListAdapter();
     }
 
     public void close() {
@@ -58,23 +68,41 @@ public class MainCtListUpdater {
 
     private void automatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
-        update();
+        updateTime();
     }
 
     public boolean isAutomaticOn() {
         return automaticOn;
     }
 
-    public void reload() {
-        mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
-        mainCtListItemAdapter.notifyDataSetChanged();
-        mainCtListView.post(runnableCheckNeedScrollBar);   //  Tous les items de la listview sont alors complètement dessinés
+
+    private void onCtListItemButtonClick() {    //  Reprogrammer le timer automatique
+        stopAutomatic();
+        startAutomatic();
     }
 
-    public void update() {
+    private void onCtListExpiredTimer(CtRecord ctRecord) {
+        updateTime();
+        toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), context);
+        if (isAutomaticOn()) {   //  => Pas de Beep au Resume suite à reload de MainCtList()
+            beep(context);
+        }
+    }
+
+    public void reload() {
+        ctRecordsHandler.sortCtRecords();
+        mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
+        updateTime();
+        mainCtListView.post(runnableCheckNeedScrollBar);
+    }
+
+    public void updateTime() {
         long nowm = System.currentTimeMillis();
         ctRecordsHandler.updateTimeAll(nowm);
-        mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
+        repaint();
+    }
+
+    public void repaint() {
         if (mainCtListView.getChildCount() > 0) {
             int firstVisiblePos = mainCtListView.getFirstVisiblePosition();
             int lastVisiblePos = mainCtListView.getLastVisiblePosition();
@@ -96,7 +124,6 @@ public class MainCtListUpdater {
             if (mainCtListView.getChildAt(lastVisiblePos - firstVisiblePos).getBottom() > mainCtListView.getHeight()) {   //  Le dernier item visible ne l'est que partiellement
                 lastFullVisiblePos = lastFullVisiblePos - 1;
             }
-            int n = mainCtListView.getCount();
             boolean b = (((firstFullVisiblePos == 0) && (lastFullVisiblePos == (mainCtListView.getCount() - 1))) ? false : true);  // false si toute la liste est entièrement visible
             if (b != needScrollBar) {
                 needScrollBar = b;
@@ -108,6 +135,25 @@ public class MainCtListUpdater {
     private void setScrollBar(boolean enabled) {
         mainCtListView.setFastScrollEnabled(enabled);
         mainCtListView.setFastScrollAlwaysVisible(enabled);
+    }
+
+    private void setupCtRecordsHandler() {
+        ctRecordsHandler.setOnExpiredTimerListener(new CtRecordsHandler.onExpiredTimerListener() {
+            @Override
+            public void onExpiredTimer(CtRecord ctRecord) {
+                onCtListExpiredTimer(ctRecord);
+            }
+        });
+    }
+
+    private void setupMainCtListAdapter() {
+        mainCtListItemAdapter = (MainCtListItemAdapter) mainCtListView.getAdapter();
+        mainCtListItemAdapter.setOnItemButtonClick(new MainCtListItemAdapter.onButtonClickListener() {
+            @Override
+            public void onButtonClick() {
+                onCtListItemButtonClick();
+            }
+        });
     }
 
     private void setupRunnables() {

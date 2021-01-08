@@ -50,7 +50,7 @@ public class CtRecordsHandler {
     }
 
     private enum ACTIONS_ON_SELECTION {
-        START, STOP, SPLIT, RESET, REMOVE, COUNT
+        UPDATE_TIME, START, STOP, SPLIT, RESET, REMOVE, COUNT
     }
 
     private final String ALARM_SEPARATOR = "£µ$***ALARM***$µ£";
@@ -117,27 +117,9 @@ public class CtRecordsHandler {
         if (ctRecords.size() >= 2) {
             Collections.sort(ctRecords, new Comparator<CtRecord>() {
                 public int compare(CtRecord ctRecord1, CtRecord ctRecord2) {
-                    boolean running1 = ctRecord1.isRunning();
-                    boolean running2 = ctRecord2.isRunning();
-                    int sortResult = (running1 == running2) ? 0 : (running1 ? -1 : 1);    //  ORDER BY running DESC
-                    if (sortResult == 0) {    //  running1 = running2
-                        String mode1 = ctRecord1.getMode().toString();
-                        String mode2 = ctRecord2.getMode().toString();
-                        sortResult = mode2.compareTo(mode1);                              //  ORDER BY mode DESC  (Timers puis Chronos )
-                        if (sortResult == 0) {     //  mode1 = mode2
-                            long time1 = ctRecord1.getTimeDisplayWithoutSplit();   //  OK si updateTime() appelé pour tous les ctRecords avant le tri
-                            long time2 = ctRecord2.getTimeDisplayWithoutSplit();
-                            sortResult = ((time1 == time2) ? 0 : ((time1 > time2) ? 1 : -1));   //  Si Timer  => ORDER BY time ASC   (d'abord les plus petits temps)
-                            if (mode1.equals(MODES.CHRONO.toString())) {                  //  Si Chrono => ORDER BY time DESC  (d'abord les plus grands temps)
-                                sortResult = -sortResult;
-                            }
-                            if (sortResult == 0) {     //  time1 = time2
-                                String label1 = ctRecord1.getLabel();
-                                String label2 = ctRecord2.getLabel();
-                                sortResult = label1.compareTo(label2);           //  ORDER BY label ASC
-                            }
-                        }
-                    }
+                    int idct1 = ctRecord1.getIdct();
+                    int idct2 = ctRecord2.getIdct();
+                    int sortResult = ((idct1 == idct2) ? 0 : ((idct1 > idct2) ? 1 : -1));   //  Tri par n° idct ASC
                     return sortResult;
                 }
             });
@@ -167,6 +149,11 @@ public class CtRecordsHandler {
 
     public int getCountAllTimers() {
         return actionOnAll(ACTIONS_ON_ALL.COUNT_TIMERS);
+    }
+
+    public void updateTimeSelection(long nowm) {
+        this.nowm = nowm;
+        actionOnSelection(ACTIONS_ON_SELECTION.UPDATE_TIME);
     }
 
     public void startSelection(long nowm, boolean setClockAppAlarmOnStartTimer) {
@@ -268,6 +255,9 @@ public class CtRecordsHandler {
             do {
                 if (ctRecords.get(i).isSelected()) {
                     count = count + 1;   //  Compter
+                    if (action.equals(ACTIONS_ON_SELECTION.UPDATE_TIME)) {
+                        ctRecords.get(i).updateTime(nowm);
+                    }
                     if (action.equals(ACTIONS_ON_SELECTION.START)) {
                         ctRecords.get(i).start(nowm, setClockAppAlarmOnStartTimer);
                     }

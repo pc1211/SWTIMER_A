@@ -26,11 +26,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
-import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
-import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
@@ -39,11 +37,10 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.createPekislibTableIfNot
 import static com.example.pgyl.pekislib_a.StringDBUtils.getDefaults;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
+import static com.example.pgyl.swtimer_a.MainCtListItemAdapter.onCheckBoxClickListener;
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getChronoTimersTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
@@ -180,7 +177,7 @@ public class MainActivity extends Activity {
 
         updateDisplayStateButtonColors();
         updateDisplayKeepScreen();
-        sortAndReloadMainCtList();
+        mainCtListUpdater.reload();
         updateDisplayButtonsAndDotMatrixDisplayVisibility();
         mainCtListUpdater.startAutomatic();
         invalidateOptionsMenu();
@@ -260,7 +257,7 @@ public class MainActivity extends Activity {
             if (command.equals(COMMANDS.SELECT_ALL_CT)) {
                 ctRecordsHandler.selectAll();
             }
-            mainCtListUpdater.update();
+            mainCtListUpdater.repaint();
             updateDisplayButtonsAndDotMatrixDisplayVisibility();
         } else {
             toastLong("The list must contain at least one Chrono or Timer", this);
@@ -269,11 +266,13 @@ public class MainActivity extends Activity {
 
     private void onButtonClickActionOnSelection(COMMANDS command, long nowm) {
         if (ctRecordsHandler.getCountSelection() >= 1) {
-            if (command.equals(COMMANDS.SPLIT_SELECTED_CT)) {
-                ctRecordsHandler.splitSelection(nowm);
-                mainCtListUpdater.update();
-            } else {
+            if (command.equals(COMMANDS.REMOVE_SELECTED_CT)) {
+                removeSelection();
+            } else {   //  Pas Remove Selection
                 mainCtListUpdater.stopAutomatic();
+                if (command.equals(COMMANDS.SPLIT_SELECTED_CT)) {
+                    ctRecordsHandler.splitSelection(nowm);
+                }
                 if (command.equals(COMMANDS.START_SELECTED_CT)) {
                     ctRecordsHandler.startSelection(nowm, setClockAppAlarmOnStartTimer);
                 }
@@ -283,12 +282,8 @@ public class MainActivity extends Activity {
                 if (command.equals(COMMANDS.RESET_SELECTED_CT)) {
                     ctRecordsHandler.resetSelection();
                 }
-                if (command.equals(COMMANDS.REMOVE_SELECTED_CT)) {
-                    removeSelection();
-                }
-                sortAndReloadMainCtList();
-                updateDisplayButtonsAndDotMatrixDisplayVisibility();
-                mainCtListUpdater.startAutomatic();
+                mainCtListUpdater.updateTime();
+                mainCtListUpdater.startAutomatic();   //  Reprogrammer le timer automatique
             }
         } else {
             toastLong("The list must contain at least one selected Chrono or Timer", this);
@@ -306,7 +301,7 @@ public class MainActivity extends Activity {
     private void onStateButtonClickShowExpirationTime() {
         showExpirationTime = !showExpirationTime;
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
-        mainCtListUpdater.update();
+        mainCtListUpdater.updateTime();
         updateDisplayStateButtonColor(STATE_COMMANDS.SHOW_EXPIRATION_TIME);
     }
 
@@ -315,42 +310,8 @@ public class MainActivity extends Activity {
         updateDisplayStateButtonColor(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST);
     }
 
-    private void onCtListExpiredTimer(CtRecord ctRecord) {
-        boolean needBeep;
-
-        if (mainCtListUpdater.isAutomaticOn()) {
-            mainCtListUpdater.stopAutomatic();
-            needBeep = true;
-        } else {  //  Pas en mode automatique (=> C'est dû à un timer mis à jour suite au sortAndReloadMainCtList() du onResume)
-            needBeep = false;
-        }
-        sortAndReloadMainCtList();
-        mainCtListUpdater.startAutomatic();
-        toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), this);
-        if (needBeep) {
-            beep(this);
-        }
-    }
-
-    private void onCtListItemButtonClick(boolean needSortAndReload) {   //  Bouton individuel
-        if (needSortAndReload) {
-            mainCtListUpdater.stopAutomatic();
-            sortAndReloadMainCtList();
-            mainCtListUpdater.startAutomatic();
-        } else {
-            mainCtListUpdater.update();
-        }
-    }
-
     private void onCtListItemCheckBoxClick() {
         updateDisplayButtonsAndDotMatrixDisplayVisibility();
-    }
-
-    private void sortAndReloadMainCtList() {
-        long nowm = System.currentTimeMillis();
-        ctRecordsHandler.updateTimeAll(nowm);
-        ctRecordsHandler.sortCtRecords();
-        mainCtListUpdater.reload();
     }
 
     private void updateDisplayButtonsAndDotMatrixDisplayVisibility() {
@@ -422,8 +383,10 @@ public class MainActivity extends Activity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int id) {
+                mainCtListUpdater.stopAutomatic();
                 ctRecordsHandler.removeSelection();
-                sortAndReloadMainCtList();
+                mainCtListUpdater.reload();
+                mainCtListUpdater.startAutomatic();
                 updateDisplayButtonsAndDotMatrixDisplayVisibility();
             }
         });
@@ -436,9 +399,9 @@ public class MainActivity extends Activity {
         mainCtListUpdater.stopAutomatic();
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
-            sortAndReloadMainCtList();
-            updateDisplayButtonsAndDotMatrixDisplayVisibility();
+            mainCtListUpdater.reload();
             mainCtListUpdater.startAutomatic();
+            updateDisplayButtonsAndDotMatrixDisplayVisibility();
         } else {
             launchCtDisplayActivity(idct);
         }
@@ -566,12 +529,6 @@ public class MainActivity extends Activity {
 
     private void setupCtRecordsHandler() {
         ctRecordsHandler = new CtRecordsHandler(this, stringDB);
-        ctRecordsHandler.setOnExpiredTimerListener(new CtRecordsHandler.onExpiredTimerListener() {
-            @Override
-            public void onExpiredTimer(CtRecord ctRecord) {
-                onCtListExpiredTimer(ctRecord);
-            }
-        });
     }
 
     private void setupStringDB() {
@@ -632,13 +589,7 @@ public class MainActivity extends Activity {
 
     private void setupMainCtList() {
         mainCtListItemAdapter = new MainCtListItemAdapter(this, stringDB, mainCtListItemDotMatrixDisplayUpdater);
-        mainCtListItemAdapter.setOnItemButtonClick(new MainCtListItemAdapter.onButtonClickListener() {
-            @Override
-            public void onButtonClick(boolean needSortAndReload) {
-                onCtListItemButtonClick(needSortAndReload);
-            }
-        });
-        mainCtListItemAdapter.setOnItemCheckBoxClick(new MainCtListItemAdapter.onCheckBoxClickListener() {
+        mainCtListItemAdapter.setOnItemCheckBoxClick(new onCheckBoxClickListener() {
             @Override
             public void onCheckBoxClick() {
                 onCtListItemCheckBoxClick();
@@ -649,7 +600,7 @@ public class MainActivity extends Activity {
     }
 
     private void setupMainCtListUpdater() {
-        mainCtListUpdater = new MainCtListUpdater(mainCtListView, ctRecordsHandler);
+        mainCtListUpdater = new MainCtListUpdater(mainCtListView, ctRecordsHandler, this);
     }
 
     private void setupShowExpirationTime() {

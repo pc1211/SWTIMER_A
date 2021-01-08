@@ -25,8 +25,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     //endregion
 
     //region Constantes
-    final int LABEL_MARGIN_TOP = 1;  //  Marge avant la 2e ligne si orientation Portrait (affichage sur deux lignes)
-    final String SEPARATOR = "-";   //  Séparateur entre Time et Label si orientation Paysage (affichage sur une seule ligne)
+    final int LABEL_MARGIN_TOP = 1;  //  Marge avant la 2e ligne
     final String FILLER_LABEL = "ABCDEFGHIJK";   //  Prévoir la place pour un label de taille maximale
     final long FILLER_TIME_MS = 0;   //  correspondant à 00:00:00.0 si TS
     //endregion
