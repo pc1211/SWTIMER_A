@@ -68,7 +68,9 @@ public class MainCtListUpdater {
 
     private void automatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
-        updateTime();
+        long nowm = System.currentTimeMillis();
+        ctRecordsHandler.updateTimeAll(nowm);
+        repaint();
     }
 
     private void onCtListItemButtonClick() {    //  Reprogrammer le timer automatique
@@ -77,7 +79,9 @@ public class MainCtListUpdater {
     }
 
     private void onCtListExpiredTimer(CtRecord ctRecord) {
-        updateTime();
+        long nowm = System.currentTimeMillis();
+        ctRecordsHandler.updateTimeAll(nowm);
+        repaint();
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), context);
         if (automaticOn) {   //  => Pas de Beep au Resume suite à reload de MainCtList()
             beep(context);
@@ -88,13 +92,9 @@ public class MainCtListUpdater {
         ctRecordsHandler.sortCtRecords();
         mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
         mainCtListItemAdapter.notifyDataSetChanged();
-        mainCtListView.post(runnableCheckNeedScrollBar);
-    }
-
-    public void updateTime() {
         long nowm = System.currentTimeMillis();
         ctRecordsHandler.updateTimeAll(nowm);
-        repaint();
+        mainCtListView.post(runnableCheckNeedScrollBar);
     }
 
     public void repaint() {

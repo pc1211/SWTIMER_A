@@ -178,8 +178,8 @@ public class MainActivity extends Activity {
         updateDisplayStateButtonColors();
         updateDisplayKeepScreen();
         mainCtListUpdater.reload();
-        updateDisplayButtonsAndDotMatrixDisplayVisibility();
         mainCtListUpdater.startAutomatic();
+        updateDisplayButtonsAndDotMatrixDisplayVisibility();
         invalidateOptionsMenu();
     }
 
@@ -257,8 +257,8 @@ public class MainActivity extends Activity {
             if (command.equals(COMMANDS.SELECT_ALL_CT)) {
                 ctRecordsHandler.selectAll();
             }
-            mainCtListUpdater.repaint();
             updateDisplayButtonsAndDotMatrixDisplayVisibility();
+            mainCtListUpdater.repaint();
         } else {
             toastLong("The list must contain at least one Chrono or Timer", this);
         }
@@ -266,10 +266,10 @@ public class MainActivity extends Activity {
 
     private void onButtonClickActionOnSelection(COMMANDS command, long nowm) {
         if (ctRecordsHandler.getCountSelection() >= 1) {
+            mainCtListUpdater.stopAutomatic();
             if (command.equals(COMMANDS.REMOVE_SELECTED_CT)) {
                 removeSelection();
             } else {   //  Pas Remove Selection
-                mainCtListUpdater.stopAutomatic();
                 if (command.equals(COMMANDS.SPLIT_SELECTED_CT)) {
                     ctRecordsHandler.splitSelection(nowm);
                 }
@@ -282,9 +282,10 @@ public class MainActivity extends Activity {
                 if (command.equals(COMMANDS.RESET_SELECTED_CT)) {
                     ctRecordsHandler.resetSelection();
                 }
-                mainCtListUpdater.updateTime();
-                mainCtListUpdater.startAutomatic();   //  Reprogrammer le timer automatique
+                ctRecordsHandler.updateTimeAll(nowm);
+                mainCtListUpdater.repaint();
             }
+            mainCtListUpdater.startAutomatic();   //  Reprogrammer le timer automatique
         } else {
             toastLong("The list must contain at least one selected Chrono or Timer", this);
         }
@@ -301,7 +302,7 @@ public class MainActivity extends Activity {
     private void onStateButtonClickShowExpirationTime() {
         showExpirationTime = !showExpirationTime;
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
-        mainCtListUpdater.updateTime();
+        mainCtListUpdater.repaint();
         updateDisplayStateButtonColor(STATE_COMMANDS.SHOW_EXPIRATION_TIME);
     }
 
@@ -383,10 +384,8 @@ public class MainActivity extends Activity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int id) {
-                mainCtListUpdater.stopAutomatic();
                 ctRecordsHandler.removeSelection();
                 mainCtListUpdater.reload();
-                mainCtListUpdater.startAutomatic();
                 updateDisplayButtonsAndDotMatrixDisplayVisibility();
             }
         });
