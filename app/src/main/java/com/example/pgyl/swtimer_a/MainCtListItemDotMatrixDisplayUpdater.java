@@ -57,7 +57,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         dotMatrixDisplayView.fillRect(displayRect, TIME_ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
         dotMatrixDisplayView.setSymbolPos(timeDisplayRect.left + margins.left, timeDisplayRect.top + margins.top);
         dotMatrixDisplayView.writeText(timeText, TIME_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        dotMatrixDisplayView.setSymbolPos(labelDisplayRect.left + margins.left, labelDisplayRect.top + margins.top);
+        dotMatrixDisplayView.setSymbolPos(labelDisplayRect.left + margins.left, labelDisplayRect.top + LABEL_MARGIN_TOP);
         String label = ((labelText.length() > FILLER_LABEL.length()) ? labelText.substring(0, FILLER_LABEL.length()) : labelText);   //  Label (limité)
         dotMatrixDisplayView.writeText(label, LABEL_ON_COLOR, defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
@@ -79,7 +79,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
         displayRect = new Rect(gridRect.left, gridRect.top, displayRectWidth, displayRectHeight);  //  Affichage au début de la grille
         timeDisplayRect = new Rect(displayRect.left, displayRect.top, displayRect.right, margins.top + fillerTimeTextDimensions.height + extraFont.getSymbol('.').getDimensions().height);  //  Affichage sur la 1e ligne
-        labelDisplayRect = new Rect(displayRect.left, timeDisplayRect.bottom + LABEL_MARGIN_TOP - margins.top, timeDisplayRect.right, displayRect.bottom);  //  Affichage sur la 2e ligne
+        labelDisplayRect = new Rect(displayRect.left, timeDisplayRect.bottom, displayRect.right, displayRect.bottom);  //  Affichage sur la 2e ligne
 
         dotMatrixDisplayView.setInternalMarginCoeffs(INTERNAL_MARGIN_SIZE_COEFFS);
         dotMatrixDisplayView.setExternalMarginCoeffs(ALIGN_LEFT_HEIGHT);
