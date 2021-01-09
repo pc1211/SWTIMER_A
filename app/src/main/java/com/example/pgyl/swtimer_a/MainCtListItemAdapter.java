@@ -101,14 +101,14 @@ public class MainCtListItemAdapter extends BaseAdapter {
         return i;
     }
 
-    private void onCbSelectionClick(View rowv, int pos, boolean isChecked) {
+    private void onCbSelectionClick(int pos, boolean isChecked) {
         ctRecords.get(pos).setSelectedOn(isChecked);
         if (mOnCheckBoxClickListener != null) {
             mOnCheckBoxClickListener.onCheckBoxClick();
         }
     }
 
-    private void onCbSelectionLongClick(View rowv, int pos) {
+    private void onCbSelectionLongClick(int pos) {
         for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
             ctRecords.get(i).setSelectedOn(i == pos);
         }
@@ -146,15 +146,11 @@ public class MainCtListItemAdapter extends BaseAdapter {
         paintView(rowv, pos);
     }
 
-    private void onButtonClockAppAlarmClick(View rowv, int pos) {
-        if (mOnButtonClickListener != null) {
-            mOnButtonClickListener.onButtonClick();
-        }
+    private void onButtonClockAppAlarmClick(int pos) {
         ctRecords.get(pos).setClockAppAlarmOn(!ctRecords.get(pos).isClockAppAlarmOn());
-        paintView(rowv, pos);
     }
 
-    private void onTimeLabelClick(View rowv, int pos) {
+    private void onTimeLabelClick(int pos) {
         launchCtDisplayActivity(ctRecords.get(pos).getIdct());
     }
 
@@ -225,13 +221,13 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.cbSelection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                onCbSelectionClick(rowv, pos, isChecked);
+                onCbSelectionClick(pos, isChecked);
             }
         });
         viewHolder.cbSelection.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onCbSelectionLongClick(rowv, pos);
+                onCbSelectionLongClick(pos);
                 return false;
             }
         });
@@ -254,14 +250,14 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonClockAppAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onButtonClockAppAlarmClick(rowv, pos);
+                onButtonClockAppAlarmClick(pos);
             }
         });
         viewHolder.buttonDotMatrixDisplayTimeLabel.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonDotMatrixDisplayTimeLabel.setOnCustomClickListener(new DotMatrixDisplayView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
-                onTimeLabelClick(rowv, pos);
+                onTimeLabelClick(pos);
             }
         });
         mainCtListItemDotMatrixDisplayUpdater.setupDimensions(viewHolder.buttonDotMatrixDisplayTimeLabel);
