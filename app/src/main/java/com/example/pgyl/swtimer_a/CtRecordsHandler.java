@@ -20,6 +20,7 @@ import static com.example.pgyl.pekislib_a.Constants.SWITCHES;
 import static com.example.pgyl.pekislib_a.StringDBUtils.getDefaultsBase;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.ROUND_TO_TIME_UNIT_PRECISION;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeUnit;
@@ -189,7 +190,7 @@ public class CtRecordsHandler {
 
     private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
         if (clockAppAlarmSwitch.equals(SWITCHES.ON)) {   //  On peut immédiatement demander à Clock App de créer l'alarme, sans devoir quitter SwTimer App
-            long gap = msToTimeUnit(timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss)) - timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm)), TIME_UNITS.SEC);
+            long gap = msToTimeUnit(timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss)) - timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm)), TIME_UNITS.SEC, ROUND_TO_TIME_UNIT_PRECISION);
             String message = "Setting " + ctRecord.getClockAppAlarmDescription() + CRLF + "(" + gap + "s before exact end)";
             setClockAppAlarm(context, ctRecord.getTimeExp(), ctRecord.getLabel(), message);
         } else {   //  OFF  ;  A chaque timer actif avec Clock App alarme correspondra une demande de suppression d'alarme Clock App si (stop, reset ou remove) via sélection ou via bouton individuel

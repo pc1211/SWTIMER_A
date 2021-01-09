@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.ROUND_TO_TIME_UNIT_PRECISION;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
@@ -26,15 +27,6 @@ import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 
 public class MainCtListItemAdapter extends BaseAdapter {
-    public interface onButtonClickListener {
-        void onButtonClick();
-    }
-
-    public void setOnItemButtonClick(onButtonClickListener listener) {
-        mOnButtonClickListener = listener;
-    }
-
-    private onButtonClickListener mOnButtonClickListener;
 
     public interface onCheckBoxClickListener {
         void onCheckBoxClick();
@@ -65,7 +57,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     private void init() {
-        mOnButtonClickListener = null;
         mOnCheckBoxClickListener = null;
     }
 
@@ -120,9 +111,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     private void onButtonModeRunClick(View rowv, int pos) {
         long nowm = System.currentTimeMillis();
-        if (mOnButtonClickListener != null) {
-            mOnButtonClickListener.onButtonClick();
-        }
         if (!ctRecords.get(pos).isRunning()) {
             ctRecords.get(pos).start(nowm, setClockAppAlarmOnStartTimer);
         } else {
@@ -134,9 +122,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     private void onButtonSplitResetClick(View rowv, int pos) {
         long nowm = System.currentTimeMillis();
-        if (mOnButtonClickListener != null) {
-            mOnButtonClickListener.onButtonClick();
-        }
         if ((ctRecords.get(pos).isRunning()) || (ctRecords.get(pos).isSplitted())) {
             ctRecords.get(pos).split(nowm);
         } else {
@@ -197,8 +182,13 @@ public class MainCtListItemAdapter extends BaseAdapter {
         unpressedColor = (ctRecords.get(pos).isClockAppAlarmOn() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonClockAppAlarm.setColors(pressedColor, unpressedColor);
 
-        TIME_UNITS timeUnitPrecision = (((!ctRecords.get(pos).isRunning()) || (ctRecords.get(pos).isSplitted())) ? APP_TIME_UNIT_PRECISION : TIME_UNITS.SEC);
-        String timeText = (((ctRecords.get(pos).getMode().equals(MODES.TIMER)) && showExpirationTime) ? getFormattedTimeZoneLongTimeDate(ctRecords.get(pos).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(pos).getTimeDisplay(), timeUnitPrecision));
+        TIME_UNITS timeUnitPrecision = TIME_UNITS.SEC;
+        boolean roundToTimeUnitPrecision = !ROUND_TO_TIME_UNIT_PRECISION;
+        if ((!ctRecords.get(pos).isRunning()) || (ctRecords.get(pos).isSplitted())) {
+            timeUnitPrecision = APP_TIME_UNIT_PRECISION;
+            roundToTimeUnitPrecision = ROUND_TO_TIME_UNIT_PRECISION;
+        }
+        String timeText = (((ctRecords.get(pos).getMode().equals(MODES.TIMER)) && showExpirationTime) ? getFormattedTimeZoneLongTimeDate(ctRecords.get(pos).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(pos).getTimeDisplay(), timeUnitPrecision, roundToTimeUnitPrecision));
 
         mainCtListItemDotMatrixDisplayUpdater.displayText(viewHolder.buttonDotMatrixDisplayTimeLabel, timeText, ctRecords.get(pos).getLabel());
     }

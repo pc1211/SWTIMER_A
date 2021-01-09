@@ -10,6 +10,7 @@ import com.example.pgyl.pekislib_a.DotMatrixFont;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_HEIGHT;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.ROUND_TO_TIME_UNIT_PRECISION;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
 
@@ -68,7 +69,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         int displayRectWidth;
         int displayRectHeight;
 
-        BiDimensions fillerTimeTextDimensions = getFontTextDimensions(msToTimeFormatD(FILLER_TIME_MS, APP_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
+        BiDimensions fillerTimeTextDimensions = getFontTextDimensions(msToTimeFormatD(FILLER_TIME_MS, APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
         BiDimensions fillerLabelTextDimensions = getFontTextDimensions(FILLER_LABEL, defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         displayRectWidth = margins.left + fillerLabelTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du label maximum; margins.right remplace la dernière marge droite

@@ -56,9 +56,9 @@ import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTableStateButto
 
 //  MainActivity fait appel à CtRecordShandler pour la gestion des CtRecord (création, suppression, tri, écoute des événements, ...) grâce aux boutons de contrôle agissant sur la sélection des items de la liste, ...
 //  MainCtListUpdater maintient la liste de MainActivity (rafraîchissement, scrollbar, ...), fait appel à MainCtListAdapter (pour gérer chaque item) et également à CtRecordShandler (pour leur mise à jour)
-//  MainCtListItemAdapter reçoit ses items (CtRecord) de la part de MainCtListUpdater et gère chaque item de la liste (avec ses boutons de contrôle, clics relayés à MainActivity pour nouveau tri éventuel)
-//  CtRecordsHandler reçoit les événements onExpiredTimer() des CtRecord (et les relaie à MainActivity), et aussi leurs onRequestClockAppAlarmSwitch() pour la création/suppression d'alarmes dans Clock App
-//  Si un item de liste génère un onExpiredTimer(), il sera réceptionné par CtRecordsHandler, qui le relaie à MainActivity, qui le signalera à l'utilisateur
+//  MainCtListItemAdapter reçoit ses items (CtRecord) de la part de MainCtListUpdater et gère chaque item de la liste (avec ses boutons de contrôle)
+//  CtRecordsHandler reçoit les événements onExpiredTimer() des CtRecord (et les relaie à MainCtListUpdater), et aussi leurs onRequestClockAppAlarmSwitch() pour la création/suppression d'alarmes dans Clock App
+//  Si un item de liste génère un onExpiredTimer(), MainCtListUpdater le signalera à l'utilisateur
 public class MainActivity extends Activity {
     //region Constantes
     private enum COMMANDS {
@@ -266,7 +266,6 @@ public class MainActivity extends Activity {
 
     private void onButtonClickActionOnSelection(COMMANDS command, long nowm) {
         if (ctRecordsHandler.getCountSelection() >= 1) {
-            mainCtListUpdater.stopAutomatic();
             if (command.equals(COMMANDS.REMOVE_SELECTED_CT)) {
                 removeSelection();
             } else {   //  Pas Remove Selection
@@ -285,7 +284,6 @@ public class MainActivity extends Activity {
                 ctRecordsHandler.updateTimeAll(nowm);
                 mainCtListUpdater.repaint();
             }
-            mainCtListUpdater.startAutomatic();   //  Reprogrammer le timer automatique
         } else {
             toastLong("The list must contain at least one selected Chrono or Timer", this);
         }
@@ -384,8 +382,10 @@ public class MainActivity extends Activity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int id) {
+                mainCtListUpdater.stopAutomatic();
                 ctRecordsHandler.removeSelection();
                 mainCtListUpdater.reload();
+                mainCtListUpdater.startAutomatic();
                 updateDisplayButtonsAndDotMatrixDisplayVisibility();
             }
         });

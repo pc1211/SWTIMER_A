@@ -73,11 +73,6 @@ public class MainCtListUpdater {
         repaint();
     }
 
-    private void onCtListItemButtonClick() {    //  Reprogrammer le timer automatique
-        stopAutomatic();
-        startAutomatic();
-    }
-
     private void onCtListExpiredTimer(CtRecord ctRecord) {
         long nowm = System.currentTimeMillis();
         ctRecordsHandler.updateTimeAll(nowm);
@@ -143,12 +138,6 @@ public class MainCtListUpdater {
 
     private void setupMainCtListAdapter() {
         mainCtListItemAdapter = (MainCtListItemAdapter) mainCtListView.getAdapter();
-        mainCtListItemAdapter.setOnItemButtonClick(new MainCtListItemAdapter.onButtonClickListener() {
-            @Override
-            public void onButtonClick() {
-                onCtListItemButtonClick();
-            }
-        });
     }
 
     private void setupRunnables() {

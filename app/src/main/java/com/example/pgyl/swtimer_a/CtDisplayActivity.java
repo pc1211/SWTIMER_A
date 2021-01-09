@@ -19,7 +19,6 @@ import com.example.pgyl.pekislib_a.PresetsActivity;
 import com.example.pgyl.pekislib_a.StringDB;
 import com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
 import com.example.pgyl.pekislib_a.SymbolButtonView;
-import com.example.pgyl.pekislib_a.TimeDateUtils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +47,8 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.setDefaults;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmm;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.ROUND_TO_TIME_UNIT_PRECISION;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeUnit;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.timeFormatDToMs;
@@ -318,7 +319,7 @@ public class CtDisplayActivity extends Activity {
 
     private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
         if (clockAppAlarmSwitch.equals(SWITCHES.ON)) {
-            long gap = msToTimeUnit(timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss)) - timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm)), TimeDateUtils.TIME_UNITS.SEC);
+            long gap = msToTimeUnit(timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss)) - timeFormatDToMs(getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmm)), TIME_UNITS.SEC, ROUND_TO_TIME_UNIT_PRECISION);
             String message = "Setting " + ctRecord.getClockAppAlarmDescription() + CRLF + "(" + gap + "s before exact end)";
             ClockAppAlarmUtils.setClockAppAlarm(this, ctRecord.getTimeExp(), ctRecord.getLabel(), message);
         } else {   //  OFF
