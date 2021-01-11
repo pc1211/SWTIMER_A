@@ -88,7 +88,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     }
 
     public void setupDimensions(DotMatrixDisplayView dotMatrixDisplayView) {       //  La grille (gridRect) contient le temps (1e ligne) et le label (2e ligne)
-        final RectF INTERNAL_MARGIN_SIZE_COEFFS = new RectF(0.02f, 0, 0.02f, 0);   //  Marge autour de l'affichage proprement dit (% de largeur)
+        final RectF INTERNAL_MARGIN_SIZE_COEFFS = new RectF(0, 0, 0, 0);   //  Marge autour de l'affichage proprement dit (% de largeur)
         int displayRectWidth;
         int displayRectHeight;
 
