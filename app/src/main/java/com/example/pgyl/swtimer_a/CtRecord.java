@@ -50,16 +50,14 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     private long timeDef;                 //  Temps par défaut (en ms)
     private long timeDefInit;             //  Temps par défaut initial (non éditable) (en ms)
     private long timeExp;                 //  Temps d'expiration (si Timer) (en ms)
-    private long timeDisplay;             //  Temps à afficher (écoulé (si Chrono) ou restant (si Timer)) (en ms)
-    private long timeDisplayWithoutSplit; //  Idem timeDisplay mais sans tenir compte du Split (pour Tri de liste dans MainActivity) (en ms)
     //endregion
 
     public CtRecord() {
-        fill(0, MODES.CHRONO, false, false, false, false, null, null, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, getMidnightTimeMillis(), TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
+        fill(0, MODES.CHRONO, false, false, false, false, null, null, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE, getMidnightTimeMillis());
     }
 
     public CtRecord(int idct, MODES mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarmOn, String label, String labelInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp) {  //  pas timeDisplay ni timeDisplayWithoutSplit, toujours mis à TIME_DEFAULT_VALUE à l'initialisation
-        fill(idct, mode, selected, running, splitted, clockAppAlarmOn, label, labelInit, timeStart, timeAcc, timeAccUntilSplit, timeDef, timeDefInit, timeExp, TIME_DEFAULT_VALUE, TIME_DEFAULT_VALUE);
+        fill(idct, mode, selected, running, splitted, clockAppAlarmOn, label, labelInit, timeStart, timeAcc, timeAccUntilSplit, timeDef, timeDefInit, timeExp);
     }
 
     public int getIdct() {
@@ -194,7 +192,6 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return setOK;
     }
 
-
     public long getTimeDefInit() {
         return timeDefInit;
     }
@@ -207,15 +204,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return timeExp;
     }
 
-    public long getTimeDisplay() {   //  Pas de set
-        return timeDisplay;
-    }
-
-    public long getTimeDisplayWithoutSplit() {   //  Pas de set
-        return timeDisplayWithoutSplit;
-    }
-
-    public void updateTime(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
+    public long getTimeDisplay(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
+        long timeDisplay = TIME_DEFAULT_VALUE;
         boolean expired = false;
         if (mode.equals(MODES.TIMER)) {
             if (running) {
@@ -223,8 +213,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                     running = false;
                     splitted = false;
                     timeAcc = 0;
-                    timeDisplayWithoutSplit = timeDef;
-                    timeDisplay = timeDisplayWithoutSplit;
+                    timeDisplay = timeDef;
                     clockAppAlarmOn = false;
                     if (mOnExpiredTimerListener != null) {
                         mOnExpiredTimerListener.onExpiredTimer(this);
@@ -243,9 +232,9 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                 tacc = -tacc;
                 taus = -taus;
             }
-            timeDisplayWithoutSplit = (timeDef + tacc) % TIME_UNITS.DAY.DURATION_MS();      //  => Retour à 00:00:00.00 après 23:59:59.99
-            timeDisplay = ((splitted) ? (timeDef + taus) % TIME_UNITS.DAY.DURATION_MS() : timeDisplayWithoutSplit);
+            timeDisplay = (timeDef + ((splitted) ? taus : tacc)) % TIME_UNITS.DAY.DURATION_MS();   //  => Retour à 00:00:00.00 après 23:59:59.99
         }
+        return timeDisplay;
     }
 
     public void start(long nowm, boolean setClockAppAlarmOnStartTimer) {
@@ -312,7 +301,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return "Clock App alarm" + CRLF + label + " @ " + getFormattedTimeZoneLongTimeDate(timeExp, HHmm);
     }
 
-    private void fill(int idct, MODES mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarmOn, String label, String labelInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp, long timeDisplay, long timeDisplayWithoutSplit) {
+    private void fill(int idct, MODES mode, boolean selected, boolean running, boolean splitted, boolean clockAppAlarmOn, String label, String labelInit, long timeStart, long timeAcc, long timeAccUntilSplit, long timeDef, long timeDefInit, long timeExp) {
         this.idct = idct;
         this.mode = mode;
         this.selected = selected;
@@ -327,8 +316,6 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         this.timeDef = timeDef;
         this.timeDefInit = timeDefInit;
         this.timeExp = timeExp;
-        this.timeDisplay = timeDisplay;
-        this.timeDisplayWithoutSplit = timeDisplayWithoutSplit;
     }
 
 }

@@ -16,12 +16,6 @@ import java.util.ArrayList;
 
 import static com.example.pgyl.pekislib_a.Constants.BUTTON_STATES;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.ROUND_TO_TIME_UNIT_PRECISION;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
-import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
@@ -116,8 +110,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         } else {
             ctRecords.get(pos).stop(nowm);
         }
-        ctRecords.get(pos).updateTime(nowm);
-        paintView(rowv, pos);
+        paintView(rowv, pos, nowm);
     }
 
     private void onButtonSplitResetClick(View rowv, int pos) {
@@ -127,8 +120,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         } else {
             ctRecords.get(pos).reset();
         }
-        ctRecords.get(pos).updateTime(nowm);
-        paintView(rowv, pos);
+        paintView(rowv, pos, nowm);
     }
 
     private void onButtonClockAppAlarmClick(int pos) {
@@ -147,11 +139,12 @@ public class MainCtListItemAdapter extends BaseAdapter {
         rowView.setTag(viewHolder);
 
         setupViewHolder(viewHolder, rowView, position);
-        paintView(rowView, position);
+        long nowm = System.currentTimeMillis();
+        paintView(rowView, position, nowm);
         return rowView;
     }
 
-    public void paintView(View rowView, int position) {    //  Décoration proprement dite du getView
+    public void paintView(View rowView, int position, long nowm) {    //  Décoration proprement dite du getView
         final String LIGHT_ON_UNPRESSED_COLOR = "FF9A22";
         final String LIGHT_ON_PRESSED_COLOR = "995400";
         final String LIGHT_OFF_PRESSED_COLOR = "666666";
@@ -182,15 +175,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         unpressedColor = (ctRecords.get(pos).isClockAppAlarmOn() ? LIGHT_ON_UNPRESSED_COLOR : BUTTON_STATES.UNPRESSED.DEFAULT_COLOR());
         viewHolder.buttonClockAppAlarm.setColors(pressedColor, unpressedColor);
 
-        TIME_UNITS timeUnitPrecision = TIME_UNITS.SEC;
-        boolean roundToTimeUnitPrecision = !ROUND_TO_TIME_UNIT_PRECISION;
-        if ((!ctRecords.get(pos).isRunning()) || (ctRecords.get(pos).isSplitted())) {
-            timeUnitPrecision = APP_TIME_UNIT_PRECISION;
-            roundToTimeUnitPrecision = ROUND_TO_TIME_UNIT_PRECISION;
-        }
-        String timeText = (((ctRecords.get(pos).getMode().equals(MODES.TIMER)) && showExpirationTime) ? getFormattedTimeZoneLongTimeDate(ctRecords.get(pos).getTimeExp(), HHmmss) : msToTimeFormatD(ctRecords.get(pos).getTimeDisplay(), timeUnitPrecision, roundToTimeUnitPrecision));
-
-        mainCtListItemDotMatrixDisplayUpdater.displayText(viewHolder.buttonDotMatrixDisplayTimeLabel, timeText, ctRecords.get(pos).getLabel());
+        mainCtListItemDotMatrixDisplayUpdater.displayTimeAndLabel(viewHolder.buttonDotMatrixDisplayTimeLabel, ctRecords.get(pos), showExpirationTime, nowm);
     }
 
     private MainCtListItemViewHolder buildViewHolder(View rowView) {

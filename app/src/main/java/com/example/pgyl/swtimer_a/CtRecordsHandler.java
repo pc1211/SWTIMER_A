@@ -47,11 +47,11 @@ public class CtRecordsHandler {
 
     //region Constantes
     private enum ACTIONS_ON_ALL {
-        UPDATE_TIME, INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT
+        INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT
     }
 
     private enum ACTIONS_ON_SELECTION {
-        UPDATE_TIME, START, STOP, SPLIT, RESET, REMOVE, COUNT
+        START, STOP, SPLIT, RESET, REMOVE, COUNT
     }
 
     private final String ALARM_SEPARATOR = "£µ$***ALARM***$µ£";
@@ -127,11 +127,6 @@ public class CtRecordsHandler {
         }
     }
 
-    public int updateTimeAll(long nowm) {
-        this.nowm = nowm;
-        return actionOnAll(ACTIONS_ON_ALL.UPDATE_TIME);
-    }
-
     public void invertSelectionAll() {
         actionOnAll(ACTIONS_ON_ALL.INVERT_SELECTION);
     }
@@ -150,11 +145,6 @@ public class CtRecordsHandler {
 
     public int getCountAllTimers() {
         return actionOnAll(ACTIONS_ON_ALL.COUNT_TIMERS);
-    }
-
-    public void updateTimeSelection(long nowm) {
-        this.nowm = nowm;
-        actionOnSelection(ACTIONS_ON_SELECTION.UPDATE_TIME);
     }
 
     public void startSelection(long nowm, boolean setClockAppAlarmOnStartTimer) {
@@ -221,10 +211,6 @@ public class CtRecordsHandler {
         int count = 0;
         if (!ctRecords.isEmpty()) {
             for (int i = 0; i <= (ctRecords.size() - 1); i = i + 1) {
-                if (action.equals(ACTIONS_ON_ALL.UPDATE_TIME)) {
-                    ctRecords.get(i).updateTime(nowm);
-                    count = count + 1;
-                }
                 if (action.equals(ACTIONS_ON_ALL.INVERT_SELECTION)) {
                     ctRecords.get(i).setSelectedOn(!ctRecords.get(i).isSelected());
                 }
@@ -256,9 +242,6 @@ public class CtRecordsHandler {
             do {
                 if (ctRecords.get(i).isSelected()) {
                     count = count + 1;   //  Compter
-                    if (action.equals(ACTIONS_ON_SELECTION.UPDATE_TIME)) {
-                        ctRecords.get(i).updateTime(nowm);
-                    }
                     if (action.equals(ACTIONS_ON_SELECTION.START)) {
                         ctRecords.get(i).start(nowm, setClockAppAlarmOnStartTimer);
                     }

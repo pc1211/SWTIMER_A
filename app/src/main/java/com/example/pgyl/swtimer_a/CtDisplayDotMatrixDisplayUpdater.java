@@ -109,8 +109,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
         dotMatrixDisplayView.rebuildStructure();
     }   //  A appeler uniquement si MAJ en temps réel
 
-    public void displayCurrentTimeAndLabel() {
-        displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION), currentCtRecord.getLabel());
+    public void displayTimeAndLabel(long nowm) {
+        displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(nowm), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION), currentCtRecord.getLabel());
     }
 
     public void displayInitTimeAndLabel() {
@@ -138,7 +138,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
         long nowm = System.currentTimeMillis();
         if ((!inAutomatic) && (!dotMatrixDisplayView.isDrawing())) {   //  OK pour rafraîchir l'affichage
             inAutomatic = true;
-            currentCtRecord.updateTime(nowm);     //  Mise à jour du temps
             automaticDisplay(nowm);
             timeStart = nowm;   //  Mettre à jour le moment du dernier rafraichissement d'affichage
             inAutomatic = false;
@@ -162,7 +161,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
                 dotMatrixDisplayView.updateDisplay();
             }
         } else {
-            displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION));
+            displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(nowm), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION));
         }
     }
 
@@ -224,7 +223,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void setupDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (gridDisplayRect, glissant en cas de scroll)
-        BiDimensions timeTextDimensions = getFontTextDimensions(msToTimeFormatD(currentCtRecord.getTimeDisplay(), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
+        BiDimensions timeTextDimensions = getFontTextDimensions(msToTimeFormatD(currentCtRecord.getTimeDefInit(), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9). getTimeDefInit() utilisé juste pour avoir un temps
         BiDimensions labelTextDimensions = getFontTextDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         int displayRectWidth = margins.left + timeTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du temps, avec margins.right remplaçant la dernière marge droite)

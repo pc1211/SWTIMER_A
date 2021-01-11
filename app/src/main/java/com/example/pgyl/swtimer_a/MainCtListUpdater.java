@@ -69,14 +69,12 @@ public class MainCtListUpdater {
     private void automatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
         long nowm = System.currentTimeMillis();
-        ctRecordsHandler.updateTimeAll(nowm);
-        repaint();
+        repaint(nowm);
     }
 
     private void onCtListExpiredTimer(CtRecord ctRecord) {
         long nowm = System.currentTimeMillis();
-        ctRecordsHandler.updateTimeAll(nowm);
-        repaint();
+        repaint(nowm);
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), context);
         if (automaticOn) {   //  => Pas de Beep au Resume suite à reload de MainCtList()
             beep(context);
@@ -87,17 +85,15 @@ public class MainCtListUpdater {
         ctRecordsHandler.sortCtRecords();
         mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
         mainCtListItemAdapter.notifyDataSetChanged();
-        long nowm = System.currentTimeMillis();
-        ctRecordsHandler.updateTimeAll(nowm);
         mainCtListView.post(runnableCheckNeedScrollBar);
     }
 
-    public void repaint() {
+    public void repaint(long nowm) {
         if (mainCtListView.getChildCount() > 0) {
             int firstVisiblePos = mainCtListView.getFirstVisiblePosition();
             int lastVisiblePos = mainCtListView.getLastVisiblePosition();
             for (int i = firstVisiblePos; i <= lastVisiblePos; i = i + 1) {
-                mainCtListItemAdapter.paintView(mainCtListView.getChildAt(i - firstVisiblePos), i);
+                mainCtListItemAdapter.paintView(mainCtListView.getChildAt(i - firstVisiblePos), i, nowm);
             }
         }
     }

@@ -183,13 +183,12 @@ public class CtDisplayActivity extends Activity {
                 }
             }
         }
-        updateCurrentRecord(nowm);
         getActionBar().setTitle(currentCtRecord.getLabel());
         setupDotMatrixDisplayUpdater(currentCtRecord);
         setupDotMatrixDisplayColors();
         setupDotMatrixDisplayCoeffs();
         rebuildDotMatrixDisplayStructure();
-        updateDisplayDotMatrixDisplay();
+        updateDisplayDotMatrixDisplay(nowm);
         updateDisplayStateButtonColors();
         updateDisplayBackScreenColor();
         updateDisplayKeepScreen();
@@ -283,9 +282,8 @@ public class CtDisplayActivity extends Activity {
         if (command.equals(STATE_COMMANDS.TIMER_MODE)) {
             onStateButtonClickMode(MODES.TIMER);
         }
-        updateCurrentRecord(nowm);
         updateDisplayStateButtonColors();
-        updateDisplayDotMatrixDisplay();
+        updateDisplayDotMatrixDisplay(nowm);
     }
 
     private void onStateButtonClickRun(long nowm) {
@@ -329,7 +327,8 @@ public class CtDisplayActivity extends Activity {
 
     private void onExpiredTimer(CtRecord ctRecord) {
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), this);
-        updateDisplayDotMatrixDisplay();
+        long nowm = System.currentTimeMillis();
+        updateDisplayDotMatrixDisplay(nowm);
         updateDisplayStateButtonColors();
         beep(this);
     }
@@ -338,8 +337,8 @@ public class CtDisplayActivity extends Activity {
         launchPresetsActivity();
     }
 
-    private void updateDisplayDotMatrixDisplay() {
-        dotMatrixDisplayUpdater.displayCurrentTimeAndLabel();
+    private void updateDisplayDotMatrixDisplay(long nowm) {
+        dotMatrixDisplayUpdater.displayTimeAndLabel(nowm);
         if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
             dotMatrixDisplayUpdater.resetScroll();
             dotMatrixDisplayUpdater.startAutomatic(currentCtRecord.isReset());
@@ -526,10 +525,6 @@ public class CtDisplayActivity extends Activity {
                 CtDisplayActivity.this.onExpiredTimer(ctRecord);
             }
         });
-    }
-
-    private void updateCurrentRecord(long nowm) {
-        currentCtRecord.updateTime(nowm);
     }
 
     private void launchPresetsActivity() {

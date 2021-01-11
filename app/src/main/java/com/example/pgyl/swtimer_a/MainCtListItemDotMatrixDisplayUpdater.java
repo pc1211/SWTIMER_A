@@ -10,7 +10,10 @@ import com.example.pgyl.pekislib_a.DotMatrixFont;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_HEIGHT;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.ROUND_TO_TIME_UNIT_PRECISION;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
 
@@ -23,12 +26,13 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     private Rect displayRect;
     private Rect timeDisplayRect;
     private Rect labelDisplayRect;
+    private int timeHMSTextLength;
     //endregion
 
     //region Constantes
     final int LABEL_MARGIN_TOP = 1;  //  Marge avant la 2e ligne
     final String FILLER_LABEL = "ABCDEFGHIJK";   //  Prévoir la place pour un label de taille maximale
-    final long FILLER_TIME_MS = 0;   //  correspondant à 00:00:00.0 si TS
+    final long FILLER_TIME_MS = 0;   //  correspondant à 00:00:00.0 si TS, 00:00:00 si SEC
     //endregion
 
     public MainCtListItemDotMatrixDisplayUpdater() {
@@ -41,6 +45,8 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         setupDefaultFont();
         setupExtraFont();
         setupMargins();
+
+        timeHMSTextLength = msToTimeFormatD(FILLER_TIME_MS, TIME_UNITS.SEC, ROUND_TO_TIME_UNIT_PRECISION).length();     //  8 car 00:00:00
     }
 
     public void close() {
@@ -50,17 +56,34 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         extraFont = null;
     }
 
-    public void displayText(DotMatrixDisplayView dotMatrixDisplayView, String timeText, String labelText) {
-        final String TIME_ON_COLOR = "999900";
+    public void displayTimeAndLabel(DotMatrixDisplayView dotMatrixDisplayView, CtRecord ctRecord, boolean showExpirationTime, long nowm) {
+        final String TIME1_ON_COLOR = "FF9A22";   //  Couleur de HH:MM:SS
+        final String TIME2_ON_COLOR = "707070";    //  Couleur de .T
+        final String TIME_EXP_ON_COLOR = "EC0039";    //  Couleur si Temps d'expiration (si timer)
         final String LABEL_ON_COLOR = "707070";
         final String OFF_COLOR = "404040";
+        String timeText;
 
-        dotMatrixDisplayView.fillRect(displayRect, TIME_ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
+        dotMatrixDisplayView.fillRect(displayRect, TIME1_ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
         dotMatrixDisplayView.setSymbolPos(timeDisplayRect.left + margins.left, timeDisplayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(timeText, TIME_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        if ((showExpirationTime) && (ctRecord.getMode().equals(CtRecord.MODES.TIMER))) {   //  Afficher heure d'expiration du timer
+            timeText = getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss);
+            dotMatrixDisplayView.writeText(timeText, TIME_EXP_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        } else {  //  Affichage normal
+            timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION);
+            if ((timeText.length() > timeHMSTextLength) && (ctRecord.isRunning()) && (!ctRecord.isSplitted())) {  //  Bicolore possible si en marche et non splitté
+                dotMatrixDisplayView.writeText(timeText.substring(0, timeHMSTextLength), TIME1_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+                dotMatrixDisplayView.writeText(timeText.substring(timeHMSTextLength), TIME2_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+            } else {  //  Une seule couleur
+                dotMatrixDisplayView.writeText(timeText, TIME1_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+            }
+        }
         dotMatrixDisplayView.setSymbolPos(labelDisplayRect.left + margins.left, labelDisplayRect.top + LABEL_MARGIN_TOP);
-        String label = ((labelText.length() > FILLER_LABEL.length()) ? labelText.substring(0, FILLER_LABEL.length()) : labelText);   //  Label (limité)
-        dotMatrixDisplayView.writeText(label, LABEL_ON_COLOR, defaultFont);   //  Label avec police par défaut
+        String labelText = ctRecord.getLabel();
+        if (labelText.length() > FILLER_LABEL.length()) {
+            labelText = labelText.substring(0, FILLER_LABEL.length());   //  Longueur du label limitée au maximum possible
+        }
+        dotMatrixDisplayView.writeText(labelText, LABEL_ON_COLOR, defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
     }
 

@@ -233,7 +233,7 @@ public class MainActivity extends Activity {
             onButtonClickAddNewTimer();
         }
         if ((command.equals(COMMANDS.INVERT_SELECTION_ALL_CT)) || (command.equals(COMMANDS.SELECT_ALL_CT))) {
-            onButtonClickActionOnAll(command);
+            onButtonClickActionOnAll(command, nowm);
         }
         if ((command.equals(COMMANDS.START_SELECTED_CT)) || (command.equals(COMMANDS.STOP_SELECTED_CT)) || (command.equals(COMMANDS.SPLIT_SELECTED_CT)) || (command.equals(COMMANDS.RESET_SELECTED_CT)) || (command.equals(COMMANDS.REMOVE_SELECTED_CT))) {
             onButtonClickActionOnSelection(command, nowm);
@@ -241,15 +241,16 @@ public class MainActivity extends Activity {
     }
 
     private void onStateButtonClick(STATE_COMMANDS stateCommand) {
+        long nowm = System.currentTimeMillis();
         if (stateCommand.equals(STATE_COMMANDS.SHOW_EXPIRATION_TIME)) {
-            onStateButtonClickShowExpirationTime();
+            onStateButtonClickShowExpirationTime(nowm);
         }
         if (stateCommand.equals(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) {
             onStateButtonClickAddNewChronoTimerToList();
         }
     }
 
-    private void onButtonClickActionOnAll(COMMANDS command) {
+    private void onButtonClickActionOnAll(COMMANDS command, long nowm) {
         if (ctRecordsHandler.getCountAll() >= 1) {
             if (command.equals(COMMANDS.INVERT_SELECTION_ALL_CT)) {
                 ctRecordsHandler.invertSelectionAll();
@@ -258,7 +259,7 @@ public class MainActivity extends Activity {
                 ctRecordsHandler.selectAll();
             }
             updateDisplayButtonsAndDotMatrixDisplayVisibility();
-            mainCtListUpdater.repaint();
+            mainCtListUpdater.repaint(nowm);
         } else {
             toastLong("The list must contain at least one Chrono or Timer", this);
         }
@@ -281,8 +282,7 @@ public class MainActivity extends Activity {
                 if (command.equals(COMMANDS.RESET_SELECTED_CT)) {
                     ctRecordsHandler.resetSelection();
                 }
-                ctRecordsHandler.updateTimeAll(nowm);
-                mainCtListUpdater.repaint();
+                mainCtListUpdater.repaint(nowm);
             }
         } else {
             toastLong("The list must contain at least one selected Chrono or Timer", this);
@@ -297,10 +297,10 @@ public class MainActivity extends Activity {
         createChronoTimer(MODES.TIMER);
     }
 
-    private void onStateButtonClickShowExpirationTime() {
+    private void onStateButtonClickShowExpirationTime(long nowm) {
         showExpirationTime = !showExpirationTime;
         mainCtListItemAdapter.setShowExpirationTime(showExpirationTime);
-        mainCtListUpdater.repaint();
+        mainCtListUpdater.repaint(nowm);
         updateDisplayStateButtonColor(STATE_COMMANDS.SHOW_EXPIRATION_TIME);
     }
 
@@ -338,7 +338,7 @@ public class MainActivity extends Activity {
     }
 
     private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   On/Unpressed(ON/BACK), On/Pressed(BACK/OFF), Off/Unpressed(OFF/BACK), Off/Pressed(BACK/ON)
-        final String STATE_BUTTON_ON_COLOR = "FF9A22";
+        final String STATE_BUTTON_ON_COLOR = "EC0039";
         final String STATE_BUTTON_OFF_COLOR = "404040";
         final String STATE_BUTTON_BACK_COLOR = "000000";
 
