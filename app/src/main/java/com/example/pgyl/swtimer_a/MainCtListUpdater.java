@@ -68,13 +68,13 @@ public class MainCtListUpdater {
         handlerTime.postDelayed(runnableTime, updateInterval);
         long nowm = System.currentTimeMillis();
         automaticCount = automaticCount + 1;
-        ctRecordsHandler.findExpirationAllTimers(nowm);   //  Déclenchera éventuellement onCtListExpiredTimer
+        ctRecordsHandler.findAllTimersRunningAndExpired(nowm);   //  Déclenchera éventuellement onCtListExpiredTimer
         repaint(nowm);
     }
 
     private void onCtListExpiredTimer(CtRecord ctRecord) {
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), context);
-        if (automaticCount > 0) {   //  => Pas de Beep au onResume()
+        if (automaticCount > 0) {   //  => Beep si pas onResume() de MainActivity
             beep(context);
         }
     }

@@ -47,7 +47,7 @@ public class CtRecordsHandler {
 
     //region Constantes
     private enum ACTIONS_ON_ALL {
-        INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT, FIND_TIMER_EXPIRATIONS
+        INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT, FIND_TIMERS_RUNNING_AND_EXPIRED
     }
 
     private enum ACTIONS_ON_SELECTION {
@@ -149,9 +149,9 @@ public class CtRecordsHandler {
         return actionOnAll(ACTIONS_ON_ALL.COUNT_TIMERS);
     }
 
-    public void findExpirationAllTimers(long nowm) {
+    public void findAllTimersRunningAndExpired(long nowm) {
         this.nowm = nowm;
-        actionOnAll(ACTIONS_ON_ALL.FIND_TIMER_EXPIRATIONS);
+        actionOnAll(ACTIONS_ON_ALL.FIND_TIMERS_RUNNING_AND_EXPIRED);
     }
 
     public void startSelection(long nowm, boolean setClockAppAlarmOnStartTimer) {
@@ -237,8 +237,8 @@ public class CtRecordsHandler {
                 if (action.equals(ACTIONS_ON_ALL.COUNT)) {
                     count = count + 1;
                 }
-                if (action.equals(ACTIONS_ON_ALL.FIND_TIMER_EXPIRATIONS)) {
-                    if (ctRecords.get(i).foundExpiration(nowm)) {   //  Vient juste d'expirer => //  Déclenchera onCtListExpiredTimer
+                if (action.equals(ACTIONS_ON_ALL.FIND_TIMERS_RUNNING_AND_EXPIRED)) {
+                    if (ctRecords.get(i).isRunningAndExpired(nowm)) {   //  Vient juste d'expirer => Déclenchera onCtListExpiredTimer
                         count = count + 1;
                     }
                 }

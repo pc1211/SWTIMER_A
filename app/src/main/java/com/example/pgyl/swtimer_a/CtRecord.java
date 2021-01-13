@@ -204,8 +204,8 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return timeExp;
     }
 
-    public boolean foundExpiration(long nowm) {
-        boolean foundExpiration = false;
+    public boolean isRunningAndExpired(long nowm) {
+        boolean isRunningAndExpired = false;
         if (mode.equals(MODES.TIMER)) {
             if (running) {
                 if (timeExp < nowm) {    //  Timer expiré => Comme un Reset, mais sans la demande de désactivation éventuelle de l'alarme dans Clock App car elle a déjà dû sonner et être désactivée par l'utilisateur
@@ -216,16 +216,16 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                     if (mOnExpiredTimerListener != null) {
                         mOnExpiredTimerListener.onExpiredTimer(this);
                     }
-                    foundExpiration = true;
+                    isRunningAndExpired = true;
                 }
             }
         }
-        return foundExpiration;
+        return isRunningAndExpired;
     }
 
     public long getTimeDisplay(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
         long timeDisplay = timeDef;
-        if (!foundExpiration(nowm)) {
+        if (!isRunningAndExpired(nowm)) {
             long tacc = timeAcc;
             if (running) {
                 tacc = tacc + nowm - timeStart;
