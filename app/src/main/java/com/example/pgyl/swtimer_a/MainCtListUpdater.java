@@ -20,10 +20,10 @@ public class MainCtListUpdater {
     private Context context;
     private long updateInterval;
     private boolean needScrollBar;
-    private boolean automaticOn;
     private Handler handlerTime;
     private Runnable runnableTime;
     private Runnable runnableCheckNeedScrollBar;
+    private int automaticCount;
     //endregion
 
     public MainCtListUpdater(ListView mainCtListView, CtRecordsHandler ctRecordsHandler, Context context) {
@@ -37,9 +37,9 @@ public class MainCtListUpdater {
 
     private void init() {
         setupRunnables();
+        automaticCount = 0;
         updateInterval = TIME_UNITS.SEC.DURATION_MS();
         needScrollBar = false;
-        automaticOn = false;
         setScrollBar(needScrollBar);
         setupCtRecordsHandler();
         setupMainCtListAdapter();
@@ -57,26 +57,24 @@ public class MainCtListUpdater {
     }
 
     public void startAutomatic() {
-        automaticOn = true;
         handlerTime.postDelayed(runnableTime, updateInterval);
     }
 
     public void stopAutomatic() {
-        automaticOn = false;
         handlerTime.removeCallbacks(runnableTime);
     }
 
     private void automatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
         long nowm = System.currentTimeMillis();
+        automaticCount = automaticCount + 1;
+        ctRecordsHandler.findExpirationAllTimers(nowm);   //  Déclenchera éventuellement onCtListExpiredTimer
         repaint(nowm);
     }
 
     private void onCtListExpiredTimer(CtRecord ctRecord) {
-        long nowm = System.currentTimeMillis();
-        repaint(nowm);
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), context);
-        if (automaticOn) {   //  => Pas de Beep au Resume suite à reload de MainCtList()
+        if (automaticCount > 0) {   //  => Pas de Beep au onResume()
             beep(context);
         }
     }

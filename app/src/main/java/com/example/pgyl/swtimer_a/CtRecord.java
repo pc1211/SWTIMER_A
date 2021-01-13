@@ -204,25 +204,28 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return timeExp;
     }
 
-    public long getTimeDisplay(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
-        long timeDisplay = TIME_DEFAULT_VALUE;
-        boolean expired = false;
+    public boolean foundExpiration(long nowm) {
+        boolean foundExpiration = false;
         if (mode.equals(MODES.TIMER)) {
             if (running) {
                 if (timeExp < nowm) {    //  Timer expiré => Comme un Reset, mais sans la demande de désactivation éventuelle de l'alarme dans Clock App car elle a déjà dû sonner et être désactivée par l'utilisateur
                     running = false;
                     splitted = false;
                     timeAcc = 0;
-                    timeDisplay = timeDef;
                     clockAppAlarmOn = false;
                     if (mOnExpiredTimerListener != null) {
                         mOnExpiredTimerListener.onExpiredTimer(this);
                     }
-                    expired = true;
+                    foundExpiration = true;
                 }
             }
         }
-        if (!expired) {
+        return foundExpiration;
+    }
+
+    public long getTimeDisplay(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
+        long timeDisplay = timeDef;
+        if (!foundExpiration(nowm)) {
             long tacc = timeAcc;
             if (running) {
                 tacc = tacc + nowm - timeStart;
@@ -232,7 +235,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                 tacc = -tacc;
                 taus = -taus;
             }
-            timeDisplay = (timeDef + ((splitted) ? taus : tacc)) % TIME_UNITS.DAY.DURATION_MS();   //  => Retour à 00:00:00.00 après 23:59:59.99
+            timeDisplay = (timeDisplay + ((splitted) ? taus : tacc)) % TIME_UNITS.DAY.DURATION_MS();   //  => Retour à 00:00:00.00 après 23:59:59.99
         }
         return timeDisplay;
     }

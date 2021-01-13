@@ -35,7 +35,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     final long FILLER_TIME_MS = 0;   //  correspondant à 00:00:00.0 si TS, 00:00:00 si SEC
     //endregion
 
-    public MainCtListItemDotMatrixDisplayUpdater() {
+    public MainCtListItemDotMatrixDisplayUpdater() {    //  Général pour tous les MainCtListItems
         super();
 
         init();

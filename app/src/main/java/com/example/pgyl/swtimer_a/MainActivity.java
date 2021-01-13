@@ -112,7 +112,6 @@ public class MainActivity extends Activity {
     private MenuItem barMenuItemKeepScreen;
     private CtRecordsHandler ctRecordsHandler;
     private MainCtListUpdater mainCtListUpdater;
-    private MainCtListItemDotMatrixDisplayUpdater mainCtListItemDotMatrixDisplayUpdater;
     private boolean showExpirationTime;
     private boolean addNewChronoTimerToList;
     private boolean setClockAppAlarmOnStartTimer;
@@ -143,8 +142,6 @@ public class MainActivity extends Activity {
         mainCtListUpdater.stopAutomatic();
         mainCtListUpdater.close();
         mainCtListUpdater = null;
-        mainCtListItemDotMatrixDisplayUpdater.close();
-        mainCtListItemDotMatrixDisplayUpdater = null;
         mainCtListItemAdapter.close();
         mainCtListItemAdapter = null;
         ctRecordsHandler.saveAndclose();
@@ -166,7 +163,6 @@ public class MainActivity extends Activity {
         keepScreen = getSHPKeepScreen();
         setupStringDB();
         setupCtRecordsHandler();
-        setupMainCtListItemDotMatrixDisplayUpdater();    //  Nécessaire pour setupMainCtList();
         setupMainCtList();
         setupMainCtListUpdater();
         setupDotMatrixDisplayUpdater();
@@ -582,12 +578,8 @@ public class MainActivity extends Activity {
         presetsHandler = null;
     }
 
-    private void setupMainCtListItemDotMatrixDisplayUpdater() {
-        mainCtListItemDotMatrixDisplayUpdater = new MainCtListItemDotMatrixDisplayUpdater();
-    }
-
     private void setupMainCtList() {
-        mainCtListItemAdapter = new MainCtListItemAdapter(this, stringDB, mainCtListItemDotMatrixDisplayUpdater);
+        mainCtListItemAdapter = new MainCtListItemAdapter(this, stringDB);
         mainCtListItemAdapter.setOnItemCheckBoxClick(new onCheckBoxClickListener() {
             @Override
             public void onCheckBoxClick() {

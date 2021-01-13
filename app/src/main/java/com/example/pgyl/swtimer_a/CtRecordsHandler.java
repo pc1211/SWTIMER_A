@@ -47,7 +47,7 @@ public class CtRecordsHandler {
 
     //region Constantes
     private enum ACTIONS_ON_ALL {
-        INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT
+        INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT, FIND_TIMER_EXPIRATIONS
     }
 
     private enum ACTIONS_ON_SELECTION {
@@ -115,15 +115,17 @@ public class CtRecordsHandler {
     }
 
     public void sortCtRecords() {
-        if (ctRecords.size() >= 2) {
-            Collections.sort(ctRecords, new Comparator<CtRecord>() {
-                public int compare(CtRecord ctRecord1, CtRecord ctRecord2) {
-                    int idct1 = ctRecord1.getIdct();
-                    int idct2 = ctRecord2.getIdct();
-                    int sortResult = ((idct1 == idct2) ? 0 : ((idct1 > idct2) ? 1 : -1));   //  Tri par n° idct ASC
-                    return sortResult;
-                }
-            });
+        if (!ctRecords.isEmpty()) {
+            if (ctRecords.size() >= 2) {
+                Collections.sort(ctRecords, new Comparator<CtRecord>() {
+                    public int compare(CtRecord ctRecord1, CtRecord ctRecord2) {
+                        int idct1 = ctRecord1.getIdct();
+                        int idct2 = ctRecord2.getIdct();
+                        int sortResult = ((idct1 == idct2) ? 0 : ((idct1 > idct2) ? 1 : -1));   //  Tri par n° idct ASC
+                        return sortResult;
+                    }
+                });
+            }
         }
     }
 
@@ -145,6 +147,11 @@ public class CtRecordsHandler {
 
     public int getCountAllTimers() {
         return actionOnAll(ACTIONS_ON_ALL.COUNT_TIMERS);
+    }
+
+    public void findExpirationAllTimers(long nowm) {
+        this.nowm = nowm;
+        actionOnAll(ACTIONS_ON_ALL.FIND_TIMER_EXPIRATIONS);
     }
 
     public void startSelection(long nowm, boolean setClockAppAlarmOnStartTimer) {
@@ -229,6 +236,11 @@ public class CtRecordsHandler {
                 }
                 if (action.equals(ACTIONS_ON_ALL.COUNT)) {
                     count = count + 1;
+                }
+                if (action.equals(ACTIONS_ON_ALL.FIND_TIMER_EXPIRATIONS)) {
+                    if (ctRecords.get(i).foundExpiration(nowm)) {   //  Vient juste d'expirer => //  Déclenchera onCtListExpiredTimer
+                        count = count + 1;
+                    }
                 }
             }
         }

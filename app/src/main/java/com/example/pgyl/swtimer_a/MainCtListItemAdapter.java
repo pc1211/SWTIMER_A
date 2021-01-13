@@ -41,20 +41,24 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private MainCtListItemDotMatrixDisplayUpdater mainCtListItemDotMatrixDisplayUpdater;
     //endregion
 
-    public MainCtListItemAdapter(Context context, StringDB stringDB, MainCtListItemDotMatrixDisplayUpdater mainCtListItemDotMatrixDisplayUpdater) {
+    public MainCtListItemAdapter(Context context, StringDB stringDB) {
         super();
 
         this.context = context;
         this.stringDB = stringDB;
-        this.mainCtListItemDotMatrixDisplayUpdater = mainCtListItemDotMatrixDisplayUpdater;
         init();
     }
 
     private void init() {
         mOnCheckBoxClickListener = null;
+        ctRecords = null;
+        setupMainCtListItemDotMatrixDisplayUpdater();
     }
 
     public void close() {
+        mainCtListItemDotMatrixDisplayUpdater.close();
+        mainCtListItemDotMatrixDisplayUpdater = null;
+        ctRecords = null;
         stringDB = null;
         context = null;
     }
@@ -237,6 +241,10 @@ public class MainCtListItemAdapter extends BaseAdapter {
         });
         mainCtListItemDotMatrixDisplayUpdater.setupDimensions(viewHolder.buttonDotMatrixDisplayTimeLabel);
         mainCtListItemDotMatrixDisplayUpdater.setupBackColor(viewHolder.buttonDotMatrixDisplayTimeLabel);
+    }
+
+    private void setupMainCtListItemDotMatrixDisplayUpdater() {
+        mainCtListItemDotMatrixDisplayUpdater = new MainCtListItemDotMatrixDisplayUpdater();
     }
 
     private void launchCtDisplayActivity(int idct) {
