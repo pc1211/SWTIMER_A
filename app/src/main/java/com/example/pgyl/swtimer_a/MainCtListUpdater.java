@@ -74,13 +74,15 @@ public class MainCtListUpdater {
 
     private void onCtListExpiredTimer(CtRecord ctRecord) {
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), context);
-        if (automaticCount > 0) {   //  => Beep si pas onResume() de MainActivity
+        if (automaticCount > 0) {   //  => Pas onResume() de MainActivity
             beep(context);
         }
     }
 
     public void reload() {
         ctRecordsHandler.sortCtRecords();
+        long nowm = System.currentTimeMillis();
+        ctRecordsHandler.findAllTimersRunningAndExpired(nowm);   //  Déclenchera éventuellement onCtListExpiredTimer
         mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
         mainCtListItemAdapter.notifyDataSetChanged();
         mainCtListView.post(runnableCheckNeedScrollBar);
