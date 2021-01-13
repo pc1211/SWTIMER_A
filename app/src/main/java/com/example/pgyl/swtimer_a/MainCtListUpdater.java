@@ -23,7 +23,7 @@ public class MainCtListUpdater {
     private Handler handlerTime;
     private Runnable runnableTime;
     private Runnable runnableCheckNeedScrollBar;
-    private int automaticCount;
+    private boolean automaticFlag;
     //endregion
 
     public MainCtListUpdater(ListView mainCtListView, CtRecordsHandler ctRecordsHandler, Context context) {
@@ -37,7 +37,7 @@ public class MainCtListUpdater {
 
     private void init() {
         setupRunnables();
-        automaticCount = 0;
+        automaticFlag = false;
         updateInterval = TIME_UNITS.SEC.DURATION_MS();
         needScrollBar = false;
         setScrollBar(needScrollBar);
@@ -67,14 +67,14 @@ public class MainCtListUpdater {
     private void automatic() {
         handlerTime.postDelayed(runnableTime, updateInterval);
         long nowm = System.currentTimeMillis();
-        automaticCount = automaticCount + 1;
-        ctRecordsHandler.findAllTimersRunningAndExpired(nowm);   //  Déclenchera éventuellement onCtListExpiredTimer
+        automaticFlag = true;
+        ctRecordsHandler.checkAllTimersRunningExpired(nowm);   //  Déclenchera éventuellement onCtListExpiredTimer
         repaint(nowm);
     }
 
     private void onCtListExpiredTimer(CtRecord ctRecord) {
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), context);
-        if (automaticCount > 0) {   //  => Pas onResume() de MainActivity
+        if (automaticFlag) {   //  => Pas suite au Reload() appelé par MainActivity au onResume(), qui ne doit pas produire de beep
             beep(context);
         }
     }
@@ -82,7 +82,7 @@ public class MainCtListUpdater {
     public void reload() {
         ctRecordsHandler.sortCtRecords();
         long nowm = System.currentTimeMillis();
-        ctRecordsHandler.findAllTimersRunningAndExpired(nowm);   //  Déclenchera éventuellement onCtListExpiredTimer
+        ctRecordsHandler.checkAllTimersRunningExpired(nowm);   //  Déclenchera éventuellement onCtListExpiredTimer
         mainCtListItemAdapter.setItems(ctRecordsHandler.getChronoTimers());
         mainCtListItemAdapter.notifyDataSetChanged();
         mainCtListView.post(runnableCheckNeedScrollBar);

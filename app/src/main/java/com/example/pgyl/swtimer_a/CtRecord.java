@@ -204,8 +204,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
         return timeExp;
     }
 
-    public boolean isRunningAndExpired(long nowm) {
-        boolean isRunningAndExpired = false;
+    public void checkRunningExpired(long nowm) {
         if (mode.equals(MODES.TIMER)) {
             if (running) {
                 if (timeExp < nowm) {    //  Timer expiré => Comme un Reset, mais sans la demande de désactivation éventuelle de l'alarme dans Clock App car elle a déjà dû sonner et être désactivée par l'utilisateur
@@ -216,28 +215,23 @@ class CtRecord {   //  Données d'un Chrono ou Timer
                     if (mOnExpiredTimerListener != null) {
                         mOnExpiredTimerListener.onExpiredTimer(this);
                     }
-                    isRunningAndExpired = true;
                 }
             }
         }
-        return isRunningAndExpired;
     }
 
     public long getTimeDisplay(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
-        long timeDisplay = timeDef;
-        if (!isRunningAndExpired(nowm)) {
-            long tacc = timeAcc;
-            if (running) {
-                tacc = tacc + nowm - timeStart;
-            }
-            long taus = timeAccUntilSplit;
-            if (mode.equals(MODES.TIMER)) {
-                tacc = -tacc;
-                taus = -taus;
-            }
-            timeDisplay = (timeDisplay + ((splitted) ? taus : tacc)) % TIME_UNITS.DAY.DURATION_MS();   //  => Retour à 00:00:00.00 après 23:59:59.99
+        checkRunningExpired(nowm);
+        long tacc = timeAcc;
+        if (running) {
+            tacc = tacc + nowm - timeStart;
         }
-        return timeDisplay;
+        long taus = timeAccUntilSplit;
+        if (mode.equals(MODES.TIMER)) {
+            tacc = -tacc;
+            taus = -taus;
+        }
+        return (timeDef + ((splitted) ? taus : tacc)) % TIME_UNITS.DAY.DURATION_MS();   //  => Retour à 00:00:00.00 après 23:59:59.99
     }
 
     public void start(long nowm, boolean setClockAppAlarmOnStartTimer) {
