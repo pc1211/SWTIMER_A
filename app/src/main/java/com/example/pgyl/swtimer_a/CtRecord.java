@@ -221,7 +221,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public long getTimeDisplay(long nowm) {  // Actualiser le Chrono/Timer au moment nowm ("Maintenant") (en ms)
-        checkRunningExpired(nowm);
+        checkRunningExpired(nowm);   //  Pour éviter le cas (nowm - timeStart) > timeDef, cad nowm > timeExp, pour un timer
         long tacc = timeAcc;
         if (running) {
             tacc = tacc + nowm - timeStart;
@@ -255,6 +255,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public void stop(long nowm) {
+        checkRunningExpired(nowm);   //  Pour éviter le cas (nowm - timeStart) > timeDef, cad nowm > timeExp, pour un timer
         if (running) {
             running = false;
             timeAcc = timeAcc + nowm - timeStart;
@@ -270,6 +271,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public void split(long nowm) {
+        checkRunningExpired(nowm);   //  Pour éviter le cas (nowm - timeStart) > timeDef, cad nowm > timeExp, pour un timer
         if (running || splitted) {
             splitted = !splitted;
             if (splitted) {  //  => Running
