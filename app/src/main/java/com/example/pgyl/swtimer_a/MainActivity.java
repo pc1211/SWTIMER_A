@@ -333,14 +333,16 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   On/Unpressed(ON/BACK), On/Pressed(BACK/OFF), Off/Unpressed(OFF/BACK), Off/Pressed(BACK/ON)
-        final String STATE_BUTTON_ON_COLOR = "EC0039";
+    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   On+Unpressed(ON/BACK), On+Pressed(BACK/OFF), Off+Unpressed(OFF/BACK), Off+Pressed(BACK/ON)
+        final String STATE_BUTTON_ON_EXP_TIME_COLOR = "EC0039";
+        final String STATE_BUTTON_ON_NEW_CT_COLOR = "668CFF";
         final String STATE_BUTTON_OFF_COLOR = "404040";
         final String STATE_BUTTON_BACK_COLOR = "000000";
 
-        String frontColor = ((getStateButtonState(stateCommand)) ? STATE_BUTTON_ON_COLOR : STATE_BUTTON_OFF_COLOR);
+        String stateButtonOnColor = ((stateCommand.equals(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) ? STATE_BUTTON_ON_NEW_CT_COLOR : STATE_BUTTON_ON_EXP_TIME_COLOR);
+        String frontColor = ((getStateButtonState(stateCommand)) ? stateButtonOnColor : STATE_BUTTON_OFF_COLOR);
         String backColor = STATE_BUTTON_BACK_COLOR;
-        String extraColor = ((getStateButtonState(stateCommand)) ? STATE_BUTTON_OFF_COLOR : STATE_BUTTON_ON_COLOR);
+        String extraColor = ((getStateButtonState(stateCommand)) ? STATE_BUTTON_OFF_COLOR : stateButtonOnColor);
         stateButtons[stateCommand.INDEX()].setColors(frontColor, backColor, extraColor);
     }
 
