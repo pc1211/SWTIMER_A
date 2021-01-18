@@ -4,49 +4,44 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <CheckBox
-        android:id="@+id/CB_SELECTION"
+    <com.example.pgyl.pekislib_a.SymbolButtonView
+        android:id="@+id/STATE_BTN_MODE_SELECTION"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_weight="4" />
 
-    <com.example.pgyl.pekislib_a.CustomImageButton
-        android:id="@+id/BTN_MODE_RUN"
+    <com.example.pgyl.pekislib_a.SymbolButtonView
+        android:id="@+id/STATE_BTN_RUN"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginLeft="4dp"
         android:layout_marginTop="4dp"
-        android:layout_weight="6"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:src="@drawable/main_chrono" />
+        android:layout_marginBottom="4dp"
+        android:layout_weight="4" />
 
-    <com.example.pgyl.pekislib_a.CustomImageButton
-        android:id="@+id/BTN_SPLIT_RESET"
+    <com.example.pgyl.pekislib_a.SymbolButtonView
+        android:id="@+id/STATE_BTN_SPLIT_RESET"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="4dp"
-        android:layout_weight="6"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:src="@drawable/main_split" />
+        android:layout_marginBottom="4dp"
+        android:layout_weight="4" />
 
-    <com.example.pgyl.pekislib_a.CustomImageButton
-        android:id="@+id/BTN_CLOCK_APP_ALARM"
+    <com.example.pgyl.pekislib_a.SymbolButtonView
+        android:id="@+id/STATE_BTN_CLOCK_APP_ALARM"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="4dp"
-        android:layout_weight="6"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:src="@drawable/main_bell" />
+        android:layout_marginBottom="4dp"
+        android:layout_weight="4" />
 
     <com.example.pgyl.pekislib_a.DotMatrixDisplayView
         android:id="@+id/BTN_DOT_MATRIX_DISPLAY_TIME_LABEL"
         android:layout_width="0dp"
         android:layout_height="48dp"
+        android:layout_marginLeft="4dp"
         android:layout_marginTop="2dp"
         android:layout_weight="16" />
 
