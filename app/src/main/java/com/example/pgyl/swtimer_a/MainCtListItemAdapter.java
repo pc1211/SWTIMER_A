@@ -142,8 +142,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
     public void paintView(View rowView, int position, long nowm) {    //  Décoration proprement dite du getView
         final String ON_MODE_SELECTION_COLOR = "668CFF";
         final String ON_RUN_SPLIT_RESET_CLOCK_APP_ALARM_COLOR = "FF9A22";
-        final String OFF_COLOR = "404040";
-        final String BACK_COLOR = "000000";
+        final String OFF_COLOR = "505050";
+        final String BACK_COLOR = "303030";
 
         int pos = position;
         MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) rowView.getTag();

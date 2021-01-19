@@ -43,6 +43,6 @@
         android:layout_height="48dp"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="2dp"
-        android:layout_weight="16" />
+        android:layout_weight="13" />
 
 </LinearLayout>
