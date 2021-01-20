@@ -14,7 +14,7 @@ import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_HEIGHT;
 public class MainDotMatrixDisplayUpdater {
 
     private enum MESSAGES {
-        EMPTY_LIST("List empty"), EMPTY_SELECTION("Tap blue items to select");
+        EMPTY_LIST("List empty"), EMPTY_SELECTION("Select with blue symbol");
         private String text;
 
         MESSAGES(String text) {

@@ -142,13 +142,12 @@ public class MainCtListItemAdapter extends BaseAdapter {
     public void paintView(View rowView, int position, long nowm) {    //  Décoration proprement dite du getView
         final String ON_MODE_SELECTION_COLOR = "668CFF";
         final String ON_RUN_SPLIT_RESET_CLOCK_APP_ALARM_COLOR = "FF9A22";
-        final String OFF_COLOR = "404040";
-        final String BACK_COLOR = "202020";
+        final String OFF_COLOR = "484848";
+        final String BACK_COLOR = "303030";
 
         int pos = position;
         MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) rowView.getTag();
 
-        viewHolder.buttonModeSelection.setSVGImageResource((ctRecords.get(pos).getMode().equals(MODES.CHRONO)) ? R.raw.ct_chrono : R.raw.ct_timer);
         boolean b = ctRecords.get(pos).isSelected();
         String frontColor = (b ? BACK_COLOR : ON_MODE_SELECTION_COLOR);
         String backColor = (b ? ON_MODE_SELECTION_COLOR : BACK_COLOR);
@@ -191,6 +190,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         final View rowv = rowView;
         final int pos = position;
 
+        viewHolder.buttonModeSelection.setSVGImageResource((ctRecords.get(pos).getMode().equals(MODES.CHRONO)) ? R.raw.ct_chrono : R.raw.ct_timer);
         viewHolder.buttonModeSelection.setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
         viewHolder.buttonModeSelection.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonModeSelection.setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
@@ -199,16 +199,16 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonModeSelectionClick(rowv, pos);
             }
         });
-        viewHolder.buttonModeRun.setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
         viewHolder.buttonModeRun.setSVGImageResource(R.raw.ct_run);
+        viewHolder.buttonModeRun.setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
         viewHolder.buttonModeRun.setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
                 onButtonModeRunClick(rowv, pos);
             }
         });
-        viewHolder.buttonSplitReset.setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
         viewHolder.buttonSplitReset.setSVGImageResource(R.raw.ct_split);
+        viewHolder.buttonSplitReset.setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
         viewHolder.buttonSplitReset.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonSplitReset.setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
             @Override
@@ -216,8 +216,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonSplitResetClick(rowv, pos);
             }
         });
-        viewHolder.buttonClockAppAlarm.setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
         viewHolder.buttonClockAppAlarm.setSVGImageResource(R.raw.ct_bell);
+        viewHolder.buttonClockAppAlarm.setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
         viewHolder.buttonClockAppAlarm.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonClockAppAlarm.setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
             @Override
