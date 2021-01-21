@@ -139,21 +139,22 @@ public class MainCtListItemAdapter extends BaseAdapter {
         return rowView;
     }
 
-    public void paintView(View rowView, int position, long nowm) {    //  Décoration proprement dite du getView
+    public void paintView(View rowView, int position, long nowm) {    //  Décoration proprement dite du getView7
+        final String ON_COLOR_1 = "668CFF";
+        final String BACK_COLOR_1 = "000000";
+        final String ON_COLOR_2 = "FF9A22";
+        final String OFF_COLOR_2 = "000000";
+        final String BACK_COLOR_2 = "505050";
+
         int pos = position;
         MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) rowView.getTag();
 
-        final String ON_COLOR_1 = "668CFF";
-        final String BACK_COLOR_1 = "000000";
         boolean b = ctRecords.get(pos).isSelected();
         String frontColor = (b ? BACK_COLOR_1 : ON_COLOR_1);
         String backColor = (b ? ON_COLOR_1 : BACK_COLOR_1);
         String extraColor = (b ? BACK_COLOR_1 : ON_COLOR_1);
         viewHolder.buttonModeSelection.setColors(frontColor, backColor, extraColor);
 
-        final String ON_COLOR_2 = "FF9A22";
-        final String OFF_COLOR_2 = "000000";
-        final String BACK_COLOR_2 = "606060";
         backColor = BACK_COLOR_2;
         b = ctRecords.get(pos).isRunning();
         frontColor = (b ? ON_COLOR_2 : OFF_COLOR_2);

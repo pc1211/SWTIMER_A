@@ -143,6 +143,7 @@
             android:layout_height="wrap_content"
             android:cacheColorHint="@android:color/black"
             android:divider="@null"
+            android:listSelector="@android:color/transparent"
             android:scrollbars="vertical" />
     </LinearLayout>
 </LinearLayout>
