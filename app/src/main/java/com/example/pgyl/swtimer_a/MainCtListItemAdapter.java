@@ -152,7 +152,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonModeSelection.setColors(frontColor, backColor, extraColor);
 
         final String ON_COLOR_2 = "FF9A22";
-        final String OFF_COLOR_2 = "303030";
+        final String OFF_COLOR_2 = "000000";
         final String BACK_COLOR_2 = "606060";
         backColor = BACK_COLOR_2;
         b = ctRecords.get(pos).isRunning();
