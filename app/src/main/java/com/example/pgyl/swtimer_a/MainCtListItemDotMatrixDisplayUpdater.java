@@ -31,7 +31,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
 
     //region Constantes
     final int LABEL_MARGIN_TOP = 1;  //  Marge avant la 2e ligne
-    final String FILLER_LABEL = "ABCDEFGHIJKL";   //  Prévoir la place pour un label de taille maximale
+    final String FILLER_LABEL = "ABCDEFGHIJ";   //  Prévoir la place pour un label de taille maximale
     final long FILLER_TIME_MS = 0;   //  correspondant à 00:00:00.0 si TS, 00:00:00 si SEC
     //endregion
 
