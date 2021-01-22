@@ -140,35 +140,35 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     public void paintView(View rowView, int position, long nowm) {    //  Décoration proprement dite du getView7
-        final String ON_COLOR_1 = "668CFF";
-        final String BACK_COLOR_1 = "000000";
-        final String ON_COLOR_2 = "FF9A22";
-        final String OFF_COLOR_2 = "000000";
-        final String BACK_COLOR_2 = "505050";
+        final String COLOR_A_1 = "668CFF";
+        final String COLOR_A_2 = "000000";
+        final String COLOR_B_1 = "000000";
+        final String COLOR_B_2 = "C0C0C0";
+        final String COLOR_B_3 = "FF9A22";
 
         int pos = position;
         MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) rowView.getTag();
 
-        boolean b = ctRecords.get(pos).isSelected();
-        String frontColor = (b ? BACK_COLOR_1 : ON_COLOR_1);
-        String backColor = (b ? ON_COLOR_1 : BACK_COLOR_1);
-        String extraColor = (b ? BACK_COLOR_1 : ON_COLOR_1);
+        boolean b = ctRecords.get(pos).isSelected();   //  A
+        String frontColor = (b ? COLOR_A_2 : COLOR_A_1);
+        String backColor = (b ? COLOR_A_1 : COLOR_A_2);
+        String extraColor = frontColor;
         viewHolder.buttonModeSelection.setColors(frontColor, backColor, extraColor);
 
-        backColor = BACK_COLOR_2;
+        frontColor = COLOR_B_1;    //  B
         b = ctRecords.get(pos).isRunning();
-        frontColor = (b ? ON_COLOR_2 : OFF_COLOR_2);
-        extraColor = (b ? OFF_COLOR_2 : ON_COLOR_2);
+        backColor = (b ? COLOR_B_3 : COLOR_B_2);
+        extraColor = frontColor;
         viewHolder.buttonModeRun.setColors(frontColor, backColor, extraColor);
 
         b = ctRecords.get(pos).isSplitted();
-        frontColor = (b ? ON_COLOR_2 : OFF_COLOR_2);
-        extraColor = (b ? OFF_COLOR_2 : ON_COLOR_2);
+        backColor = (b ? COLOR_B_3 : COLOR_B_2);
+        extraColor = frontColor;
         viewHolder.buttonSplitReset.setColors(frontColor, backColor, extraColor);
 
         b = ctRecords.get(pos).isClockAppAlarmOn();
-        frontColor = (b ? ON_COLOR_2 : OFF_COLOR_2);
-        extraColor = (b ? OFF_COLOR_2 : ON_COLOR_2);
+        backColor = (b ? COLOR_B_3 : COLOR_B_2);
+        extraColor = frontColor;
         viewHolder.buttonClockAppAlarm.setColors(frontColor, backColor, extraColor);
 
         mainCtListItemDotMatrixDisplayUpdater.displayTimeAndLabel(viewHolder.buttonDotMatrixDisplayTimeLabel, ctRecords.get(pos), showExpirationTime, nowm);
