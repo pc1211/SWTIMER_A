@@ -156,19 +156,14 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonModeSelection.setColors(frontColor, backColor, extraColor);
 
         frontColor = COLOR_B_1;    //  B
-        b = ctRecords.get(pos).isRunning();
-        backColor = (b ? COLOR_B_3 : COLOR_B_2);
         extraColor = frontColor;
+        backColor = (ctRecords.get(pos).isRunning() ? COLOR_B_3 : COLOR_B_2);
         viewHolder.buttonModeRun.setColors(frontColor, backColor, extraColor);
 
-        b = ctRecords.get(pos).isSplitted();
-        backColor = (b ? COLOR_B_3 : COLOR_B_2);
-        extraColor = frontColor;
+        backColor = (ctRecords.get(pos).isSplitted() ? COLOR_B_3 : COLOR_B_2);
         viewHolder.buttonSplitReset.setColors(frontColor, backColor, extraColor);
 
-        b = ctRecords.get(pos).isClockAppAlarmOn();
-        backColor = (b ? COLOR_B_3 : COLOR_B_2);
-        extraColor = frontColor;
+        backColor = (ctRecords.get(pos).isClockAppAlarmOn() ? COLOR_B_3 : COLOR_B_2);
         viewHolder.buttonClockAppAlarm.setColors(frontColor, backColor, extraColor);
 
         mainCtListItemDotMatrixDisplayUpdater.displayTimeAndLabel(viewHolder.buttonDotMatrixDisplayTimeLabel, ctRecords.get(pos), showExpirationTime, nowm);
