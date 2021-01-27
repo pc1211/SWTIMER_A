@@ -6,7 +6,7 @@ import com.example.pgyl.pekislib_a.SymbolButtonView;
 public class MainCtListItemViewHolder {
     //region Variables
     SymbolButtonView buttonModeSelection;
-    SymbolButtonView buttonModeRun;
+    SymbolButtonView buttonStartStop;
     SymbolButtonView buttonSplitReset;
     SymbolButtonView buttonClockAppAlarm;
     DotMatrixDisplayView buttonDotMatrixDisplayTimeLabel;

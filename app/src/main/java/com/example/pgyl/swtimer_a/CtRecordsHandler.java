@@ -47,7 +47,7 @@ public class CtRecordsHandler {
 
     //region Constantes
     private enum ACTIONS_ON_ALL {
-        INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT, CHECK_TIMERS_RUNNING_EXPIRED, GET_MAX_ID
+        INVERT_SELECTION, SELECT, COUNT_CHRONOS, COUNT_TIMERS, COUNT_RUNNING, COUNT, CHECK_TIMERS_RUNNING_EXPIRED, GET_MAX_ID
     }
 
     private enum ACTIONS_ON_SELECTION {
@@ -149,6 +149,10 @@ public class CtRecordsHandler {
         return actionOnAll(ACTIONS_ON_ALL.COUNT_TIMERS);
     }
 
+    public int getCountAllRunning() {
+        return actionOnAll(ACTIONS_ON_ALL.COUNT_RUNNING);
+    }
+
     private int getMaxIdAll() {
         return actionOnAll(ACTIONS_ON_ALL.GET_MAX_ID);
     }
@@ -210,6 +214,11 @@ public class CtRecordsHandler {
                 }
                 if (action.equals(ACTIONS_ON_ALL.COUNT_TIMERS)) {
                     if (ctRecords.get(i).getMode().equals(MODES.TIMER)) {
+                        ret = ret + 1;
+                    }
+                }
+                if (action.equals(ACTIONS_ON_ALL.COUNT_RUNNING)) {
+                    if (ctRecords.get(i).isRunning()) {
                         ret = ret + 1;
                     }
                 }

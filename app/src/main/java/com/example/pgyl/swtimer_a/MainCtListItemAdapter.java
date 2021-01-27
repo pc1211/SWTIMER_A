@@ -31,6 +31,16 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
     private onCheckBoxClickListener mOnCheckBoxClickListener;
 
+    public interface onStartStopResetClickListener {
+        void onStartStopResetClick();
+    }
+
+    public void setOnItemStartStopResetClick(onStartStopResetClickListener listener) {
+        mOnStartStopResetClickListener = listener;
+    }
+
+    private onStartStopResetClickListener mOnStartStopResetClickListener;
+
     //region Variables
     private Context context;
     private ArrayList<CtRecord> ctRecords;
@@ -98,12 +108,15 @@ public class MainCtListItemAdapter extends BaseAdapter {
         paintView(rowv, pos, nowm);
     }
 
-    private void onButtonModeRunClick(View rowv, int pos) {
+    private void onButtonStartStopClick(View rowv, int pos) {
         long nowm = System.currentTimeMillis();
         if (!ctRecords.get(pos).isRunning()) {
             ctRecords.get(pos).start(nowm, setClockAppAlarmOnStartTimer);
         } else {
             ctRecords.get(pos).stop(nowm);
+        }
+        if (mOnStartStopResetClickListener != null) {
+            mOnStartStopResetClickListener.onStartStopResetClick();
         }
         paintView(rowv, pos, nowm);
     }
@@ -114,6 +127,9 @@ public class MainCtListItemAdapter extends BaseAdapter {
             ctRecords.get(pos).split(nowm);
         } else {
             ctRecords.get(pos).reset();
+            if (mOnStartStopResetClickListener != null) {
+                mOnStartStopResetClickListener.onStartStopResetClick();
+            }
         }
         paintView(rowv, pos, nowm);
     }
@@ -158,7 +174,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         frontColor = COLOR_B_1;    //  B
         extraColor = frontColor;
         backColor = (ctRecords.get(pos).isRunning() ? COLOR_B_3 : COLOR_B_2);
-        viewHolder.buttonModeRun.setColors(frontColor, backColor, extraColor);
+        viewHolder.buttonStartStop.setColors(frontColor, backColor, extraColor);
 
         backColor = (ctRecords.get(pos).isSplitted() ? COLOR_B_3 : COLOR_B_2);
         viewHolder.buttonSplitReset.setColors(frontColor, backColor, extraColor);
@@ -172,7 +188,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private MainCtListItemViewHolder buildViewHolder(View rowView) {
         MainCtListItemViewHolder viewHolder = new MainCtListItemViewHolder();
         viewHolder.buttonModeSelection = rowView.findViewById(R.id.STATE_BTN_MODE_SELECTION);
-        viewHolder.buttonModeRun = rowView.findViewById(R.id.STATE_BTN_RUN);
+        viewHolder.buttonStartStop = rowView.findViewById(R.id.STATE_BTN_RUN);
         viewHolder.buttonSplitReset = rowView.findViewById(R.id.STATE_BTN_SPLIT_RESET);
         viewHolder.buttonClockAppAlarm = rowView.findViewById(R.id.STATE_BTN_CLOCK_APP_ALARM);
         viewHolder.buttonDotMatrixDisplayTimeLabel = rowView.findViewById(R.id.BTN_DOT_MATRIX_DISPLAY_TIME_LABEL);
@@ -195,12 +211,12 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonModeSelectionClick(rowv, pos);
             }
         });
-        viewHolder.buttonModeRun.setSVGImageResource(R.raw.ct_run);
-        viewHolder.buttonModeRun.setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
-        viewHolder.buttonModeRun.setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
+        viewHolder.buttonStartStop.setSVGImageResource(R.raw.ct_run);
+        viewHolder.buttonStartStop.setSymbolSizeCoeff(STATE_BUTTON_SYMBOL_SIZE_COEFF);
+        viewHolder.buttonStartStop.setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
-                onButtonModeRunClick(rowv, pos);
+                onButtonStartStopClick(rowv, pos);
             }
         });
         viewHolder.buttonSplitReset.setSVGImageResource(R.raw.ct_split);

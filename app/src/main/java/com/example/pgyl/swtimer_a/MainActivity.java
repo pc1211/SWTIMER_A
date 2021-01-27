@@ -268,15 +268,20 @@ public class MainActivity extends Activity {
             } else {   //  Pas Remove Selection
                 if (command.equals(COMMANDS.SPLIT_SELECTED_CT)) {
                     ctRecordsHandler.splitSelection(nowm);
-                }
-                if (command.equals(COMMANDS.START_SELECTED_CT)) {
-                    ctRecordsHandler.startSelection(nowm, setClockAppAlarmOnStartTimer);
-                }
-                if (command.equals(COMMANDS.STOP_SELECTED_CT)) {
-                    ctRecordsHandler.stopSelection(nowm);
-                }
-                if (command.equals(COMMANDS.RESET_SELECTED_CT)) {
-                    ctRecordsHandler.resetSelection();
+                } else {   //  Pas Split
+                    mainCtListUpdater.stopAutomatic();
+                    if (command.equals(COMMANDS.START_SELECTED_CT)) {
+                        ctRecordsHandler.startSelection(nowm, setClockAppAlarmOnStartTimer);
+                    }
+                    if (command.equals(COMMANDS.STOP_SELECTED_CT)) {
+                        ctRecordsHandler.stopSelection(nowm);
+                    }
+                    if (command.equals(COMMANDS.RESET_SELECTED_CT)) {
+                        ctRecordsHandler.resetSelection();
+                    }
+                    if (ctRecordsHandler.getCountAllRunning() > 0) {
+                        mainCtListUpdater.startAutomatic();
+                    }
                 }
                 mainCtListUpdater.repaint(nowm);
             }
@@ -307,6 +312,13 @@ public class MainActivity extends Activity {
 
     private void onCtListItemCheckBoxClick() {
         updateDisplayButtonsAndDotMatrixDisplayVisibility();
+    }
+
+    private void onCtListItemStartStopResetClick() {
+        mainCtListUpdater.stopAutomatic();
+        if (ctRecordsHandler.getCountAllRunning() > 0) {
+            mainCtListUpdater.startAutomatic();
+        }
     }
 
     private void updateDisplayButtonsAndDotMatrixDisplayVisibility() {
@@ -586,6 +598,12 @@ public class MainActivity extends Activity {
             @Override
             public void onCheckBoxClick() {
                 onCtListItemCheckBoxClick();
+            }
+        });
+        mainCtListItemAdapter.setOnItemStartStopResetClick(new MainCtListItemAdapter.onStartStopResetClickListener() {
+            @Override
+            public void onStartStopResetClick() {
+                onCtListItemStartStopResetClick();
             }
         });
         mainCtListView = findViewById(R.id.CT_LIST);
