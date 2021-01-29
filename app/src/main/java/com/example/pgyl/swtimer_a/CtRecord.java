@@ -127,7 +127,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
 
     public boolean setLabel(String newLabel) {
         boolean setOK = true;
-        if (label != newLabel) {
+        if ((label == null) || (!label.equals(newLabel))) {
             if (mode.equals(MODES.TIMER)) {
                 if (running) {
                     if (isClockAppAlarmOn()) {    //  Trop perturbant pour l'utilisateur (Passage par l'interface de Clock App, reprogrammation, ...)

@@ -256,7 +256,7 @@ public class CtDisplayDotMatrixDisplayActivity extends Activity {
 
         dotMatrixDisplayUpdater.displayInitTimeAndLabel();
         if (coeffIndex == getDotMatrixDisplayCoeffsScrollSpeedIndex()) {
-            dotMatrixDisplayUpdater.startAutomatic(AUTOMATIC_SCROLL_ON);
+            dotMatrixDisplayUpdater.startAutomatic(System.currentTimeMillis(), AUTOMATIC_SCROLL_ON);
         } else {
             dotMatrixDisplayUpdater.stopAutomatic();
         }

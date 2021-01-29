@@ -121,12 +121,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
         displayHalfTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION), currentCtRecord.getLabelInit());
     }
 
-    public void startAutomatic(boolean automaticScrollOn) {
+    public void startAutomatic(long nowm, boolean automaticScrollOn) {
         stopAutomatic();   //  On efface tout et on recommence
         this.automaticScrollOn = automaticScrollOn;
         updateInterval = automaticScrollOn ? getUpdateInterval(dotsPerSecond) : APP_TIME_UNIT_PRECISION.DURATION_MS();   //  Si pas de scroll => Rafraichissement à la fréquence correspondant à la précision du chrono/timer
         timeStart = System.currentTimeMillis();
-        handlerTime.postDelayed(runnableTime, updateInterval);   //  Go !
+        handlerTime.postDelayed(runnableTime, updateInterval - (timeStart - nowm));   //  Respecter updateInterval à partir de nowm
     }
 
     public void stopAutomatic() {
@@ -228,7 +228,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
         int displayRectWidth = margins.left + timeTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du temps, avec margins.right remplaçant la dernière marge droite)
         int displayRectHeight = margins.top + Math.max(timeTextDimensions.height, labelTextDimensions.height) + margins.bottom;   //  Affichage du temps uniquement ou (via scroll) du temps et du label , sur la hauteur nécessaire
-        int gridRectWidth = displayRectWidth + labelTextDimensions.width - defaultFont.getRightMargin();   // La grille doit pouvoir contenir le temps et le label sur toute sa largeur ...
+        int gridRectWidth = displayRectWidth;
+        if (labelTextDimensions.width > 0) {   // La grille doit pouvoir contenir le temps et le label sur toute sa largeur ...
+            gridRectWidth = gridRectWidth + labelTextDimensions.width - defaultFont.getRightMargin();
+        }
         int gridRectHeight = displayRectHeight;   //  ... et la même hauteur que la fenêtre d'affichage
 
         gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);

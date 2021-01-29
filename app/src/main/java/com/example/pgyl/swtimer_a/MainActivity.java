@@ -174,7 +174,7 @@ public class MainActivity extends Activity {
         updateDisplayStateButtonColors();
         updateDisplayKeepScreen();
         mainCtListUpdater.reload();
-        mainCtListUpdater.startAutomatic();
+        mainCtListUpdater.startAutomatic(System.currentTimeMillis());
         updateDisplayButtonsAndDotMatrixDisplayVisibility();
         invalidateOptionsMenu();
     }
@@ -280,7 +280,7 @@ public class MainActivity extends Activity {
                         ctRecordsHandler.resetSelection();
                     }
                     if (ctRecordsHandler.getCountAllRunning() > 0) {
-                        mainCtListUpdater.startAutomatic();
+                        mainCtListUpdater.startAutomatic(nowm);
                     }
                 }
                 mainCtListUpdater.repaint(nowm);
@@ -314,10 +314,10 @@ public class MainActivity extends Activity {
         updateDisplayButtonsAndDotMatrixDisplayVisibility();
     }
 
-    private void onCtListItemStartStopResetClick() {
+    private void onCtListItemStartStopResetClick(long nowm) {
         mainCtListUpdater.stopAutomatic();
         if (ctRecordsHandler.getCountAllRunning() > 0) {
-            mainCtListUpdater.startAutomatic();
+            mainCtListUpdater.startAutomatic(nowm);
         }
     }
 
@@ -395,7 +395,9 @@ public class MainActivity extends Activity {
                 mainCtListUpdater.stopAutomatic();
                 ctRecordsHandler.removeSelection();
                 mainCtListUpdater.reload();
-                mainCtListUpdater.startAutomatic();
+                if (ctRecordsHandler.getCountAllRunning() > 0) {
+                    mainCtListUpdater.startAutomatic(System.currentTimeMillis());
+                }
                 updateDisplayButtonsAndDotMatrixDisplayVisibility();
             }
         });
@@ -405,11 +407,9 @@ public class MainActivity extends Activity {
     }
 
     private void createChronoTimer(MODES mode) {
-        mainCtListUpdater.stopAutomatic();
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
             mainCtListUpdater.reload();
-            mainCtListUpdater.startAutomatic();
             updateDisplayButtonsAndDotMatrixDisplayVisibility();
         } else {
             launchCtDisplayActivity(idct);
@@ -602,8 +602,8 @@ public class MainActivity extends Activity {
         });
         mainCtListItemAdapter.setOnItemStartStopResetClick(new MainCtListItemAdapter.onStartStopResetClickListener() {
             @Override
-            public void onStartStopResetClick() {
-                onCtListItemStartStopResetClick();
+            public void onStartStopResetClick(long nowm) {
+                onCtListItemStartStopResetClick(nowm);
             }
         });
         mainCtListView = findViewById(R.id.CT_LIST);

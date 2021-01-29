@@ -56,8 +56,8 @@ public class MainCtListUpdater {
         ctRecordsHandler = null;
     }
 
-    public void startAutomatic() {
-        handlerTime.postDelayed(runnableTime, updateInterval);
+    public void startAutomatic(long nowm) {
+        handlerTime.postDelayed(runnableTime, updateInterval - (System.currentTimeMillis() - nowm));   //  Respecter updateInterval à partir de nowm
     }
 
     public void stopAutomatic() {
