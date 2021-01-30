@@ -331,18 +331,13 @@ public class MainActivity extends Activity {
             }
             buttons[COMMANDS.INVERT_SELECTION_ALL_CT.INDEX()].setVisibility(View.VISIBLE);   //  Pour voir les boutons pouvant agir sur la sélection des chrono/timers de la liste
             buttons[COMMANDS.SELECT_ALL_CT.INDEX()].setVisibility(View.VISIBLE);
-            if (ctRecordsHandler.getCountAllTimers() >= 1) {   //  Il y a au moins un timer dans la liste
-                stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setVisibility(View.VISIBLE);  //  Pour voir le bouton montrant l'heure d'expiration du timer ou sinon le temps restant
-            } else {
-                stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setVisibility(View.INVISIBLE);
-            }
         } else {  //  La liste est vide
             dotMatrixDisplayUpdater.displayEmptyList();
             setSecondRowLayoutVisible(layoutDotMatrixDisplay);   //  Pour voir le panneau d'affichage et cacher les boutons pouvant agir sur les chrono/timers sélectionnés
             buttons[COMMANDS.INVERT_SELECTION_ALL_CT.INDEX()].setVisibility(View.INVISIBLE);   //  Cacher les boutons non pertinents en cas de liste vide
             buttons[COMMANDS.SELECT_ALL_CT.INDEX()].setVisibility(View.INVISIBLE);
-            stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setVisibility(View.INVISIBLE);
         }
+        stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setVisibility((ctRecordsHandler.getCountAllTimers() >= 1) ? View.VISIBLE : View.INVISIBLE);  //  Pour voir le bouton montrant l'heure d'expiration du timer ou sinon le temps restant
     }
 
     private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   On+Unpressed(ON/BACK), On+Pressed(BACK/OFF), Off+Unpressed(OFF/BACK), Off+Pressed(BACK/ON)
@@ -407,9 +402,13 @@ public class MainActivity extends Activity {
     }
 
     private void createChronoTimer(MODES mode) {
+        mainCtListUpdater.stopAutomatic();   //  C'est plus prudent
         int idct = ctRecordsHandler.createChronoTimer(mode);
         if (addNewChronoTimerToList) {
             mainCtListUpdater.reload();
+            if (ctRecordsHandler.getCountAllRunning() > 0) {
+                mainCtListUpdater.startAutomatic(System.currentTimeMillis());
+            }
             updateDisplayButtonsAndDotMatrixDisplayVisibility();
         } else {
             launchCtDisplayActivity(idct);

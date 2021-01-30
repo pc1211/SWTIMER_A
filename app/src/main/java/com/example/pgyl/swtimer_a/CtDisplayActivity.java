@@ -338,12 +338,11 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayDotMatrixDisplay(long nowm) {
+        dotMatrixDisplayUpdater.stopAutomatic();
         dotMatrixDisplayUpdater.displayTimeAndLabel(nowm);
         if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
             dotMatrixDisplayUpdater.resetScroll();
             dotMatrixDisplayUpdater.startAutomatic(nowm, currentCtRecord.isReset());
-        } else {  //  Pas besoin de rafraichissement continu
-            dotMatrixDisplayUpdater.stopAutomatic();
         }
     }
 

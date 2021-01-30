@@ -254,11 +254,10 @@ public class CtDisplayDotMatrixDisplayActivity extends Activity {
     private void updateDisplayDotMatrixDisplay() {
         final boolean AUTOMATIC_SCROLL_ON = true;
 
+        dotMatrixDisplayUpdater.stopAutomatic();
         dotMatrixDisplayUpdater.displayInitTimeAndLabel();
         if (coeffIndex == getDotMatrixDisplayCoeffsScrollSpeedIndex()) {
             dotMatrixDisplayUpdater.startAutomatic(System.currentTimeMillis(), AUTOMATIC_SCROLL_ON);
-        } else {
-            dotMatrixDisplayUpdater.stopAutomatic();
         }
     }
 

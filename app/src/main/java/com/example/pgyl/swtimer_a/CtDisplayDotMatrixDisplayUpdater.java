@@ -42,7 +42,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private int scrollCount;
     private boolean automaticScrollOn;
     private boolean inAutomatic;
-    private long timeStart;
+    private long timeStartAutomatic;
     private Handler handlerTime;
     private Runnable runnableTime;
     //endregion
@@ -122,11 +122,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void startAutomatic(long nowm, boolean automaticScrollOn) {
-        stopAutomatic();   //  On efface tout et on recommence
         this.automaticScrollOn = automaticScrollOn;
         updateInterval = automaticScrollOn ? getUpdateInterval(dotsPerSecond) : APP_TIME_UNIT_PRECISION.DURATION_MS();   //  Si pas de scroll => Rafraichissement à la fréquence correspondant à la précision du chrono/timer
-        timeStart = System.currentTimeMillis();
-        handlerTime.postDelayed(runnableTime, updateInterval - (timeStart - nowm));   //  Respecter updateInterval à partir de nowm
+        timeStartAutomatic = nowm;
+        handlerTime.postDelayed(runnableTime, updateInterval - (System.currentTimeMillis() - nowm));   //  Respecter updateInterval à partir de nowm
     }
 
     public void stopAutomatic() {
@@ -139,7 +138,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         if ((!inAutomatic) && (!dotMatrixDisplayView.isDrawing())) {   //  OK pour rafraîchir l'affichage
             inAutomatic = true;
             automaticDisplay(nowm);
-            timeStart = nowm;   //  Mettre à jour le moment du dernier rafraichissement d'affichage
+            timeStartAutomatic = nowm;   //  Mettre à jour le moment du dernier rafraichissement d'affichage
             inAutomatic = false;
         }
     }
@@ -149,7 +148,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
         if (automaticScrollOn) {
             if (dotsPerSecond != 0) {   //  Scroll à effectuer
-                int dotsElapsed = (int) ((nowm - timeStart + (updateInterval / 2)) / updateInterval);   //  Arrondir le nombre de points écoulés depuis timeStart
+                int dotsElapsed = (int) ((nowm - timeStartAutomatic + (updateInterval / 2)) / updateInterval);   //  Arrondir le nombre de points écoulés depuis timeStart
                 int scrollDiff = dotsElapsed % MAX_SCROLL_COUNT;
                 scrollCount = scrollCount + scrollDiff;
                 if (scrollCount > MAX_SCROLL_COUNT) {
