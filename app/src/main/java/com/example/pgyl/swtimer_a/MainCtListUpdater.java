@@ -24,6 +24,7 @@ public class MainCtListUpdater {
     private Runnable runnableTime;
     private Runnable runnableCheckNeedScrollBar;
     private boolean automaticFlag;
+    private long timeStartAutomatic;
     //endregion
 
     public MainCtListUpdater(ListView mainCtListView, CtRecordsHandler ctRecordsHandler, Context context) {
@@ -58,6 +59,7 @@ public class MainCtListUpdater {
 
     public void startAutomatic(long nowm) {
         handlerTime.postDelayed(runnableTime, updateInterval - (System.currentTimeMillis() - nowm));   //  Respecter updateInterval à partir de nowm
+        timeStartAutomatic = nowm;
     }
 
     public void stopAutomatic() {
@@ -65,8 +67,9 @@ public class MainCtListUpdater {
     }
 
     private void automatic() {
-        handlerTime.postDelayed(runnableTime, updateInterval);
         long nowm = System.currentTimeMillis();
+        long expectedNowm = timeStartAutomatic + updateInterval * ((nowm - timeStartAutomatic + (updateInterval / 2)) / updateInterval);
+        handlerTime.postDelayed(runnableTime, updateInterval + expectedNowm - nowm);   //  Eviter l'incidence d'un updateInterval mal respecté sur tous les nowm suivants (et leur temps affiché associé, juste mais décalé car dixièmes de secondes affichés et visibles longtemps si intervalle d'une seconde)
         automaticFlag = true;
         ctRecordsHandler.checkAllTimersRunningExpired(nowm);   //  Déclenchera éventuellement onCtListExpiredTimer
         repaint(nowm);
