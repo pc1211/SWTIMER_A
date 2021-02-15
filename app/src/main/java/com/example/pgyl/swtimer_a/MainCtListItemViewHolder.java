@@ -7,7 +7,8 @@ public class MainCtListItemViewHolder {
     //region Variables
     SymbolButtonView buttonModeSelection;
     SymbolButtonView buttonStartStop;
-    SymbolButtonView buttonSplitReset;
+    SymbolButtonView buttonSplit;
+    SymbolButtonView buttonReset;
     SymbolButtonView buttonClockAppAlarm;
     DotMatrixDisplayView buttonDotMatrixDisplayTimeLabel;
     //endregion

@@ -73,15 +73,16 @@ class CtRecord {   //  Données d'un Chrono ou Timer
     }
 
     public boolean setMode(MODES newMode) {
+        boolean setOK = false;
         if (!mode.equals(newMode)) {
             if (!running) {
                 mode = newMode;
                 timeDef = timeDefInit;
                 reset();
-                return true;
+                setOK = true;
             }
         }
-        return false;
+        return setOK;
     }
 
     public boolean isSelected() {

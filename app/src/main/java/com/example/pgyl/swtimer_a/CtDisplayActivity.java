@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -79,7 +80,7 @@ import static com.example.pgyl.swtimer_a.StringDBUtils.saveDBChronoTimer;
 public class CtDisplayActivity extends Activity {
     //region Constantes
     private enum STATE_COMMANDS {
-        RUN(R.raw.ct_run), SPLIT(R.raw.ct_split), CLOCK_APP_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
+        START_STOP(R.raw.ct_start_stop), SPLIT(R.raw.ct_split), CLOCK_APP_ALARM(R.raw.ct_bell), RESET(R.raw.ct_reset), CHRONO_MODE(R.raw.ct_chrono), TIMER_MODE(R.raw.ct_timer);
 
         private int valueId;
 
@@ -189,7 +190,7 @@ public class CtDisplayActivity extends Activity {
         setupDotMatrixDisplayCoeffs();
         rebuildDotMatrixDisplayStructure();
         updateDisplayDotMatrixDisplay(nowm);
-        updateDisplayStateButtonColors();
+        updateDisplayStateButtonColorsAndVisibility();
         updateDisplayBackScreenColor();
         updateDisplayKeepScreen();
         invalidateOptionsMenu();
@@ -264,55 +265,30 @@ public class CtDisplayActivity extends Activity {
 
     private void onStateButtonCustomClick(STATE_COMMANDS command) {
         long nowm = System.currentTimeMillis();
-        if (command.equals(STATE_COMMANDS.RUN)) {
-            onStateButtonClickRun(nowm);
-        }
-        if (command.equals(STATE_COMMANDS.SPLIT)) {
-            onStateButtonClickSplit(nowm);
-        }
-        if (command.equals(STATE_COMMANDS.CLOCK_APP_ALARM)) {
-            onStateButtonClickClockAppAlarm();
-        }
-        if (command.equals(STATE_COMMANDS.RESET)) {
-            onStateButtonClickReset();
-        }
-        if (command.equals(STATE_COMMANDS.CHRONO_MODE)) {
-            onStateButtonClickMode(MODES.CHRONO);
-        }
-        if (command.equals(STATE_COMMANDS.TIMER_MODE)) {
-            onStateButtonClickMode(MODES.TIMER);
-        }
-        updateDisplayStateButtonColors();
-        updateDisplayDotMatrixDisplay(nowm);
-    }
-
-    private void onStateButtonClickRun(long nowm) {
-        if (!currentCtRecord.isRunning()) {
-            currentCtRecord.start(nowm, setClockAppAlarmOnStartTimer);
-        } else {
-            currentCtRecord.stop(nowm);
-        }
-    }
-
-    private void onStateButtonClickSplit(long nowm) {
-        currentCtRecord.split(nowm);
-    }
-
-    private void onStateButtonClickClockAppAlarm() {
-        currentCtRecord.setClockAppAlarmOn(!currentCtRecord.isClockAppAlarmOn());
-    }
-
-    private void onStateButtonClickReset() {
-        currentCtRecord.reset();
-    }
-
-    private void onStateButtonClickMode(MODES newMode) {
-        MODES oldMode = currentCtRecord.getMode();
-        if (!currentCtRecord.setMode(newMode)) {
-            if (!newMode.equals(oldMode)) {
-                toastLong("First stop " + capitalize(oldMode.toString()), this);
+        if (command.equals(STATE_COMMANDS.START_STOP)) {
+            if (!currentCtRecord.isRunning()) {
+                currentCtRecord.start(nowm, setClockAppAlarmOnStartTimer);
+            } else {
+                currentCtRecord.stop(nowm);
             }
         }
+        if (command.equals(STATE_COMMANDS.SPLIT)) {
+            currentCtRecord.split(nowm);
+        }
+        if (command.equals(STATE_COMMANDS.CLOCK_APP_ALARM)) {
+            currentCtRecord.setClockAppAlarmOn(!currentCtRecord.isClockAppAlarmOn());
+        }
+        if (command.equals(STATE_COMMANDS.RESET)) {
+            currentCtRecord.reset();
+        }
+        if (command.equals(STATE_COMMANDS.CHRONO_MODE)) {
+            currentCtRecord.setMode(MODES.CHRONO);
+        }
+        if (command.equals(STATE_COMMANDS.TIMER_MODE)) {
+            currentCtRecord.setMode(MODES.TIMER);
+        }
+        updateDisplayStateButtonColorsAndVisibility();
+        updateDisplayDotMatrixDisplay(nowm);
     }
 
     private void onRequestClockAppAlarmSwitch(CtRecord ctRecord, SWITCHES clockAppAlarmSwitch) {   //  Créer ou désactiver une alarme dans Clock App; Evénement normalement déclenché par CtRecord
@@ -329,7 +305,7 @@ public class CtDisplayActivity extends Activity {
         toastLong("Timer " + ctRecord.getLabel() + CRLF + "expired @ " + getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss), this);
         long nowm = System.currentTimeMillis();
         updateDisplayDotMatrixDisplay(nowm);
-        updateDisplayStateButtonColors();
+        updateDisplayStateButtonColorsAndVisibility();
         beep(this);
     }
 
@@ -350,17 +326,20 @@ public class CtDisplayActivity extends Activity {
         backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + colors[getTableIndex(colorTableNames, getBackScreenColorsTableName())][getBackScreenColorsBackIndex()]));
     }
 
-    private void updateDisplayStateButtonColor(STATE_COMMANDS command) {  //   ON/BACK ou OFF/BACK
+    private void updateDisplayStateButtonColorsAndVisibility() {
         int colorTableIndex = getTableIndex(colorTableNames, getStateButtonsColorsTableName());
-        String frontColor = ((getStateButtonState(command)) ? colors[colorTableIndex][getStateButtonsColorsOnIndex()] : colors[colorTableIndex][getStateButtonsColorsOffIndex()]);
-        String backColor = colors[colorTableIndex][getStateButtonsColorsBackIndex()];
-        String extraColor = ((getStateButtonState(command)) ? colors[colorTableIndex][getStateButtonsColorsOffIndex()] : colors[colorTableIndex][getStateButtonsColorsOnIndex()]);
-        stateButtons[command.INDEX()].setColors(frontColor, backColor, extraColor);
-    }
-
-    private void updateDisplayStateButtonColors() {
+        int onColorIndex = getStateButtonsColorsOnIndex();
+        int offColorIndex = getStateButtonsColorsOffIndex();
+        int backColorIndex = getStateButtonsColorsBackIndex();
         for (STATE_COMMANDS command : STATE_COMMANDS.values()) {
-            updateDisplayStateButtonColor(command);
+            boolean state = getStateButtonState(command);
+            String frontColor = (state ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
+            String backColor = colors[colorTableIndex][backColorIndex];
+            String extraColor = (state ? colors[colorTableIndex][offColorIndex] : colors[colorTableIndex][onColorIndex]);
+            stateButtons[command.INDEX()].setColors(frontColor, backColor, extraColor);
+
+            boolean visibility = getStateButtonVisibility(command);
+            stateButtons[command.INDEX()].setVisibility(visibility ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -387,7 +366,7 @@ public class CtDisplayActivity extends Activity {
         if (command.equals(STATE_COMMANDS.TIMER_MODE)) {
             return currentCtRecord.getMode().equals(MODES.TIMER);
         }
-        if (command.equals(STATE_COMMANDS.RUN)) {
+        if (command.equals(STATE_COMMANDS.START_STOP)) {
             return currentCtRecord.isRunning();
         }
         if (command.equals(STATE_COMMANDS.SPLIT)) {
@@ -398,6 +377,28 @@ public class CtDisplayActivity extends Activity {
         }
         if (command.equals(STATE_COMMANDS.CLOCK_APP_ALARM)) {
             return currentCtRecord.isClockAppAlarmOn();
+        }
+        return false;
+    }
+
+    private boolean getStateButtonVisibility(STATE_COMMANDS command) {
+        if (command.equals(STATE_COMMANDS.CHRONO_MODE)) {
+            return (currentCtRecord.getMode().equals(MODES.CHRONO) || currentCtRecord.isReset());
+        }
+        if (command.equals(STATE_COMMANDS.TIMER_MODE)) {
+            return (currentCtRecord.getMode().equals(MODES.TIMER) || currentCtRecord.isReset());
+        }
+        if (command.equals(STATE_COMMANDS.START_STOP)) {
+            return (currentCtRecord.getMode().equals(MODES.CHRONO) || !currentCtRecord.isReset() || (currentCtRecord.getTimeDef() > 0));
+        }
+        if (command.equals(STATE_COMMANDS.SPLIT)) {
+            return (currentCtRecord.isRunning() || currentCtRecord.isSplitted());
+        }
+        if (command.equals(STATE_COMMANDS.RESET)) {
+            return (!currentCtRecord.isRunning() && !currentCtRecord.isReset());
+        }
+        if (command.equals(STATE_COMMANDS.CLOCK_APP_ALARM)) {
+            return (currentCtRecord.getMode().equals(MODES.TIMER) && currentCtRecord.isRunning());
         }
         return false;
     }
@@ -442,7 +443,7 @@ public class CtDisplayActivity extends Activity {
             try {
                 stateButtons[stateCommand.INDEX()] = findViewById(rid.getField(STATE_BUTTON_XML_NAME_PREFIX + stateCommand.toString()).getInt(rid));
                 stateButtons[stateCommand.INDEX()].setSVGImageResource(stateCommand.ID());
-                if (!stateCommand.equals(STATE_COMMANDS.RUN)) {   //  Start/Stop doit pouvoir cliquer sans délai
+                if (!stateCommand.equals(STATE_COMMANDS.START_STOP)) {   //  Start/Stop doit pouvoir cliquer sans délai
                     stateButtons[stateCommand.INDEX()].setMinClickTimeInterval(STATE_BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
                 }
                 final STATE_COMMANDS fstatecommand = stateCommand;

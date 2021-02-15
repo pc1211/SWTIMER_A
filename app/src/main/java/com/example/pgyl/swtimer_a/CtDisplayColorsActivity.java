@@ -89,7 +89,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private enum STATE_COMMANDS {
-        RUN1(R.raw.ct_run), RUN2(R.raw.ct_run);
+        START_STOP1(R.raw.ct_start_stop), START_STOP2(R.raw.ct_start_stop);
 
         private int valueId;
 
@@ -454,10 +454,10 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private boolean getStateButtonState(STATE_COMMANDS stateCommand) {
-        if (stateCommand.equals(STATE_COMMANDS.RUN1)) {
+        if (stateCommand.equals(STATE_COMMANDS.START_STOP1)) {
             return true;   //  Toujours ON
         }
-        if (stateCommand.equals(STATE_COMMANDS.RUN2)) {
+        if (stateCommand.equals(STATE_COMMANDS.START_STOP2)) {
             return false;   //  Toujours OFF
         }
         return false;

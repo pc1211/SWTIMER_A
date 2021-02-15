@@ -47,7 +47,7 @@
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.SymbolButtonView
-            android:id="@+id/STATE_BTN_RUN"
+            android:id="@+id/STATE_BTN_START_STOP"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="4dp"
