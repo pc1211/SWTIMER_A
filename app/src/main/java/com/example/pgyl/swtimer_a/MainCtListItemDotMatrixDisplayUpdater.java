@@ -57,7 +57,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     }
 
     public void displayTimeAndLabel(DotMatrixDisplayView dotMatrixDisplayView, CtRecord ctRecord, boolean showExpirationTime, long nowm) {
-        final String TIME1_ON_COLOR = "FF9A22";   //  Couleur de HH:MM:SS
+        final String TIME1_ON_COLOR = "999900";   //  Couleur de HH:MM:SS
         final String TIME2_ON_COLOR = "707070";    //  Couleur de .T
         final String TIME_EXP_ON_COLOR = "00B777";    //  Couleur si Temps d'expiration (si timer)
         final String LABEL_ON_COLOR = "668CFF";
@@ -79,11 +79,8 @@ public class MainCtListItemDotMatrixDisplayUpdater {
             }
         }
         dotMatrixDisplayView.setSymbolPos(labelDisplayRect.left + margins.left, labelDisplayRect.top + LABEL_MARGIN_TOP);
-        String labelText = ctRecord.getLabel();
-        if (labelText.length() > FILLER_LABEL.length()) {
-            labelText = labelText.substring(0, FILLER_LABEL.length());   //  Longueur du label limitée au maximum possible
-        }
-        dotMatrixDisplayView.writeText(labelText, LABEL_ON_COLOR, defaultFont);   //  Label avec police par défaut
+        int numChars = Math.min(ctRecord.getLabel().length(), FILLER_LABEL.length());   // Au maximum la longueur de FILLER_LABEL
+        dotMatrixDisplayView.writeText(ctRecord.getLabel().substring(0, numChars), LABEL_ON_COLOR, defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
     }
 
