@@ -106,9 +106,9 @@ public class CtRecordsHandler {
         long defaultTime = Long.parseLong(defaultsBase[getPresetsCTTimeIndex()]);
         ctRecord.setTimeDefInit(defaultTime);
         ctRecord.setTimeDef(defaultTime, DUMMY_VALUE);
-        String defaultLabel = defaultsBase[getPresetsCTLabelIndex()];
-        ctRecord.setLabelInit(defaultLabel + idct);   //  "Label<idct>"
-        ctRecord.setLabel(defaultLabel + idct);
+        String defaultLabel = defaultsBase[getPresetsCTLabelIndex()] + idct;   //  "Label<idct>"
+        ctRecord.setLabelInit(defaultLabel);
+        ctRecord.setLabel(defaultLabel);
         setupCtRecordListener(ctRecord);
         ctRecords.add(ctRecord);
         return ctRecord.getIdct();
