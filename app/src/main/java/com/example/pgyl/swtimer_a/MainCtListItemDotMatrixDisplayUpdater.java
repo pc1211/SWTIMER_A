@@ -26,7 +26,6 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     private Rect displayRect;
     private Rect timeDisplayRect;
     private Rect labelDisplayRect;
-    private int timeHMSTextLength;
     //endregion
 
     //region Constantes
@@ -45,8 +44,6 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         setupDefaultFont();
         setupExtraFont();
         setupMargins();
-
-        timeHMSTextLength = msToTimeFormatD(FILLER_TIME_MS, TIME_UNITS.SEC, ROUND_TO_TIME_UNIT_PRECISION).length();     //  8 car 00:00:00
     }
 
     public void close() {
@@ -57,30 +54,33 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     }
 
     public void displayTimeAndLabel(DotMatrixDisplayView dotMatrixDisplayView, CtRecord ctRecord, boolean showExpirationTime, long nowm) {
-        final String TIME1_ON_COLOR = "FFFF00";   //  Couleur de HH:MM:SS
-        final String TIME2_ON_COLOR = "707070";    //  Couleur de .T
+        final String TIME_ON_COLOR = "FFFF00";   //  Couleur de HH:MM:SS
         final String TIME_EXP_ON_COLOR = "00B777";    //  Couleur si Temps d'expiration (si timer)
         final String LABEL_ON_COLOR = "668CFF";
         final String OFF_COLOR = "404040";
+        long time;
         String timeText;
+        String color;
 
-        dotMatrixDisplayView.fillRect(displayRect, TIME1_ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
+        dotMatrixDisplayView.fillRect(displayRect, TIME_ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
         dotMatrixDisplayView.setSymbolPos(timeDisplayRect.left + margins.left, timeDisplayRect.top + margins.top);
-        if ((showExpirationTime) && (ctRecord.getMode().equals(CtRecord.MODES.TIMER))) {   //  Afficher heure d'expiration du timer
-            timeText = getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss);
-            dotMatrixDisplayView.writeText(timeText, TIME_EXP_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        if ((showExpirationTime) && (ctRecord.getMode().equals(CtRecord.MODES.TIMER))) {   //  Afficher heure d'expiration du timer HH:MM:SS
+            time = ctRecord.getTimeExp();
+            timeText = getFormattedTimeZoneLongTimeDate(time, HHmmss);
+            color = TIME_EXP_ON_COLOR;
         } else {  //  Affichage normal
-            timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION);
-            if ((timeText.length() > timeHMSTextLength) && (ctRecord.isRunning()) && (!ctRecord.isSplitted())) {  //  Bicolore possible si en marche et non splitté
-                dotMatrixDisplayView.writeText(timeText.substring(0, timeHMSTextLength), TIME1_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
-                dotMatrixDisplayView.writeText(timeText.substring(timeHMSTextLength), TIME2_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
-            } else {  //  Une seule couleur
-                dotMatrixDisplayView.writeText(timeText, TIME1_ON_COLOR, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+            time = ctRecord.getTimeDisplay(nowm);
+            if ((ctRecord.isRunning()) && (!ctRecord.isSplitted())) {  //  HH:MM:SS
+                timeText = msToTimeFormatD(time, TIME_UNITS.SEC, !ROUND_TO_TIME_UNIT_PRECISION);
+            } else {   //  HH:MM:SS.T
+                timeText = msToTimeFormatD(time, APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION);
             }
+            color = TIME_ON_COLOR;
         }
+        dotMatrixDisplayView.writeText(timeText, color, extraFont, defaultFont);   //  Temps avec police extra prioritaire
         dotMatrixDisplayView.setSymbolPos(labelDisplayRect.left + margins.left, labelDisplayRect.top + LABEL_MARGIN_TOP);
-        int numChars = Math.min(ctRecord.getLabel().length(), FILLER_LABEL.length());   // Au maximum la longueur de FILLER_LABEL
-        dotMatrixDisplayView.writeText(ctRecord.getLabel().substring(0, numChars), LABEL_ON_COLOR, defaultFont);   //  Label avec police par défaut
+        String label = ctRecord.getLabel();
+        dotMatrixDisplayView.writeText(label.substring(0, Math.min(label.length(), FILLER_LABEL.length())), LABEL_ON_COLOR, defaultFont);   //  Label avec police par défaut
         dotMatrixDisplayView.updateDisplay();
     }
 
