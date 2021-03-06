@@ -26,6 +26,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     private Rect displayRect;
     private Rect timeDisplayRect;
     private Rect labelDisplayRect;
+    private int timeHmsLength;
     //endregion
 
     //region Constantes
@@ -44,6 +45,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         setupDefaultFont();
         setupExtraFont();
         setupMargins();
+        timeHmsLength = msToTimeFormatD(0, TIME_UNITS.SEC, ROUND_TO_TIME_UNIT_PRECISION).length();   //  00:00:00
     }
 
     public void close() {
@@ -58,22 +60,18 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         final String TIME_EXP_ON_COLOR = "00B777";    //  Couleur si Temps d'expiration (si timer)
         final String LABEL_ON_COLOR = "668CFF";
         final String OFF_COLOR = "404040";
-        long time;
         String timeText;
         String color;
 
         dotMatrixDisplayView.fillRect(displayRect, TIME_ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
         dotMatrixDisplayView.setSymbolPos(timeDisplayRect.left + margins.left, timeDisplayRect.top + margins.top);
         if ((showExpirationTime) && (ctRecord.getMode().equals(CtRecord.MODES.TIMER))) {   //  Afficher heure d'expiration du timer HH:MM:SS
-            time = ctRecord.getTimeExp();
-            timeText = getFormattedTimeZoneLongTimeDate(time, HHmmss);
+            timeText = getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss);
             color = TIME_EXP_ON_COLOR;
         } else {  //  Affichage normal
-            time = ctRecord.getTimeDisplay(nowm);
-            if ((ctRecord.isRunning()) && (!ctRecord.isSplitted())) {  //  HH:MM:SS
-                timeText = msToTimeFormatD(time, TIME_UNITS.SEC, !ROUND_TO_TIME_UNIT_PRECISION);
-            } else {   //  HH:MM:SS.T
-                timeText = msToTimeFormatD(time, APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION);
+            timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION);   //  HH:MM:SS.T
+            if ((ctRecord.isRunning()) && (!ctRecord.isSplitted())) {
+                timeText = timeText.substring(0, timeHmsLength);   //  Couper à HH:MM:SS
             }
             color = TIME_ON_COLOR;
         }
