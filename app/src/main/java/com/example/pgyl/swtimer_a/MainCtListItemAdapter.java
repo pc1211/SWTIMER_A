@@ -32,7 +32,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private onCheckBoxClickListener mOnCheckBoxClickListener;
 
     public interface onStartStopResetClickListener {
-        void onStartStopResetClick(long nowm);
+        void onStartStopResetClick(long nowm, long timeAcc);
     }
 
     public void setOnItemStartStopResetClick(onStartStopResetClickListener listener) {
@@ -116,7 +116,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
             ctRecords.get(pos).stop(nowm);
         }
         if (mOnStartStopResetClickListener != null) {
-            mOnStartStopResetClickListener.onStartStopResetClick(nowm);
+            mOnStartStopResetClickListener.onStartStopResetClick(nowm, ctRecords.get(pos).getTimeAcc());
         }
         paintView(rowv, pos, nowm);
     }
@@ -131,7 +131,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         long nowm = System.currentTimeMillis();
         ctRecords.get(pos).reset();
         if (mOnStartStopResetClickListener != null) {
-            mOnStartStopResetClickListener.onStartStopResetClick(nowm);
+            mOnStartStopResetClickListener.onStartStopResetClick(nowm, ctRecords.get(pos).getTimeAcc());
         }
         paintView(rowv, pos, nowm);
     }

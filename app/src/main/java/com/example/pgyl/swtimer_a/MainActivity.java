@@ -174,7 +174,7 @@ public class MainActivity extends Activity {
         updateDisplayStateButtonColors();
         updateDisplayKeepScreen();
         mainCtListUpdater.reload();
-        mainCtListUpdater.startAutomatic(System.currentTimeMillis());
+        mainCtListUpdater.startAutomatic(System.currentTimeMillis(), 0);
         updateDisplayButtonsAndDotMatrixDisplayVisibility();
         invalidateOptionsMenu();
     }
@@ -280,7 +280,7 @@ public class MainActivity extends Activity {
                         ctRecordsHandler.resetSelection();
                     }
                     if (ctRecordsHandler.getCountAllRunning() > 0) {
-                        mainCtListUpdater.startAutomatic(nowm);
+                        mainCtListUpdater.startAutomatic(nowm, 0);
                     }
                 }
                 mainCtListUpdater.repaint(nowm);
@@ -314,10 +314,10 @@ public class MainActivity extends Activity {
         updateDisplayButtonsAndDotMatrixDisplayVisibility();
     }
 
-    private void onCtListItemStartStopResetClick(long nowm) {
+    private void onCtListItemStartStopResetClick(long nowm, long timeAcc) {
         mainCtListUpdater.stopAutomatic();
         if (ctRecordsHandler.getCountAllRunning() > 0) {
-            mainCtListUpdater.startAutomatic(nowm);
+            mainCtListUpdater.startAutomatic(nowm, timeAcc);
         }
     }
 
@@ -391,7 +391,7 @@ public class MainActivity extends Activity {
                 ctRecordsHandler.removeSelection();
                 mainCtListUpdater.reload();
                 if (ctRecordsHandler.getCountAllRunning() > 0) {
-                    mainCtListUpdater.startAutomatic(System.currentTimeMillis());
+                    mainCtListUpdater.startAutomatic(System.currentTimeMillis(), 0);
                 }
                 updateDisplayButtonsAndDotMatrixDisplayVisibility();
             }
@@ -407,7 +407,7 @@ public class MainActivity extends Activity {
         if (addNewChronoTimerToList) {
             mainCtListUpdater.reload();
             if (ctRecordsHandler.getCountAllRunning() > 0) {
-                mainCtListUpdater.startAutomatic(System.currentTimeMillis());
+                mainCtListUpdater.startAutomatic(System.currentTimeMillis(), 0);
             }
             updateDisplayButtonsAndDotMatrixDisplayVisibility();
         } else {
@@ -601,8 +601,8 @@ public class MainActivity extends Activity {
         });
         mainCtListItemAdapter.setOnItemStartStopResetClick(new MainCtListItemAdapter.onStartStopResetClickListener() {
             @Override
-            public void onStartStopResetClick(long nowm) {
-                onCtListItemStartStopResetClick(nowm);
+            public void onStartStopResetClick(long nowm, long timeAcc) {
+                onCtListItemStartStopResetClick(nowm, timeAcc);
             }
         });
         mainCtListView = findViewById(R.id.CT_LIST);
