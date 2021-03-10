@@ -163,20 +163,22 @@ public class MainCtListItemAdapter extends BaseAdapter {
         final String COLOR_B_1 = "000000";
         final String COLOR_B_2 = "C0C0C0";
         final String COLOR_B_3 = "FF9A22";
+        final String COLOR_B_4 = "707070";
 
         int pos = position;
         MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) rowView.getTag();
 
         boolean b = ctRecords.get(pos).isSelected();   //  A
         String frontColor = (b ? COLOR_A_2 : COLOR_A_1);
-        String backColor = (b ? COLOR_A_1 : COLOR_A_2);
         String extraColor = frontColor;
+        String backColor = (b ? COLOR_A_1 : COLOR_A_2);
         viewHolder.buttonModeSelection.setColors(frontColor, backColor, extraColor);
 
         if (ctRecords.get(pos).getMode().equals(MODES.CHRONO) || !ctRecords.get(pos).isReset() || (ctRecords.get(pos).getTimeDef() > 0)) {
-            frontColor = COLOR_B_1;    //  B
+            b = ctRecords.get(pos).isRunning();
+            frontColor = (b ? COLOR_B_1 : COLOR_B_4);    //  B
             extraColor = frontColor;
-            backColor = (ctRecords.get(pos).isRunning() ? COLOR_B_3 : COLOR_B_2);
+            backColor = (b ? COLOR_B_3 : COLOR_B_2);
             viewHolder.buttonStartStop.setColors(frontColor, backColor, extraColor);
             viewHolder.buttonStartStop.setVisibility(View.VISIBLE);
         } else {
@@ -184,7 +186,10 @@ public class MainCtListItemAdapter extends BaseAdapter {
         }
 
         if (ctRecords.get(pos).isRunning() || ctRecords.get(pos).isSplitted()) {
-            backColor = (ctRecords.get(pos).isSplitted() ? COLOR_B_3 : COLOR_B_2);
+            b = ctRecords.get(pos).isSplitted();
+            frontColor = (b ? COLOR_B_1 : COLOR_B_4);
+            extraColor = frontColor;
+            backColor = (b ? COLOR_B_3 : COLOR_B_2);
             viewHolder.buttonSplit.setColors(frontColor, backColor, extraColor);
             viewHolder.buttonSplit.setVisibility(View.VISIBLE);
         } else {
@@ -192,6 +197,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
         }
 
         if (!ctRecords.get(pos).isRunning() && !ctRecords.get(pos).isReset()) {
+            frontColor = COLOR_B_4;
+            extraColor = frontColor;
             backColor = COLOR_B_2;
             viewHolder.buttonReset.setColors(frontColor, backColor, extraColor);
             viewHolder.buttonReset.setVisibility(View.VISIBLE);
@@ -200,7 +207,10 @@ public class MainCtListItemAdapter extends BaseAdapter {
         }
 
         if (ctRecords.get(pos).getMode().equals(MODES.TIMER) && ctRecords.get(pos).isRunning()) {
-            backColor = (ctRecords.get(pos).isClockAppAlarmOn() ? COLOR_B_3 : COLOR_B_2);
+            b = ctRecords.get(pos).isClockAppAlarmOn();
+            frontColor = (b ? COLOR_B_1 : COLOR_B_4);
+            extraColor = frontColor;
+            backColor = (b ? COLOR_B_3 : COLOR_B_2);
             viewHolder.buttonClockAppAlarm.setColors(frontColor, backColor, extraColor);
             viewHolder.buttonClockAppAlarm.setVisibility(View.VISIBLE);
         } else {
