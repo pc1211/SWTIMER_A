@@ -11,7 +11,6 @@ import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensio
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_HEIGHT;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.HHmmss;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.ROUND_TO_TIME_UNIT_PRECISION;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
@@ -68,7 +67,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
             color = TIME_EXP_ON_COLOR;
         } else {  //  Affichage normal
             TIME_UNITS timeUnit = ((ctRecord.isRunning()) && (!ctRecord.isSplitted())) ? TIME_UNITS.SEC : APP_TIME_UNIT_PRECISION;
-            timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), timeUnit, ROUND_TO_TIME_UNIT_PRECISION);   //  HH:MM:SS ou HH:MM:SS.T
+            timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), timeUnit, APP_TIME_UNIT_PRECISION);   //  HH:MM:SS ou HH:MM:SS.T
             color = TIME_ON_COLOR;
         }
         dotMatrixDisplayView.writeText(timeText, color, extraFont, defaultFont);   //  Temps avec police extra prioritaire
@@ -83,7 +82,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         int displayRectWidth;
         int displayRectHeight;
 
-        BiDimensions fillerTimeTextDimensions = getFontTextDimensions(msToTimeFormatD(FILLER_TIME_MS, APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
+        BiDimensions fillerTimeTextDimensions = getFontTextDimensions(msToTimeFormatD(FILLER_TIME_MS, APP_TIME_UNIT_PRECISION, APP_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
         BiDimensions fillerLabelTextDimensions = getFontTextDimensions(FILLER_LABEL, defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         displayRectWidth = margins.left + fillerLabelTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du label maximum; margins.right remplace la dernière marge droite
