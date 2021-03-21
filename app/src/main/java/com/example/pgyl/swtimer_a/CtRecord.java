@@ -232,7 +232,7 @@ class CtRecord {   //  Données d'un Chrono ou Timer
             tacc = -tacc;
             taus = -taus;
         }
-        return (timeDef + ((splitted) ? taus : tacc)) % TIME_UNITS.DAY.DURATION_MS();   //  => Retour à 00:00:00.00 après 23:59:59.99
+        return (timeDef + (splitted ? taus : tacc)) % TIME_UNITS.DAY.DURATION_MS();   //  => Retour à 00:00:00.00 après 23:59:59.99
     }
 
     public void start(long nowm, boolean setClockAppAlarmOnStartTimer) {

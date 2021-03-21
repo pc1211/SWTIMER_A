@@ -341,7 +341,7 @@ public class MainActivity extends Activity {
     }
 
     private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   On+Unpressed(ON/BACK), On+Pressed(BACK/OFF), Off+Unpressed(OFF/BACK), Off+Pressed(BACK/ON)
-        final String STATE_BUTTON_ON_EXP_TIME_COLOR = "00B777";
+        final String STATE_BUTTON_ON_EXP_TIME_COLOR = "FF0000";
         final String STATE_BUTTON_ON_NEW_CT_COLOR = "668CFF";
         final String STATE_BUTTON_OFF_COLOR = "404040";
         final String STATE_BUTTON_BACK_COLOR = "000000";

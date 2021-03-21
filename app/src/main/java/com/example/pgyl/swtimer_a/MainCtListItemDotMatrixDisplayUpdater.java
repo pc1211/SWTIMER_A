@@ -26,7 +26,6 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     private Rect displayRect;
     private Rect timeDisplayRect;
     private Rect labelDisplayRect;
-    private int timeHmsLength;
     //endregion
 
     //region Constantes
@@ -45,7 +44,6 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         setupDefaultFont();
         setupExtraFont();
         setupMargins();
-        timeHmsLength = msToTimeFormatD(0, TIME_UNITS.SEC, ROUND_TO_TIME_UNIT_PRECISION).length();   //  00:00:00
     }
 
     public void close() {
@@ -57,8 +55,8 @@ public class MainCtListItemDotMatrixDisplayUpdater {
 
     public void displayTimeAndLabel(DotMatrixDisplayView dotMatrixDisplayView, CtRecord ctRecord, boolean showExpirationTime, long nowm) {
         final String TIME_ON_COLOR = "FFFF00";   //  Couleur de HH:MM:SS
-        final String TIME_EXP_ON_COLOR = "00B777";    //  Couleur si Temps d'expiration (si timer)
-        final String LABEL_ON_COLOR = "668CFF";
+        final String TIME_EXP_ON_COLOR = "FF0000";    //  Couleur si Temps d'expiration (si timer)
+        final String LABEL_ON_COLOR = "C0C0C0";
         final String OFF_COLOR = "404040";
         String timeText;
         String color;
@@ -69,10 +67,8 @@ public class MainCtListItemDotMatrixDisplayUpdater {
             timeText = getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss);
             color = TIME_EXP_ON_COLOR;
         } else {  //  Affichage normal
-            timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), APP_TIME_UNIT_PRECISION, ROUND_TO_TIME_UNIT_PRECISION);   //  HH:MM:SS.T
-            if ((ctRecord.isRunning()) && (!ctRecord.isSplitted())) {
-                timeText = timeText.substring(0, timeHmsLength);   //  Couper à HH:MM:SS
-            }
+            TIME_UNITS timeUnit = ((ctRecord.isRunning()) && (!ctRecord.isSplitted())) ? TIME_UNITS.SEC : APP_TIME_UNIT_PRECISION;
+            timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), timeUnit, ROUND_TO_TIME_UNIT_PRECISION);   //  HH:MM:SS ou HH:MM:SS.T
             color = TIME_ON_COLOR;
         }
         dotMatrixDisplayView.writeText(timeText, color, extraFont, defaultFont);   //  Temps avec police extra prioritaire
