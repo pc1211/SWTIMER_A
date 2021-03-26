@@ -53,7 +53,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     }
 
     public void displayTimeAndLabel(DotMatrixDisplayView dotMatrixDisplayView, CtRecord ctRecord, boolean showExpirationTime, long nowm) {
-        final String TIME_ON_COLOR = "FFA500";   //  Couleur de HH:MM:SS
+        final String TIME_ON_COLOR = "FFFF00";   //  Couleur de HH:MM:SS
         final String TIME_EXP_ON_COLOR = "FF0000";    //  Couleur si Temps d'expiration (si timer)
         final String LABEL_ON_COLOR = "668CFF";
         final String OFF_COLOR = "404040";
