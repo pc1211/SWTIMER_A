@@ -4,13 +4,16 @@ import com.example.pgyl.pekislib_a.InputButtonsActivity;
 
 import java.util.ArrayList;
 
+import static com.example.pgyl.pekislib_a.Constants.CRLF;
 import static com.example.pgyl.pekislib_a.Constants.REGEXP_MIN_ONE_CHAR;
 import static com.example.pgyl.pekislib_a.Constants.REGEXP_PERCENT;
+import static com.example.pgyl.pekislib_a.Constants.REGEXP_PERCENT_ERROR_MESSAGE;
 import static com.example.pgyl.pekislib_a.Constants.REGEXP_SIX_CHARS;
+import static com.example.pgyl.pekislib_a.Constants.REGEXP_SIX_CHARS_ERROR_MESSAGE;
 import static com.example.pgyl.pekislib_a.StringDB.TABLE_ID_INDEX;
 import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_IDS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
-import static com.example.pgyl.pekislib_a.TimeDateUtils.getFirstTimeUnit;
+import static com.example.pgyl.pekislib_a.TimeDateUtils.getFirstTimeUnitToDecode;
 import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
 
 public class StringDBTables {
@@ -179,6 +182,7 @@ public class StringDBTables {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_TIME.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.ON_LABEL.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.OFF.LABEL(), SwTimerTableDataFields.DotMatrixDisplayColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), REGEXP_SIX_CHARS, REGEXP_SIX_CHARS, REGEXP_SIX_CHARS, REGEXP_SIX_CHARS},
+                {TABLE_IDS.REGEXP_ERROR_MESSAGE.toString(), REGEXP_SIX_CHARS_ERROR_MESSAGE, REGEXP_SIX_CHARS_ERROR_MESSAGE, REGEXP_SIX_CHARS_ERROR_MESSAGE, REGEXP_SIX_CHARS_ERROR_MESSAGE},
                 {TABLE_IDS.DEFAULT.toString(), "999900", "00B777", "303030", "000000"}
         };
         return TABLE_COLORS_DOT_MATRIX_DISPLAY_INITS;
@@ -211,6 +215,7 @@ public class StringDBTables {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.StateButtonsColors.ON.LABEL(), SwTimerTableDataFields.StateButtonsColors.OFF.LABEL(), SwTimerTableDataFields.StateButtonsColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), REGEXP_SIX_CHARS, REGEXP_SIX_CHARS, REGEXP_SIX_CHARS},
+                {TABLE_IDS.REGEXP_ERROR_MESSAGE.toString(), REGEXP_SIX_CHARS_ERROR_MESSAGE, REGEXP_SIX_CHARS_ERROR_MESSAGE, REGEXP_SIX_CHARS_ERROR_MESSAGE},
                 {TABLE_IDS.DEFAULT.toString(), "0061F3", "404040", "000000"}
         };
         return TABLE_COLOR_STATE_BUTTONS_INITS;
@@ -239,6 +244,7 @@ public class StringDBTables {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.BackScreenColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), REGEXP_SIX_CHARS},
+                {TABLE_IDS.REGEXP_ERROR_MESSAGE.toString(), REGEXP_SIX_CHARS_ERROR_MESSAGE},
                 {TABLE_IDS.DEFAULT.toString(), "000000"}
         };
         return TABLE_COLORS_BACK_SCREEN_INITS;
@@ -326,20 +332,24 @@ public class StringDBTables {
         final String TU_REG_EXP_END = "|$))";
 
         String timeFormatDLRegExp = TF_REG_EXP_BEGIN;
-        TIME_UNITS tu = getFirstTimeUnit();   //  1e unité à décoder
+        String timeFormatDLRegExpErrorMessage = "Required: ";
+        TIME_UNITS tu = getFirstTimeUnitToDecode();   //  1e unité à décoder
         do {   //  Construire une regexp adaptée à TIME_UNIT_PRECISION
             timeFormatDLRegExp = timeFormatDLRegExp + TU_REG_EXP_BEGIN + tu.FORMAT_DL_SEPARATOR() + TU_REG_EXP_END + TF_REG_EXP_MID;
+            timeFormatDLRegExpErrorMessage = timeFormatDLRegExpErrorMessage + "[..." + tu.FORMAT_DL_SEPARATOR() + "]";
             if (tu.equals(APP_TIME_UNIT_PRECISION)) {
                 break;
             }
-            tu = tu.getNextTimeUnit();
+            tu = tu.getNext();
         } while (tu != null);
         timeFormatDLRegExp = timeFormatDLRegExp + TF_REG_EXP_END;    //  Si TIME_UNIT_PRECISION = TS => "^(?=.+)([0-9]+(h|$))?([0-9]+(m|$))?([0-9]+(s|$))?([0-9]+(t|$))?$"  cad [...h][...m][...s][...t] et au moins 1 caractère
+        timeFormatDLRegExpErrorMessage = timeFormatDLRegExpErrorMessage + CRLF + "and at least 1 char";    //  [...h][...m][...s][...t]
 
         final String[][] TABLE_PRESETS_CT_INITS = {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.PresetsCT.TIME.LABEL(), SwTimerTableDataFields.PresetsCT.LABEL.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.TIME_FORMAT_DL.toString(), InputButtonsActivity.KEYBOARDS.ASCII.toString()},
                 {TABLE_IDS.REGEXP.toString(), timeFormatDLRegExp, null},
+                {TABLE_IDS.REGEXP_ERROR_MESSAGE.toString(), timeFormatDLRegExpErrorMessage, null},
                 {TABLE_IDS.DEFAULT_BASE.toString(), "0", "Label"},    //  A la base des DEFAULT calculés par CtRecordsHandler et injectés dans PRESETS_CT par CtDisplayActivity en vue de PresetsActivity
                 {TABLE_IDS.MAX.toString(), String.valueOf(TIME_UNITS.DAY.DURATION_MS() - APP_TIME_UNIT_PRECISION.DURATION_MS()), null},       //  Si TS => Max 23:59:59.9
                 {TABLE_IDS.TIME_UNIT_PRECISION.toString(), APP_TIME_UNIT_PRECISION.toString(), null}
@@ -385,6 +395,7 @@ public class StringDBTables {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
                 {TABLE_IDS.REGEXP.toString(), REGEXP_PERCENT, REGEXP_PERCENT, REGEXP_MIN_ONE_CHAR},
+                {TABLE_IDS.REGEXP_ERROR_MESSAGE.toString(), REGEXP_PERCENT_ERROR_MESSAGE, REGEXP_PERCENT_ERROR_MESSAGE, REGEXP_PERCENT_ERROR_MESSAGE},
                 {TABLE_IDS.DEFAULT.toString(), "20", "0", "25"},    //  Points carrés par défaut ; 25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
                 {TABLE_IDS.MAX.toString(), "100", "100", "100"}
         };

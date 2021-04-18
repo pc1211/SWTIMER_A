@@ -53,7 +53,7 @@ public class StringDBUtils {
     }
 
     public static void saveDBChronoTimer(StringDB stringDB, String[] values) {
-        stringDB.insertOrReplaceRow(getChronoTimersTableName(), values);
+            stringDB.insertOrReplaceRow(getChronoTimersTableName(), values);
     }
 
     public static void saveDBChronoTimers(StringDB stringDB, String[][] values) {
