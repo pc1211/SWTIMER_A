@@ -396,7 +396,7 @@ public class StringDBTables {
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
                 {TABLE_IDS.REGEXP.toString(), REGEXP_PERCENT, REGEXP_PERCENT, REGEXP_PERCENT},
                 {TABLE_IDS.REGEXP_ERROR_MESSAGE.toString(), REGEXP_PERCENT_ERROR_MESSAGE, REGEXP_PERCENT_ERROR_MESSAGE, REGEXP_PERCENT_ERROR_MESSAGE},
-                {TABLE_IDS.DEFAULT.toString(), "20", "0", "25"},    //  Points carrés par défaut ; 25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
+                {TABLE_IDS.DEFAULT.toString(), "20", "100", "25"},    //  Points carrés par défaut ; 25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)
                 {TABLE_IDS.MAX.toString(), "100", "100", "100"}
         };
         return TABLE_DOT_MATRIX_DISPLAY_COEFFS_INITS;
