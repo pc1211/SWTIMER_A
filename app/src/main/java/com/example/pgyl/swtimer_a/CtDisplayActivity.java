@@ -35,12 +35,12 @@ import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
 import static com.example.pgyl.pekislib_a.MiscUtils.beep;
 import static com.example.pgyl.pekislib_a.MiscUtils.capitalize;
+import static com.example.pgyl.pekislib_a.MiscUtils.getStringIndexOf;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
 import static com.example.pgyl.pekislib_a.StringDBTables.TABLE_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentsFromActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentsFromMultipleTablesFromActivity;
-import static com.example.pgyl.pekislib_a.StringDBUtils.getTableIndex;
 import static com.example.pgyl.pekislib_a.StringDBUtils.isColdStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForMultipleTablesForActivity;
@@ -322,11 +322,11 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void updateDisplayBackScreenColor() {
-        backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + colors[getTableIndex(colorTableNames, getBackScreenColorsTableName())][getBackScreenColorsBackIndex()]));
+        backLayout.setBackgroundColor(Color.parseColor(COLOR_PREFIX + colors[getStringIndexOf(getBackScreenColorsTableName(), colorTableNames)][getBackScreenColorsBackIndex()]));
     }
 
     private void updateDisplayStateButtonColorsAndVisibility() {
-        int colorTableIndex = getTableIndex(colorTableNames, getStateButtonsColorsTableName());
+        int colorTableIndex = getStringIndexOf(getStateButtonsColorsTableName(), colorTableNames);
         int onColorIndex = getStateButtonsColorsOnIndex();
         int offColorIndex = getStateButtonsColorsOffIndex();
         int backColorIndex = getStateButtonsColorsBackIndex();
@@ -472,7 +472,7 @@ public class CtDisplayActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayColors() {
-        dotMatrixDisplayUpdater.setColors(colors[getTableIndex(colorTableNames, getDotMatrixDisplayColorsTableName())]);
+        dotMatrixDisplayUpdater.setColors(colors[getStringIndexOf(getDotMatrixDisplayColorsTableName(), colorTableNames)]);
     }
 
     private void setupDotMatrixDisplayCoeffs() {

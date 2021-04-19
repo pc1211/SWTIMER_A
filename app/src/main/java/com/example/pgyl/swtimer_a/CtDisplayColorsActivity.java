@@ -37,6 +37,7 @@ import static com.example.pgyl.pekislib_a.Constants.PEKISLIB_ACTIVITIES;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_TITLE;
+import static com.example.pgyl.pekislib_a.MiscUtils.getStringIndexOf;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_DISPLAY_TYPE;
 import static com.example.pgyl.pekislib_a.PresetsActivity.PRESETS_ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
@@ -45,7 +46,6 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentFromActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentsFromActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrentsFromMultipleTablesFromActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.getFieldLabelsFromMultipleTables;
-import static com.example.pgyl.pekislib_a.StringDBUtils.getTableIndex;
 import static com.example.pgyl.pekislib_a.StringDBUtils.isColdStartStatusOfActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
@@ -364,15 +364,15 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayColors() {
-        if (colorTableIndex == getTableIndex(colorTableNames, getDotMatrixDisplayColorsTableName())) {
+        if (colorTableNames[colorTableIndex].equals(getDotMatrixDisplayColorsTableName())) {
             setupDotMatrixDisplayColors();
             rebuildDotMatrixDisplayStructure();   //  Uniquement à cause de la reconstruction du pochoir
             updateDisplayDotMatrixDisplay();
         }
-        if (colorTableIndex == getTableIndex(colorTableNames, getStateButtonsColorsTableName())) {
+        if (colorTableNames[colorTableIndex].equals(getStateButtonsColorsTableName())) {
             updateDisplayStateButtonColors();
         }
-        if (colorTableIndex == getTableIndex(colorTableNames, getBackScreenColorsTableName())) {
+        if (colorTableNames[colorTableIndex].equals(getBackScreenColorsTableName())) {
             updateDisplayBackScreenColors();
         }
     }
@@ -382,7 +382,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   ON/BACK ou OFF/BACK
-        int colorTableIndex = getTableIndex(colorTableNames, getStateButtonsColorsTableName());
+        int colorTableIndex = getStringIndexOf(getStateButtonsColorsTableName(), colorTableNames);
         String frontColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsColorsOnIndex()] : colors[colorTableIndex][getStateButtonsColorsOffIndex()]);
         String backColor = colors[colorTableIndex][getStateButtonsColorsBackIndex()];
         String extraColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsColorsOffIndex()] : colors[colorTableIndex][getStateButtonsColorsOnIndex()]);
@@ -396,7 +396,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void updateDisplayBackScreenColors() {
-        int color = Color.parseColor(COLOR_PREFIX + colors[getTableIndex(colorTableNames, getBackScreenColorsTableName())][getBackScreenColorsBackIndex()]);
+        int color = Color.parseColor(COLOR_PREFIX + colors[getStringIndexOf(getBackScreenColorsTableName(), colorTableNames)][getBackScreenColorsBackIndex()]);
         backLayoutPart2.setBackgroundColor(color);
         backLayoutPart1.setBackgroundColor(color);
     }
@@ -492,7 +492,7 @@ public class CtDisplayColorsActivity extends Activity {
     }
 
     private void setupDotMatrixDisplayColors() {
-        dotMatrixDisplayUpdater.setColors(colors[getTableIndex(colorTableNames, getDotMatrixDisplayColorsTableName())]);
+        dotMatrixDisplayUpdater.setColors(colors[getStringIndexOf(getDotMatrixDisplayColorsTableName(), colorTableNames)]);
     }
 
     private void setupDotMatrixDisplayCoeffs() {
