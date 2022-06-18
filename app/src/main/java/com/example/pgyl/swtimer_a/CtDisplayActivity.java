@@ -315,9 +315,9 @@ public class CtDisplayActivity extends Activity {
     private void updateDisplayDotMatrixDisplay(long nowm) {
         dotMatrixDisplayUpdater.stopAutomatic();
         dotMatrixDisplayUpdater.displayTimeAndLabel(nowm);
-        if ((currentCtRecord.isRunning() && (!currentCtRecord.isSplitted())) || (currentCtRecord.isReset())) {   //  Besoin de rafraichissement continu
+        if (currentCtRecord.isReset() || (currentCtRecord.isRunning() && ((currentCtRecord.getMode().equals(MODES.TIMER)) || ((currentCtRecord.getMode().equals(MODES.CHRONO)) && !currentCtRecord.isSplitted())))) {   //  Besoin de rafraichissement continu
             dotMatrixDisplayUpdater.resetScroll();
-            dotMatrixDisplayUpdater.startAutomatic(nowm, currentCtRecord.isReset());
+            dotMatrixDisplayUpdater.startAutomatic(nowm, currentCtRecord.isReset());   //  Appelé même si Timer en Split car sinon pas de constatation que timer écoulé (car currentCdRecord n'est plus mis à jour)
         }
     }
 

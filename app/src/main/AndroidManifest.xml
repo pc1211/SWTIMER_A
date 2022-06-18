@@ -10,7 +10,8 @@
             android:name="com.example.pgyl.swtimer_a.MainActivity"
             android:label="Swtimer"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
