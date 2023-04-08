@@ -3,9 +3,9 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.os.Handler;
 
-import com.example.pgyl.pekislib_a.DefaultDotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
+import com.example.pgyl.pekislib_a.DotMatrixFontDefault;
 
 import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.SCROLL_DIRECTIONS;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
@@ -13,6 +13,7 @@ import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.MILLISECONDS_PER_SECOND;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
+import static com.example.pgyl.swtimer_a.Constants.DOT_ASCII_CODE;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsOffIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsOnLabelIndex;
@@ -28,7 +29,6 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private Rect gridRect;
     private Rect displayRect;
     private Rect halfDisplayRect;
-    private Rect scrollRect;
     private Rect labelRect;
     private String[] colors;
     private int onTimeColorIndex;
@@ -164,9 +164,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private long getUpdateInterval(int dotsPerSecond) {
-        final long UPDATE_INTERVAL_ONGOING = MILLISECONDS_PER_SECOND;   //  Pour que automatic() continue d'être appelé même si dotsPerSecond = 0, mais sans scroll
-
-        return (dotsPerSecond != 0) ? MILLISECONDS_PER_SECOND / dotsPerSecond : UPDATE_INTERVAL_ONGOING;
+        return (dotsPerSecond != 0) ? MILLISECONDS_PER_SECOND / dotsPerSecond : MILLISECONDS_PER_SECOND;   //  Continuer à appeler automatic() même si dotsPerSecond = 0, mais sans scroll
     }
 
     private void displayTimeAndLabel(String timeText, String labelText) {
@@ -204,7 +202,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void setupDefaultFont() {
-        defaultFont = new DefaultDotMatrixFont();
+        defaultFont = new DotMatrixFontDefault();
     }
 
     private void setupExtraFont() {
@@ -216,7 +214,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         final int MARGIN_RIGHT = 1;
         final int MARGIN_TOP = 1;
 
-        int marginBottom = extraFont.getSymbol('.').getDimensions().height;  // Le  "." est affiché dans la marge inférieure
+        int marginBottom = extraFont.getSymbolByCode(DOT_ASCII_CODE).getDimensions().height;  // Le  "." est affiché dans la marge inférieure
         margins = new Rect(MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, marginBottom);
     }
 
@@ -230,13 +228,12 @@ public class CtDisplayDotMatrixDisplayUpdater {
         if (labelTextDimensions.width > 0) {   // La grille doit pouvoir contenir le temps et le label sur toute sa largeur ...
             gridRectWidth = gridRectWidth + labelTextDimensions.width - defaultFont.getRightMargin();
         }
-        int gridRectHeight = displayRectHeight;   //  ... et la même hauteur que la fenêtre d'affichage
 
-        gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
+        gridRect = new Rect(0, 0, gridRectWidth, displayRectHeight);   //  ... et la même hauteur que la fenêtre d'affichage
         displayRect = new Rect(gridRect.left, gridRect.top, displayRectWidth, displayRectHeight);  //  Affichage au début de la grille
         halfDisplayRect = new Rect(displayRect.right / 2, displayRect.top, displayRect.right, displayRect.bottom);  //  Pour affichage partagé dans CtDisplayColorsActivity
         labelRect = new Rect(displayRect.right, gridRect.top, gridRect.right, gridRect.bottom);   //  Espace restant de la grille
-        scrollRect = new Rect(gridRect);   //  On scrolle la grille entière (margins.left servira de margins.right)
+        Rect scrollRect = new Rect(gridRect);   //  On scrolle la grille entière (margins.left servira de margins.right)
 
         dotMatrixDisplayView.setGridRect(gridRect);
         dotMatrixDisplayView.setDisplayRect(displayRect);

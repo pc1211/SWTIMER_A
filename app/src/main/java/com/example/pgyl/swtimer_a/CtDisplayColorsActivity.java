@@ -381,12 +381,16 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.displayHalfInitTimeAndInitLabel();   //  Partager l'affichage entre Temps et Label
     }
 
-    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   ON/BACK ou OFF/BACK
+    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {
         int colorTableIndex = getStringIndexOf(getStateButtonsColorsTableName(), colorTableNames);
-        String frontColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsColorsOnIndex()] : colors[colorTableIndex][getStateButtonsColorsOffIndex()]);
-        String backColor = colors[colorTableIndex][getStateButtonsColorsBackIndex()];
-        String extraColor = ((getStateButtonState(stateCommand)) ? colors[colorTableIndex][getStateButtonsColorsOffIndex()] : colors[colorTableIndex][getStateButtonsColorsOnIndex()]);
-        stateButtons[stateCommand.INDEX()].setColors(frontColor, backColor, extraColor);
+        int onColorIndex = getStateButtonsColorsOnIndex();
+        int offColorIndex = getStateButtonsColorsOffIndex();
+        int backColorIndex = getStateButtonsColorsBackIndex();
+        boolean b = getStateButtonState(stateCommand);
+        String unpressedFrontColor = (b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
+        String unpressedBackColor = colors[colorTableIndex][backColorIndex];
+        String pressedBackColor = (b ? colors[colorTableIndex][offColorIndex] : colors[colorTableIndex][onColorIndex]);
+        stateButtons[stateCommand.INDEX()].setColors(unpressedFrontColor, unpressedBackColor, unpressedBackColor, pressedBackColor);
     }
 
     private void updateDisplayStateButtonColors() {

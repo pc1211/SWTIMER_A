@@ -351,17 +351,15 @@ public class MainActivity extends Activity {
         stateButtons[STATE_COMMANDS.SHOW_EXPIRATION_TIME.INDEX()].setVisibility((ctRecordsHandler.getCountAllTimers() >= 1) ? View.VISIBLE : View.INVISIBLE);  //  Pour voir le bouton montrant l'heure d'expiration du timer ou sinon le temps restant
     }
 
-    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {  //   On+Unpressed(ON/BACK), On+Pressed(BACK/OFF), Off+Unpressed(OFF/BACK), Off+Pressed(BACK/ON)
-        final String STATE_BUTTON_ON_EXP_TIME_COLOR = "FF0000";
-        final String STATE_BUTTON_ON_NEW_CT_COLOR = "668CFF";
-        final String STATE_BUTTON_OFF_COLOR = "404040";
-        final String STATE_BUTTON_BACK_COLOR = "000000";
+    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {
+        final String COLOR_1 = "FF0000";
+        final String COLOR_2 = "668CFF";
+        final String COLOR_3 = "404040";
+        final String COLOR_4 = "000000";
 
-        String stateButtonOnColor = ((stateCommand.equals(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) ? STATE_BUTTON_ON_NEW_CT_COLOR : STATE_BUTTON_ON_EXP_TIME_COLOR);
-        String frontColor = ((getStateButtonState(stateCommand)) ? stateButtonOnColor : STATE_BUTTON_OFF_COLOR);
-        String backColor = STATE_BUTTON_BACK_COLOR;
-        String extraColor = ((getStateButtonState(stateCommand)) ? STATE_BUTTON_OFF_COLOR : stateButtonOnColor);
-        stateButtons[stateCommand.INDEX()].setColors(frontColor, backColor, extraColor);
+        String stateButtonOnColor = ((stateCommand.equals(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) ? COLOR_2 : COLOR_1);
+        boolean b = getStateButtonState(stateCommand);
+        stateButtons[stateCommand.INDEX()].setColors((b ? stateButtonOnColor : COLOR_3), COLOR_4, COLOR_4, (b ? COLOR_3 : stateButtonOnColor));
     }
 
     private void updateDisplayStateButtonColors() {

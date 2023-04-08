@@ -14,5 +14,5 @@ public class Constants {
 
     public static final TIME_UNITS APP_TIME_UNIT_PRECISION = TIME_UNITS.TS;  //  Précision souhaitée dans l'affichage du temps
     public static final int SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER = 100;
-
+    public static final int DOT_ASCII_CODE = 46;
 }

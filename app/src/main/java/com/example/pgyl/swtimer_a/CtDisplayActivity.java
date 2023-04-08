@@ -331,14 +331,12 @@ public class CtDisplayActivity extends Activity {
         int offColorIndex = getStateButtonsColorsOffIndex();
         int backColorIndex = getStateButtonsColorsBackIndex();
         for (STATE_COMMANDS command : STATE_COMMANDS.values()) {
-            boolean state = getStateButtonState(command);
-            String frontColor = (state ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
-            String backColor = colors[colorTableIndex][backColorIndex];
-            String extraColor = (state ? colors[colorTableIndex][offColorIndex] : colors[colorTableIndex][onColorIndex]);
-            stateButtons[command.INDEX()].setColors(frontColor, backColor, extraColor);
-
-            boolean visibility = getStateButtonVisibility(command);
-            stateButtons[command.INDEX()].setVisibility(visibility ? View.VISIBLE : View.INVISIBLE);
+            boolean b = getStateButtonState(command);
+            String unpressedFrontColor = (b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
+            String unpressedBackColor = colors[colorTableIndex][backColorIndex];
+            String pressedBackColor = (b ? colors[colorTableIndex][offColorIndex] : colors[colorTableIndex][onColorIndex]);
+            stateButtons[command.INDEX()].setColors(unpressedFrontColor, unpressedBackColor, unpressedBackColor, pressedBackColor);
+            stateButtons[command.INDEX()].setVisibility(getStateButtonVisibility(command) ? View.VISIBLE : View.INVISIBLE);
         }
     }
 

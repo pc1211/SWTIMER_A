@@ -3,9 +3,9 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import com.example.pgyl.pekislib_a.DefaultDotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
+import com.example.pgyl.pekislib_a.DotMatrixFontDefault;
 
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
@@ -15,6 +15,7 @@ import static com.example.pgyl.pekislib_a.TimeDateUtils.TIME_UNITS;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.getFormattedTimeZoneLongTimeDate;
 import static com.example.pgyl.pekislib_a.TimeDateUtils.msToTimeFormatD;
 import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
+import static com.example.pgyl.swtimer_a.Constants.DOT_ASCII_CODE;
 
 public class MainCtListItemDotMatrixDisplayUpdater {
     //region Variables
@@ -86,13 +87,11 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         BiDimensions fillerLabelTextDimensions = getFontTextDimensions(FILLER_LABEL, defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         displayRectWidth = margins.left + fillerLabelTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du label maximum; margins.right remplace la dernière marge droite
-        displayRectHeight = margins.top + fillerTimeTextDimensions.height + extraFont.getSymbol('.').getDimensions().height + LABEL_MARGIN_TOP + fillerLabelTextDimensions.height + margins.bottom;
-        int gridRectWidth = displayRectWidth;
-        int gridRectHeight = displayRectHeight;
+        displayRectHeight = margins.top + fillerTimeTextDimensions.height + extraFont.getSymbolByCode(DOT_ASCII_CODE).getDimensions().height + LABEL_MARGIN_TOP + fillerLabelTextDimensions.height + margins.bottom;
 
-        gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
-        displayRect = new Rect(gridRect.left, gridRect.top, displayRectWidth, displayRectHeight);  //  Affichage au début de la grille
-        timeDisplayRect = new Rect(displayRect.left, displayRect.top, displayRect.right, margins.top + fillerTimeTextDimensions.height + extraFont.getSymbol('.').getDimensions().height);  //  Affichage sur la 1e ligne
+        gridRect = new Rect(0, 0, displayRectWidth, displayRectHeight);
+        displayRect = new Rect(gridRect.left, gridRect.top, gridRect.width(), gridRect.height());  //  Affichage au début de la grille
+        timeDisplayRect = new Rect(displayRect.left, displayRect.top, displayRect.right, margins.top + fillerTimeTextDimensions.height + extraFont.getSymbolByCode(DOT_ASCII_CODE).getDimensions().height);  //  Affichage sur la 1e ligne
         labelDisplayRect = new Rect(displayRect.left, timeDisplayRect.bottom, displayRect.right, displayRect.bottom);  //  Affichage sur la 2e ligne
 
         dotMatrixDisplayView.setInternalMarginCoeffs(INTERNAL_MARGIN_SIZE_COEFFS);
@@ -108,7 +107,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     }
 
     private void setupDefaultFont() {
-        defaultFont = new DefaultDotMatrixFont();
+        defaultFont = new DotMatrixFontDefault();
     }
 
     private void setupExtraFont() {

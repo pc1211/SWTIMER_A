@@ -3,9 +3,9 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import com.example.pgyl.pekislib_a.DefaultDotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
+import com.example.pgyl.pekislib_a.DotMatrixFontDefault;
 
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
@@ -30,7 +30,6 @@ public class MainDotMatrixDisplayUpdater {
     private DotMatrixDisplayView dotMatrixDisplayView;
     private DotMatrixFont defaultFont;
     private Rect margins;
-    private Rect gridRect;
     private Rect displayRect;
     //endregion
 
@@ -79,7 +78,7 @@ public class MainDotMatrixDisplayUpdater {
     }
 
     private void setupDefaultFont() {
-        defaultFont = new DefaultDotMatrixFont();
+        defaultFont = new DotMatrixFontDefault();
     }
 
     private void setupMargins() {    // Marges (en nombre de carrés autour de l'affichage proprement dit)
@@ -99,10 +98,8 @@ public class MainDotMatrixDisplayUpdater {
 
         int displayRectWidth = margins.left + textDimensions.width - defaultFont.getRightMargin() + margins.right;   //   margins.right remplace la dernière marge droite
         int displayRectHeight = margins.top + textDimensions.height + margins.bottom;
-        int gridRectWidth = displayRectWidth;
-        int gridRectHeight = displayRectHeight;
 
-        gridRect = new Rect(0, 0, gridRectWidth, gridRectHeight);
+        Rect gridRect = new Rect(0, 0, displayRectWidth, displayRectHeight);
         displayRect = new Rect(gridRect.left, gridRect.top, displayRectWidth, displayRectHeight);  //  Affichage au début de la grille
 
         dotMatrixDisplayView.setInternalMarginCoeffs(INTERNAL_MARGIN_SIZE_COEFFS);
