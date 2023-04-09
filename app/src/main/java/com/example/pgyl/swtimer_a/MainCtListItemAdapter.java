@@ -162,12 +162,13 @@ public class MainCtListItemAdapter extends BaseAdapter {
         final String COLOR_2 = "000000";
         final String COLOR_3 = "FF9A22";
         final String COLOR_4 = "707070";
+        final String COLOR_5 = "668CFF";
 
         int pos = position;
         MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) rowView.getTag();
 
         boolean b = ctRecords.get(pos).isSelected();
-        viewHolder.buttonModeSelection.setColors((b ? COLOR_3 : COLOR_1), COLOR_2, COLOR_2, (b ? COLOR_1 : COLOR_3));
+        viewHolder.buttonModeSelection.setColors((b ? COLOR_2 : COLOR_1), (b ? COLOR_5 : COLOR_2), (b ? COLOR_2 : COLOR_5), COLOR_1);
 
         if (ctRecords.get(pos).getMode().equals(MODES.CHRONO) || !ctRecords.get(pos).isReset() || (ctRecords.get(pos).getTimeDef() > 0)) {
             b = ctRecords.get(pos).isRunning();
