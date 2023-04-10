@@ -359,7 +359,8 @@ public class MainActivity extends Activity {
 
         String stateButtonOnColor = ((stateCommand.equals(STATE_COMMANDS.ADD_NEW_CHRONOTIMER_TO_LIST)) ? COLOR_2 : COLOR_1);
         boolean b = getStateButtonState(stateCommand);
-        stateButtons[stateCommand.INDEX()].setColors((b ? stateButtonOnColor : COLOR_3), COLOR_4, COLOR_4, (b ? COLOR_3 : stateButtonOnColor));
+        String unpressedFrontColor = (b ? stateButtonOnColor : COLOR_3);
+        stateButtons[stateCommand.INDEX()].setColors(unpressedFrontColor, COLOR_4, COLOR_4, unpressedFrontColor);
     }
 
     private void updateDisplayStateButtonColors() {

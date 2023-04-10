@@ -168,11 +168,11 @@ public class MainCtListItemAdapter extends BaseAdapter {
         MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) rowView.getTag();
 
         boolean b = ctRecords.get(pos).isSelected();
-        viewHolder.buttonModeSelection.setColors((b ? COLOR_2 : COLOR_1), (b ? COLOR_5 : COLOR_2), (b ? COLOR_2 : COLOR_5), COLOR_1);
+        viewHolder.buttonModeSelection.setColors((b ? COLOR_2 : COLOR_1), (b ? COLOR_5 : COLOR_2), (b ? COLOR_5 : COLOR_2), (b ? COLOR_2 : COLOR_1));
 
         if (ctRecords.get(pos).getMode().equals(MODES.CHRONO) || !ctRecords.get(pos).isReset() || (ctRecords.get(pos).getTimeDef() > 0)) {
             b = ctRecords.get(pos).isRunning();
-            viewHolder.buttonStartStop.setColors((b ? COLOR_2 : COLOR_4), (b ? COLOR_3 : COLOR_1), (b ? COLOR_1 : COLOR_3), COLOR_2);
+            viewHolder.buttonStartStop.setColors((b ? COLOR_2 : COLOR_4), (b ? COLOR_3 : COLOR_1), (b ? COLOR_3 : COLOR_1), (b ? COLOR_2 : COLOR_4));
             viewHolder.buttonStartStop.setVisibility(View.VISIBLE);
         } else {
             viewHolder.buttonStartStop.setVisibility(View.INVISIBLE);
@@ -180,14 +180,14 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
         if (ctRecords.get(pos).isRunning() || ctRecords.get(pos).isSplitted()) {
             b = ctRecords.get(pos).isSplitted();
-            viewHolder.buttonSplit.setColors((b ? COLOR_2 : COLOR_4), (b ? COLOR_3 : COLOR_1), (b ? COLOR_1 : COLOR_3), COLOR_2);
+            viewHolder.buttonSplit.setColors((b ? COLOR_2 : COLOR_4), (b ? COLOR_3 : COLOR_1), (b ? COLOR_3 : COLOR_1), (b ? COLOR_2 : COLOR_4));
             viewHolder.buttonSplit.setVisibility(View.VISIBLE);
         } else {
             viewHolder.buttonSplit.setVisibility(View.INVISIBLE);
         }
 
         if (!ctRecords.get(pos).isRunning() && !ctRecords.get(pos).isReset()) {
-            viewHolder.buttonReset.setColors(COLOR_4, COLOR_1, COLOR_3, COLOR_2);
+            viewHolder.buttonReset.setColors(COLOR_4, COLOR_1, COLOR_1, COLOR_4);
             viewHolder.buttonReset.setVisibility(View.VISIBLE);
         } else {
             viewHolder.buttonReset.setVisibility(View.INVISIBLE);
@@ -195,7 +195,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
         if (ctRecords.get(pos).getMode().equals(MODES.TIMER) && ctRecords.get(pos).isRunning()) {
             b = ctRecords.get(pos).isClockAppAlarmOn();
-            viewHolder.buttonClockAppAlarm.setColors((b ? COLOR_2 : COLOR_4), (b ? COLOR_3 : COLOR_1), (b ? COLOR_1 : COLOR_3), COLOR_2);
+            viewHolder.buttonClockAppAlarm.setColors((b ? COLOR_2 : COLOR_4), (b ? COLOR_3 : COLOR_1), (b ? COLOR_3 : COLOR_1), (b ? COLOR_2 : COLOR_4));
             viewHolder.buttonClockAppAlarm.setVisibility(View.VISIBLE);
         } else {
             viewHolder.buttonClockAppAlarm.setVisibility(View.INVISIBLE);
