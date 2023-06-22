@@ -11,8 +11,8 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColor
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTInits;
 import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsInits;
-import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsInits;
+import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getSwTimerTableDataFieldsCount;
 
 public class StringDBUtils {
@@ -34,8 +34,8 @@ public class StringDBUtils {
         stringDB.insertOrReplaceRows(getDotMatrixDisplayCoeffsTableName(), getDotMatrixDisplayCoeffsInits());
     }
 
-    public static void initializeTableStateButtonsColors(StringDB stringDB) {
-        stringDB.insertOrReplaceRows(getStateButtonsColorsTableName(), getStateButtonsColorsInits());
+    public static void initializeTableButtonsColors(StringDB stringDB) {
+        stringDB.insertOrReplaceRows(getButtonsColorsTableName(), getButtonsColorsInits());
     }
 
     public static void initializeTableBackScreenColors(StringDB stringDB) {

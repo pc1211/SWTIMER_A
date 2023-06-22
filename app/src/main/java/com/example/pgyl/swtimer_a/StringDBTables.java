@@ -19,12 +19,12 @@ import static com.example.pgyl.swtimer_a.Constants.APP_TIME_UNIT_PRECISION;
 public class StringDBTables {
 
     public static String[] getColorTableNames() {
-        return new String[]{SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString(), SWTIMER_TABLES.STATE_BUTTONS_COLORS.toString(), SWTIMER_TABLES.BACK_SCREEN_COLORS.toString()};
+        return new String[]{SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString(), SWTIMER_TABLES.BUTTONS_COLORS.toString(), SWTIMER_TABLES.BACK_SCREEN_COLORS.toString()};
     }
 
     enum SWTIMER_TABLES {   // Les tables, rattachées à leurs champs de data
         DOT_MATRIX_DISPLAY_COLORS(SwTimerTableDataFields.DotMatrixDisplayColors.class, "Dot matrix display"),
-        STATE_BUTTONS_COLORS(SwTimerTableDataFields.StateButtonsColors.class, "CT Control buttons"),
+        BUTTONS_COLORS(SwTimerTableDataFields.ButtonsColors.class, "CT Control buttons"),
         BACK_SCREEN_COLORS(SwTimerTableDataFields.BackScreenColors.class, "Back screen"),
         CHRONO_TIMERS(SwTimerTableDataFields.ChronoTimers.class, ""),   //  Table des Chronos et Timers
         PRESETS_CT(SwTimerTableDataFields.PresetsCT.class, ""),
@@ -71,12 +71,12 @@ public class StringDBTables {
             }
         }
 
-        enum StateButtonsColors implements SwTimerTableDataFields {
+        enum ButtonsColors implements SwTimerTableDataFields {
             ON("ON"), OFF("OFF"), BACK("Background");
 
             private String valueLabel;
 
-            StateButtonsColors(String valueLabel) {
+            ButtonsColors(String valueLabel) {
                 this.valueLabel = valueLabel;
             }
 
@@ -205,32 +205,32 @@ public class StringDBTables {
     }
     //endregion
 
-    //region STATE_BUTTONS_COLORS
-    public static String getStateButtonsColorsTableName() {
-        return SWTIMER_TABLES.STATE_BUTTONS_COLORS.toString();
+    //region BUTTONS_COLORS
+    public static String getButtonsColorsTableName() {
+        return SWTIMER_TABLES.BUTTONS_COLORS.toString();
     }
 
-    public static String[][] getStateButtonsColorsInits() {
-        final String[][] TABLE_COLOR_STATE_BUTTONS_INITS = {
-                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.StateButtonsColors.ON.LABEL(), SwTimerTableDataFields.StateButtonsColors.OFF.LABEL(), SwTimerTableDataFields.StateButtonsColors.BACK.LABEL()},
+    public static String[][] getButtonsColorsInits() {
+        final String[][] TABLE_COLOR_BUTTONS_INITS = {
+                {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.ButtonsColors.ON.LABEL(), SwTimerTableDataFields.ButtonsColors.OFF.LABEL(), SwTimerTableDataFields.ButtonsColors.BACK.LABEL()},
                 {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString(), InputButtonsActivity.KEYBOARDS.HEX.toString()},
                 {TABLE_IDS.REGEXP.toString(), REGEXP_SIX_CHARS, REGEXP_SIX_CHARS, REGEXP_SIX_CHARS},
                 {TABLE_IDS.REGEXP_ERROR_MESSAGE.toString(), REGEXP_SIX_CHARS_ERROR_MESSAGE, REGEXP_SIX_CHARS_ERROR_MESSAGE, REGEXP_SIX_CHARS_ERROR_MESSAGE},
                 {TABLE_IDS.DEFAULT.toString(), "0061F3", "404040", "000000"}
         };
-        return TABLE_COLOR_STATE_BUTTONS_INITS;
+        return TABLE_COLOR_BUTTONS_INITS;
     }
 
-    public static int getStateButtonsColorsOnIndex() {
-        return SwTimerTableDataFields.StateButtonsColors.ON.INDEX();
+    public static int getButtonsColorsOnIndex() {
+        return SwTimerTableDataFields.ButtonsColors.ON.INDEX();
     }
 
-    public static int getStateButtonsColorsOffIndex() {
-        return SwTimerTableDataFields.StateButtonsColors.OFF.INDEX();
+    public static int getButtonsColorsOffIndex() {
+        return SwTimerTableDataFields.ButtonsColors.OFF.INDEX();
     }
 
-    public static int getStateButtonsColorsBackIndex() {
-        return SwTimerTableDataFields.StateButtonsColors.BACK.INDEX();
+    public static int getButtonsColorsBackIndex() {
+        return SwTimerTableDataFields.ButtonsColors.BACK.INDEX();
     }
     //endregion
 
@@ -393,7 +393,7 @@ public class StringDBTables {
     public static String[][] getDotMatrixDisplayCoeffsInits() {
         final String[][] TABLE_DOT_MATRIX_DISPLAY_COEFFS_INITS = {
                 {TABLE_IDS.LABEL.toString(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_SPACING.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.DOT_CORNER_RADIUS.LABEL(), SwTimerTableDataFields.DotMatrixDisplayCoeffs.SCROLL_SPEED.LABEL()},
-                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString(), InputButtonsActivity.KEYBOARDS.POSINT.toString()},
+                {TABLE_IDS.KEYBOARD.toString(), InputButtonsActivity.KEYBOARDS.INTEGER.toString(), InputButtonsActivity.KEYBOARDS.INTEGER.toString(), InputButtonsActivity.KEYBOARDS.INTEGER.toString()},
                 {TABLE_IDS.REGEXP.toString(), REGEXP_PERCENT, REGEXP_PERCENT, REGEXP_PERCENT},
                 {TABLE_IDS.REGEXP_ERROR_MESSAGE.toString(), REGEXP_PERCENT_ERROR_MESSAGE, REGEXP_PERCENT_ERROR_MESSAGE, REGEXP_PERCENT_ERROR_MESSAGE},
                 {TABLE_IDS.DEFAULT.toString(), "20", "100", "25"},    //  Points carrés par défaut ; 25 points par seconde cad +/- 4 caractères par secondes  (car un caractère avec marge droite a une largeur de 6 points)

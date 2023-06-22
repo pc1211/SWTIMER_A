@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
+import com.example.pgyl.pekislib_a.ColorUtils.ButtonColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
@@ -55,6 +56,10 @@ import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.StringDBTables.chronoTimerRowToCtRecord;
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsBackIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsBackIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsOffIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsOnIndex;
+import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getColorTableNames;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDescriptionsOfMultipleSwtimerTables;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsDotCornerRadiusIndex;
@@ -62,10 +67,6 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeff
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsScrollSpeedIndex;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
-import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsBackIndex;
-import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOffIndex;
-import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsOnIndex;
-import static com.example.pgyl.swtimer_a.StringDBTables.getStateButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBUtils.getDBChronoTimerById;
 
 public class CtDisplayColorsActivity extends Activity {
@@ -157,6 +158,7 @@ public class CtDisplayColorsActivity extends Activity {
     private String[][] colorTableLabels;
     private String[] colorTableDescriptions;
     private COLOR_SPACES colorSpace;
+    private ButtonColorBox buttonColorBox;
     private String[] coeffs;   //  Espacement des points de DotMatrixDisplay, forme des points et vitesse de défilement
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
@@ -190,6 +192,7 @@ public class CtDisplayColorsActivity extends Activity {
         setCurrentsForMultipleTablesForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colorTableNames, colors);
         stringDB.close();
         stringDB = null;
+        buttonColorBox = null;
         savePreferences();
     }
 
@@ -199,6 +202,7 @@ public class CtDisplayColorsActivity extends Activity {
 
         shpFileName = getPackageName() + "." + getClass().getSimpleName() + SHP_FILE_NAME_SUFFIX;
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
+        buttonColorBox = new ButtonColorBox();
         setupStringDB();
         currentCtRecord = chronoTimerRowToCtRecord(getDBChronoTimerById(stringDB, idct));
         colorTableNames = getColorTableNames();
@@ -369,7 +373,7 @@ public class CtDisplayColorsActivity extends Activity {
             rebuildDotMatrixDisplayStructure();   //  Uniquement à cause de la reconstruction du pochoir
             updateDisplayDotMatrixDisplay();
         }
-        if (colorTableNames[colorTableIndex].equals(getStateButtonsColorsTableName())) {
+        if (colorTableNames[colorTableIndex].equals(getButtonsColorsTableName())) {
             updateDisplayStateButtonColors();
         }
         if (colorTableNames[colorTableIndex].equals(getBackScreenColorsTableName())) {
@@ -381,21 +385,23 @@ public class CtDisplayColorsActivity extends Activity {
         dotMatrixDisplayUpdater.displayHalfInitTimeAndInitLabel();   //  Partager l'affichage entre Temps et Label
     }
 
-    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {
-        int colorTableIndex = getStringIndexOf(getStateButtonsColorsTableName(), colorTableNames);
-        int onColorIndex = getStateButtonsColorsOnIndex();
-        int offColorIndex = getStateButtonsColorsOffIndex();
-        int backColorIndex = getStateButtonsColorsBackIndex();
-        boolean b = getStateButtonState(stateCommand);
-        String unpressedFrontColor = (b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
-        String unpressedBackColor = colors[colorTableIndex][backColorIndex];
-        stateButtons[stateCommand.INDEX()].setColors(unpressedFrontColor, unpressedBackColor, unpressedBackColor, unpressedFrontColor);
-    }
-
     private void updateDisplayStateButtonColors() {
         for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
             updateDisplayStateButtonColor(stateCommand);
         }
+    }
+
+    private void updateDisplayStateButtonColor(STATE_COMMANDS stateCommand) {
+        int colorTableIndex = getStringIndexOf(getButtonsColorsTableName(), colorTableNames);
+        int onColorIndex = getButtonsColorsOnIndex();
+        int offColorIndex = getButtonsColorsOffIndex();
+        int backColorIndex = getButtonsColorsBackIndex();
+        boolean b = getStateButtonState(stateCommand);
+        buttonColorBox.unpressedFrontColor = b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex];
+        buttonColorBox.unpressedBackColor = colors[colorTableIndex][backColorIndex];
+        buttonColorBox.pressedFrontColor = buttonColorBox.unpressedBackColor;
+        buttonColorBox.pressedBackColor = buttonColorBox.unpressedFrontColor;
+        stateButtons[stateCommand.INDEX()].setColors(buttonColorBox);
     }
 
     private void updateDisplayBackScreenColors() {
