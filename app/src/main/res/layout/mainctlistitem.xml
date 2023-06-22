@@ -41,7 +41,7 @@
         android:layout_height="44dp"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="2dp"
-        android:layout_weight="65"
+        android:layout_weight="45"
         android:paddingTop="2dp" />
 
 </LinearLayout>
