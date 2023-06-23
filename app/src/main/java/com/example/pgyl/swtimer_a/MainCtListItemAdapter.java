@@ -285,7 +285,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         });
         viewHolder.buttonClockAppAlarm.setScaleType(ImageView.ScaleType.FIT_CENTER);
         viewHolder.buttonClockAppAlarm.setAdjustViewBounds(true);
-        viewHolder.buttonClockAppAlarm.setImageResource(R.drawable.main_reset);
+        viewHolder.buttonClockAppAlarm.setImageResource(R.drawable.main_bell);
         viewHolder.buttonClockAppAlarm.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonClockAppAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
