@@ -13,18 +13,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.example.pgyl.pekislib_a.ButtonColorBox;
 import com.example.pgyl.pekislib_a.ClockAppAlarmUtils;
-import com.example.pgyl.pekislib_a.ColorUtils.ButtonColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
+import com.example.pgyl.pekislib_a.ImageButtonView;
 import com.example.pgyl.pekislib_a.PresetsActivity;
 import com.example.pgyl.pekislib_a.StringDB;
 import com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
-import com.example.pgyl.pekislib_a.SymbolButtonView;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.example.pgyl.pekislib_a.ButtonColorBox.COLOR_TYPES;
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.COLOR_PREFIX;
 import static com.example.pgyl.pekislib_a.Constants.CRLF;
@@ -106,14 +107,13 @@ public class CtDisplayActivity extends Activity {
     private CtRecord currentCtRecord;
     private DotMatrixDisplayView dotMatrixDisplayView;
     private CtDisplayDotMatrixDisplayUpdater dotMatrixDisplayUpdater;
-    private SymbolButtonView[] buttons;
+    private ImageButtonView[] buttons;
     private Menu menu;
     private MenuItem barMenuItemSetClockAppAlarmOnStartTimer;
     private MenuItem barMenuItemKeepScreen;
     private LinearLayout backLayout;
     private boolean setClockAppAlarmOnStartTimer;
     private boolean keepScreen;
-    private ButtonColorBox buttonColorBox;
     private String[][] colors;   //  Couleurs de DotMatrixDisplay, Boutons, Backscreen
     private String[] colorTableNames;
     private String[] coeffs;   //  Espacement des points de DotMatrixDisplay, forme des points et vitesse de défilement
@@ -147,7 +147,6 @@ public class CtDisplayActivity extends Activity {
         stringDB.close();
         stringDB = null;
         menu = null;
-        buttonColorBox = null;
         savePreferences();
     }
 
@@ -155,7 +154,6 @@ public class CtDisplayActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        buttonColorBox = new ButtonColorBox();
         long nowm = System.currentTimeMillis();
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car partagé avec MainActivity
         setClockAppAlarmOnStartTimer = getSHPSetClockAppAlarmOnStartTimer();
@@ -335,12 +333,13 @@ public class CtDisplayActivity extends Activity {
         int offColorIndex = getButtonsColorsOffIndex();
         int backColorIndex = getButtonsColorsBackIndex();
         for (COMMANDS command : COMMANDS.values()) {
+            ButtonColorBox buttonColorBox = buttons[command.INDEX()].getColorBox();
             boolean b = getButtonState(command);
-            buttonColorBox.unpressedFrontColor = b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex];
-            buttonColorBox.unpressedBackColor = colors[colorTableIndex][backColorIndex];
-            buttonColorBox.pressedFrontColor = buttonColorBox.unpressedBackColor;
-            buttonColorBox.pressedBackColor = buttonColorBox.unpressedFrontColor;
-            buttons[command.INDEX()].setColors(buttonColorBox);
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, colors[colorTableIndex][backColorIndex]);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).stringValue);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+            buttons[command.INDEX()].updateDisplayColors();
             buttons[command.INDEX()].setVisibility(getButtonVisibility(command) ? View.VISIBLE : View.INVISIBLE);
         }
     }
@@ -439,7 +438,7 @@ public class CtDisplayActivity extends Activity {
         final String BUTTON_XML_NAME_PREFIX = "BTN_";
         final long BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
-        buttons = new SymbolButtonView[COMMANDS.values().length];
+        buttons = new ImageButtonView[COMMANDS.values().length];
         Class rid = R.id.class;
         for (COMMANDS command : COMMANDS.values()) {
             try {
@@ -449,7 +448,7 @@ public class CtDisplayActivity extends Activity {
                     buttons[command.INDEX()].setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
                 }
                 final COMMANDS fCommand = command;
-                buttons[command.INDEX()].setCustomOnClickListener(new SymbolButtonView.onCustomClickListener() {
+                buttons[command.INDEX()].setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
                     @Override
                     public void onCustomClick() {
                         onButtonCustomClick(fCommand);

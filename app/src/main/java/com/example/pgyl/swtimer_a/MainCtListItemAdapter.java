@@ -6,15 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 
-import com.example.pgyl.pekislib_a.ColorUtils.ButtonColorBox;
+import com.example.pgyl.pekislib_a.ButtonColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
+import com.example.pgyl.pekislib_a.ImageButtonView;
 import com.example.pgyl.pekislib_a.StringDB;
 import com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
 
 import java.util.ArrayList;
 
+import static com.example.pgyl.pekislib_a.ButtonColorBox.COLOR_TYPES;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
@@ -22,15 +23,15 @@ import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 
 public class MainCtListItemAdapter extends BaseAdapter {
 
-    public interface onCheckBoxClickListener {
-        void onCheckBoxClick();
+    public interface onModeSelectionClickListener {
+        void onModeSelectionClick();
     }
 
-    public void setOnItemCheckBoxClick(onCheckBoxClickListener listener) {
-        mOnCheckBoxClickListener = listener;
+    public void setOnModeSelectionClick(onModeSelectionClickListener listener) {
+        mOnModeSelectionClickListener = listener;
     }
 
-    private onCheckBoxClickListener mOnCheckBoxClickListener;
+    private onModeSelectionClickListener mOnModeSelectionClickListener;
 
     public interface onStartStopResetClickListener {
         void onStartStopResetClick(long nowm, long timeAcc);
@@ -46,7 +47,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<CtRecord> ctRecords;
     private StringDB stringDB;
-    private ButtonColorBox buttonColorBox;
     private boolean showExpirationTime;
     private boolean setClockAppAlarmOnStartTimer;
     private MainCtListItemDotMatrixDisplayUpdater mainCtListItemDotMatrixDisplayUpdater;
@@ -61,9 +61,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     private void init() {
-        mOnCheckBoxClickListener = null;
+        mOnModeSelectionClickListener = null;
         ctRecords = null;
-        buttonColorBox = new ButtonColorBox();
         setupMainCtListItemDotMatrixDisplayUpdater();
     }
 
@@ -72,7 +71,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
         mainCtListItemDotMatrixDisplayUpdater = null;
         ctRecords = null;
         stringDB = null;
-        buttonColorBox = null;
         context = null;
     }
 
@@ -106,8 +104,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
     private void onButtonModeSelectionClick(View rowv, int pos) {
         long nowm = System.currentTimeMillis();
         ctRecords.get(pos).setSelectedOn(!ctRecords.get(pos).isSelected());   //  Invert selection
-        if (mOnCheckBoxClickListener != null) {
-            mOnCheckBoxClickListener.onCheckBoxClick();
+        if (mOnModeSelectionClickListener != null) {
+            mOnModeSelectionClickListener.onModeSelectionClick();
         }
         paintView(rowv, pos, nowm);
     }
@@ -162,7 +160,6 @@ public class MainCtListItemAdapter extends BaseAdapter {
     }
 
     public void paintView(View rowView, int position, long nowm) {    //  Décoration proprement dite du getView7
-        final String BUTTON_LIGHT_COLOR = "C0C0C0";
         final String BACKGROUND_COLOR = "000000";
         final String PRESSED_COLOR = "FF9A22";
         final String BUTTON_DARK_COLOR = "707070";
@@ -172,19 +169,21 @@ public class MainCtListItemAdapter extends BaseAdapter {
         MainCtListItemViewHolder viewHolder = (MainCtListItemViewHolder) rowView.getTag();
 
         boolean b = ctRecords.get(pos).isSelected();
-        buttonColorBox.unpressedFrontColor = b ? BACKGROUND_COLOR : BUTTON_LIGHT_COLOR;
-        buttonColorBox.unpressedBackColor = b ? SELECT_COLOR : BACKGROUND_COLOR;
-        buttonColorBox.pressedFrontColor = b ? SELECT_COLOR : BACKGROUND_COLOR;
-        buttonColorBox.pressedBackColor = b ? BACKGROUND_COLOR : BUTTON_LIGHT_COLOR;
-        viewHolder.buttonModeSelection.setColors(buttonColorBox);
+        ButtonColorBox buttonColorBox = viewHolder.buttonModeSelection.getColorBox();
+        buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR);
+        buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, b ? SELECT_COLOR : BACKGROUND_COLOR);
+        buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).stringValue);
+        buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+        viewHolder.buttonModeSelection.updateDisplayColors();
 
         if (ctRecords.get(pos).getMode().equals(MODES.CHRONO) || !ctRecords.get(pos).isReset() || (ctRecords.get(pos).getTimeDef() > 0)) {
             b = ctRecords.get(pos).isRunning();
-            buttonColorBox.unpressedFrontColor = b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR;
-            buttonColorBox.unpressedBackColor = b ? PRESSED_COLOR : BUTTON_LIGHT_COLOR;
-            buttonColorBox.pressedFrontColor = b ? PRESSED_COLOR : BUTTON_LIGHT_COLOR;
-            buttonColorBox.pressedBackColor = b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR;
-            viewHolder.buttonStartStop.setColors(buttonColorBox);
+            buttonColorBox = viewHolder.buttonStartStop.getColorBox();
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR);
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, b ? PRESSED_COLOR : BACKGROUND_COLOR);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).stringValue);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+            viewHolder.buttonStartStop.updateDisplayColors();
             viewHolder.buttonStartStop.setVisibility(View.VISIBLE);
         } else {
             viewHolder.buttonStartStop.setVisibility(View.INVISIBLE);
@@ -192,22 +191,24 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
         if (ctRecords.get(pos).isRunning() || ctRecords.get(pos).isSplitted()) {
             b = ctRecords.get(pos).isSplitted();
-            buttonColorBox.unpressedFrontColor = b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR;
-            buttonColorBox.unpressedBackColor = b ? PRESSED_COLOR : BUTTON_LIGHT_COLOR;
-            buttonColorBox.pressedFrontColor = b ? PRESSED_COLOR : BUTTON_LIGHT_COLOR;
-            buttonColorBox.pressedBackColor = b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR;
-            viewHolder.buttonSplit.setColors(buttonColorBox);
+            buttonColorBox = viewHolder.buttonSplit.getColorBox();
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR);
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, b ? PRESSED_COLOR : BACKGROUND_COLOR);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).stringValue);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+            viewHolder.buttonSplit.updateDisplayColors();
             viewHolder.buttonSplit.setVisibility(View.VISIBLE);
         } else {
             viewHolder.buttonSplit.setVisibility(View.INVISIBLE);
         }
 
         if (!ctRecords.get(pos).isRunning() && !ctRecords.get(pos).isReset()) {
-            buttonColorBox.unpressedFrontColor = BUTTON_DARK_COLOR;
-            buttonColorBox.unpressedBackColor = BUTTON_LIGHT_COLOR;
-            buttonColorBox.pressedFrontColor = BUTTON_LIGHT_COLOR;
-            buttonColorBox.pressedBackColor = BUTTON_DARK_COLOR;
-            viewHolder.buttonReset.setColors(buttonColorBox);
+            buttonColorBox = viewHolder.buttonReset.getColorBox();
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, BUTTON_DARK_COLOR);
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, BACKGROUND_COLOR);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).stringValue);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+            viewHolder.buttonReset.updateDisplayColors();
             viewHolder.buttonReset.setVisibility(View.VISIBLE);
         } else {
             viewHolder.buttonReset.setVisibility(View.INVISIBLE);
@@ -215,11 +216,12 @@ public class MainCtListItemAdapter extends BaseAdapter {
 
         if (ctRecords.get(pos).getMode().equals(MODES.TIMER) && ctRecords.get(pos).isRunning()) {
             b = ctRecords.get(pos).isClockAppAlarmOn();
-            buttonColorBox.unpressedFrontColor = b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR;
-            buttonColorBox.unpressedBackColor = b ? PRESSED_COLOR : BUTTON_LIGHT_COLOR;
-            buttonColorBox.pressedFrontColor = b ? PRESSED_COLOR : BUTTON_LIGHT_COLOR;
-            buttonColorBox.pressedBackColor = b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR;
-            viewHolder.buttonClockAppAlarm.setColors(buttonColorBox);
+            buttonColorBox = viewHolder.buttonClockAppAlarm.getColorBox();
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR);
+            buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, b ? PRESSED_COLOR : BACKGROUND_COLOR);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).stringValue);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+            viewHolder.buttonClockAppAlarm.updateDisplayColors();
             viewHolder.buttonClockAppAlarm.setVisibility(View.VISIBLE);
         } else {
             viewHolder.buttonClockAppAlarm.setVisibility(View.INVISIBLE);
@@ -245,51 +247,41 @@ public class MainCtListItemAdapter extends BaseAdapter {
         final View rowv = rowView;
         final int pos = position;
 
-        viewHolder.buttonModeSelection.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        viewHolder.buttonModeSelection.setAdjustViewBounds(true);
-        viewHolder.buttonModeSelection.setImageResource((ctRecords.get(pos).getMode().equals(MODES.CHRONO)) ? R.drawable.main_chrono : R.drawable.main_timer);
+        viewHolder.buttonModeSelection.setPNGImageResource((ctRecords.get(pos).getMode().equals(MODES.CHRONO)) ? R.drawable.main_chrono : R.drawable.main_timer);
         viewHolder.buttonModeSelection.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonModeSelection.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonModeSelection.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onCustomClick() {
                 onButtonModeSelectionClick(rowv, pos);
             }
         });
-        viewHolder.buttonStartStop.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        viewHolder.buttonStartStop.setAdjustViewBounds(true);
-        viewHolder.buttonStartStop.setImageResource(R.drawable.main_start_stop);
-        viewHolder.buttonStartStop.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonStartStop.setPNGImageResource(R.drawable.main_start_stop);
+        viewHolder.buttonStartStop.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onCustomClick() {
                 onButtonStartStopClick(rowv, pos);
             }
         });
-        viewHolder.buttonSplit.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        viewHolder.buttonSplit.setAdjustViewBounds(true);
-        viewHolder.buttonSplit.setImageResource(R.drawable.main_split);
-        viewHolder.buttonSplit.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonSplit.setPNGImageResource(R.drawable.main_split);
+        viewHolder.buttonSplit.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onCustomClick() {
                 onButtonSplitClick(rowv, pos);
             }
         });
-        viewHolder.buttonReset.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        viewHolder.buttonReset.setAdjustViewBounds(true);
-        viewHolder.buttonReset.setImageResource(R.drawable.main_reset);
+        viewHolder.buttonReset.setPNGImageResource(R.drawable.main_reset);
         viewHolder.buttonReset.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonReset.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonReset.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onCustomClick() {
                 onButtonResetClick(rowv, pos);
             }
         });
-        viewHolder.buttonClockAppAlarm.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        viewHolder.buttonClockAppAlarm.setAdjustViewBounds(true);
-        viewHolder.buttonClockAppAlarm.setImageResource(R.drawable.main_bell);
+        viewHolder.buttonClockAppAlarm.setPNGImageResource(R.drawable.main_bell);
         viewHolder.buttonClockAppAlarm.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonClockAppAlarm.setOnClickListener(new View.OnClickListener() {
+        viewHolder.buttonClockAppAlarm.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onCustomClick() {
                 onButtonClockAppAlarmClick(pos);
             }
         });

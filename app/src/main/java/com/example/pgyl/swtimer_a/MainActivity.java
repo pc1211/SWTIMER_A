@@ -14,20 +14,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.example.pgyl.pekislib_a.ColorUtils.ButtonColorBox;
-import com.example.pgyl.pekislib_a.CustomImageButton;
+import com.example.pgyl.pekislib_a.ButtonColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
+import com.example.pgyl.pekislib_a.ImageButtonView;
 import com.example.pgyl.pekislib_a.PresetsHandler;
 import com.example.pgyl.pekislib_a.StringDB;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.example.pgyl.pekislib_a.ButtonColorBox.COLOR_TYPES;
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
@@ -43,7 +43,7 @@ import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
-import static com.example.pgyl.swtimer_a.MainCtListItemAdapter.onCheckBoxClickListener;
+import static com.example.pgyl.swtimer_a.MainCtListItemAdapter.onModeSelectionClickListener;
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getChronoTimersTableName;
@@ -88,7 +88,7 @@ public class MainActivity extends Activity {
     //region Variables
     private LinearLayout layoutButtonsOnSelection;
     private LinearLayout layoutDotMatrixDisplay;
-    private CustomImageButton[] buttons;
+    private ImageButtonView[] buttons;
     private DotMatrixDisplayView dotMatrixDisplayView;
     private MainDotMatrixDisplayUpdater dotMatrixDisplayUpdater;
     private Menu menu;
@@ -99,7 +99,6 @@ public class MainActivity extends Activity {
     private boolean showExpirationTime;
     private boolean addNewChronoTimerToList;
     private boolean setClockAppAlarmOnStartTimer;
-    private ButtonColorBox buttonColorBox;
     private boolean keepScreen;
     private ListView mainCtListView;
     private MainCtListItemAdapter mainCtListItemAdapter;
@@ -132,7 +131,6 @@ public class MainActivity extends Activity {
         stringDB.close();
         stringDB = null;
         menu = null;
-        buttonColorBox = null;
         savePreferences();
     }
     //endregion
@@ -144,7 +142,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car sera partagé avec CtDisplayActivity
         keepScreen = getSHPKeepScreen();
-        buttonColorBox = new ButtonColorBox();
 
         setupButtons();
         setupDotMatrixDisplay();
@@ -338,44 +335,32 @@ public class MainActivity extends Activity {
     }
 
     private void updateDisplayButtonColor(COMMANDS command) {
-        final String NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT = "668CFF";
-        final String NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT = "0040FF";
-        final String COLOR_PRESSED = "FF9A22";
         final String SHOW_EXPIRATION_TIME_COLOR = "FF0000";
         final String ADD_NEW_CHRONOTIMER_TO_LIST_COLOR = "668CFF";
-        final String INACTIVE_COLOR = "404040";
+        final String NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT = "668CFF";
+        final String NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT = "0040FF";
+        final String BUTTON_DARK_COLOR = "404040";
         final String BACKGROUND_COLOR = "000000";
 
+        ButtonColorBox buttonColorBox = buttons[command.INDEX()].getColorBox();
         switch (command) {
-            case INVERT_SELECTION_ALL_CT:
-            case SELECT_ALL_CT:
-            case REMOVE_SELECTED_CT:
-            case RESET_SELECTED_CT:
-            case SPLIT_SELECTED_CT:
-            case START_SELECTED_CT:
-            case STOP_SELECTED_CT:
-                buttonColorBox.unpressedFrontColor = null;
-                buttonColorBox.unpressedBackColor = null;
-                buttonColorBox.pressedFrontColor = null;
-                buttonColorBox.pressedBackColor = COLOR_PRESSED;
-                break;
-            case NEW_CHRONO:
-            case NEW_TIMER:
-                buttonColorBox.unpressedFrontColor = null;
-                buttonColorBox.unpressedBackColor = NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT;
-                buttonColorBox.pressedFrontColor = null;
-                buttonColorBox.pressedBackColor = NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT;
-                break;
             case SHOW_EXPIRATION_TIME:
             case ADD_NEW_CHRONOTIMER_TO_LIST:
                 String color = command.equals(COMMANDS.SHOW_EXPIRATION_TIME) ? SHOW_EXPIRATION_TIME_COLOR : ADD_NEW_CHRONOTIMER_TO_LIST_COLOR;
-                buttonColorBox.unpressedFrontColor = getButtonState(command) ? color : INACTIVE_COLOR;
-                buttonColorBox.unpressedBackColor = BACKGROUND_COLOR;
-                buttonColorBox.pressedFrontColor = null;
-                buttonColorBox.pressedBackColor = buttonColorBox.unpressedFrontColor;
+                buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, getButtonState(command) ? color : BUTTON_DARK_COLOR);
+                buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, BACKGROUND_COLOR);
+                buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).stringValue);
+                buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+                break;
+            case NEW_CHRONO:
+            case NEW_TIMER:
+                buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, BACKGROUND_COLOR);
+                buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT);
+                buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+                buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT);
                 break;
         }
-        buttons[command.INDEX()].setColors(buttonColorBox);
+        buttons[command.INDEX()].updateDisplayColors();
     }
 
     private void updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(boolean setClockAppAlarmOnStartTimer) {
@@ -497,21 +482,19 @@ public class MainActivity extends Activity {
         final String BUTTON_COMMAND_XML_PREFIX = "BTN_";
         final long BUTTON_MIN_CLICK_TIME_INTERVAL_MS = 500;
 
-        buttons = new CustomImageButton[COMMANDS.values().length];
+        buttons = new ImageButtonView[COMMANDS.values().length];
         Class rid = R.id.class;
         for (COMMANDS command : COMMANDS.values())
             try {
                 buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_COMMAND_XML_PREFIX + command.toString()).getInt(rid));
-                buttons[command.INDEX()].setScaleType(ImageView.ScaleType.FIT_CENTER);
-                buttons[command.INDEX()].setAdjustViewBounds(true);
-                buttons[command.INDEX()].setImageResource(command.ID());
+                buttons[command.INDEX()].setPNGImageResource(command.ID());
                 if ((!command.equals(COMMANDS.START_SELECTED_CT)) && (!command.equals(COMMANDS.STOP_SELECTED_CT))) {   //  Start et stop doivent pouvoir cliquer sans délai
                     buttons[command.INDEX()].setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
                 }
                 final COMMANDS fcommand = command;
-                buttons[command.INDEX()].setOnClickListener(new View.OnClickListener() {
+                buttons[command.INDEX()].setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onCustomClick() {
                         onButtonClick(fcommand);
                     }
                 });
@@ -588,9 +571,9 @@ public class MainActivity extends Activity {
 
     private void setupMainCtList() {
         mainCtListItemAdapter = new MainCtListItemAdapter(this, stringDB);
-        mainCtListItemAdapter.setOnItemCheckBoxClick(new onCheckBoxClickListener() {
+        mainCtListItemAdapter.setOnModeSelectionClick(new onModeSelectionClickListener() {
             @Override
-            public void onCheckBoxClick() {
+            public void onModeSelectionClick() {
                 onCtListItemCheckBoxClick();
             }
         });

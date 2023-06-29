@@ -25,7 +25,7 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.example.pgyl.pekislib_a.SymbolButtonView
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_START_STOP"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -33,7 +33,7 @@
             android:layout_marginBottom="4dp"
             android:layout_weight="1" />
 
-        <com.example.pgyl.pekislib_a.SymbolButtonView
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_SPLIT"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -48,7 +48,7 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.example.pgyl.pekislib_a.SymbolButtonView
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_CLOCK_APP_ALARM"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -56,7 +56,7 @@
             android:layout_marginBottom="4dp"
             android:layout_weight="1" />
 
-        <com.example.pgyl.pekislib_a.SymbolButtonView
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_RESET"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -71,7 +71,7 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.example.pgyl.pekislib_a.SymbolButtonView
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_CHRONO_MODE"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -79,7 +79,7 @@
             android:layout_marginBottom="4dp"
             android:layout_weight="1" />
 
-        <com.example.pgyl.pekislib_a.SymbolButtonView
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_TIMER_MODE"
             android:layout_width="0dp"
             android:layout_height="match_parent"

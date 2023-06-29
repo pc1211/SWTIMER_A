@@ -26,7 +26,7 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <com.example.pgyl.pekislib_a.SymbolButtonView
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/STATE_BTN_START_STOP1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
             android:layout_marginBottom="4dp"
             android:layout_weight="1" />
 
-        <com.example.pgyl.pekislib_a.SymbolButtonView
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/STATE_BTN_START_STOP2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

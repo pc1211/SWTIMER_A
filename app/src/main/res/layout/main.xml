@@ -11,47 +11,53 @@
         android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
-        <com.example.pgyl.pekislib_a.CustomImageButton
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_SHOW_EXPIRATION_TIME"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
             android:layout_weight="3" />
 
-        <com.example.pgyl.pekislib_a.CustomImageButton
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_ADD_NEW_CHRONOTIMER_TO_LIST"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
             android:layout_weight="3" />
 
-        <com.example.pgyl.pekislib_a.CustomImageButton
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_NEW_CHRONO"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
             android:layout_weight="4" />
 
-        <com.example.pgyl.pekislib_a.CustomImageButton
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_NEW_TIMER"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
             android:layout_weight="4" />
 
-        <com.example.pgyl.pekislib_a.CustomImageButton
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_INVERT_SELECTION_ALL_CT"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
             android:layout_weight="4" />
 
-        <com.example.pgyl.pekislib_a.CustomImageButton
+        <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_SELECT_ALL_CT"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
             android:layout_weight="4" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginTop="3dp"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <FrameLayout
@@ -64,34 +70,39 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <com.example.pgyl.pekislib_a.CustomImageButton
+                <com.example.pgyl.pekislib_a.ImageButtonView
                     android:id="@+id/BTN_START_SELECTED_CT"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1" />
 
-                <com.example.pgyl.pekislib_a.CustomImageButton
+                <com.example.pgyl.pekislib_a.ImageButtonView
                     android:id="@+id/BTN_STOP_SELECTED_CT"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1" />
 
-                <com.example.pgyl.pekislib_a.CustomImageButton
+                <com.example.pgyl.pekislib_a.ImageButtonView
                     android:id="@+id/BTN_SPLIT_SELECTED_CT"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1" />
 
-                <com.example.pgyl.pekislib_a.CustomImageButton
+                <com.example.pgyl.pekislib_a.ImageButtonView
                     android:id="@+id/BTN_RESET_SELECTED_CT"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1" />
 
-                <com.example.pgyl.pekislib_a.CustomImageButton
+                <com.example.pgyl.pekislib_a.ImageButtonView
                     android:id="@+id/BTN_REMOVE_SELECTED_CT"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1" />
             </LinearLayout>
 

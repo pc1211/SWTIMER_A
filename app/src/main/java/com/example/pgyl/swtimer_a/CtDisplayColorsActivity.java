@@ -16,18 +16,19 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
-import com.example.pgyl.pekislib_a.ColorUtils.ButtonColorBox;
+import com.example.pgyl.pekislib_a.ButtonColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
+import com.example.pgyl.pekislib_a.ImageButtonView;
 import com.example.pgyl.pekislib_a.InputButtonsActivity;
 import com.example.pgyl.pekislib_a.MainActivity;
 import com.example.pgyl.pekislib_a.PresetsActivity;
 import com.example.pgyl.pekislib_a.StringDB;
-import com.example.pgyl.pekislib_a.SymbolButtonView;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.example.pgyl.pekislib_a.ButtonColorBox.COLOR_TYPES;
 import static com.example.pgyl.pekislib_a.ColorUtils.HSVToRGB;
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.COLOR_MASK;
@@ -144,7 +145,7 @@ public class CtDisplayColorsActivity extends Activity {
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
     private CtDisplayDotMatrixDisplayUpdater dotMatrixDisplayUpdater;
-    private SymbolButtonView[] stateButtons;
+    private ImageButtonView[] stateButtons;
     private Button[] buttons;
     private SeekBar[] seekBars;
     private Drawable[] processDrawables;
@@ -158,7 +159,6 @@ public class CtDisplayColorsActivity extends Activity {
     private String[][] colorTableLabels;
     private String[] colorTableDescriptions;
     private COLOR_SPACES colorSpace;
-    private ButtonColorBox buttonColorBox;
     private String[] coeffs;   //  Espacement des points de DotMatrixDisplay, forme des points et vitesse de défilement
     private float[] hsvStruc;
     private boolean validReturnFromCalledActivity;
@@ -192,7 +192,6 @@ public class CtDisplayColorsActivity extends Activity {
         setCurrentsForMultipleTablesForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.toString(), colorTableNames, colors);
         stringDB.close();
         stringDB = null;
-        buttonColorBox = null;
         savePreferences();
     }
 
@@ -202,7 +201,6 @@ public class CtDisplayColorsActivity extends Activity {
 
         shpFileName = getPackageName() + "." + getClass().getSimpleName() + SHP_FILE_NAME_SUFFIX;
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
-        buttonColorBox = new ButtonColorBox();
         setupStringDB();
         currentCtRecord = chronoTimerRowToCtRecord(getDBChronoTimerById(stringDB, idct));
         colorTableNames = getColorTableNames();
@@ -396,12 +394,13 @@ public class CtDisplayColorsActivity extends Activity {
         int onColorIndex = getButtonsColorsOnIndex();
         int offColorIndex = getButtonsColorsOffIndex();
         int backColorIndex = getButtonsColorsBackIndex();
+        ButtonColorBox buttonColorBox = stateButtons[stateCommand.INDEX()].getColorBox();
         boolean b = getStateButtonState(stateCommand);
-        buttonColorBox.unpressedFrontColor = b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex];
-        buttonColorBox.unpressedBackColor = colors[colorTableIndex][backColorIndex];
-        buttonColorBox.pressedFrontColor = buttonColorBox.unpressedBackColor;
-        buttonColorBox.pressedBackColor = buttonColorBox.unpressedFrontColor;
-        stateButtons[stateCommand.INDEX()].setColors(buttonColorBox);
+        buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
+        buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, colors[colorTableIndex][backColorIndex]);
+        buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).stringValue);
+        buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+        stateButtons[stateCommand.INDEX()].updateDisplayColors();
     }
 
     private void updateDisplayBackScreenColors() {
@@ -521,7 +520,7 @@ public class CtDisplayColorsActivity extends Activity {
     private void setupStateButtons() {
         final String STATE_BUTTON_XML_PREFIX = "STATE_BTN_";
 
-        stateButtons = new SymbolButtonView[STATE_COMMANDS.values().length];
+        stateButtons = new ImageButtonView[STATE_COMMANDS.values().length];
         Class rid = R.id.class;
         for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
             try {
