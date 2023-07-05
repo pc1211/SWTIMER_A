@@ -97,10 +97,7 @@ public class CtDisplayDotMatrixDisplayActivity extends Activity {
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getActionBar().setTitle("Set Dot matrix display");
-        setupOrientationLayout();
-        setupButtons();
-        setupSeekBarForValue();
-        setupDotMatrixDisplay();
+
         validReturnFromCalledActivity = false;
     }
 
@@ -120,6 +117,11 @@ public class CtDisplayDotMatrixDisplayActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        setupOrientationLayout();
+        setupButtons();
+        setupSeekBarForValue();
+        setupDotMatrixDisplay();
 
         shpFileName = getPackageName() + "." + getClass().getSimpleName() + SHP_FILE_NAME_SUFFIX;
         tableDescription = getIntent().getStringExtra(TABLE_EXTRA_KEYS.DESCRIPTION.toString());

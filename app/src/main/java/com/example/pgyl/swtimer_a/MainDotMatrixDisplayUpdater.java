@@ -3,6 +3,7 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import com.example.pgyl.pekislib_a.ButtonColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontDefault;
@@ -55,20 +56,28 @@ public class MainDotMatrixDisplayUpdater {
 
     public void displayEmptySelection() {
         displayText(MESSAGES.EMPTY_SELECTION.TEXT());
+        dotMatrixDisplayView.updateDisplay();
     }
 
     public void displayEmptyList() {
         displayText(MESSAGES.EMPTY_LIST.TEXT());
+        dotMatrixDisplayView.updateDisplay();
     }
 
     private void displayText(String text) {
         final String ON_COLOR = "707070";
         final String OFF_COLOR = "404040";
 
-        dotMatrixDisplayView.fillRect(displayRect, ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
+        ButtonColorBox colorBox = dotMatrixDisplayView.getColorBox();
+
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_BACK_COLOR, OFF_COLOR);
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_BACK_COLOR, ON_COLOR);
+        dotMatrixDisplayView.drawBackRect(displayRect);
+
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_FRONT_COLOR, ON_COLOR);
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_FRONT_COLOR, OFF_COLOR);
         dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(text, ON_COLOR, defaultFont);
-        dotMatrixDisplayView.updateDisplay();
+        dotMatrixDisplayView.drawFrontText(text, null, defaultFont);
     }
 
     private void setupBackColor() {
@@ -94,7 +103,7 @@ public class MainDotMatrixDisplayUpdater {
                 maxText = dotMatrixDisplayMessage.TEXT();
             }
         }
-        BiDimensions textDimensions = getFontTextDimensions(maxText, defaultFont);
+        BiDimensions textDimensions = getFontTextDimensions(maxText, null, defaultFont);
 
         int displayRectWidth = margins.left + textDimensions.width - defaultFont.getRightMargin() + margins.right;   //   margins.right remplace la dernière marge droite
         int displayRectHeight = margins.top + textDimensions.height + margins.bottom;

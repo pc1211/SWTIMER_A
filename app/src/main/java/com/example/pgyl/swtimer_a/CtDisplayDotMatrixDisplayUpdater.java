@@ -3,10 +3,12 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.os.Handler;
 
+import com.example.pgyl.pekislib_a.ButtonColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontDefault;
 
+import static com.example.pgyl.pekislib_a.ButtonColorBox.COLOR_TYPES;
 import static com.example.pgyl.pekislib_a.DotMatrixDisplayView.SCROLL_DIRECTIONS;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
@@ -31,6 +33,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     private Rect halfDisplayRect;
     private Rect labelRect;
     private String[] colors;
+    private ButtonColorBox colorBox;
     private int onTimeColorIndex;
     private int onLabelColorIndex;
     private int offColorIndex;
@@ -65,6 +68,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
         setupDimensions();
         resetScroll();
         setScrollSpeed(String.valueOf(DOTS_PER_SECOND_DEFAULT));
+        colorBox = dotMatrixDisplayView.getColorBox();
         inAutomatic = false;
     }
 
@@ -78,6 +82,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
         extraFont.close();
         extraFont = null;
         currentCtRecord = null;
+        colorBox.close();
+        colorBox = null;
     }
 
     public void setColors(String[] colors) {
@@ -110,14 +116,17 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     public void displayTimeAndLabel(long nowm) {
         displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDisplay(nowm), APP_TIME_UNIT_PRECISION, APP_TIME_UNIT_PRECISION), currentCtRecord.getLabel());
+        dotMatrixDisplayView.updateDisplay();
     }
 
     public void displayInitTimeAndLabel() {
         displayTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), APP_TIME_UNIT_PRECISION, APP_TIME_UNIT_PRECISION), currentCtRecord.getLabel());
+        dotMatrixDisplayView.updateDisplay();
     }
 
     public void displayHalfInitTimeAndInitLabel() {
         displayHalfTimeAndLabel(msToTimeFormatD(currentCtRecord.getTimeDefInit(), APP_TIME_UNIT_PRECISION, APP_TIME_UNIT_PRECISION), currentCtRecord.getLabelInit());
+        dotMatrixDisplayView.updateDisplay();
     }
 
     public void startAutomatic(long nowm, boolean automaticScrollOn) {
@@ -159,7 +168,9 @@ public class CtDisplayDotMatrixDisplayUpdater {
                 dotMatrixDisplayView.updateDisplay();
             }
         } else {
+            displayBackground();
             displayTime(msToTimeFormatD(currentCtRecord.getTimeDisplay(nowm), APP_TIME_UNIT_PRECISION, APP_TIME_UNIT_PRECISION));
+            dotMatrixDisplayView.updateDisplay();
         }
     }
 
@@ -168,30 +179,46 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void displayTimeAndLabel(String timeText, String labelText) {
-        dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);    //  Pressed=ON TIME  Unpressed=OFF
-        dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        dotMatrixDisplayView.fillRect(labelRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Pressed=ON LABEL  Unpressed=OFF
-        dotMatrixDisplayView.setSymbolPos(labelRect.left, labelRect.top + margins.top);
-        dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
-        dotMatrixDisplayView.updateDisplay();
-    }
-
-    private void displayTime(String timeText) {
-        dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);   //  Pressed=ON TIME  Unpressed=OFF
-        dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        dotMatrixDisplayView.updateDisplay();
+        displayBackground();
+        displayTime(timeText);
+        displayLabel(labelText);
     }
 
     private void displayHalfTimeAndLabel(String timeText, String labelText) {   //  Partager l'affichage entre Temps et Label (utilisé pour le réglage des couleurs dans CtDisplayColorsActivity)
-        dotMatrixDisplayView.fillRect(displayRect, colors[onTimeColorIndex], colors[offColorIndex]);   //  Pressed=ON TIME  Unpressed=OFF
+        displayBackground();
+        displayTime(timeText);
+        displayHalfLabel(labelText);
+    }
+
+    private void displayBackground() {
+        colorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, colors[offColorIndex]);
+        colorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, colors[onTimeColorIndex]);
+        dotMatrixDisplayView.drawBackRect(displayRect);
+        dotMatrixDisplayView.drawBackRect(labelRect);
+    }
+
+    private void displayTime(String timeText) {
+        colorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, colors[onTimeColorIndex]);
+        colorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(timeText, colors[onTimeColorIndex], extraFont, defaultFont);   //  Temps avec police extra prioritaire
-        dotMatrixDisplayView.fillRect(halfDisplayRect, colors[onLabelColorIndex], colors[offColorIndex]);   //  Effacer la 2e moitié du temps    Pressed=ON LABEL  Unpressed=OFF
+        dotMatrixDisplayView.drawFrontText(timeText, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+    }
+
+    private void displayLabel(String labelText) {
+        colorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, colors[onLabelColorIndex]);
+        colorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, colors[offColorIndex]);
+        dotMatrixDisplayView.setSymbolPos(labelRect.left, labelRect.top + margins.top);
+        dotMatrixDisplayView.drawFrontText(labelText, null, defaultFont);   //  Label avec police par défaut
+    }
+
+    private void displayHalfLabel(String labelText) {
+        colorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, colors[offColorIndex]);
+        colorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, colors[onLabelColorIndex]);
+        dotMatrixDisplayView.drawBackRect(halfDisplayRect);
+        colorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, colors[onLabelColorIndex]);
+        colorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(halfDisplayRect.left, halfDisplayRect.top + margins.top);
-        dotMatrixDisplayView.writeText(labelText, colors[onLabelColorIndex], defaultFont);   //  Label avec police par défaut
-        dotMatrixDisplayView.updateDisplay();
+        dotMatrixDisplayView.drawFrontText(labelText, null, defaultFont);   //  Label avec police par défaut
     }
 
     private void setupColorIndexes() {
@@ -220,7 +247,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
 
     private void setupDimensions() {       //  La grille (gridRect) contient le temps et le label, et seule une partie est affichée (gridDisplayRect, glissant en cas de scroll)
         BiDimensions timeTextDimensions = getFontTextDimensions(msToTimeFormatD(currentCtRecord.getTimeDefInit(), APP_TIME_UNIT_PRECISION, APP_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9). getTimeDefInit() utilisé juste pour avoir un temps
-        BiDimensions labelTextDimensions = getFontTextDimensions(currentCtRecord.getLabel(), defaultFont);   //  labelText est uniquement affiché en defaultFont
+        BiDimensions labelTextDimensions = getFontTextDimensions(currentCtRecord.getLabel(), null, defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         int displayRectWidth = margins.left + timeTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du temps, avec margins.right remplaçant la dernière marge droite)
         int displayRectHeight = margins.top + Math.max(timeTextDimensions.height, labelTextDimensions.height) + margins.bottom;   //  Affichage du temps uniquement ou (via scroll) du temps et du label , sur la hauteur nécessaire

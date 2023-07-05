@@ -3,6 +3,7 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import com.example.pgyl.pekislib_a.ButtonColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontDefault;
@@ -61,8 +62,12 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         String timeText;
         String color;
 
-        dotMatrixDisplayView.fillRect(displayRect, TIME_ON_COLOR, OFF_COLOR);    //  Pressed=ON  Unpressed=OFF
-        dotMatrixDisplayView.setSymbolPos(timeDisplayRect.left + margins.left, timeDisplayRect.top + margins.top);
+        ButtonColorBox colorBox = dotMatrixDisplayView.getColorBox();
+
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_BACK_COLOR, OFF_COLOR);
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_BACK_COLOR, TIME_ON_COLOR);
+        dotMatrixDisplayView.drawBackRect(displayRect);
+
         if ((showExpirationTime) && (ctRecord.getMode().equals(CtRecord.MODES.TIMER))) {   //  Afficher heure d'expiration du timer HH:MM:SS
             timeText = getFormattedTimeZoneLongTimeDate(ctRecord.getTimeExp(), HHmmss);
             color = TIME_EXP_ON_COLOR;
@@ -71,11 +76,16 @@ public class MainCtListItemDotMatrixDisplayUpdater {
             timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), timeUnit, APP_TIME_UNIT_PRECISION);   //  HH:MM:SS ou HH:MM:SS.T
             color = TIME_ON_COLOR;
         }
-        dotMatrixDisplayView.writeText(timeText, color, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_FRONT_COLOR, color);
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_FRONT_COLOR, OFF_COLOR);
+        dotMatrixDisplayView.setSymbolPos(timeDisplayRect.left + margins.left, timeDisplayRect.top + margins.top);
+        dotMatrixDisplayView.drawFrontText(timeText, extraFont, defaultFont);   //  Temps avec police extra prioritaire
+
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_FRONT_COLOR, LABEL_ON_COLOR);
+        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_FRONT_COLOR, OFF_COLOR);
         dotMatrixDisplayView.setSymbolPos(labelDisplayRect.left + margins.left, labelDisplayRect.top + LABEL_MARGIN_TOP);
         String label = ctRecord.getLabel();
-        dotMatrixDisplayView.writeText(label.substring(0, Math.min(label.length(), FILLER_LABEL.length())), LABEL_ON_COLOR, defaultFont);   //  Label avec police par défaut
-        dotMatrixDisplayView.updateDisplay();
+        dotMatrixDisplayView.drawFrontText(label.substring(0, Math.min(label.length(), FILLER_LABEL.length())), null, defaultFont);   //  Label avec police par défaut
     }
 
     public void setupDimensions(DotMatrixDisplayView dotMatrixDisplayView) {       //  La grille (gridRect) contient le temps (1e ligne) et le label (2e ligne)
@@ -84,7 +94,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         int displayRectHeight;
 
         BiDimensions fillerTimeTextDimensions = getFontTextDimensions(msToTimeFormatD(FILLER_TIME_MS, APP_TIME_UNIT_PRECISION, APP_TIME_UNIT_PRECISION), extraFont, defaultFont);  // timeText mélange de l'extraFont (pour les ":" et ".") et defaultFont (pour les chiffres de 0 à 9)
-        BiDimensions fillerLabelTextDimensions = getFontTextDimensions(FILLER_LABEL, defaultFont);   //  labelText est uniquement affiché en defaultFont
+        BiDimensions fillerLabelTextDimensions = getFontTextDimensions(FILLER_LABEL, null, defaultFont);   //  labelText est uniquement affiché en defaultFont
 
         displayRectWidth = margins.left + fillerLabelTextDimensions.width - defaultFont.getRightMargin() + margins.right;   //   Affichage sur la largeur du label maximum; margins.right remplace la dernière marge droite
         displayRectHeight = margins.top + fillerTimeTextDimensions.height + extraFont.getSymbolByCode(DOT_ASCII_CODE).getDimensions().height + LABEL_MARGIN_TOP + fillerLabelTextDimensions.height + margins.bottom;

@@ -127,10 +127,6 @@ public class CtDisplayActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        setupOrientationLayout();
-        setupButtons();
-        setupBackLayout();
-        setupDotMatrixDisplay();
         validReturnFromCalledActivity = false;
     }
 
@@ -153,6 +149,11 @@ public class CtDisplayActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        setupOrientationLayout();
+        setupButtons();
+        setupBackLayout();
+        setupDotMatrixDisplay();
 
         long nowm = System.currentTimeMillis();
         shpFileName = getPackageName() + SHP_FILE_NAME_SUFFIX;   //  Sans nom d'activité car partagé avec MainActivity
@@ -319,7 +320,7 @@ public class CtDisplayActivity extends Activity {
         dotMatrixDisplayUpdater.displayTimeAndLabel(nowm);
         if (currentCtRecord.isReset() || (currentCtRecord.isRunning() && ((currentCtRecord.getMode().equals(MODES.TIMER)) || (!currentCtRecord.isSplitted())))) {   //  Besoin de rafraichissement continu
             dotMatrixDisplayUpdater.resetScroll();
-            dotMatrixDisplayUpdater.startAutomatic(nowm, currentCtRecord.isReset());   //  Appelé même si Timer en Split car sinon pas de constatation que timer écoulé (car currentCdRecord n'est plus mis à jour)
+            dotMatrixDisplayUpdater.startAutomatic(nowm, currentCtRecord.isReset());   //  Appelé même si Timer en Split car sinon pas de constatation que timer écoulé (car currentCtRecord n'est plus mis à jour)
         }
     }
 
@@ -337,8 +338,8 @@ public class CtDisplayActivity extends Activity {
             boolean b = getButtonState(command);
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, colors[colorTableIndex][backColorIndex]);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).stringValue);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).stringValue);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGB);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGB);
             buttons[command.INDEX()].updateDisplayColors();
             buttons[command.INDEX()].setVisibility(getButtonVisibility(command) ? View.VISIBLE : View.INVISIBLE);
         }
