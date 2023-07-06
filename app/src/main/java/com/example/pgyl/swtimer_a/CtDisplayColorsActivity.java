@@ -398,8 +398,8 @@ public class CtDisplayColorsActivity extends Activity {
         boolean b = getStateButtonState(stateCommand);
         buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
         buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, colors[colorTableIndex][backColorIndex]);
-        buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGB);
-        buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGB);
+        buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGBHex);
+        buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
         stateButtons[stateCommand.INDEX()].updateDisplayColors();
     }
 

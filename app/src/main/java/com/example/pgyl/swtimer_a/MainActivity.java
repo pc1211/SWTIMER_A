@@ -349,14 +349,14 @@ public class MainActivity extends Activity {
                 String color = command.equals(COMMANDS.SHOW_EXPIRATION_TIME) ? SHOW_EXPIRATION_TIME_COLOR : ADD_NEW_CHRONOTIMER_TO_LIST_COLOR;
                 buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, getButtonState(command) ? color : BUTTON_DARK_COLOR);
                 buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, BACKGROUND_COLOR);
-                buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGB);
-                buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGB);
+                buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGBHex);
+                buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
                 break;
             case NEW_CHRONO:
             case NEW_TIMER:
                 buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, BACKGROUND_COLOR);
                 buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT);
-                buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGB);
+                buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
                 buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT);
                 break;
         }

@@ -172,8 +172,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
         ButtonColorBox buttonColorBox = viewHolder.buttonModeSelection.getColorBox();
         buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR);
         buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, b ? SELECT_COLOR : BACKGROUND_COLOR);
-        buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGB);
-        buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGB);
+        buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGBHex);
+        buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
         viewHolder.buttonModeSelection.updateDisplayColors();
 
         if (ctRecords.get(pos).getMode().equals(MODES.CHRONO) || !ctRecords.get(pos).isReset() || (ctRecords.get(pos).getTimeDef() > 0)) {
@@ -181,8 +181,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
             buttonColorBox = viewHolder.buttonStartStop.getColorBox();
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR);
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, b ? PRESSED_COLOR : BACKGROUND_COLOR);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGB);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGB);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGBHex);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
             viewHolder.buttonStartStop.updateDisplayColors();
             viewHolder.buttonStartStop.setVisibility(View.VISIBLE);
         } else {
@@ -194,8 +194,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
             buttonColorBox = viewHolder.buttonSplit.getColorBox();
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR);
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, b ? PRESSED_COLOR : BACKGROUND_COLOR);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGB);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGB);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGBHex);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
             viewHolder.buttonSplit.updateDisplayColors();
             viewHolder.buttonSplit.setVisibility(View.VISIBLE);
         } else {
@@ -206,8 +206,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
             buttonColorBox = viewHolder.buttonReset.getColorBox();
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, BUTTON_DARK_COLOR);
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, BACKGROUND_COLOR);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGB);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGB);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGBHex);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
             viewHolder.buttonReset.updateDisplayColors();
             viewHolder.buttonReset.setVisibility(View.VISIBLE);
         } else {
@@ -219,8 +219,8 @@ public class MainCtListItemAdapter extends BaseAdapter {
             buttonColorBox = viewHolder.buttonClockAppAlarm.getColorBox();
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? BACKGROUND_COLOR : BUTTON_DARK_COLOR);
             buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, b ? PRESSED_COLOR : BACKGROUND_COLOR);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGB);
-            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGB);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGBHex);
+            buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
             viewHolder.buttonClockAppAlarm.updateDisplayColors();
             viewHolder.buttonClockAppAlarm.setVisibility(View.VISIBLE);
         } else {
