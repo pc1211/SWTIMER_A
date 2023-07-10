@@ -3,6 +3,7 @@
 
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <application
+        android:allowBackup="false"
         android:icon="@drawable/app_icon"
         android:label="Swtimer"
         android:theme="@style/AppTheme">
