@@ -96,6 +96,7 @@ public class CtDisplayDotMatrixDisplayActivity extends Activity {
 
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getActionBar().setTitle("Set Dot matrix display");
+        setupOrientationLayout();
 
         validReturnFromCalledActivity = false;
     }
@@ -117,7 +118,6 @@ public class CtDisplayDotMatrixDisplayActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        setupOrientationLayout();
         setupButtons();
         setupSeekBarForValue();
         setupDotMatrixDisplay();

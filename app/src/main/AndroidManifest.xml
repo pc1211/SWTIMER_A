@@ -8,10 +8,10 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.example.pgyl.swtimer_a.MainActivity"
+            android:exported="true"
             android:label="Swtimer"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="stateHidden"
-            android:exported="true">
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -19,10 +19,10 @@
         </activity>
         <activity
             android:name="com.example.pgyl.swtimer_a.CtDisplayActivity"
-            android:label="CTActivity" />
+            android:label="CtDisplayActivity" />
         <activity
             android:name="com.example.pgyl.pekislib_a.PresetsActivity"
-            android:label="InputEditListActivity" />
+            android:label="PresetsActivity" />
         <activity
             android:name="com.example.pgyl.pekislib_a.InputButtonsActivity"
             android:label="InputButtonsActivity" />
@@ -32,7 +32,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.example.pgyl.swtimer_a.CtDisplayDotMatrixDisplayActivity"
-            android:label="CtDisplayDimensionsActivity" />
+            android:label="CtDisplayDotMatrixDisplayActivity" />
         <activity
             android:name="com.example.pgyl.pekislib_a.HelpActivity"
             android:label="HelpActivity" />

@@ -49,7 +49,6 @@ public class MainDotMatrixDisplayUpdater {
     }
 
     public void close() {
-        dotMatrixDisplayView = null;
         defaultFont.close();
         defaultFont = null;
     }

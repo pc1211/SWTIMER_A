@@ -76,12 +76,10 @@ public class CtDisplayDotMatrixDisplayUpdater {
         stopAutomatic();
         runnableTime = null;
         handlerTime = null;
-        dotMatrixDisplayView = null;
         defaultFont.close();
         defaultFont = null;
         extraFont.close();
         extraFont = null;
-        currentCtRecord = null;
         colorBox.close();
         colorBox = null;
     }
