@@ -10,9 +10,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
@@ -146,7 +144,7 @@ public class CtDisplayColorsActivity extends Activity {
     private DotMatrixDisplayView dotMatrixDisplayView;
     private CtDisplayDotMatrixDisplayUpdater dotMatrixDisplayUpdater;
     private ImageButtonView[] stateButtons;
-    private Button[] buttons;
+    private ImageButtonView[] buttons;
     private SeekBar[] seekBars;
     private Drawable[] processDrawables;
     private LinearLayout backLayoutPart1;
@@ -174,11 +172,7 @@ public class CtDisplayColorsActivity extends Activity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getActionBar().setTitle("Set Colors");
         setContentView(R.layout.ctdisplaycolors);   //  Mode portrait uniquement (cf Manifest)
-        setupBackLayout();
-        setupStateButtons();
-        setupButtons();
-        setupSeekBars();
-        setupDotMatrixDisplay();
+
         validReturnFromCalledActivity = false;
     }
 
@@ -198,6 +192,12 @@ public class CtDisplayColorsActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        setupBackLayout();
+        setupStateButtons();
+        setupButtons();
+        setupSeekBars();
+        setupDotMatrixDisplay();
 
         shpFileName = getPackageName() + "." + getClass().getSimpleName() + SHP_FILE_NAME_SUFFIX;
         int idct = getIntent().getIntExtra(CtDisplayActivity.CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), NOT_FOUND);
@@ -525,6 +525,7 @@ public class CtDisplayColorsActivity extends Activity {
         for (STATE_COMMANDS stateCommand : STATE_COMMANDS.values()) {
             try {
                 stateButtons[stateCommand.INDEX()] = findViewById(rid.getField(STATE_BUTTON_XML_PREFIX + stateCommand.toString()).getInt(rid));
+                stateButtons[stateCommand.INDEX()].setOutlineStrokeWidthDp(0);
                 stateButtons[stateCommand.INDEX()].setSVGImageResource(stateCommand.ID());
             } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
                 Logger.getLogger(com.example.pgyl.swtimer_a.MainActivity.class.getName()).log(Level.SEVERE, null, ex);
@@ -535,16 +536,16 @@ public class CtDisplayColorsActivity extends Activity {
     private void setupButtons() {
         final String BUTTON_XML_PREFIX = "BTN_";
 
-        buttons = new Button[COMMANDS.values().length];
+        buttons = new ImageButtonView[COMMANDS.values().length];
         Class rid = R.id.class;
         for (COMMANDS command : COMMANDS.values()) {
             try {
                 buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_XML_PREFIX + command.toString()).getInt(rid));   //  BTN_... dans le XML
                 buttons[command.INDEX()].setText(command.TEXT());
                 final COMMANDS fcommand = command;
-                buttons[command.INDEX()].setOnClickListener(new Button.OnClickListener() {
+                buttons[command.INDEX()].setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
                     @Override
-                    public void onClick(View view) {
+                    public void onCustomClick() {
                         onButtonClick(fcommand);
                     }
                 });

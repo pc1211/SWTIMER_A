@@ -487,6 +487,7 @@ public class MainActivity extends Activity {
         for (COMMANDS command : COMMANDS.values())
             try {
                 buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_COMMAND_XML_PREFIX + command.toString()).getInt(rid));
+                buttons[command.INDEX()].setOutlineStrokeWidthDp(0);
                 buttons[command.INDEX()].setPNGImageResource(command.ID());
                 if ((!command.equals(COMMANDS.START_SELECTED_CT)) && (!command.equals(COMMANDS.STOP_SELECTED_CT))) {   //  Start et stop doivent pouvoir cliquer sans délai
                     buttons[command.INDEX()].setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);

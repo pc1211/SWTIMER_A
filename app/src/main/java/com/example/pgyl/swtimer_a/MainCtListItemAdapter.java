@@ -248,6 +248,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         final View rowv = rowView;
         final int pos = position;
 
+        viewHolder.buttonModeSelection.setOutlineStrokeWidthDp(0);
         viewHolder.buttonModeSelection.setPNGImageResource((ctRecords.get(pos).getMode().equals(MODES.CHRONO)) ? R.drawable.main_chrono : R.drawable.main_timer);
         viewHolder.buttonModeSelection.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonModeSelection.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
@@ -256,6 +257,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonModeSelectionClick(rowv, pos);
             }
         });
+        viewHolder.buttonStartStop.setOutlineStrokeWidthDp(0);
         viewHolder.buttonStartStop.setPNGImageResource(R.drawable.main_start_stop);
         viewHolder.buttonStartStop.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
@@ -263,6 +265,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonStartStopClick(rowv, pos);
             }
         });
+        viewHolder.buttonSplit.setOutlineStrokeWidthDp(0);
         viewHolder.buttonSplit.setPNGImageResource(R.drawable.main_split);
         viewHolder.buttonSplit.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
@@ -270,6 +273,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonSplitClick(rowv, pos);
             }
         });
+        viewHolder.buttonReset.setOutlineStrokeWidthDp(0);
         viewHolder.buttonReset.setPNGImageResource(R.drawable.main_reset);
         viewHolder.buttonReset.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonReset.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
@@ -278,6 +282,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
                 onButtonResetClick(rowv, pos);
             }
         });
+        viewHolder.buttonClockAppAlarm.setOutlineStrokeWidthDp(0);
         viewHolder.buttonClockAppAlarm.setPNGImageResource(R.drawable.main_bell);
         viewHolder.buttonClockAppAlarm.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
         viewHolder.buttonClockAppAlarm.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {

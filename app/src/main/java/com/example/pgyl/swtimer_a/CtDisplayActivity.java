@@ -444,6 +444,7 @@ public class CtDisplayActivity extends Activity {
         for (COMMANDS command : COMMANDS.values()) {
             try {
                 buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_XML_NAME_PREFIX + command.toString()).getInt(rid));
+                buttons[command.INDEX()].setOutlineStrokeWidthDp(0);
                 buttons[command.INDEX()].setSVGImageResource(command.ID());
                 if (!command.equals(COMMANDS.START_STOP)) {   //  Start/Stop doit pouvoir cliquer sans délai
                     buttons[command.INDEX()].setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);

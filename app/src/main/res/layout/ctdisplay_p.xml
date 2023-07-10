@@ -22,6 +22,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -29,22 +32,23 @@
             android:id="@+id/BTN_START_STOP"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_SPLIT"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -52,22 +56,23 @@
             android:id="@+id/BTN_CLOCK_APP_ALARM"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_RESET"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -75,16 +80,14 @@
             android:id="@+id/BTN_CHRONO_MODE"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1" />
 
         <com.example.pgyl.pekislib_a.ImageButtonView
             android:id="@+id/BTN_TIMER_MODE"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1" />
     </LinearLayout>
 </LinearLayout>
