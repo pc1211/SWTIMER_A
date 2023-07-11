@@ -85,8 +85,8 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void setColors(String[] colors) {
-        this.colors = colors;
-        dotMatrixDisplayView.setBackColor(colors[backColorIndex]);
+        this.colors = colors;   //  couleurs utilisées plus bas par displayTime() (ON TIME, ON LABEL) ou displayBackground() (OFF)) ... via colorBox de DotMatrixDisplayView
+        dotMatrixDisplayView.setBackColor(colors[backColorIndex]);   //  (cf dotMatrixDisplayView.setBackColor(): Background est stocké à part, bien que déjà intégré dans colors)
     }
 
     public void setDotSpacingCoeff(String dotSpacingCoeff) {

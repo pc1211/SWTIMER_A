@@ -258,7 +258,7 @@ public class CtDisplayActivity extends Activity {
             return true;
         }
         if (item.getItemId() == R.id.SET_DOT_MATRIX_DISPLAY_COEFFS) {
-            launchCtDisplayDotMatrixDisplayCoeffsActivity();
+            launchCtDisplayDotMatrixDisplayActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -315,6 +315,50 @@ public class CtDisplayActivity extends Activity {
         launchPresetsActivity();
     }
 
+    private boolean getButtonState(COMMANDS command) {
+        if (command.equals(COMMANDS.CHRONO_MODE)) {
+            return currentCtRecord.getMode().equals(MODES.CHRONO);
+        }
+        if (command.equals(COMMANDS.TIMER_MODE)) {
+            return currentCtRecord.getMode().equals(MODES.TIMER);
+        }
+        if (command.equals(COMMANDS.START_STOP)) {
+            return currentCtRecord.isRunning();
+        }
+        if (command.equals(COMMANDS.SPLIT)) {
+            return currentCtRecord.isSplitted();
+        }
+        if (command.equals(COMMANDS.RESET)) {
+            return false;
+        }
+        if (command.equals(COMMANDS.CLOCK_APP_ALARM)) {
+            return currentCtRecord.isClockAppAlarmOn();
+        }
+        return false;
+    }
+
+    private boolean getButtonVisibility(COMMANDS command) {
+        if (command.equals(COMMANDS.CHRONO_MODE)) {
+            return (currentCtRecord.getMode().equals(MODES.CHRONO) || currentCtRecord.isReset());
+        }
+        if (command.equals(COMMANDS.TIMER_MODE)) {
+            return (currentCtRecord.getMode().equals(MODES.TIMER) || currentCtRecord.isReset());
+        }
+        if (command.equals(COMMANDS.START_STOP)) {
+            return (currentCtRecord.getMode().equals(MODES.CHRONO) || !currentCtRecord.isReset() || (currentCtRecord.getTimeDef() > 0));
+        }
+        if (command.equals(COMMANDS.SPLIT)) {
+            return (currentCtRecord.isRunning() || currentCtRecord.isSplitted());
+        }
+        if (command.equals(COMMANDS.RESET)) {
+            return (!currentCtRecord.isRunning() && !currentCtRecord.isReset());
+        }
+        if (command.equals(COMMANDS.CLOCK_APP_ALARM)) {
+            return (currentCtRecord.getMode().equals(MODES.TIMER) && currentCtRecord.isRunning());
+        }
+        return false;
+    }
+
     private void updateDisplayDotMatrixDisplay(long nowm) {
         dotMatrixDisplayUpdater.stopAutomatic();
         dotMatrixDisplayUpdater.displayTimeAndLabel(nowm);
@@ -359,50 +403,6 @@ public class CtDisplayActivity extends Activity {
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-    }
-
-    private boolean getButtonState(COMMANDS command) {
-        if (command.equals(COMMANDS.CHRONO_MODE)) {
-            return currentCtRecord.getMode().equals(MODES.CHRONO);
-        }
-        if (command.equals(COMMANDS.TIMER_MODE)) {
-            return currentCtRecord.getMode().equals(MODES.TIMER);
-        }
-        if (command.equals(COMMANDS.START_STOP)) {
-            return currentCtRecord.isRunning();
-        }
-        if (command.equals(COMMANDS.SPLIT)) {
-            return currentCtRecord.isSplitted();
-        }
-        if (command.equals(COMMANDS.RESET)) {
-            return false;
-        }
-        if (command.equals(COMMANDS.CLOCK_APP_ALARM)) {
-            return currentCtRecord.isClockAppAlarmOn();
-        }
-        return false;
-    }
-
-    private boolean getButtonVisibility(COMMANDS command) {
-        if (command.equals(COMMANDS.CHRONO_MODE)) {
-            return (currentCtRecord.getMode().equals(MODES.CHRONO) || currentCtRecord.isReset());
-        }
-        if (command.equals(COMMANDS.TIMER_MODE)) {
-            return (currentCtRecord.getMode().equals(MODES.TIMER) || currentCtRecord.isReset());
-        }
-        if (command.equals(COMMANDS.START_STOP)) {
-            return (currentCtRecord.getMode().equals(MODES.CHRONO) || !currentCtRecord.isReset() || (currentCtRecord.getTimeDef() > 0));
-        }
-        if (command.equals(COMMANDS.SPLIT)) {
-            return (currentCtRecord.isRunning() || currentCtRecord.isSplitted());
-        }
-        if (command.equals(COMMANDS.RESET)) {
-            return (!currentCtRecord.isRunning() && !currentCtRecord.isReset());
-        }
-        if (command.equals(COMMANDS.CLOCK_APP_ALARM)) {
-            return (currentCtRecord.getMode().equals(MODES.TIMER) && currentCtRecord.isRunning());
-        }
-        return false;
     }
 
     private void savePreferences() {
@@ -551,8 +551,9 @@ public class CtDisplayActivity extends Activity {
         startActivityForResult(callingIntent, (SWTIMER_ACTIVITIES.CT_DISPLAY_COLORS.INDEX() + 1) * SWTIMER_ACTIVITIES_REQUEST_CODE_MULTIPLIER);
     }
 
-    private void launchCtDisplayDotMatrixDisplayCoeffsActivity() {
+    private void launchCtDisplayDotMatrixDisplayActivity() {
         setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName(), coeffs);
+        setCurrentsForActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString(), getDotMatrixDisplayColorsTableName(), colors[getStringIndexOf(getDotMatrixDisplayColorsTableName(), colorTableNames)]);
         setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString(), ACTIVITY_START_STATUS.COLD);
         Intent callingIntent = new Intent(this, CtDisplayDotMatrixDisplayActivity.class);
         callingIntent.putExtra(CTDISPLAY_EXTRA_KEYS.CURRENT_CHRONO_TIMER_ID.toString(), currentCtRecord.getIdct());

@@ -36,14 +36,19 @@ import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringDBTables.getActivityInfosTableName;
+import static com.example.pgyl.pekislib_a.StringDBTables.getDataVersionsDataVersionIndex;
+import static com.example.pgyl.pekislib_a.StringDBTables.getDataVersionsTableName;
 import static com.example.pgyl.pekislib_a.StringDBUtils.createPekislibTableIfNotExists;
+import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrent;
 import static com.example.pgyl.pekislib_a.StringDBUtils.getDefaults;
+import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrent;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setCurrentsForActivity;
 import static com.example.pgyl.pekislib_a.StringDBUtils.setStartStatusOfActivity;
 import static com.example.pgyl.swtimer_a.Constants.SWTIMER_ACTIVITIES;
 import static com.example.pgyl.swtimer_a.CtDisplayActivity.CTDISPLAY_EXTRA_KEYS;
 import static com.example.pgyl.swtimer_a.CtRecord.MODES;
 import static com.example.pgyl.swtimer_a.MainCtListItemAdapter.onModeSelectionClickListener;
+import static com.example.pgyl.swtimer_a.StringDBTables.DATA_VERSION;
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getChronoTimersTableName;
@@ -119,6 +124,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
+        setCurrent(stringDB, getDataVersionsTableName(), getDataVersionsDataVersionIndex(), String.valueOf(DATA_VERSION));
         mainCtListUpdater.stopAutomatic();
         mainCtListUpdater.close();
         mainCtListUpdater = null;
@@ -522,6 +528,23 @@ public class MainActivity extends Activity {
         stringDB = new StringDB(this);
         stringDB.open();
 
+        String DBDataVersion = (stringDB.tableExists(getDataVersionsTableName())) ? getCurrent(stringDB, getDataVersionsTableName(), getDataVersionsDataVersionIndex()) : null;
+        int ver = (DBDataVersion != null) ? Integer.parseInt(DBDataVersion) : 0;
+        if (ver < DATA_VERSION) {   //  Données obsolètes => Tout réinitialiser, avec données par défaut
+            stringDB.deleteTableIfExists(getDataVersionsTableName());
+            stringDB.deleteTableIfExists(getActivityInfosTableName());
+            stringDB.deleteTableIfExists(getDotMatrixDisplayColorsTableName());
+            stringDB.deleteTableIfExists(getButtonsColorsTableName());
+            stringDB.deleteTableIfExists(getBackScreenColorsTableName());
+            stringDB.deleteTableIfExists(getDotMatrixDisplayCoeffsTableName());
+            stringDB.deleteTableIfExists(getPresetsCTTableName());
+            stringDB.deleteTableIfExists(getChronoTimersTableName());
+        }
+
+        if (!stringDB.tableExists(getDataVersionsTableName())) {
+            createPekislibTableIfNotExists(stringDB, getDataVersionsTableName());    //  Réinitialiser
+            setCurrent(stringDB, getDataVersionsTableName(), getDataVersionsDataVersionIndex(), String.valueOf(DATA_VERSION));
+        }
         if (!stringDB.tableExists(getActivityInfosTableName())) {
             createPekislibTableIfNotExists(stringDB, getActivityInfosTableName());
         }

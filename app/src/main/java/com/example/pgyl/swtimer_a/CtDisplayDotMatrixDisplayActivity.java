@@ -130,7 +130,7 @@ public class CtDisplayDotMatrixDisplayActivity extends Activity {
         coeffs = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString(), getDotMatrixDisplayCoeffsTableName());
         labels = getLabels(stringDB, getDotMatrixDisplayCoeffsTableName());
         maxs = getMaxs(stringDB, getDotMatrixDisplayCoeffsTableName());
-        colors = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY.toString(), getDotMatrixDisplayColorsTableName());  //  Prendre les couleurs actuelles de CtDisplayActivity
+        colors = getCurrentsFromActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString(), getDotMatrixDisplayColorsTableName());
 
         if (isColdStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString())) {
             setStartStatusOfActivity(stringDB, SWTIMER_ACTIVITIES.CT_DISPLAY_DOT_MATRIX_DISPLAY.toString(), ACTIVITY_START_STATUS.HOT);
