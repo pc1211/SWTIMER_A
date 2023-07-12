@@ -36,8 +36,8 @@ import static com.example.pgyl.pekislib_a.MiscUtils.msgBox;
 import static com.example.pgyl.pekislib_a.MiscUtils.toastLong;
 import static com.example.pgyl.pekislib_a.StringDBTables.ACTIVITY_START_STATUS;
 import static com.example.pgyl.pekislib_a.StringDBTables.getActivityInfosTableName;
-import static com.example.pgyl.pekislib_a.StringDBTables.getDataVersionsDataVersionIndex;
-import static com.example.pgyl.pekislib_a.StringDBTables.getDataVersionsTableName;
+import static com.example.pgyl.pekislib_a.StringDBTables.getAppInfosDataVersionIndex;
+import static com.example.pgyl.pekislib_a.StringDBTables.getAppInfosTableName;
 import static com.example.pgyl.pekislib_a.StringDBUtils.createPekislibTableIfNotExists;
 import static com.example.pgyl.pekislib_a.StringDBUtils.getCurrent;
 import static com.example.pgyl.pekislib_a.StringDBUtils.getDefaults;
@@ -124,7 +124,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
-        setCurrent(stringDB, getDataVersionsTableName(), getDataVersionsDataVersionIndex(), String.valueOf(DATA_VERSION));
+        setCurrent(stringDB, getAppInfosTableName(), getAppInfosDataVersionIndex(), String.valueOf(DATA_VERSION));
         mainCtListUpdater.stopAutomatic();
         mainCtListUpdater.close();
         mainCtListUpdater = null;
@@ -528,10 +528,10 @@ public class MainActivity extends Activity {
         stringDB = new StringDB(this);
         stringDB.open();
 
-        String DBDataVersion = (stringDB.tableExists(getDataVersionsTableName())) ? getCurrent(stringDB, getDataVersionsTableName(), getDataVersionsDataVersionIndex()) : null;
+        String DBDataVersion = (stringDB.tableExists(getAppInfosTableName())) ? getCurrent(stringDB, getAppInfosTableName(), getAppInfosDataVersionIndex()) : null;
         int ver = (DBDataVersion != null) ? Integer.parseInt(DBDataVersion) : 0;
-        if (ver < DATA_VERSION) {   //  Données obsolètes => Tout réinitialiser, avec données par défaut
-            stringDB.deleteTableIfExists(getDataVersionsTableName());
+        if (ver != DATA_VERSION) {   //  Données invalides => Tout réinitialiser, avec données par défaut
+            stringDB.deleteTableIfExists(getAppInfosTableName());
             stringDB.deleteTableIfExists(getActivityInfosTableName());
             stringDB.deleteTableIfExists(getDotMatrixDisplayColorsTableName());
             stringDB.deleteTableIfExists(getButtonsColorsTableName());
@@ -539,11 +539,12 @@ public class MainActivity extends Activity {
             stringDB.deleteTableIfExists(getDotMatrixDisplayCoeffsTableName());
             stringDB.deleteTableIfExists(getPresetsCTTableName());
             stringDB.deleteTableIfExists(getChronoTimersTableName());
+            msgBox("All Data Deleted (Invalid)", this);
         }
 
-        if (!stringDB.tableExists(getDataVersionsTableName())) {
-            createPekislibTableIfNotExists(stringDB, getDataVersionsTableName());    //  Réinitialiser
-            setCurrent(stringDB, getDataVersionsTableName(), getDataVersionsDataVersionIndex(), String.valueOf(DATA_VERSION));
+        if (!stringDB.tableExists(getAppInfosTableName())) {
+            createPekislibTableIfNotExists(stringDB, getAppInfosTableName());    //  Réinitialiser
+            setCurrent(stringDB, getAppInfosTableName(), getAppInfosDataVersionIndex(), String.valueOf(DATA_VERSION));
         }
         if (!stringDB.tableExists(getActivityInfosTableName())) {
             createPekislibTableIfNotExists(stringDB, getActivityInfosTableName());

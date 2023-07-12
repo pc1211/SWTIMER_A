@@ -22,7 +22,7 @@ public class StringDBTables {
         return new String[]{SWTIMER_TABLES.DOT_MATRIX_DISPLAY_COLORS.toString(), SWTIMER_TABLES.BUTTONS_COLORS.toString(), SWTIMER_TABLES.BACK_SCREEN_COLORS.toString()};
     }
 
-    public static final int DATA_VERSION = 2;   //   A augmenter dès que les données éventuelles dans la DB existante ne seront plus comptatibles après changements
+    public static final int DATA_VERSION = 4;   //   A augmenter dès que les données éventuelles dans la DB existante ne seront plus comptatibles après changements
 
     enum SWTIMER_TABLES {   // Les tables, rattachées à leurs champs de data
         DOT_MATRIX_DISPLAY_COLORS(SwTimerTableDataFields.DotMatrixDisplayColors.class, "Dot matrix display"),
