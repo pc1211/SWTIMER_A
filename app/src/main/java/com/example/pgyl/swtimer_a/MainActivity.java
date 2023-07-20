@@ -17,7 +17,7 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.example.pgyl.pekislib_a.ButtonColorBox;
+import com.example.pgyl.pekislib_a.ColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.ImageButtonView;
@@ -27,7 +27,7 @@ import com.example.pgyl.pekislib_a.StringDB;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.example.pgyl.pekislib_a.ButtonColorBox.COLOR_TYPES;
+import static com.example.pgyl.pekislib_a.ColorUtils.BUTTON_COLOR_TYPES;
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.SHP_FILE_NAME_SUFFIX;
 import static com.example.pgyl.pekislib_a.HelpActivity.HELP_ACTIVITY_EXTRA_KEYS;
@@ -348,22 +348,22 @@ public class MainActivity extends Activity {
         final String BUTTON_DARK_COLOR = "404040";
         final String BACKGROUND_COLOR = "000000";
 
-        ButtonColorBox buttonColorBox = buttons[command.INDEX()].getColorBox();
+        ColorBox colorBox = buttons[command.INDEX()].getColorBox();
         switch (command) {
             case SHOW_EXPIRATION_TIME:
             case ADD_NEW_CHRONOTIMER_TO_LIST:
                 String color = command.equals(COMMANDS.SHOW_EXPIRATION_TIME) ? SHOW_EXPIRATION_TIME_COLOR : ADD_NEW_CHRONOTIMER_TO_LIST_COLOR;
-                buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, getButtonState(command) ? color : BUTTON_DARK_COLOR);
-                buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, BACKGROUND_COLOR);
-                buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGBHex);
-                buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
+                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), getButtonState(command) ? color : BUTTON_DARK_COLOR);
+                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), BACKGROUND_COLOR);
+                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX()).RGBString);
+                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX()).RGBString);
                 break;
             case NEW_CHRONO:
             case NEW_TIMER:
-                buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, BACKGROUND_COLOR);
-                buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT);
-                buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
-                buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT);
+                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), BACKGROUND_COLOR);
+                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT);
+                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX()).RGBString);
+                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT);
                 break;
         }
         buttons[command.INDEX()].updateDisplayColors();

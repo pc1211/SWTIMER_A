@@ -3,11 +3,13 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import com.example.pgyl.pekislib_a.ButtonColorBox;
+import com.example.pgyl.pekislib_a.ColorBox;
+import com.example.pgyl.pekislib_a.ColorUtils;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontDefault;
 
+import static com.example.pgyl.pekislib_a.ColorUtils.DOT_MATRIX_COLOR_TYPES;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_HEIGHT;
@@ -29,6 +31,7 @@ public class MainDotMatrixDisplayUpdater {
 
     //region Variables
     private DotMatrixDisplayView dotMatrixDisplayView;
+    private ColorBox colorBox;
     private DotMatrixFont defaultFont;
     private Rect margins;
     private Rect displayRect;
@@ -42,13 +45,18 @@ public class MainDotMatrixDisplayUpdater {
     }
 
     private void init() {
+        final String BACK_COLOR = "000000";
+
+        colorBox = dotMatrixDisplayView.getColorBox();
+        colorBox.setColor(ColorUtils.DOT_MATRIX_COLOR_TYPES.BACK_SCREEN_COLOR.INDEX(), BACK_COLOR);
         setupDefaultFont();
-        setupBackColor();
         setupMargins();
         setupDimensions();
     }
 
     public void close() {
+        colorBox.close();
+        colorBox = null;
         defaultFont.close();
         defaultFont = null;
     }
@@ -67,22 +75,14 @@ public class MainDotMatrixDisplayUpdater {
         final String ON_COLOR = "707070";
         final String OFF_COLOR = "404040";
 
-        ButtonColorBox colorBox = dotMatrixDisplayView.getColorBox();
-
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_BACK_COLOR, OFF_COLOR);
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_BACK_COLOR, ON_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), ON_COLOR);
         dotMatrixDisplayView.drawBackRect(displayRect);
 
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_FRONT_COLOR, ON_COLOR);
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_FRONT_COLOR, OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), ON_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), OFF_COLOR);
         dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
         dotMatrixDisplayView.drawFrontText(text, null, defaultFont);
-    }
-
-    private void setupBackColor() {
-        final String BACK_COLOR = "000000";
-
-        dotMatrixDisplayView.setBackColor(BACK_COLOR);
     }
 
     private void setupDefaultFont() {

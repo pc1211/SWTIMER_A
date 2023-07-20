@@ -11,5 +11,6 @@ public class MainCtListItemViewHolder {
     ImageButtonView buttonReset;
     ImageButtonView buttonClockAppAlarm;
     DotMatrixDisplayView buttonDotMatrixDisplayTimeLabel;
+    MainCtListItemDotMatrixDisplayUpdater mainCtListItemDotMatrixDisplayUpdater;
     //endregion
 }

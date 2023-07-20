@@ -14,7 +14,7 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
-import com.example.pgyl.pekislib_a.ButtonColorBox;
+import com.example.pgyl.pekislib_a.ColorBox;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.HelpActivity;
 import com.example.pgyl.pekislib_a.ImageButtonView;
@@ -26,7 +26,7 @@ import com.example.pgyl.pekislib_a.StringDB;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.example.pgyl.pekislib_a.ButtonColorBox.COLOR_TYPES;
+import static com.example.pgyl.pekislib_a.ColorUtils.BUTTON_COLOR_TYPES;
 import static com.example.pgyl.pekislib_a.ColorUtils.HSVToRGB;
 import static com.example.pgyl.pekislib_a.Constants.ACTIVITY_EXTRA_KEYS;
 import static com.example.pgyl.pekislib_a.Constants.COLOR_MASK;
@@ -394,12 +394,12 @@ public class CtDisplayColorsActivity extends Activity {
         int onColorIndex = getButtonsColorsOnIndex();
         int offColorIndex = getButtonsColorsOffIndex();
         int backColorIndex = getButtonsColorsBackIndex();
-        ButtonColorBox buttonColorBox = stateButtons[stateCommand.INDEX()].getColorBox();
+        ColorBox colorBox = stateButtons[stateCommand.INDEX()].getColorBox();
         boolean b = getStateButtonState(stateCommand);
-        buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR, b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
-        buttonColorBox.setColor(COLOR_TYPES.UNPRESSED_BACK_COLOR, colors[colorTableIndex][backColorIndex]);
-        buttonColorBox.setColor(COLOR_TYPES.PRESSED_FRONT_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_BACK_COLOR).RGBHex);
-        buttonColorBox.setColor(COLOR_TYPES.PRESSED_BACK_COLOR, buttonColorBox.getColor(COLOR_TYPES.UNPRESSED_FRONT_COLOR).RGBHex);
+        colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
+        colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), colors[colorTableIndex][backColorIndex]);
+        colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX()).RGBString);
+        colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX()).RGBString);
         stateButtons[stateCommand.INDEX()].updateDisplayColors();
     }
 

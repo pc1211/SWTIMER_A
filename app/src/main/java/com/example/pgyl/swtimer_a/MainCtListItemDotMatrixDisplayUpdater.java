@@ -3,11 +3,13 @@ package com.example.pgyl.swtimer_a;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import com.example.pgyl.pekislib_a.ButtonColorBox;
+import com.example.pgyl.pekislib_a.ColorBox;
+import com.example.pgyl.pekislib_a.ColorUtils;
 import com.example.pgyl.pekislib_a.DotMatrixDisplayView;
 import com.example.pgyl.pekislib_a.DotMatrixFont;
 import com.example.pgyl.pekislib_a.DotMatrixFontDefault;
 
+import static com.example.pgyl.pekislib_a.ColorUtils.DOT_MATRIX_COLOR_TYPES;
 import static com.example.pgyl.pekislib_a.DotMatrixFontUtils.getFontTextDimensions;
 import static com.example.pgyl.pekislib_a.MiscUtils.BiDimensions;
 import static com.example.pgyl.pekislib_a.PointRectUtils.ALIGN_LEFT_HEIGHT;
@@ -20,6 +22,8 @@ import static com.example.pgyl.swtimer_a.Constants.DOT_ASCII_CODE;
 
 public class MainCtListItemDotMatrixDisplayUpdater {
     //region Variables
+    private DotMatrixDisplayView dotMatrixDisplayView;
+    private ColorBox colorBox;
     private DotMatrixFont defaultFont;
     private DotMatrixFont extraFont;
     private Rect margins;
@@ -35,26 +39,33 @@ public class MainCtListItemDotMatrixDisplayUpdater {
     final long FILLER_TIME_MS = 0;   //  correspondant à 00:00:00.0 si TS, 00:00:00 si SEC
     //endregion
 
-    public MainCtListItemDotMatrixDisplayUpdater() {    //  Général pour tous les MainCtListItems
+    public MainCtListItemDotMatrixDisplayUpdater(DotMatrixDisplayView dotMatrixDisplayView) {    //  Général pour tous les MainCtListItems
         super();
 
+        this.dotMatrixDisplayView = dotMatrixDisplayView;
         init();
     }
 
     private void init() {
+        final String BACK_COLOR = "000000";
+
+        colorBox = dotMatrixDisplayView.getColorBox();
+        colorBox.setColor(ColorUtils.DOT_MATRIX_COLOR_TYPES.BACK_SCREEN_COLOR.INDEX(), BACK_COLOR);
         setupDefaultFont();
         setupExtraFont();
         setupMargins();
     }
 
     public void close() {
+        colorBox.close();
+        colorBox = null;
         defaultFont.close();
         defaultFont = null;
         extraFont.close();
         extraFont = null;
     }
 
-    public void displayTimeAndLabel(DotMatrixDisplayView dotMatrixDisplayView, CtRecord ctRecord, boolean showExpirationTime, long nowm) {
+    public void displayTimeAndLabel(CtRecord ctRecord, boolean showExpirationTime, long nowm) {
         final String TIME_ON_COLOR = "FFFF00";   //  Couleur de HH:MM:SS
         final String TIME_EXP_ON_COLOR = "FF0000";    //  Couleur si Temps d'expiration (si timer)
         final String LABEL_ON_COLOR = "668CFF";
@@ -62,10 +73,8 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         String timeText;
         String color;
 
-        ButtonColorBox colorBox = dotMatrixDisplayView.getColorBox();
-
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_BACK_COLOR, OFF_COLOR);
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_BACK_COLOR, TIME_ON_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), TIME_ON_COLOR);
         dotMatrixDisplayView.drawBackRect(displayRect);
 
         if ((showExpirationTime) && (ctRecord.getMode().equals(CtRecord.MODES.TIMER))) {   //  Afficher heure d'expiration du timer HH:MM:SS
@@ -76,19 +85,19 @@ public class MainCtListItemDotMatrixDisplayUpdater {
             timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), timeUnit, APP_TIME_UNIT_PRECISION);   //  HH:MM:SS ou HH:MM:SS.T
             color = TIME_ON_COLOR;
         }
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_FRONT_COLOR, color);
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_FRONT_COLOR, OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), color);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), OFF_COLOR);
         dotMatrixDisplayView.setSymbolPos(timeDisplayRect.left + margins.left, timeDisplayRect.top + margins.top);
         dotMatrixDisplayView.drawFrontText(timeText, extraFont, defaultFont);   //  Temps avec police extra prioritaire
 
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.UNPRESSED_FRONT_COLOR, LABEL_ON_COLOR);
-        colorBox.setColor(ButtonColorBox.COLOR_TYPES.PRESSED_FRONT_COLOR, OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), LABEL_ON_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), OFF_COLOR);
         dotMatrixDisplayView.setSymbolPos(labelDisplayRect.left + margins.left, labelDisplayRect.top + LABEL_MARGIN_TOP);
         String label = ctRecord.getLabel();
         dotMatrixDisplayView.drawFrontText(label.substring(0, Math.min(label.length(), FILLER_LABEL.length())), null, defaultFont);   //  Label avec police par défaut
     }
 
-    public void setupDimensions(DotMatrixDisplayView dotMatrixDisplayView) {       //  La grille (gridRect) contient le temps (1e ligne) et le label (2e ligne)
+    public void setupDimensions() {       //  La grille (gridRect) contient le temps (1e ligne) et le label (2e ligne)
         final RectF INTERNAL_MARGIN_SIZE_COEFFS = new RectF(0, 0, 0, 0);   //  Marge autour de l'affichage proprement dit (% de largeur)
         int displayRectWidth;
         int displayRectHeight;
@@ -108,12 +117,6 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         dotMatrixDisplayView.setExternalMarginCoeffs(ALIGN_LEFT_HEIGHT);
         dotMatrixDisplayView.setGridRect(gridRect);
         dotMatrixDisplayView.setDisplayRect(displayRect);
-    }
-
-    public void setupBackColor(DotMatrixDisplayView dotMatrixDisplayView) {
-        final String BACK_COLOR = "000000";
-
-        dotMatrixDisplayView.setBackColor(BACK_COLOR);
     }
 
     private void setupDefaultFont() {
