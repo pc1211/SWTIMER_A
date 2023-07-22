@@ -380,11 +380,11 @@ public class CtDisplayActivity extends Activity {
         for (COMMANDS command : COMMANDS.values()) {
             boolean buttonState = getButtonState(command);
             ColorBox colorBox = buttons[command.INDEX()].getColorBox();
-            colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), buttonState ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
-            colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), colors[colorTableIndex][backColorIndex]);
-            colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX()).RGBString);
-            colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX()).RGBString);
-            buttons[command.INDEX()].updateDisplayColors();
+            colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), buttonState ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
+            colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK.INDEX(), colors[colorTableIndex][backColorIndex]);
+            colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK.INDEX()).RGBString);
+            colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT.INDEX()).RGBString);
+            buttons[command.INDEX()].updateDisplay();
             buttons[command.INDEX()].setVisibility(getButtonVisibility(command) ? View.VISIBLE : View.INVISIBLE);
         }
     }

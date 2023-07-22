@@ -50,7 +50,7 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         final String BACK_COLOR = "000000";
 
         colorBox = dotMatrixDisplayView.getColorBox();
-        colorBox.setColor(ColorUtils.DOT_MATRIX_COLOR_TYPES.BACK_SCREEN_COLOR.INDEX(), BACK_COLOR);
+        colorBox.setColor(ColorUtils.DOT_MATRIX_COLOR_TYPES.BACK_SCREEN.INDEX(), BACK_COLOR);
         setupDefaultFont();
         setupExtraFont();
         setupMargins();
@@ -73,8 +73,8 @@ public class MainCtListItemDotMatrixDisplayUpdater {
         String timeText;
         String color;
 
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), OFF_COLOR);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), TIME_ON_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK.INDEX(), OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK.INDEX(), TIME_ON_COLOR);
         dotMatrixDisplayView.drawBackRect(displayRect);
 
         if ((showExpirationTime) && (ctRecord.getMode().equals(CtRecord.MODES.TIMER))) {   //  Afficher heure d'expiration du timer HH:MM:SS
@@ -85,13 +85,13 @@ public class MainCtListItemDotMatrixDisplayUpdater {
             timeText = msToTimeFormatD(ctRecord.getTimeDisplay(nowm), timeUnit, APP_TIME_UNIT_PRECISION);   //  HH:MM:SS ou HH:MM:SS.T
             color = TIME_ON_COLOR;
         }
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), color);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), color);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT.INDEX(), OFF_COLOR);
         dotMatrixDisplayView.setSymbolPos(timeDisplayRect.left + margins.left, timeDisplayRect.top + margins.top);
         dotMatrixDisplayView.drawFrontText(timeText, extraFont, defaultFont);   //  Temps avec police extra prioritaire
 
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), LABEL_ON_COLOR);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), LABEL_ON_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT.INDEX(), OFF_COLOR);
         dotMatrixDisplayView.setSymbolPos(labelDisplayRect.left + margins.left, labelDisplayRect.top + LABEL_MARGIN_TOP);
         String label = ctRecord.getLabel();
         dotMatrixDisplayView.drawFrontText(label.substring(0, Math.min(label.length(), FILLER_LABEL.length())), null, defaultFont);   //  Label avec police par défaut

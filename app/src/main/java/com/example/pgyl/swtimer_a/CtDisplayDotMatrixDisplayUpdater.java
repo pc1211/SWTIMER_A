@@ -108,7 +108,7 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     public void rebuildStructure() {
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.BACK_SCREEN_COLOR.INDEX(), colors[backColorIndex]);   //  Nécessaire pour DotMatrixDisplayView.createDotFormStencilBitmap()
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.BACK_SCREEN.INDEX(), colors[backColorIndex]);   //  Nécessaire pour DotMatrixDisplayView.createDotFormStencilBitmap()
         dotMatrixDisplayView.rebuildStructure();
     }   //  A appeler uniquement si MAJ en temps réel
 
@@ -189,32 +189,32 @@ public class CtDisplayDotMatrixDisplayUpdater {
     }
 
     private void displayBackground() {
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), colors[offColorIndex]);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), colors[onTimeColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK.INDEX(), colors[offColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK.INDEX(), colors[onTimeColorIndex]);
         dotMatrixDisplayView.drawBackRect(displayRect);
         dotMatrixDisplayView.drawBackRect(labelRect);
     }
 
     private void displayTime(String timeText) {
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), colors[onTimeColorIndex]);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colors[offColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), colors[onTimeColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT.INDEX(), colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
         dotMatrixDisplayView.drawFrontText(timeText, extraFont, defaultFont);   //  Temps avec police extra prioritaire
     }
 
     private void displayLabel(String labelText) {
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), colors[onLabelColorIndex]);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colors[offColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), colors[onLabelColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT.INDEX(), colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(labelRect.left, labelRect.top + margins.top);
         dotMatrixDisplayView.drawFrontText(labelText, null, defaultFont);   //  Label avec police par défaut
     }
 
     private void displayHalfLabel(String labelText) {
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), colors[offColorIndex]);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), colors[onLabelColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK.INDEX(), colors[offColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK.INDEX(), colors[onLabelColorIndex]);
         dotMatrixDisplayView.drawBackRect(halfDisplayRect);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), colors[onLabelColorIndex]);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colors[offColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), colors[onLabelColorIndex]);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT.INDEX(), colors[offColorIndex]);
         dotMatrixDisplayView.setSymbolPos(halfDisplayRect.left, halfDisplayRect.top + margins.top);
         dotMatrixDisplayView.drawFrontText(labelText, null, defaultFont);   //  Label avec police par défaut
     }

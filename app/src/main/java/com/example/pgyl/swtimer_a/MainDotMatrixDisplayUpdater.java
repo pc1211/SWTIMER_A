@@ -48,7 +48,7 @@ public class MainDotMatrixDisplayUpdater {
         final String BACK_COLOR = "000000";
 
         colorBox = dotMatrixDisplayView.getColorBox();
-        colorBox.setColor(ColorUtils.DOT_MATRIX_COLOR_TYPES.BACK_SCREEN_COLOR.INDEX(), BACK_COLOR);
+        colorBox.setColor(ColorUtils.DOT_MATRIX_COLOR_TYPES.BACK_SCREEN.INDEX(), BACK_COLOR);
         setupDefaultFont();
         setupMargins();
         setupDimensions();
@@ -75,12 +75,12 @@ public class MainDotMatrixDisplayUpdater {
         final String ON_COLOR = "707070";
         final String OFF_COLOR = "404040";
 
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), OFF_COLOR);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), ON_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_BACK.INDEX(), OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_BACK.INDEX(), ON_COLOR);
         dotMatrixDisplayView.drawBackRect(displayRect);
 
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), ON_COLOR);
-        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), OFF_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), ON_COLOR);
+        colorBox.setColor(DOT_MATRIX_COLOR_TYPES.PRESSED_FRONT.INDEX(), OFF_COLOR);
         dotMatrixDisplayView.setSymbolPos(displayRect.left + margins.left, displayRect.top + margins.top);
         dotMatrixDisplayView.drawFrontText(text, null, defaultFont);
     }

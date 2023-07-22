@@ -396,11 +396,11 @@ public class CtDisplayColorsActivity extends Activity {
         int backColorIndex = getButtonsColorsBackIndex();
         ColorBox colorBox = stateButtons[stateCommand.INDEX()].getColorBox();
         boolean b = getStateButtonState(stateCommand);
-        colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
-        colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), colors[colorTableIndex][backColorIndex]);
-        colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX()).RGBString);
-        colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX()).RGBString);
-        stateButtons[stateCommand.INDEX()].updateDisplayColors();
+        colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), b ? colors[colorTableIndex][onColorIndex] : colors[colorTableIndex][offColorIndex]);
+        colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK.INDEX(), colors[colorTableIndex][backColorIndex]);
+        colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK.INDEX()).RGBString);
+        colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT.INDEX()).RGBString);
+        stateButtons[stateCommand.INDEX()].updateDisplay();
     }
 
     private void updateDisplayBackScreenColors() {

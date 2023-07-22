@@ -353,20 +353,20 @@ public class MainActivity extends Activity {
             case SHOW_EXPIRATION_TIME:
             case ADD_NEW_CHRONOTIMER_TO_LIST:
                 String color = command.equals(COMMANDS.SHOW_EXPIRATION_TIME) ? SHOW_EXPIRATION_TIME_COLOR : ADD_NEW_CHRONOTIMER_TO_LIST_COLOR;
-                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), getButtonState(command) ? color : BUTTON_DARK_COLOR);
-                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), BACKGROUND_COLOR);
-                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX()).RGBString);
-                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX()).RGBString);
+                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), getButtonState(command) ? color : BUTTON_DARK_COLOR);
+                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK.INDEX(), BACKGROUND_COLOR);
+                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK.INDEX()).RGBString);
+                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT.INDEX()).RGBString);
                 break;
             case NEW_CHRONO:
             case NEW_TIMER:
-                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX(), BACKGROUND_COLOR);
-                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK_COLOR.INDEX(), NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT);
-                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT_COLOR.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT_COLOR.INDEX()).RGBString);
-                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK_COLOR.INDEX(), NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT);
+                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT.INDEX(), BACKGROUND_COLOR);
+                colorBox.setColor(BUTTON_COLOR_TYPES.UNPRESSED_BACK.INDEX(), NEW_CHRONO_TIMER_UNPRESSED_COLOR_DEFAULT);
+                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_FRONT.INDEX(), colorBox.getColor(BUTTON_COLOR_TYPES.UNPRESSED_FRONT.INDEX()).RGBString);
+                colorBox.setColor(BUTTON_COLOR_TYPES.PRESSED_BACK.INDEX(), NEW_CHRONO_TIMER_PRESSED_COLOR_DEFAULT);
                 break;
         }
-        buttons[command.INDEX()].updateDisplayColors();
+        buttons[command.INDEX()].updateDisplay();
     }
 
     private void updateDisplaySetClockAppAlarmOnStartTimerBarMenuItemIcon(boolean setClockAppAlarmOnStartTimer) {
