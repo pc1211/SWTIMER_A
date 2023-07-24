@@ -499,7 +499,7 @@ public class MainActivity extends Activity {
                     buttons[command.INDEX()].setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
                 }
                 final COMMANDS fcommand = command;
-                buttons[command.INDEX()].setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
+                buttons[command.INDEX()].setOnCustomClickListener(new ImageButtonView.onCustomClickListener() {
                     @Override
                     public void onCustomClick() {
                         onButtonClick(fcommand);

@@ -250,7 +250,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonModeSelection.setOutlineStrokeWidthDp(0);
         viewHolder.buttonModeSelection.setPNGImageResource((ctRecords.get(pos).getMode().equals(MODES.CHRONO)) ? R.drawable.main_chrono : R.drawable.main_timer);
         viewHolder.buttonModeSelection.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonModeSelection.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
+        viewHolder.buttonModeSelection.setOnCustomClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
                 onButtonModeSelectionClick(rowv, pos);
@@ -258,7 +258,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         });
         viewHolder.buttonStartStop.setOutlineStrokeWidthDp(0);
         viewHolder.buttonStartStop.setPNGImageResource(R.drawable.main_start_stop);
-        viewHolder.buttonStartStop.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
+        viewHolder.buttonStartStop.setOnCustomClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
                 onButtonStartStopClick(rowv, pos);
@@ -266,7 +266,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         });
         viewHolder.buttonSplit.setOutlineStrokeWidthDp(0);
         viewHolder.buttonSplit.setPNGImageResource(R.drawable.main_split);
-        viewHolder.buttonSplit.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
+        viewHolder.buttonSplit.setOnCustomClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
                 onButtonSplitClick(rowv, pos);
@@ -275,7 +275,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonReset.setOutlineStrokeWidthDp(0);
         viewHolder.buttonReset.setPNGImageResource(R.drawable.main_reset);
         viewHolder.buttonReset.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonReset.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
+        viewHolder.buttonReset.setOnCustomClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
                 onButtonResetClick(rowv, pos);
@@ -284,7 +284,7 @@ public class MainCtListItemAdapter extends BaseAdapter {
         viewHolder.buttonClockAppAlarm.setOutlineStrokeWidthDp(0);
         viewHolder.buttonClockAppAlarm.setPNGImageResource(R.drawable.main_bell);
         viewHolder.buttonClockAppAlarm.setMinClickTimeInterval(BUTTON_MIN_CLICK_TIME_INTERVAL_MS);
-        viewHolder.buttonClockAppAlarm.setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
+        viewHolder.buttonClockAppAlarm.setOnCustomClickListener(new ImageButtonView.onCustomClickListener() {
             @Override
             public void onCustomClick() {
                 onButtonClockAppAlarmClick(pos);

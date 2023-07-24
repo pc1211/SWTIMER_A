@@ -333,7 +333,7 @@ public class CtDisplayDotMatrixDisplayActivity extends Activity {
                 buttons[command.INDEX()] = findViewById(rid.getField(BUTTON_XML_PREFIX + command.toString()).getInt(rid));   //  BTN_... dans le XML
                 buttons[command.INDEX()].setText(command.TEXT());
                 final COMMANDS fcommand = command;
-                buttons[command.INDEX()].setCustomOnClickListener(new ImageButtonView.onCustomClickListener() {
+                buttons[command.INDEX()].setOnCustomClickListener(new ImageButtonView.onCustomClickListener() {
                     @Override
                     public void onCustomClick() {
                         onButtonClick(fcommand);
