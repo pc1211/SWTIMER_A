@@ -85,6 +85,13 @@
                     android:layout_weight="1" />
 
                 <com.example.pgyl.pekislib_a.ImageButtonView
+                    android:id="@+id/BTN_START_STOP_SELECTED_CT"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1" />
+
+                <com.example.pgyl.pekislib_a.ImageButtonView
                     android:id="@+id/BTN_SPLIT_SELECTED_CT"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"

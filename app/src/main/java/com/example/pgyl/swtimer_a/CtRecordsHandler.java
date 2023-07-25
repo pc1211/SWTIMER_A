@@ -50,7 +50,7 @@ public class CtRecordsHandler {
     }
 
     private enum ACTIONS_ON_SELECTION {
-        START, STOP, SPLIT, RESET, REMOVE, COUNT, COUNT_RUNNING_TIMERS_WITH_CLOCK_APP_ALARM
+        START, STOP, START_STOP, SPLIT, RESET, REMOVE, COUNT, COUNT_RUNNING_TIMERS_WITH_CLOCK_APP_ALARM
     }
 
     private final String ALARM_SEPARATOR = "£µ$***ALARM***$µ£";
@@ -173,6 +173,11 @@ public class CtRecordsHandler {
         actionOnSelection(ACTIONS_ON_SELECTION.STOP);
     }
 
+    public void startStopSelection(long nowm) {
+        this.nowm = nowm;
+        actionOnSelection(ACTIONS_ON_SELECTION.START_STOP);
+    }
+
     public void splitSelection(long nowm) {
         this.nowm = nowm;
         actionOnSelection(ACTIONS_ON_SELECTION.SPLIT);
@@ -248,6 +253,13 @@ public class CtRecordsHandler {
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.STOP)) {
                         ctRecords.get(i).stop(nowm);
+                    }
+                    if (action.equals(ACTIONS_ON_SELECTION.START_STOP)) {
+                        if (ctRecords.get(i).isRunning()) {
+                            ctRecords.get(i).stop(nowm);
+                        } else {   //  Stoppé
+                            ctRecords.get(i).start(nowm, setClockAppAlarmOnStartTimer);
+                        }
                     }
                     if (action.equals(ACTIONS_ON_SELECTION.SPLIT)) {
                         ctRecords.get(i).split(nowm);

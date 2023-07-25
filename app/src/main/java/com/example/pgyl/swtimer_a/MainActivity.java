@@ -70,7 +70,7 @@ import static com.example.pgyl.swtimer_a.StringDBUtils.initializeTablePresetsCT;
 public class MainActivity extends Activity {
     //region Constantes
     private enum COMMANDS {
-        NEW_CHRONO(R.drawable.main_chrono), NEW_TIMER(R.drawable.main_timer), INVERT_SELECTION_ALL_CT(R.drawable.main_inv), SELECT_ALL_CT(R.drawable.main_all), START_SELECTED_CT(R.drawable.main_start), STOP_SELECTED_CT(R.drawable.main_stop), SPLIT_SELECTED_CT(R.drawable.main_split), RESET_SELECTED_CT(R.drawable.main_reset), REMOVE_SELECTED_CT(R.drawable.main_remove), SHOW_EXPIRATION_TIME(R.drawable.main_clock), ADD_NEW_CHRONOTIMER_TO_LIST(R.drawable.main_tolist);
+        NEW_CHRONO(R.drawable.main_chrono), NEW_TIMER(R.drawable.main_timer), INVERT_SELECTION_ALL_CT(R.drawable.main_inv), SELECT_ALL_CT(R.drawable.main_all), START_SELECTED_CT(R.drawable.main_start), STOP_SELECTED_CT(R.drawable.main_stop), START_STOP_SELECTED_CT(R.drawable.main_start_stop), SPLIT_SELECTED_CT(R.drawable.main_split), RESET_SELECTED_CT(R.drawable.main_reset), REMOVE_SELECTED_CT(R.drawable.main_remove), SHOW_EXPIRATION_TIME(R.drawable.main_clock), ADD_NEW_CHRONOTIMER_TO_LIST(R.drawable.main_tolist);
 
         private int valueId;
 
@@ -229,7 +229,7 @@ public class MainActivity extends Activity {
         if ((command.equals(COMMANDS.INVERT_SELECTION_ALL_CT)) || (command.equals(COMMANDS.SELECT_ALL_CT))) {
             onButtonClickActionOnAll(command, nowm);
         }
-        if ((command.equals(COMMANDS.START_SELECTED_CT)) || (command.equals(COMMANDS.STOP_SELECTED_CT)) || (command.equals(COMMANDS.SPLIT_SELECTED_CT)) || (command.equals(COMMANDS.RESET_SELECTED_CT)) || (command.equals(COMMANDS.REMOVE_SELECTED_CT))) {
+        if ((command.equals(COMMANDS.START_SELECTED_CT)) || (command.equals(COMMANDS.STOP_SELECTED_CT)) || (command.equals(COMMANDS.START_STOP_SELECTED_CT)) || (command.equals(COMMANDS.SPLIT_SELECTED_CT)) || (command.equals(COMMANDS.RESET_SELECTED_CT)) || (command.equals(COMMANDS.REMOVE_SELECTED_CT))) {
             onButtonClickActionOnSelection(command, nowm);
         }
         if (command.equals(COMMANDS.SHOW_EXPIRATION_TIME)) {
@@ -269,6 +269,9 @@ public class MainActivity extends Activity {
                     }
                     if (command.equals(COMMANDS.STOP_SELECTED_CT)) {
                         ctRecordsHandler.stopSelection(nowm);
+                    }
+                    if (command.equals(COMMANDS.START_STOP_SELECTED_CT)) {
+                        ctRecordsHandler.startStopSelection(nowm);
                     }
                     if (command.equals(COMMANDS.RESET_SELECTED_CT)) {
                         ctRecordsHandler.resetSelection();
