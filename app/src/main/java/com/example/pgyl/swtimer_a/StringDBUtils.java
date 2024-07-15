@@ -4,6 +4,8 @@ import com.example.pgyl.pekislib_a.StringDB;
 
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsInits;
 import static com.example.pgyl.swtimer_a.StringDBTables.getBackScreenColorsTableName;
+import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsInits;
+import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getChronoTimersTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsInits;
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayCoeffsTableName;
@@ -11,8 +13,6 @@ import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColor
 import static com.example.pgyl.swtimer_a.StringDBTables.getDotMatrixDisplayColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTInits;
 import static com.example.pgyl.swtimer_a.StringDBTables.getPresetsCTTableName;
-import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsInits;
-import static com.example.pgyl.swtimer_a.StringDBTables.getButtonsColorsTableName;
 import static com.example.pgyl.swtimer_a.StringDBTables.getSwTimerTableDataFieldsCount;
 
 public class StringDBUtils {
